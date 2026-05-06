@@ -1,0 +1,44 @@
+# Build output
+bin/
+obj/
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.vcxproj.filters
+
+# Rider
+.idea/
+
+# NuGet
+packages/
+*.nupkg
+project.lock.json
+project.assets.json
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
+*.log
+
+# Native binaries (Silk.NET downloads these)
+*.dll
+*.pdb
+*.so
+*.dylib
+
+# But keep content files
+!Content/**
+
+# Shader source (keep these)
+!Content/ShaderFiles/**
+
+# Compiled shader cache (if you add any)
+*.spirv
+*.spv

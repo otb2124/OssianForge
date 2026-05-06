@@ -1,0 +1,36 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace OssianForge.Engine.Nodes
+{
+    public class Nodes
+    {
+
+        public NodeManager NodeManager;
+
+        public Nodes() { NodeManager = new NodeManager(); }
+
+
+        public void Initialize()
+        {
+            NodeManager.Initialize();
+        }
+
+        public void OnLoad()
+        {
+            NodeManager.OnLoad();
+        }
+        public void OnUpdate(double delta)
+        { 
+            NodeManager.OnUpdate(delta);
+        }
+
+        public void OnRender(double delta)
+        {
+            NodeManager.OnRender(delta);
+        }
+    }
+}

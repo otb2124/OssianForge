@@ -1,0 +1,105 @@
+﻿using OssianForge.Engine.Inputs;
+using System.Numerics;
+
+namespace OssianForge.Engine.Graphics.Camera
+{
+    public class Camera
+    {
+        public Vector3 Position = new Vector3(0, 1.5f, 3f);
+        public float Fov = 45f;
+        public float AspectRatio;
+
+        private float _yaw = -90f; // facing forward by default
+        private float _pitch = 0f;
+
+        private Vector2 _lastMousePos;
+        private bool _firstMouse = true;
+
+        private const float MoveSpeed = 3f;
+        private const float MouseSensitivity = 0.3f;
+        private const float ZoomSpeed = 2f;
+        private const float MinFov = 10f;
+        private const float MaxFov = 120f;
+
+        // Forward direction derived from yaw/pitch
+        private Vector3 GetForward()
+        {
+            float yawRad = float.DegreesToRadians(_yaw);
+            float pitchRad = float.DegreesToRadians(_pitch);
+            return Vector3.Normalize(new Vector3(
+                MathF.Cos(pitchRad) * MathF.Cos(yawRad),
+                MathF.Sin(pitchRad),
+                MathF.Cos(pitchRad) * MathF.Sin(yawRad)
+            ));
+        }
+
+        public void OnUpdate(double delta)
+        {
+            ControlCamera((float)delta);
+        }
+
+        private void ControlCamera(float delta)
+        {
+            ControlMouseRotation();
+            ControlMovement(delta);
+            ControlZoom();
+        }
+
+        private void ControlMouseRotation()
+        {
+            Vector2 mousePos = Engine.Inputs.mouse.Position;
+
+            if (_firstMouse)
+            {
+                _lastMousePos = mousePos;
+                _firstMouse = false;
+                return;
+            }
+
+            Vector2 diff = mousePos - _lastMousePos;
+            _lastMousePos = mousePos;
+
+            _yaw += diff.X * MouseSensitivity;
+            _pitch = Math.Clamp(_pitch - diff.Y * MouseSensitivity, -89f, 89f);
+        }
+
+        private void ControlMovement(float delta)
+        {
+            var keys = Engine.Inputs.KeyHandler;
+            Vector3 forward = GetForward();
+            Vector3 right = Vector3.Normalize(Vector3.Cross(forward, Vector3.UnitY));
+
+            if (keys.IsStateActive(KeyHandler.KeyStates.MOVEUPPRESSED))
+                Position += forward * MoveSpeed * delta;
+            if (keys.IsStateActive(KeyHandler.KeyStates.MOVEDOWNPRESSED))
+                Position -= forward * MoveSpeed * delta;
+            if (keys.IsStateActive(KeyHandler.KeyStates.MOVELEFTPRESSED))
+                Position -= right * MoveSpeed * delta;
+            if (keys.IsStateActive(KeyHandler.KeyStates.MOVERIGHTPRESSED))
+                Position += right * MoveSpeed * delta;
+        }
+
+        private void ControlZoom()
+        {
+            var keys = Engine.Inputs.KeyHandler;
+            if (keys.IsStateActive(KeyHandler.KeyStates.CAMERAZOOMUPPRESSED))
+                Fov = Math.Clamp(Fov - ZoomSpeed, MinFov, MaxFov);
+            if (keys.IsStateActive(KeyHandler.KeyStates.CAMERAZOOMDOWNPRESSED))
+                Fov = Math.Clamp(Fov + ZoomSpeed, MinFov, MaxFov);
+        }
+
+        public Matrix4x4 GetView()
+        {
+            // Target is now Position + forward direction, not a fixed point
+            return Matrix4x4.CreateLookAt(Position, Position + GetForward(), Vector3.UnitY);
+        }
+
+        public Matrix4x4 GetProjection()
+        {
+            return Matrix4x4.CreatePerspectiveFieldOfView(
+                float.DegreesToRadians(Fov),
+                AspectRatio,
+                0.1f, 100f);
+        }
+    }
+}
