@@ -1,4 +1,5 @@
 ﻿using OssianForge.Engine.Nodes.Props;
+using OssianForge.Engine.Resources.Shaders;
 using System.Numerics;
 
 namespace OssianForge.Engine.Graphics.RenderTarget
@@ -9,7 +10,7 @@ namespace OssianForge.Engine.Graphics.RenderTarget
     /// </summary>
     public class PostProcessPass : IDisposable
     {
-        public Shader Shader;
+        public ShaderResource ShaderResource;
         public bool Enabled = true;
 
         // Common built-in uniforms — set these each frame before Render()
@@ -21,9 +22,9 @@ namespace OssianForge.Engine.Graphics.RenderTarget
         public float ChromaStrength = 0.0f;   // 0 = off, 0.003 = subtle, 0.01 = strong
         public Vector3 ColorTint = Vector3.One;  // RGB multiplier, (1,1,1) = neutral
 
-        public PostProcessPass(string vertShaderId, string fragShaderId)
+        public PostProcessPass(string shaderId)
         {
-            Shader = new Shader(vertShaderId, fragShaderId);
+            ShaderResource = Engine.Resources.GetResource(shaderId) as ShaderResource;
         }
 
         /// <summary>
@@ -33,20 +34,20 @@ namespace OssianForge.Engine.Graphics.RenderTarget
         {
             var gl = Engine.Graphics.OpenGL;
 
-            Shader.Use();
+            ShaderResource.Apply();
 
             gl.ActiveTexture(Silk.NET.OpenGL.TextureUnit.Texture0);
             gl.BindTexture(Silk.NET.OpenGL.TextureTarget.Texture2D, inputTexture);
-            Shader.SetInt("uScreen", 0);
-            Shader.SetFloat("uGamma", Gamma);
-            Shader.SetFloat("uExposure", Exposure);
-            Shader.SetFloat("uSaturation", Saturation);
-            Shader.SetInt("uInvert", Invert ? 1 : 0);
-            Shader.SetFloat("uVignette", Vignette);
-            Shader.SetFloat("uChroma", ChromaStrength);
-            Shader.SetVector3("uColorTint", ColorTint);
+            ShaderResource.SetInt("uScreen", 0);
+            ShaderResource.SetFloat("uGamma", Gamma);
+            ShaderResource.SetFloat("uExposure", Exposure);
+            ShaderResource.SetFloat("uSaturation", Saturation);
+            ShaderResource.SetInt("uInvert", Invert ? 1 : 0);
+            ShaderResource.SetFloat("uVignette", Vignette);
+            ShaderResource.SetFloat("uChroma", ChromaStrength);
+            ShaderResource.SetVector3("uColorTint", ColorTint);
         }
 
-        public void Dispose() => Shader.Dispose();
+        public void Dispose() => ShaderResource.Dispose();
     }
 }

@@ -1,4 +1,6 @@
 ﻿using OssianForge.Engine.Resources.Meshes;
+using OssianForge.Engine.Resources.Shaders;
+using OssianForge.Engine.Resources.Textures;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,8 +28,8 @@ namespace OssianForge.Engine.Resources
         {
             ResourceFileMap = new Dictionary<string, string>
             {
-                { "shaderfile.Basic.vert", "ShaderFiles/Basic.vert"},
-                { "shaderfile.Basic.frag", "ShaderFiles/Basic.frag"},
+                { "shaderfile.basic.vert", "ShaderFiles/Basic.vert"},
+                { "shaderfile.basic.frag", "ShaderFiles/Basic.frag"},
                 { "shaderfile.skybox.vert", "ShaderFiles/skybox.vert"},
                 { "shaderfile.skybox.frag", "ShaderFiles/skybox.frag"},
                 { "shaderfile.sprite.vert", "ShaderFiles/sprite.vert"},
@@ -53,6 +55,31 @@ namespace OssianForge.Engine.Resources
 
 
 
+            ResourceList = new List<Resource>
+            {
+                new MeshResource("mesh.donut", "meshfile.donut"),
+                new MeshResource("mesh.donut56", "meshfile.donut56"),
+                new MeshResource("mesh.house", "meshfile.house"),
+                new MeshResource("mesh.cube", "fastmesh.cube"),
+                new MeshResource("mesh.plane", "fastmesh.plane"),
+                //new MeshResource("mesh.house", "meshfile.house"),
+                //new MeshResource("mesh.house", "meshfile.house"),
+
+                new ShaderResource("shader.basic", "shaderfile.basic.vert", "shaderfile.basic.frag"),
+                new ShaderResource("shader.skybox", "shaderfile.skybox.vert", "shaderfile.skybox.frag"),
+                new ShaderResource("shader.sprite", "shaderfile.sprite.vert", "shaderfile.sprite.frag"),
+                new ShaderResource("shader.post", "shaderfile.post.vert", "shaderfile.post.frag"),
+
+                new TextureResource("texture.donut.icing", "texturefile.IcingBaseColor"),
+                new TextureResource("texture.donut.base", "texturefile.DonutBaseColor"),
+                new TextureResource("texture.house.barrel", "texturefile.house.barrel"),
+                new TextureResource("texture.brick", "texturefile.brick.d", "texturefile.brick.n"),
+                new TextureResource("texture.house.windows", "texturefile.house.windows"),
+                new TextureResource("texture.house.wood", "texturefile.house.wood"),
+                new TextureResource("texture.light", "texturefile.light"),
+                new TextureResource("texture.dices", "texturefile.dices"),
+            };
+
 
             foreach (var record in ResourceFileMap)
             {
@@ -69,17 +96,16 @@ namespace OssianForge.Engine.Resources
 
                 ResourceFiles.Add(resource);
             }
-
-
-            ResourceList = new List<Resource>
-            {
-                new MeshResource("123", "123")
-            };
         }
 
         public void OnLoad()
         {
-            foreach (var resource in ResourceFiles)
+            foreach (var resourceFile in ResourceFiles)
+            {
+                resourceFile.Load();
+            }
+
+            foreach (var resource in ResourceList)
             {
                 resource.Load();
             }

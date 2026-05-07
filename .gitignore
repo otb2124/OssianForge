@@ -42,3 +42,6 @@ desktop.ini
 # Compiled shader cache (if you add any)
 *.spirv
 *.spv
+
+#snapshots
+snapshots/

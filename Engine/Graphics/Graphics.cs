@@ -66,10 +66,10 @@ namespace OssianForge.Engine.Graphics
 
         public void OnLoad()
         {
-            PostProcess = new PostProcessStack(Window.Size.X, Window.Size.Y);
-            var mainPass = new PostProcessPass("shaderfile.post.vert", "shaderfile.post.frag");
+            //PostProcess = new PostProcessStack(Window.Size.X, Window.Size.Y);
+            //var mainPass = new PostProcessPass("shader.post");
             //mainPass.ChromaStrength = 0.01f;
-            PostProcess.Passes.Add(mainPass);
+            //PostProcess.Passes.Add(mainPass);
         }
 
 
@@ -84,9 +84,9 @@ namespace OssianForge.Engine.Graphics
             CurrentDelta = delta;
             OpenGL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
-            PostProcess.BeginScene();
+            //PostProcess.BeginScene();
             Engine.Nodes.OnRender(delta);
-            PostProcess.EndScene();
+            //PostProcess.EndScene();
         }
 
         public void OnResize(Vector2D<int> size)

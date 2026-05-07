@@ -3,6 +3,7 @@
     public class Node
     {
         public string Id;
+        public string Name;
         public Node Parent;
         public List<Node> Children = new();
         public List<Props.NodeProperty> Properties = new();

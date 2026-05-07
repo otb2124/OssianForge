@@ -1,17 +1,22 @@
 ﻿using OssianForge.Engine.Resources.TextureFiles;
 using System.Numerics;
 using Silk.NET.OpenGL;
+using OssianForge.Engine.Resources.Shaders;
+
 
 namespace OssianForge.Engine.Nodes.Props
 {
-    public class Sprite : NodeProperty, IDisposable
+
+
+    //TODO: replace with just adding MaterialProperty, QuadMesh and ShaderProperty to Node3D
+    //Move Billboard feature to MeshProperty
+    public class SpriteProperty : NodeProperty, IDisposable
     {
         public TextureFile Texture;
         public Vector2 Size;
         public Vector4 Color;
-        public Model Model;
 
-        private Shader _shader;
+        private ShaderResource _shader;
         private uint _vao, _vbo;
 
         private static readonly float[] QuadVertices =
@@ -25,21 +30,22 @@ namespace OssianForge.Engine.Nodes.Props
         };
 
         // Texture-based billboard
-        public Sprite(string textureId, Vector2 size, Vector4 color = default)
+        public SpriteProperty(string textureId, Vector2 size, Vector4 color = default)
         {
             Texture = Engine.Resources.GetResourceFile(textureId) as TextureFile
                 ?? throw new Exception($"Texture not found: '{textureId}'");
             Size = size;
             Color = color == default ? Vector4.One : color;
-            _shader = new Shader("shaderfile.sprite.vert", "shaderfile.sprite.frag");
+            _shader = Engine.Resources.GetResource("shader.sprite") as ShaderResource;
             SetupQuad();
         }
 
-        public Sprite(Model model)
+        /*
+        public SpriteProperty(Model model)
         {
             Model = model;
         }
-
+        */
 
         private void SetupQuad()
         {
@@ -92,7 +98,8 @@ namespace OssianForge.Engine.Nodes.Props
             gl.DepthMask(false);   // don't write to depth buffer
             gl.Enable(EnableCap.DepthTest);
 
-            if (Model != null)
+            
+            /*if (Model != null)
             {
                 Matrix4x4 model =
                     Matrix4x4.CreateScale(worldScale) *
@@ -100,15 +107,15 @@ namespace OssianForge.Engine.Nodes.Props
                     Matrix4x4.CreateTranslation(worldPosition);
 
                 Model.Draw(model, view, proj);
-            }
-            else if (_vao != 0)
+            }*/
+            if (_vao != 0)
             {
                 Matrix4x4 model =
                     Matrix4x4.CreateScale(Size.X * worldScale.X, Size.Y * worldScale.Y, 1.0f) *
                     billboard *
                     Matrix4x4.CreateTranslation(worldPosition);
 
-                _shader.Use();
+                _shader.Apply();
                 _shader.SetMatrix4("uModel", model);
                 _shader.SetMatrix4("uView", view);
                 _shader.SetMatrix4("uProjection", proj);
@@ -133,7 +140,7 @@ namespace OssianForge.Engine.Nodes.Props
             var gl = Engine.Graphics.OpenGL;
             if (_vao != 0) gl.DeleteVertexArray(_vao);
             if (_vbo != 0) gl.DeleteBuffer(_vbo);
-            Model?.Dispose();
+            //Model?.Dispose();
         }
     }
 }

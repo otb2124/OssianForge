@@ -21,12 +21,13 @@ namespace OssianForge.Engine.Resources.Shaders
             SubShaders = new();
             foreach (var shaderId in shaderFileIds)
                 SubShaders.Add(new SubShader(shaderId));
-
-            Link();
         }
 
-        private void Link()
+        public override void Load()
         {
+            foreach (var subShader in SubShaders)
+                subShader.Load();
+
             Handle = Engine.Graphics.OpenGL.CreateProgram();
 
             foreach (var sub in SubShaders)
@@ -42,7 +43,7 @@ namespace OssianForge.Engine.Resources.Shaders
                 Engine.Graphics.OpenGL.DetachShader(Handle, sub.Handle);
         }
 
-        public void Use() => Engine.Graphics.OpenGL.UseProgram(Handle);
+        public void Apply() => Engine.Graphics.OpenGL.UseProgram(Handle);
 
         public void Dispose()
         {
@@ -69,13 +70,19 @@ namespace OssianForge.Engine.Resources.Shaders
 
     public class SubShader
     {
+        public string FileId;
         public ShaderFile ShaderFile;
         public uint Handle;
 
         public SubShader(string shaderId)
         {
-            ShaderFile = Engine.Resources.GetResourceFile(shaderId) as ShaderFile
-                ?? throw new Exception($"ShaderFile not found: '{shaderId}'");
+            FileId = shaderId;
+        }
+
+        public void Load()
+        {
+            ShaderFile = Engine.Resources.GetResourceFile(FileId) as ShaderFile
+                ?? throw new Exception($"ShaderFile not found: '{FileId}'");
             Handle = ShaderFile.Compiled;
         }
     }

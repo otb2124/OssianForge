@@ -9,16 +9,19 @@ namespace OssianForge.Engine.Resources.Meshes
 
         public List<SubMeshResource> SubMeshes = new();
 
+        public string ResourceId;
+
         public MeshResource(string id, string meshId) 
         {
             Id = id;
+            ResourceId = meshId;
         }
 
-        public void Load(string id)
+        public override void Load()
         {
-            if (id.StartsWith("fastmesh."))
+            if (ResourceId.StartsWith("fastmesh."))
             {
-                FastMesh fast = id switch
+                FastMesh fast = ResourceId switch
                 {
                     "fastmesh.triangle" => FastMesh.Triangle,
                     "fastmesh.plane" => FastMesh.Plane,
@@ -27,17 +30,17 @@ namespace OssianForge.Engine.Resources.Meshes
                     "fastmesh.cylinder" => FastMesh.Cylinder,
                     "fastmesh.ball" => FastMesh.Ball,
                     "fastmesh.quad" => FastMesh.Quad,
-                    _ => throw new Exception($"Unknown fast mesh: '{id}'")
+                    _ => throw new Exception($"Unknown fast mesh: '{ResourceId}'")
                 };
 
-                bool hasUV = id is "fastmesh.quad" or "fastmesh.plane";
-                bool hasNormals = id is "fastmesh.plane";
+                bool hasUV = ResourceId is "fastmesh.quad" or "fastmesh.plane";
+                bool hasNormals = ResourceId is "fastmesh.plane";
                 SubMeshes.Add(new SubMeshResource(fast.Vertices, 0, hasUV, hasNormals));
             }
             else
             {
-                var meshFile = Engine.Resources.GetResourceFile(id) as MeshFile
-                    ?? throw new Exception($"MeshFile not found: '{id}'");
+                var meshFile = Engine.Resources.GetResourceFile(ResourceId) as MeshFile
+                    ?? throw new Exception($"MeshFile not found: '{ResourceId}'");
 
                 foreach (var (verts, matIndex) in meshFile.SubMeshes)
                     SubMeshes.Add(new SubMeshResource(verts, matIndex, hasUV: true, hasNormals: true));
@@ -68,10 +71,12 @@ namespace OssianForge.Engine.Resources.Meshes
 
         protected uint _vao, _vbo;
         protected uint _vertexCount;
+        public int MaterialIndex;
 
-        public SubMeshResource(float[] vertices, int materialIndex, bool hasUV = false, bool hasNormals = false)
+        public SubMeshResource(float[] vertices, int materialIndex = 0, bool hasUV = false, bool hasNormals = false)
         {
-            //Init(vertices, hasUV, hasNormals);
+            MaterialIndex = materialIndex;
+            Init(vertices, hasUV, hasNormals);
         }
 
 

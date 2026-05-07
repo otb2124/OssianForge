@@ -11,5 +11,10 @@ namespace OssianForge.Engine.Resources
 
 
         public string Id;
+
+        public virtual void Load()
+        {
+
+        }
     }
 }

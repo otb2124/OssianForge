@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OssianForge.Engine.Resources.Meshes;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
@@ -18,7 +19,7 @@ namespace OssianForge.Resources.Meshes
             Vertices = vertices;
         }
 
-        //public Mesh ToMesh() => new Mesh(Vertices);
+        public SubMeshResource ToMesh() => new SubMeshResource(Vertices);
 
         public static FastMesh Triangle => new FastMesh("triangle", new float[]
         {

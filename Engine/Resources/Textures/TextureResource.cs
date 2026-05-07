@@ -6,34 +6,42 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 
-namespace OssianForge.Engine.Resources.Materials
+namespace OssianForge.Engine.Resources.Textures
 {
-    public class MaterialResource
+    public class TextureResource : Resource
     {
 
         public TextureFile Texture;
         public TextureFile NormalTexture;
 
+        public string TextureId;
+        public string TextureNormalId;
 
-        public MaterialResource(string textureId = null, string normalTextureId = null)
+
+        public TextureResource(string id, string textureId, string normalTextureId = null)
         {
-            //ShaderResource = new Shader(vertShaderId, fragShaderId);
+            //ShaderResource = new ShaderProperty(vertShaderId, fragShaderId);
+            Id = id;
+            TextureId = textureId;
+            TextureNormalId = normalTextureId;
+        }
 
-            if (textureId != null)
-                Texture = Engine.Resources.GetResourceFile(textureId) as TextureFile
-                    ?? throw new Exception($"Texture not found: '{textureId}'");
+        public override void Load()
+        {
+            if (TextureId != null)
+                Texture = Engine.Resources.GetResourceFile(TextureId) as TextureFile
+                    ?? throw new Exception($"Texture not found: '{TextureId}'");
 
-            if (normalTextureId != null)
-                NormalTexture = Engine.Resources.GetResourceFile(normalTextureId) as TextureFile
-                    ?? throw new Exception($"Normal texture not found: '{normalTextureId}'");
+            if (TextureNormalId != null)
+                NormalTexture = Engine.Resources.GetResourceFile(TextureNormalId) as TextureFile
+                    ?? throw new Exception($"Normal texture not found: '{TextureNormalId}'");
         }
 
 
-        //TODO: move to Node3d
         /*
         public void Apply(Matrix4x4 model, Matrix4x4 view, Matrix4x4 proj)
         {
-            ShaderResource.Use();
+            ShaderResource.Apply();
 
             if (Texture != null)
             {
@@ -56,10 +64,10 @@ namespace OssianForge.Engine.Resources.Materials
             ShaderResource.SetMatrix4("uView", view);
             ShaderResource.SetMatrix4("uProjection", proj);
 
-            // In Material.Apply — check location before setting
+            // In MaterialProperty.Apply — check location before setting
             var lights = Engine.Nodes.NodeManager.GetNodesOfType(typeof(Node3D))
                 .Select(n => n as Node3D)
-                .Where(n => n?.GetProperty<Light>() != null)
+                .Where(n => n?.GetProperty<LightProperty>() != null)
                 .ToList();
 
             if (lights.Count > 0)
@@ -68,7 +76,7 @@ namespace OssianForge.Engine.Resources.Materials
                 if (lightPosLoc >= 0) // only set if uniform exists in this shader
                 {
                     var lightNode = lights[0];
-                    var light = lightNode.GetProperty<Light>();
+                    var light = lightNode.GetProperty<LightProperty>();
                     ShaderResource.SetVector3("uLightPos", lightNode.Transform.Position);
                     ShaderResource.SetVector3("uLightColor", light.Color);
                     ShaderResource.SetFloat("uLightIntensity", light.Intensity);
@@ -83,6 +91,6 @@ namespace OssianForge.Engine.Resources.Materials
         public void SetVector3(string name, Vector3 value) => ShaderResource.SetVector3(name, value);
 
         */
-    
-}
+
+    }
 }
