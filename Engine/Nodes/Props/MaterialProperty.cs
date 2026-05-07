@@ -1,5 +1,4 @@
-﻿using OssianForge.Engine.Nodes.Types;
-using OssianForge.Engine.Resources.MeshFiles;
+﻿using OssianForge.Engine.Resources.MeshFiles;
 using OssianForge.Engine.Resources.Shaders;
 using OssianForge.Engine.Resources.TextureFiles;
 using OssianForge.Engine.Resources.Textures;
@@ -48,8 +47,8 @@ namespace OssianForge.Engine.Nodes.Props
             ShaderResource.SetMatrix4("uProjection", proj);
 
             // In MaterialProperty.Apply — check location before setting
-            var lights = Engine.Nodes.NodeManager.GetNodesOfType(typeof(Node3D))
-                .Select(n => n as Node3D)
+            var lights = Engine.Nodes.NodeManager.GetNodesOfType(typeof(Node))
+                .Select(n => n as Node)
                 .Where(n => n?.GetProperty<LightProperty>() != null)
                 .ToList();
 
@@ -60,7 +59,7 @@ namespace OssianForge.Engine.Nodes.Props
                 {
                     var lightNode = lights[0];
                     var light = lightNode.GetProperty<LightProperty>();
-                    ShaderResource.SetVector3("uLightPos", lightNode.Transform.Position);
+                    ShaderResource.SetVector3("uLightPos", lightNode.GetProperty<TransformProperty>().Transform.Position);
                     ShaderResource.SetVector3("uLightColor", light.Color);
                     ShaderResource.SetFloat("uLightIntensity", light.Intensity);
                     ShaderResource.SetFloat("uLightRadius", light.Radius);

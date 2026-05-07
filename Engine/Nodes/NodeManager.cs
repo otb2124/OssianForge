@@ -1,10 +1,9 @@
 ﻿using OssianForge.Engine.Nodes.Props;
-using OssianForge.Engine.Nodes.Types;
 using System.Numerics;
 using static OssianForge.Engine.Utils.Math;
 using LightProperty = OssianForge.Engine.Nodes.Props.LightProperty;
 using MaterialProperty = OssianForge.Engine.Nodes.Props.MaterialProperty;
-using Node = OssianForge.Engine.Nodes.Types.Node;
+using Node = OssianForge.Engine.Nodes.Node;
 
 namespace OssianForge.Engine.Nodes
 {

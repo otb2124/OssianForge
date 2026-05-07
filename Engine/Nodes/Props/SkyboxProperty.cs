@@ -3,7 +3,7 @@
 namespace OssianForge.Engine.Nodes.Props
 {
 
-    //add Update and Render
+    //remove
     public class SkyboxProperty : NodeProperty
     {
         public Vector3 TopColor;

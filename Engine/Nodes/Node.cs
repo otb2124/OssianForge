@@ -1,35 +1,72 @@
-﻿using Silk.NET.OpenGL;
-using OssianForge.Engine.Nodes.Props;
-using OssianForge.Engine.Utils;
-using System.Numerics;
-using static OssianForge.Engine.Utils.Math;
+﻿using OssianForge.Engine.Nodes.Props;
 using Silk.NET.Assimp;
+using Silk.NET.OpenGL;
+using System.Numerics;
 using MaterialProperty = OssianForge.Engine.Nodes.Props.MaterialProperty;
 
-namespace OssianForge.Engine.Nodes.Types
+namespace OssianForge.Engine.Nodes
 {
-    public class Node3D : Node
+    public class Node
     {
-        //fix: make this a prop
-        public Transform Transform = Transform.Default;
+        public string Id;
+        public string Name;
+        public Node Parent;
+        public List<Node> Children = new();
+        public List<NodeProperty> Properties = new();
 
-        public Node3D(Transform transform)
+        public void AddChild(Node child)
         {
-            Transform = transform;
+            child.Parent = this;
+            Children.Add(child);
         }
 
-        public Node3D()
+        public void RemoveChild(Node child)
         {
-            Transform = Transform.Default;
+            child.Parent = null;
+            Children.Remove(child);
         }
 
-        public override void OnUpdate()
+        public void AddProperty(NodeProperty prop)
         {
-            base.OnUpdate();
+            Properties.Add(prop);
         }
 
-        public override void OnRender()
+        public T GetProperty<T>() where T : NodeProperty
+            => Properties.OfType<T>().FirstOrDefault();
+
+        public List<T> GetProperties<T>() where T : NodeProperty
+            => Properties.OfType<T>().ToList();
+
+        public T GetChild<T>() where T : Node
+            => Children.OfType<T>().FirstOrDefault();
+
+        public List<T> GetChildren<T>() where T : Node
+            => Children.OfType<T>().ToList();
+
+        public virtual void OnUpdate()
         {
+            foreach (var child in Children)
+                child.OnUpdate();
+
+            ProcessPropUpdate();
+        }
+
+        public virtual void ProcessPropUpdate()
+        {
+            
+        }
+
+        public virtual void OnRender()
+        {
+            foreach (var child in Children)
+                child.OnRender();
+
+            ProcessPropRender();
+        }
+
+        public virtual void ProcessPropRender()
+        {
+            var transform = GetProperty<TransformProperty>();
             var skybox = GetProperty<SkyboxProperty>();
             var sprite = GetProperty<SpriteProperty>();
             var mesh = GetProperty<MeshProperty>();
@@ -38,6 +75,8 @@ namespace OssianForge.Engine.Nodes.Types
             // 1. SkyboxProperty
             if (skybox != null)
             {
+
+                //TODO: replace with signal MaterialResource.Cull: bool
                 var gl = Engine.Graphics.OpenGL;
                 gl.DepthFunc(DepthFunction.Lequal);
                 gl.DepthMask(false);
@@ -67,14 +106,14 @@ namespace OssianForge.Engine.Nodes.Types
                 gl.DepthFunc(DepthFunction.Less);
             }
             // 2. Opaque geometry
-            else if(mesh != null)
+            else if (mesh != null)
             {
                 int minMatIndex = mesh.MeshResource.SubMeshes.Count > 0 ? mesh.MeshResource.SubMeshes.Min(s => s.MaterialIndex) : 0;
                 foreach (var subMesh in mesh.MeshResource.SubMeshes)
                 {
                     int matIndex = subMesh.MaterialIndex - minMatIndex;
                     if (matIndex < 0 || matIndex >= materials.Count) continue;
-                    materials[matIndex].Apply(Transform.ToMatrix(), Engine.Graphics.Camera.GetView(), Engine.Graphics.Camera.GetProjection());
+                    materials[matIndex].Apply(transform.Transform.ToMatrix(), Engine.Graphics.Camera.GetView(), Engine.Graphics.Camera.GetProjection());
                     subMesh.Draw();
                 }
             }
@@ -82,20 +121,20 @@ namespace OssianForge.Engine.Nodes.Types
             // 3. Opaque children FIRST (no sprites)
             foreach (var child in Children)
             {
-                if (child is Node3D n3d && n3d.GetProperty<SpriteProperty>() == null)
+                if (child is Node n3d && n3d.GetProperty<SpriteProperty>() == null)
                     child.OnRender();
             }
 
             // 4. Transparent children SECOND
             foreach (var child in Children)
             {
-                if (child is Node3D n3d && n3d.GetProperty<SpriteProperty>() != null)
+                if (child is Node n3d && n3d.GetProperty<SpriteProperty>() != null)
                     child.OnRender();
             }
 
             // 5. This node's own sprite LAST
             if (sprite != null)
-                sprite.Draw(Transform.Position, Transform.Scale);
+                sprite.Draw(transform.Transform.Position, transform.Transform.Scale);
         }
     }
 }

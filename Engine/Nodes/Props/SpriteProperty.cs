@@ -75,6 +75,8 @@ namespace OssianForge.Engine.Nodes.Props
 
         public void Draw(Vector3 worldPosition, Vector3 worldScale)
         {
+
+            //replace with mesh billboard true
             var camera = Engine.Graphics.Camera;
             var view = camera.GetView();
             var proj = camera.GetProjection();

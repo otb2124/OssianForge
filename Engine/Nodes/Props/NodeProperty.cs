@@ -9,5 +9,6 @@ namespace OssianForge.Engine.Nodes.Props
 {
     public class NodeProperty
     {
+
     }
 }
