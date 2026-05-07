@@ -62,7 +62,7 @@ namespace OssianForge.Engine.Nodes.Props
             // In MaterialProperty.Apply — check location before setting
             var lights = Engine.Nodes.NodeManager.GetNodesOfType(typeof(Node))
                 .Select(n => n as Node)
-                .Where(n => n?.GetProperty<LightProperty>() != null)
+                .Where(n => n?.GetProperty<EmissionProperty>() != null)
                 .ToList();
 
             if (lights.Count > 0)
@@ -71,7 +71,7 @@ namespace OssianForge.Engine.Nodes.Props
                 if (lightPosLoc >= 0) // only set if uniform exists in this shader
                 {
                     var lightNode = lights[0];
-                    var light = lightNode.GetProperty<LightProperty>();
+                    var light = lightNode.GetProperty<EmissionProperty>();
                     ShaderResource.SetVector3("uLightPos", lightNode.GetProperty<TransformProperty>().Transform.Position);
                     ShaderResource.SetVector3("uLightColor", light.Color);
                     ShaderResource.SetFloat("uLightIntensity", light.Intensity);

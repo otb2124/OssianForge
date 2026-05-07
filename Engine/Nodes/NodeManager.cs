@@ -1,7 +1,7 @@
 ﻿using OssianForge.Engine.Nodes.Props;
 using System.Numerics;
 using static OssianForge.Engine.Utils.Math;
-using LightProperty = OssianForge.Engine.Nodes.Props.LightProperty;
+using LightProperty = OssianForge.Engine.Nodes.Props.EmissionProperty;
 using MaterialProperty = OssianForge.Engine.Nodes.Props.MaterialProperty;
 using Node = OssianForge.Engine.Nodes.Node;
 
