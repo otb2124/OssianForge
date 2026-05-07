@@ -34,6 +34,15 @@ namespace OssianForge.Engine.Nodes
         public T GetProperty<T>() where T : NodeProperty
             => Properties.OfType<T>().FirstOrDefault();
 
+        public void SetProperty<T>(T prop) where T : NodeProperty
+        {
+            var existing = Properties.FindIndex(p => p is T);
+            if (existing >= 0)
+                Properties[existing] = prop;
+            else
+                Properties.Add(prop);
+        }
+
         public List<T> GetProperties<T>() where T : NodeProperty
             => Properties.OfType<T>().ToList();
 

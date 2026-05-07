@@ -23,9 +23,10 @@ namespace OssianForge.Resources.Meshes
 
         public static FastMesh Triangle => new FastMesh("triangle", new float[]
         {
-         0.0f,  0.5f, 0.0f,
-        -0.5f, -0.5f, 0.0f,
-         0.5f, -0.5f, 0.0f,
+            // X      Y      Z     U     V
+             0.0f,  0.5f,  0.0f, 0.5f, 1.0f,
+            -0.5f, -0.5f,  0.0f, 0.0f, 0.0f,
+             0.5f, -0.5f,  0.0f, 1.0f, 0.0f,
         });
 
         public static FastMesh Plane => new FastMesh("plane", new float[]
@@ -40,40 +41,79 @@ namespace OssianForge.Resources.Meshes
         });
 
         public static FastMesh Cube => new FastMesh("cube", new float[]
-        {
-        // Front
-        -0.5f, -0.5f,  0.5f,  0.5f, -0.5f,  0.5f,  0.5f,  0.5f,  0.5f,
-        -0.5f, -0.5f,  0.5f,  0.5f,  0.5f,  0.5f, -0.5f,  0.5f,  0.5f,
-        // Back
-         0.5f, -0.5f, -0.5f, -0.5f, -0.5f, -0.5f, -0.5f,  0.5f, -0.5f,
-         0.5f, -0.5f, -0.5f, -0.5f,  0.5f, -0.5f,  0.5f,  0.5f, -0.5f,
-        // Left
-        -0.5f, -0.5f, -0.5f, -0.5f, -0.5f,  0.5f, -0.5f,  0.5f,  0.5f,
-        -0.5f, -0.5f, -0.5f, -0.5f,  0.5f,  0.5f, -0.5f,  0.5f, -0.5f,
-        // Right
-         0.5f, -0.5f,  0.5f,  0.5f, -0.5f, -0.5f,  0.5f,  0.5f, -0.5f,
-         0.5f, -0.5f,  0.5f,  0.5f,  0.5f, -0.5f,  0.5f,  0.5f,  0.5f,
-        // Top
-        -0.5f,  0.5f,  0.5f,  0.5f,  0.5f,  0.5f,  0.5f,  0.5f, -0.5f,
-        -0.5f,  0.5f,  0.5f,  0.5f,  0.5f, -0.5f, -0.5f,  0.5f, -0.5f,
-        // Bottom
-        -0.5f, -0.5f, -0.5f,  0.5f, -0.5f, -0.5f,  0.5f, -0.5f,  0.5f,
-        -0.5f, -0.5f, -0.5f,  0.5f, -0.5f,  0.5f, -0.5f, -0.5f,  0.5f,
+{
+            // X      Y      Z      U     V
+            // Front
+            -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+             0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+             0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+            -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+             0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+            -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
+            // Back
+             0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+            -0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
+            -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+             0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+            -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+             0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+            // Left
+            -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+            -0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+            -0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+            -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+            -0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+            -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+            // Right
+             0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+             0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
+             0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+             0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+             0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+             0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
+            // Top
+            -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
+             0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+             0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+            -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
+             0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+            -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+            // Bottom
+            -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+             0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
+             0.5f, -0.5f,  0.5f,  1.0f, 1.0f,
+            -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+             0.5f, -0.5f,  0.5f,  1.0f, 1.0f,
+            -0.5f, -0.5f,  0.5f,  0.0f, 1.0f,
         });
+
 
         public static FastMesh Pyramid => new FastMesh("pyramid", new float[]
         {
-        // Base
-        -0.5f, 0.0f, -0.5f,  0.5f, 0.0f, -0.5f,  0.5f, 0.0f,  0.5f,
-        -0.5f, 0.0f, -0.5f,  0.5f, 0.0f,  0.5f, -0.5f, 0.0f,  0.5f,
-        // Front
-        -0.5f, 0.0f,  0.5f,  0.5f, 0.0f,  0.5f,  0.0f, 1.0f,  0.0f,
-        // Back
-         0.5f, 0.0f, -0.5f, -0.5f, 0.0f, -0.5f,  0.0f, 1.0f,  0.0f,
-        // Left
-        -0.5f, 0.0f, -0.5f, -0.5f, 0.0f,  0.5f,  0.0f, 1.0f,  0.0f,
-        // Right
-         0.5f, 0.0f,  0.5f,  0.5f, 0.0f, -0.5f,  0.0f, 1.0f,  0.0f,
+            // X      Y      Z      U     V
+            // Base
+            -0.5f,  0.0f, -0.5f,  0.0f, 0.0f,
+             0.5f,  0.0f, -0.5f,  1.0f, 0.0f,
+             0.5f,  0.0f,  0.5f,  1.0f, 1.0f,
+            -0.5f,  0.0f, -0.5f,  0.0f, 0.0f,
+             0.5f,  0.0f,  0.5f,  1.0f, 1.0f,
+            -0.5f,  0.0f,  0.5f,  0.0f, 1.0f,
+            // Front
+            -0.5f,  0.0f,  0.5f,  0.0f, 0.0f,
+             0.5f,  0.0f,  0.5f,  1.0f, 0.0f,
+             0.0f,  1.0f,  0.0f,  0.5f, 1.0f,
+            // Back
+             0.5f,  0.0f, -0.5f,  0.0f, 0.0f,
+            -0.5f,  0.0f, -0.5f,  1.0f, 0.0f,
+             0.0f,  1.0f,  0.0f,  0.5f, 1.0f,
+            // Left
+            -0.5f,  0.0f, -0.5f,  0.0f, 0.0f,
+            -0.5f,  0.0f,  0.5f,  1.0f, 0.0f,
+             0.0f,  1.0f,  0.0f,  0.5f, 1.0f,
+            // Right
+             0.5f,  0.0f,  0.5f,  0.0f, 0.0f,
+             0.5f,  0.0f, -0.5f,  1.0f, 0.0f,
+             0.0f,  1.0f,  0.0f,  0.5f, 1.0f,
         });
 
         public static FastMesh Quad => new FastMesh("quad", new float[]
@@ -100,10 +140,26 @@ namespace OssianForge.Resources.Meshes
                 float a1 = 2 * MathF.PI * (i + 1) / segments;
                 float x0 = MathF.Cos(a0) * radius, z0 = MathF.Sin(a0) * radius;
                 float x1 = MathF.Cos(a1) * radius, z1 = MathF.Sin(a1) * radius;
-                verts.AddRange(new[] { x0, -halfH, z0, x1, -halfH, z1, x1, halfH, z1 });
-                verts.AddRange(new[] { x0, -halfH, z0, x1, halfH, z1, x0, halfH, z0 });
-                verts.AddRange(new[] { 0f, halfH, 0f, x0, halfH, z0, x1, halfH, z1 });
-                verts.AddRange(new[] { 0f, -halfH, 0f, x1, -halfH, z1, x0, -halfH, z0 });
+                float u0 = (float)i / segments;
+                float u1 = (float)(i + 1) / segments;
+
+                // Side quad
+                verts.AddRange(new[] { x0, -halfH, z0, u0, 0f });
+                verts.AddRange(new[] { x1, -halfH, z1, u1, 0f });
+                verts.AddRange(new[] { x1, halfH, z1, u1, 1f });
+                verts.AddRange(new[] { x0, -halfH, z0, u0, 0f });
+                verts.AddRange(new[] { x1, halfH, z1, u1, 1f });
+                verts.AddRange(new[] { x0, halfH, z0, u0, 1f });
+
+                // Top cap — UV from center outward
+                verts.AddRange(new[] { 0f, halfH, 0f, 0.5f, 0.5f });
+                verts.AddRange(new[] { x0, halfH, z0, 0.5f + MathF.Cos(a0) * 0.5f, 0.5f + MathF.Sin(a0) * 0.5f });
+                verts.AddRange(new[] { x1, halfH, z1, 0.5f + MathF.Cos(a1) * 0.5f, 0.5f + MathF.Sin(a1) * 0.5f });
+
+                // Bottom cap
+                verts.AddRange(new[] { 0f, -halfH, 0f, 0.5f, 0.5f });
+                verts.AddRange(new[] { x1, -halfH, z1, 0.5f + MathF.Cos(a1) * 0.5f, 0.5f + MathF.Sin(a1) * 0.5f });
+                verts.AddRange(new[] { x0, -halfH, z0, 0.5f + MathF.Cos(a0) * 0.5f, 0.5f + MathF.Sin(a0) * 0.5f });
             }
             return verts.ToArray();
         }
@@ -119,12 +175,25 @@ namespace OssianForge.Resources.Meshes
                 {
                     float theta0 = 2 * MathF.PI * j / slices;
                     float theta1 = 2 * MathF.PI * (j + 1) / slices;
+
+                    float u0 = (float)j / slices;
+                    float u1 = (float)(j + 1) / slices;
+                    float v0 = (float)i / stacks;
+                    float v1 = (float)(i + 1) / stacks;
+
                     Vector3 v00 = SpherePoint(radius, phi0, theta0);
                     Vector3 v10 = SpherePoint(radius, phi1, theta0);
                     Vector3 v01 = SpherePoint(radius, phi0, theta1);
                     Vector3 v11 = SpherePoint(radius, phi1, theta1);
-                    verts.AddRange(new[] { v00.X, v00.Y, v00.Z, v10.X, v10.Y, v10.Z, v11.X, v11.Y, v11.Z });
-                    verts.AddRange(new[] { v00.X, v00.Y, v00.Z, v11.X, v11.Y, v11.Z, v01.X, v01.Y, v01.Z });
+
+                    // XYZ + UV per vertex
+                    verts.AddRange(new[] { v00.X, v00.Y, v00.Z, u0, v0 });
+                    verts.AddRange(new[] { v10.X, v10.Y, v10.Z, u0, v1 });
+                    verts.AddRange(new[] { v11.X, v11.Y, v11.Z, u1, v1 });
+
+                    verts.AddRange(new[] { v00.X, v00.Y, v00.Z, u0, v0 });
+                    verts.AddRange(new[] { v11.X, v11.Y, v11.Z, u1, v1 });
+                    verts.AddRange(new[] { v01.X, v01.Y, v01.Z, u1, v0 });
                 }
             }
             return verts.ToArray();

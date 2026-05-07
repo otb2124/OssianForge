@@ -18,6 +18,7 @@ namespace OssianForge.Engine
         public static Resources.Resources Resources;
         public static Nodes.Nodes Nodes;
         public static Inputs.Inputs Inputs;
+        public static Physics.Physics Physics;
 
         public static void Create()
         {
@@ -25,6 +26,7 @@ namespace OssianForge.Engine
             Resources = new Resources.Resources();
             Nodes = new Nodes.Nodes();
             Inputs = new Inputs.Inputs();
+            Physics = new Physics.Physics();
         }
 
         public static void Initialize()
@@ -33,6 +35,7 @@ namespace OssianForge.Engine
             Resources.Initialize();
             Nodes.Initialize();
             Inputs.Initialize();
+            Physics.Initialize();
         }
 
         public static void OnRun()
@@ -57,6 +60,7 @@ namespace OssianForge.Engine
             Graphics.OnLoad();
             Nodes.OnLoad();
             Inputs.OnLoad();
+            Physics.OnLoad();
         }
 
         public static void OnUpdate(double delta)
@@ -64,6 +68,7 @@ namespace OssianForge.Engine
             Nodes.OnUpdate(delta);
             Inputs.OnUpdate(delta);
             Graphics.OnUpdate(delta);
+            Physics.OnUpdate(delta);
         }
 
         public static void OnRender(double delta)

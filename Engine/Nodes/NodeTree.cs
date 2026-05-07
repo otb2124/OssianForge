@@ -51,11 +51,20 @@ namespace OssianForge.Engine.Nodes
             plane.AddProperty(new TransformProperty(new Transform(new Vector3(0, 0, 0), Vector3.Zero, new Vector3(50, 1, 50))));
             plane.AddProperty(new MeshProperty("mesh.plane"));
             plane.AddProperty(new MaterialProperty("texture.house.wood", "shader.basic"));
+            plane.AddProperty(new BoxColliderProperty(new Vector3(50, 1, 50)));
+
+            var ball = new Node();
+            ball.Name = "ball";
+            ball.AddProperty(new TransformProperty(new Transform(new Vector3(0, 5f, -5), Vector3.Zero, new Vector3(1, 1, 1))));
+            ball.AddProperty(new MeshProperty("mesh.ball"));
+            ball.AddProperty(new MaterialProperty("texture.house.wood", "shader.basic"));
+            ball.AddProperty(new SphereColliderProperty(1f));
 
             scene.AddChild(sky);
             scene.AddChild(house);
             scene.AddChild(plane);
             scene.AddChild(lightNode);
+            scene.AddChild(ball);
 
 
             tree.AddChild(scene);

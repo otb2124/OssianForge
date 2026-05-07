@@ -8,6 +8,7 @@ using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using OssianForge.Engine.Resources.Meshes;
+using OssianForge.Engine.Resources.Textures;
 
 namespace OssianForge.Engine.Nodes.Props
 {
@@ -18,7 +19,9 @@ namespace OssianForge.Engine.Nodes.Props
 
         public MeshProperty(string meshId, bool isBillboard = false)
         {
-            MeshResource = Engine.Resources.GetResource(meshId) as MeshResource;
+            MeshResource = Engine.Resources.GetResource(meshId) as MeshResource
+                    ?? throw new Exception($"MeshResource not found: '{meshId}'");
+
             IsBillboard = isBillboard;
         }
         public virtual void Draw()  

@@ -33,7 +33,7 @@ namespace OssianForge.Engine.Resources.Meshes
                     _ => throw new Exception($"Unknown fast mesh: '{ResourceId}'")
                 };
 
-                bool hasUV = ResourceId is "fastmesh.quad" or "fastmesh.plane";
+                bool hasUV = ResourceId.Contains("fastmesh");
                 bool hasNormals = ResourceId is "fastmesh.plane";
                 SubMeshes.Add(new SubMeshResource(fast.Vertices, 0, hasUV, hasNormals));
             }
