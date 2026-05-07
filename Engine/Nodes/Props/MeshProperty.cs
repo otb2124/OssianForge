@@ -19,7 +19,7 @@ namespace OssianForge.Engine.Nodes.Props
         {
             MeshResource = Engine.Resources.GetResource(meshId) as MeshResource;
         }
-        public virtual void Draw()
+        public virtual void Draw()  
         {
             MeshResource.Draw();
         }

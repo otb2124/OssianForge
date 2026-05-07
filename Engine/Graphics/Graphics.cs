@@ -15,7 +15,8 @@ namespace OssianForge.Engine.Graphics
     public class Graphics
     {
         public IWindow Window;
-        public GL OpenGL;
+
+        public Batch.Batch Batch;
 
         public double CurrentDelta;
         public Vector2D<int> WindowSize;
@@ -44,6 +45,8 @@ namespace OssianForge.Engine.Graphics
 
             Window = Silk.NET.Windowing.Window.Create(options);
 
+            Batch = new Batch.Batch();
+
             Camera = new Camera.Camera
             {
                 Position = new Vector3(0, 1.5f, 3f),  // slightly above
@@ -51,18 +54,11 @@ namespace OssianForge.Engine.Graphics
             };
         }
 
-
-        public void InitializeOpenGL()
+        public void InitializeBatch()
         {
-            OpenGL = GL.GetApi(Window);
-            OpenGL.Enable(EnableCap.DepthTest);
-            OpenGL.Disable(EnableCap.CullFace);
-            OpenGL.Enable(EnableCap.Blend);
-            OpenGL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
-            OpenGL.Enable(EnableCap.DepthTest);
-            OpenGL.DepthFunc(DepthFunction.Less);
-            OpenGL.ClearColor(1.0f, 0.0f, 1.0f, 1.0f);
+            Batch.Init();
         }
+
 
         public void OnLoad()
         {
@@ -82,7 +78,7 @@ namespace OssianForge.Engine.Graphics
         public void OnRender(double delta)
         {
             CurrentDelta = delta;
-            OpenGL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+            Batch.Clear();
 
             //PostProcess.BeginScene();
             Engine.Nodes.OnRender(delta);
@@ -91,7 +87,7 @@ namespace OssianForge.Engine.Graphics
 
         public void OnResize(Vector2D<int> size)
         {
-            OpenGL.Viewport(size);
+            Batch.OnResize(size);
             PostProcess.Resize(size.X, size.Y);
         }
     }

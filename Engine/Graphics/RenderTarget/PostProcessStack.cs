@@ -30,7 +30,7 @@ namespace OssianForge.Engine.Graphics.RenderTarget
 
         private unsafe void CreateQuad()
         {
-            var gl = Engine.Graphics.OpenGL;
+            var gl = Engine.Graphics.Batch.OpenGL;
 
             // NDC fullscreen quad: XY position + UV
             float[] verts = {
@@ -69,7 +69,7 @@ namespace OssianForge.Engine.Graphics.RenderTarget
         public void BeginScene()
         {
             _a.Bind();
-            var gl = Engine.Graphics.OpenGL;
+            var gl = Engine.Graphics.Batch.OpenGL;
             gl.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
         }
 
@@ -78,7 +78,7 @@ namespace OssianForge.Engine.Graphics.RenderTarget
         /// </summary>
         public void EndScene()
         {
-            var gl = Engine.Graphics.OpenGL;
+            var gl = Engine.Graphics.Batch.OpenGL;
             gl.Disable(EnableCap.DepthTest); // post is purely 2D
 
             var enabledPasses = Passes.Where(p => p.Enabled).ToList();
@@ -130,8 +130,8 @@ namespace OssianForge.Engine.Graphics.RenderTarget
         {
             _a.Dispose();
             _b.Dispose();
-            Engine.Graphics.OpenGL.DeleteVertexArray(_quadVao);
-            Engine.Graphics.OpenGL.DeleteBuffer(_quadVbo);
+            Engine.Graphics.Batch.OpenGL.DeleteVertexArray(_quadVao);
+            Engine.Graphics.Batch.OpenGL.DeleteBuffer(_quadVbo);
             foreach (var p in Passes) p.Dispose();
         }
     }

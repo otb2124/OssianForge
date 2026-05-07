@@ -49,7 +49,7 @@ namespace OssianForge.Engine.Nodes.Props
 
         private void SetupQuad()
         {
-            var gl = Engine.Graphics.OpenGL;
+            var gl = Engine.Graphics.Batch.OpenGL;
             _vao = gl.GenVertexArray();
             _vbo = gl.GenBuffer();
 
@@ -92,7 +92,7 @@ namespace OssianForge.Engine.Nodes.Props
                 0, 0, 0, 1
             );
 
-            var gl = Engine.Graphics.OpenGL;
+            var gl = Engine.Graphics.Batch.OpenGL;
 
             // Sprites are transparent — don't write to depth, read only
             gl.Enable(EnableCap.Blend);
@@ -139,7 +139,7 @@ namespace OssianForge.Engine.Nodes.Props
 
         public void Dispose()
         {
-            var gl = Engine.Graphics.OpenGL;
+            var gl = Engine.Graphics.Batch.OpenGL;
             if (_vao != 0) gl.DeleteVertexArray(_vao);
             if (_vbo != 0) gl.DeleteBuffer(_vbo);
             //Model?.Dispose();

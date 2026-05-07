@@ -19,13 +19,13 @@ namespace OssianForge.Engine.Resources.ShaderFiles
         {
             base.Load();
 
-            uint shader = Engine.Graphics.OpenGL.CreateShader(FileExtensionHelper.ExtensionToShaderType(GetExtension()));
-            Engine.Graphics.OpenGL.ShaderSource(shader, Raw);
-            Engine.Graphics.OpenGL.CompileShader(shader);
+            uint shader = Engine.Graphics.Batch.OpenGL.CreateShader(FileExtensionHelper.ExtensionToShaderType(GetExtension()));
+            Engine.Graphics.Batch.OpenGL.ShaderSource(shader, Raw);
+            Engine.Graphics.Batch.OpenGL.CompileShader(shader);
 
-            Engine.Graphics.OpenGL.GetShader(shader, ShaderParameterName.CompileStatus, out int status);
+            Engine.Graphics.Batch.OpenGL.GetShader(shader, ShaderParameterName.CompileStatus, out int status);
             if (status == 0)
-                throw new Exception(Engine.Graphics.OpenGL.GetShaderInfoLog(shader));
+                throw new Exception(Engine.Graphics.Batch.OpenGL.GetShaderInfoLog(shader));
 
             Compiled = shader;
         }

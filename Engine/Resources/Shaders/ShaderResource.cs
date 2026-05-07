@@ -28,42 +28,42 @@ namespace OssianForge.Engine.Resources.Shaders
             foreach (var subShader in SubShaders)
                 subShader.Load();
 
-            Handle = Engine.Graphics.OpenGL.CreateProgram();
+            Handle = Engine.Graphics.Batch.OpenGL.CreateProgram();
 
             foreach (var sub in SubShaders)
-                Engine.Graphics.OpenGL.AttachShader(Handle, sub.Handle);
+                Engine.Graphics.Batch.OpenGL.AttachShader(Handle, sub.Handle);
 
-            Engine.Graphics.OpenGL.LinkProgram(Handle);
-            Engine.Graphics.OpenGL.GetProgram(Handle, ProgramPropertyARB.LinkStatus, out int status);
+            Engine.Graphics.Batch.OpenGL.LinkProgram(Handle);
+            Engine.Graphics.Batch.OpenGL.GetProgram(Handle, ProgramPropertyARB.LinkStatus, out int status);
             if (status == 0)
-                throw new Exception(Engine.Graphics.OpenGL.GetProgramInfoLog(Handle));
+                throw new Exception(Engine.Graphics.Batch.OpenGL.GetProgramInfoLog(Handle));
 
             // Detach after linking — good practice
             foreach (var sub in SubShaders)
-                Engine.Graphics.OpenGL.DetachShader(Handle, sub.Handle);
+                Engine.Graphics.Batch.OpenGL.DetachShader(Handle, sub.Handle);
         }
 
-        public void Apply() => Engine.Graphics.OpenGL.UseProgram(Handle);
+        public void Apply() => Engine.Graphics.Batch.OpenGL.UseProgram(Handle);
 
         public void Dispose()
         {
-            Engine.Graphics.OpenGL.DeleteProgram(Handle);
+            Engine.Graphics.Batch.OpenGL.DeleteProgram(Handle);
         }
 
         public void SetMatrix4(string name, Matrix4x4 matrix)
         {
-            int loc = Engine.Graphics.OpenGL.GetUniformLocation(Handle, name);
-            unsafe { Engine.Graphics.OpenGL.UniformMatrix4(loc, 1, false, (float*)&matrix); }
+            int loc = Engine.Graphics.Batch.OpenGL.GetUniformLocation(Handle, name);
+            unsafe { Engine.Graphics.Batch.OpenGL.UniformMatrix4(loc, 1, false, (float*)&matrix); }
         }
 
         public void SetInt(string name, int value)
-            => Engine.Graphics.OpenGL.Uniform1(Engine.Graphics.OpenGL.GetUniformLocation(Handle, name), value);
+            => Engine.Graphics.Batch.OpenGL.Uniform1(Engine.Graphics.Batch.OpenGL.GetUniformLocation(Handle, name), value);
 
         public void SetFloat(string name, float value)
-            => Engine.Graphics.OpenGL.Uniform1(Engine.Graphics.OpenGL.GetUniformLocation(Handle, name), value);
+            => Engine.Graphics.Batch.OpenGL.Uniform1(Engine.Graphics.Batch.OpenGL.GetUniformLocation(Handle, name), value);
 
         public void SetVector3(string name, Vector3 value)
-            => Engine.Graphics.OpenGL.Uniform3(Engine.Graphics.OpenGL.GetUniformLocation(Handle, name), value.X, value.Y, value.Z);
+            => Engine.Graphics.Batch.OpenGL.Uniform3(Engine.Graphics.Batch.OpenGL.GetUniformLocation(Handle, name), value.X, value.Y, value.Z);
     }
 
 

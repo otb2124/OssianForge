@@ -87,7 +87,7 @@ namespace OssianForge.Engine.Resources.Meshes
             if (hasUV) stride += 2;
             _vertexCount = (uint)(vertices.Length / stride);
 
-            var gl = Engine.Graphics.OpenGL;
+            var gl = Engine.Graphics.Batch.OpenGL;
             _vao = gl.GenVertexArray();
             _vbo = gl.GenBuffer();
 
@@ -127,14 +127,14 @@ namespace OssianForge.Engine.Resources.Meshes
 
         public virtual void Draw()
         {
-            Engine.Graphics.OpenGL.BindVertexArray(_vao);
-            Engine.Graphics.OpenGL.DrawArrays(PrimitiveType.Triangles, 0, _vertexCount);
+            Engine.Graphics.Batch.OpenGL.BindVertexArray(_vao);
+            Engine.Graphics.Batch.OpenGL.DrawArrays(PrimitiveType.Triangles, 0, _vertexCount);
         }
 
         public virtual void Dispose()
         {
-            Engine.Graphics.OpenGL.DeleteVertexArray(_vao);
-            Engine.Graphics.OpenGL.DeleteBuffer(_vbo);
+            Engine.Graphics.Batch.OpenGL.DeleteVertexArray(_vao);
+            Engine.Graphics.Batch.OpenGL.DeleteBuffer(_vbo);
         }
     }
 }

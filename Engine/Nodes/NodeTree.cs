@@ -24,12 +24,8 @@ namespace OssianForge.Engine.Nodes
             var sky = new Node();
             sky.Name = "Skybox";
             sky.AddProperty(new TransformProperty());
-            sky.AddProperty(new SkyboxProperty(
-                new Vector3(0.4f, 0.6f, 1.0f),
-                new Vector3(0.8f, 0.85f, 1.0f)
-            ));
             sky.AddProperty(new MeshProperty("mesh.cube"));
-            sky.AddProperty(new MaterialProperty("texture.brick", "shader.skybox"));
+            sky.AddProperty(new MaterialProperty("texture.brick", "shader.skybox", true));
 
 
             //light

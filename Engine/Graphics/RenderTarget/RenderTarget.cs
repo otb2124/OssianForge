@@ -26,7 +26,7 @@ namespace OssianForge.Engine.Graphics.RenderTarget
 
         private unsafe void Build(int w, int h)
         {
-            var gl = Engine.Graphics.OpenGL;
+            var gl = Engine.Graphics.Batch.OpenGL;
 
             // --- Framebuffer ---
             _fbo = gl.GenFramebuffer();
@@ -64,17 +64,17 @@ namespace OssianForge.Engine.Graphics.RenderTarget
 
         public void Bind()
         {
-            Engine.Graphics.OpenGL.BindFramebuffer(FramebufferTarget.Framebuffer, _fbo);
+            Engine.Graphics.Batch.OpenGL.BindFramebuffer(FramebufferTarget.Framebuffer, _fbo);
         }
 
         public static void BindDefault()
         {
-            Engine.Graphics.OpenGL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+            Engine.Graphics.Batch.OpenGL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
         }
 
         public void Resize(int w, int h)
         {
-            var gl = Engine.Graphics.OpenGL;
+            var gl = Engine.Graphics.Batch.OpenGL;
             gl.DeleteFramebuffer(_fbo);
             gl.DeleteTexture(_colorTexture);
             gl.DeleteRenderbuffer(_depthRbo);
@@ -84,7 +84,7 @@ namespace OssianForge.Engine.Graphics.RenderTarget
 
         public void Dispose()
         {
-            var gl = Engine.Graphics.OpenGL;
+            var gl = Engine.Graphics.Batch.OpenGL;
             gl.DeleteFramebuffer(_fbo);
             gl.DeleteTexture(_colorTexture);
             gl.DeleteRenderbuffer(_depthRbo);

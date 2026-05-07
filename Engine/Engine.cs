@@ -52,7 +52,7 @@ namespace OssianForge.Engine
 
         public static void OnLoad()
         {
-            Graphics.InitializeOpenGL();
+            Graphics.InitializeBatch();
             Resources.OnLoad();
             Graphics.OnLoad();
             Nodes.OnLoad();

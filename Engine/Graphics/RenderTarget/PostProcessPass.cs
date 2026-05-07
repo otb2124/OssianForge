@@ -32,7 +32,7 @@ namespace OssianForge.Engine.Graphics.RenderTarget
         /// </summary>
         public void ApplyUniforms(uint inputTexture)
         {
-            var gl = Engine.Graphics.OpenGL;
+            var gl = Engine.Graphics.Batch.OpenGL;
 
             ShaderResource.Apply();
 

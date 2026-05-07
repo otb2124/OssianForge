@@ -22,7 +22,7 @@ namespace OssianForge.Engine.Resources.TextureFiles
             using var stream = File.OpenRead(globalPath);
             var image = ImageResult.FromStream(stream, ColorComponents.RedGreenBlueAlpha);
 
-            var gl = Engine.Graphics.OpenGL;
+            var gl = Engine.Graphics.Batch.OpenGL;
 
             Handle = gl.GenTexture();
             gl.BindTexture(TextureTarget.Texture2D, Handle);
@@ -46,13 +46,13 @@ namespace OssianForge.Engine.Resources.TextureFiles
 
         public void Bind(uint slot = 0)
         {
-            Engine.Graphics.OpenGL.ActiveTexture(TextureUnit.Texture0 + (int)slot);
-            Engine.Graphics.OpenGL.BindTexture(TextureTarget.Texture2D, Handle);
+            Engine.Graphics.Batch.OpenGL.ActiveTexture(TextureUnit.Texture0 + (int)slot);
+            Engine.Graphics.Batch.OpenGL.BindTexture(TextureTarget.Texture2D, Handle);
         }
 
         public void Dispose()
         {
-            Engine.Graphics.OpenGL.DeleteTexture(Handle);
+            Engine.Graphics.Batch.OpenGL.DeleteTexture(Handle);
         }
     }
 }
