@@ -70,49 +70,8 @@ namespace OssianForge.Engine.Nodes
             var mesh = GetProperty<MeshProperty>();
             var materials = GetProperties<MaterialProperty>();
 
-            // Draw this node's mesh
-            if (transform != null && mesh != null && !mesh.IsBillboard && materials.Count > 0)
+            if (transform != null && mesh != null && materials.Count > 0)
                 Engine.Graphics.Batch.DrawMesh(mesh, materials, transform);
-
-            // Draw this node's sprite AFTER mesh
-            if (mesh != null && mesh.IsBillboard && transform != null)
-            {
-                var camera = Engine.Graphics.Camera;
-                var view = camera.GetView();
-
-                Matrix4x4.Invert(view, out var invView);
-                var right = new Vector3(invView.M11, invView.M12, invView.M13);
-                var up = new Vector3(invView.M21, invView.M22, invView.M23);
-                var forward = new Vector3(invView.M31, invView.M32, invView.M33);
-
-                var billboard = new Matrix4x4(
-                    right.X, right.Y, right.Z, 0,
-                    up.X, up.Y, up.Z, 0,
-                    forward.X, forward.Y, forward.Z, 0,
-                    0, 0, 0, 1
-                );
-
-                Matrix4x4 model =
-                    Matrix4x4.CreateScale(transform.Transform.Scale.X, transform.Transform.Scale.Y, 1.0f) *
-                    billboard *
-                    Matrix4x4.CreateTranslation(transform.Transform.Position);
-
-                var gl = Engine.Graphics.Batch.OpenGL;
-                gl.Enable(EnableCap.Blend);
-                gl.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.One);
-                gl.DepthMask(false);   // don't write to depth buffer
-                gl.Enable(EnableCap.DepthTest);
-
-                Engine.Graphics.Batch.DrawMesh(mesh, materials, model);
-
-                materials[0].ShaderResource.SetVector3("uColor", new Vector3(1f, 1f, 1f));
-                materials[0].ShaderResource.SetFloat("uAlpha", 1f);
-
-                // Restore
-                gl.DepthMask(true);
-                gl.DepthFunc(DepthFunction.Less);
-                gl.Disable(EnableCap.Blend);
-            }
         }
     }
 }

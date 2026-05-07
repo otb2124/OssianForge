@@ -1,4 +1,5 @@
 ﻿using OssianForge.Engine.Nodes.Props;
+using OssianForge.Engine.Resources.Meshes;
 using Silk.NET.Assimp;
 using Silk.NET.Maths;
 using Silk.NET.OpenGL;
@@ -50,8 +51,24 @@ namespace OssianForge.Engine.Graphics.Batch
             OpenGL.DepthFunc(DepthFunction.Less);
         }
 
+        public void BeginBillbord()
+        {
+            OpenGL.Enable(EnableCap.Blend);
+            OpenGL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.One);
+            OpenGL.DepthMask(false);
+            OpenGL.Enable(EnableCap.DepthTest);
+        }
 
-        public void DrawMesh(MeshProperty mesh, List<MaterialProperty> materials, Matrix4x4 transform)
+        public void EndBillbord()
+        {
+            OpenGL.DepthMask(true);
+            OpenGL.DepthFunc(DepthFunction.Less);
+            OpenGL.Disable(EnableCap.Blend);
+        }
+
+        
+
+        public void DrawMesh(MeshProperty mesh, List<MaterialProperty> materials, TransformProperty transform)
         {
             if (mesh != null)
             {
@@ -62,22 +79,36 @@ namespace OssianForge.Engine.Graphics.Batch
                     int matIndex = subMesh.MaterialIndex - minMatIndex;
                     if (matIndex < 0 || matIndex >= materials.Count) continue;
 
-                    if(materials[matIndex].IsCull)
-                        BeginCull();
-
-                    materials[matIndex].Apply(transform);
-                    subMesh.Draw();
-
                     if (materials[matIndex].IsCull)
-                        EndCull();
+                        DrawCull(subMesh, materials[matIndex], transform);
+                    else if (mesh.IsBillboard)
+                        DrawBillbord(subMesh, materials[matIndex], transform);
+                    else
+                        DrawSubMesh(subMesh, materials[matIndex], transform.Transform.ToMatrix());
                 }
             }
         }
 
-
-        public void DrawMesh(MeshProperty mesh, List<MaterialProperty> materials, TransformProperty transform)
+        public void DrawCull(SubMeshResource subMesh, MaterialProperty material, TransformProperty transform)
         {
-            DrawMesh(mesh, materials, transform.Transform.ToMatrix());
+            BeginCull();
+            DrawSubMesh(subMesh, material, transform.Transform.ToMatrix());
+            EndCull();
+        }
+
+        public void DrawBillbord(SubMeshResource subMesh, MaterialProperty material, TransformProperty transform)
+        {
+            BeginBillbord();
+            DrawSubMesh(subMesh, material, Engine.Graphics.Camera.GetBillboardMatrix(transform.Transform));
+            material.ShaderResource.SetVector3("uColor", new Vector3(1f, 1f, 1f));
+            material.ShaderResource.SetFloat("uAlpha", 1f);
+            EndBillbord();
+        }
+
+        public void DrawSubMesh(SubMeshResource subMesh, MaterialProperty material, Matrix4x4 matrix)
+        {
+            material.Apply(matrix);
+            subMesh.Draw();
         }
 
         public void Clear()

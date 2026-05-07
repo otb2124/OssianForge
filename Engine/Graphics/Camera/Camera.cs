@@ -1,5 +1,6 @@
 ﻿using OssianForge.Engine.Inputs;
 using System.Numerics;
+using static OssianForge.Engine.Utils.Math;
 
 namespace OssianForge.Engine.Graphics.Camera
 {
@@ -100,6 +101,27 @@ namespace OssianForge.Engine.Graphics.Camera
                 float.DegreesToRadians(Fov),
                 AspectRatio,
                 0.1f, 100f);
+        }
+
+        public Matrix4x4 GetBillboardMatrix(Transform transform)
+        {
+            Matrix4x4.Invert(GetView(), out var invView);
+            var right = new Vector3(invView.M11, invView.M12, invView.M13);
+            var up = new Vector3(invView.M21, invView.M22, invView.M23);
+            var forward = new Vector3(invView.M31, invView.M32, invView.M33);
+
+            var billboard = new Matrix4x4(
+                right.X, right.Y, right.Z, 0,
+                up.X, up.Y, up.Z, 0,
+                forward.X, forward.Y, forward.Z, 0,
+                0, 0, 0, 1
+            );
+            Matrix4x4 model =
+            Matrix4x4.CreateScale(transform.Scale.X, transform.Scale.Y, 1.0f) *
+            billboard *
+                Matrix4x4.CreateTranslation(transform.Position);
+
+            return model;
         }
     }
 }
