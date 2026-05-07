@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using static OssianForge.Engine.Utils.Math;
@@ -20,6 +21,11 @@ namespace OssianForge.Engine.Nodes.Props
         public TransformProperty()
         {
             Transform = Transform.Default;
+        }
+
+        public void SetMatrix(Matrix4x4 matrix)
+        {
+            Transform.SetMatrix(matrix);
         }
     }
 }

@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using static OssianForge.Engine.Utils.Math;
@@ -50,7 +51,7 @@ namespace OssianForge.Engine.Graphics.Batch
         }
 
 
-        public void DrawMesh(MeshProperty mesh, List<MaterialProperty> materials, TransformProperty transform)
+        public void DrawMesh(MeshProperty mesh, List<MaterialProperty> materials, Matrix4x4 transform)
         {
             if (mesh != null)
             {
@@ -64,13 +65,19 @@ namespace OssianForge.Engine.Graphics.Batch
                     if(materials[matIndex].IsCull)
                         BeginCull();
 
-                    materials[matIndex].Apply(transform.Transform);
+                    materials[matIndex].Apply(transform);
                     subMesh.Draw();
 
                     if (materials[matIndex].IsCull)
                         EndCull();
                 }
             }
+        }
+
+
+        public void DrawMesh(MeshProperty mesh, List<MaterialProperty> materials, TransformProperty transform)
+        {
+            DrawMesh(mesh, materials, transform.Transform.ToMatrix());
         }
 
         public void Clear()

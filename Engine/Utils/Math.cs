@@ -40,6 +40,46 @@ namespace OssianForge.Engine.Utils
 
                 return scale * rotX * rotY * rotZ * translation;
             }
+
+
+            public void SetMatrix(Matrix4x4 matrix)
+            {
+                Matrix4x4.Decompose(matrix, out Vector3 scale, out Quaternion rotation, out Vector3 translation);
+
+                Position = translation;
+                Scale = scale;
+
+                // Convert quaternion back to euler degrees
+                Rotation = QuaternionToEulerDegrees(rotation);
+            }
+
+            private static Vector3 QuaternionToEulerDegrees(Quaternion q)
+            {
+                Vector3 angles;
+
+                // X (pitch)
+                float sinrCosp = 2f * (q.W * q.X + q.Y * q.Z);
+                float cosrCosp = 1f - 2f * (q.X * q.X + q.Y * q.Y);
+                angles.X = MathF.Atan2(sinrCosp, cosrCosp);
+
+                // Y (yaw)
+                float sinp = 2f * (q.W * q.Y - q.Z * q.X);
+                angles.Y = MathF.Abs(sinp) >= 1f
+                    ? MathF.CopySign(MathF.PI / 2f, sinp)
+                    : MathF.Asin(sinp);
+
+                // Z (roll)
+                float sinyCosp = 2f * (q.W * q.Z + q.X * q.Y);
+                float cosyCosp = 1f - 2f * (q.Y * q.Y + q.Z * q.Z);
+                angles.Z = MathF.Atan2(sinyCosp, cosyCosp);
+
+                // Radians to degrees
+                return new Vector3(
+                    float.RadiansToDegrees(angles.X),
+                    float.RadiansToDegrees(angles.Y),
+                    float.RadiansToDegrees(angles.Z)
+                );
+            }
         }
     }
 }

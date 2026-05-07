@@ -12,78 +12,32 @@ namespace OssianForge.Engine.Nodes.Props
     //Move Billboard feature to MeshProperty
     public class SpriteProperty : NodeProperty, IDisposable
     {
-        public TextureFile Texture;
         public Vector2 Size;
         public Vector4 Color;
 
-        private ShaderResource _shader;
-        private uint _vao, _vbo;
-
-        private static readonly float[] QuadVertices =
-        {
-            -0.5f,  0.5f, 0.0f, 0.0f, 1.0f,
-            -0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
-             0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
-            -0.5f,  0.5f, 0.0f, 0.0f, 1.0f,
-             0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
-             0.5f,  0.5f, 0.0f, 1.0f, 1.0f,
-        };
+        public MaterialProperty _materialProperty;
+        public MeshProperty _meshProperty;
 
         // Texture-based billboard
         public SpriteProperty(string textureId, Vector2 size, Vector4 color = default)
         {
-            Texture = Engine.Resources.GetResourceFile(textureId) as TextureFile
-                ?? throw new Exception($"Texture not found: '{textureId}'");
             Size = size;
             Color = color == default ? Vector4.One : color;
-            _shader = Engine.Resources.GetResource("shader.sprite") as ShaderResource;
-            SetupQuad();
+
+            _materialProperty = new MaterialProperty(textureId, "shader.sprite");
+            _meshProperty = new MeshProperty("mesh.quad");
         }
 
-        /*
-        public SpriteProperty(Model model)
-        {
-            Model = model;
-        }
-        */
-
-        private void SetupQuad()
-        {
-            var gl = Engine.Graphics.Batch.OpenGL;
-            _vao = gl.GenVertexArray();
-            _vbo = gl.GenBuffer();
-
-            gl.BindVertexArray(_vao);
-            gl.BindBuffer(BufferTargetARB.ArrayBuffer, _vbo);
-
-            unsafe
-            {
-                fixed (float* ptr = QuadVertices)
-                    gl.BufferData(BufferTargetARB.ArrayBuffer,
-                        (nuint)(QuadVertices.Length * sizeof(float)),
-                        ptr, BufferUsageARB.StaticDraw);
-            }
-
-            gl.EnableVertexAttribArray(0);
-            unsafe { gl.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 5 * sizeof(float), (void*)0); }
-
-            gl.EnableVertexAttribArray(1);
-            unsafe { gl.VertexAttribPointer(1, 2, VertexAttribPointerType.Float, false, 5 * sizeof(float), (void*)(3 * sizeof(float))); }
-
-            gl.BindVertexArray(0);
-        }
 
         public void Draw(Vector3 worldPosition, Vector3 worldScale)
         {
-
-            //replace with mesh billboard true
             var camera = Engine.Graphics.Camera;
             var view = camera.GetView();
-            var proj = camera.GetProjection();
 
-            var right = new Vector3(view.M11, view.M21, view.M31);
-            var up = new Vector3(view.M12, view.M22, view.M32);
-            var forward = new Vector3(view.M13, view.M23, view.M33);
+            Matrix4x4.Invert(view, out var invView);
+            var right = new Vector3(invView.M11, invView.M12, invView.M13);
+            var up = new Vector3(invView.M21, invView.M22, invView.M23);
+            var forward = new Vector3(invView.M31, invView.M32, invView.M33);
 
             var billboard = new Matrix4x4(
                 right.X, right.Y, right.Z, 0,
@@ -92,56 +46,31 @@ namespace OssianForge.Engine.Nodes.Props
                 0, 0, 0, 1
             );
 
-            var gl = Engine.Graphics.Batch.OpenGL;
+            Matrix4x4 model =
+                Matrix4x4.CreateScale(Size.X * worldScale.X, Size.Y * worldScale.Y, 1.0f) *
+                billboard *
+                Matrix4x4.CreateTranslation(worldPosition);
 
-            // Sprites are transparent — don't write to depth, read only
+            var gl = Engine.Graphics.Batch.OpenGL;
             gl.Enable(EnableCap.Blend);
             gl.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.One);
             gl.DepthMask(false);   // don't write to depth buffer
             gl.Enable(EnableCap.DepthTest);
 
-            
-            /*if (Model != null)
-            {
-                Matrix4x4 model =
-                    Matrix4x4.CreateScale(worldScale) *
-                    billboard *
-                    Matrix4x4.CreateTranslation(worldPosition);
+            Engine.Graphics.Batch.DrawMesh(_meshProperty, new List<MaterialProperty> { _materialProperty }, model);
 
-                Model.Draw(model, view, proj);
-            }*/
-            if (_vao != 0)
-            {
-                Matrix4x4 model =
-                    Matrix4x4.CreateScale(Size.X * worldScale.X, Size.Y * worldScale.Y, 1.0f) *
-                    billboard *
-                    Matrix4x4.CreateTranslation(worldPosition);
+            _materialProperty.ShaderResource.SetVector3("uColor", new Vector3(Color.X, Color.Y, Color.Z));
+            _materialProperty.ShaderResource.SetFloat("uAlpha", Color.W);
 
-                _shader.Apply();
-                _shader.SetMatrix4("uModel", model);
-                _shader.SetMatrix4("uView", view);
-                _shader.SetMatrix4("uProjection", proj);
-                _shader.SetVector3("uColor", new Vector3(Color.X, Color.Y, Color.Z));
-                _shader.SetFloat("uAlpha", Color.W);
-
-                Texture.Bind(0);
-                _shader.SetInt("uTexture", 0);
-
-                gl.BindVertexArray(_vao);
-                gl.DrawArrays(PrimitiveType.Triangles, 0, 6);
-                gl.BindVertexArray(0);
-            }
-
-            // Restore depth writing for everything else
+            // Restore
             gl.DepthMask(true);
+            gl.DepthFunc(DepthFunction.Less);
             gl.Disable(EnableCap.Blend);
         }
 
         public void Dispose()
         {
             var gl = Engine.Graphics.Batch.OpenGL;
-            if (_vao != 0) gl.DeleteVertexArray(_vao);
-            if (_vbo != 0) gl.DeleteBuffer(_vbo);
             //Model?.Dispose();
         }
     }

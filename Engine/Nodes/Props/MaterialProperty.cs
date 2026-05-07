@@ -10,14 +10,14 @@ namespace OssianForge.Engine.Nodes.Props
     public class MaterialProperty : NodeProperty
     {
         
-        public TextureResource MaterialResource;
+        public TextureResource TextureResource;
         public ShaderResource ShaderResource;
         public bool IsCull;
 
-        public MaterialProperty(string materialId, string shaderId, bool isCull = false)
+        public MaterialProperty(string textureId, string shaderId, bool isCull = false)
         {
-            MaterialResource = Engine.Resources.GetResource(materialId) as TextureResource
-                    ?? throw new Exception($"MaterialResource not found: '{materialId}'");
+            TextureResource = Engine.Resources.GetResource(textureId) as TextureResource
+                    ?? throw new Exception($"TextureResource not found: '{textureId}'");
 
             ShaderResource = Engine.Resources.GetResource(shaderId) as ShaderResource
                     ?? throw new Exception($"ShaderResource not found: '{shaderId}'");
@@ -25,7 +25,7 @@ namespace OssianForge.Engine.Nodes.Props
             IsCull = isCull;
         }
 
-        public void Apply(Transform transform)
+        public void Apply(Matrix4x4 transform)
         {
             if (IsCull)
                 ApplyCull(transform);
@@ -34,19 +34,19 @@ namespace OssianForge.Engine.Nodes.Props
         }
 
 
-        public void ApplyDefault(Transform transform)
+        public void ApplyDefault(Matrix4x4 transform)
         {
             ShaderResource.Apply();
 
-            if (MaterialResource.Texture != null)
+            if (TextureResource.Texture != null)
             {
-                MaterialResource.Texture.Bind(0);
+                TextureResource.Texture.Bind(0);
                 ShaderResource.SetInt("uTexture", 0);
             }
 
-            if (MaterialResource.NormalTexture != null)
+            if (TextureResource.NormalTexture != null)
             {
-                MaterialResource.NormalTexture.Bind(1);
+                TextureResource.NormalTexture.Bind(1);
                 ShaderResource.SetInt("uNormalTexture", 1);
                 ShaderResource.SetInt("uHasNormalTexture", 1);
             }
@@ -55,7 +55,7 @@ namespace OssianForge.Engine.Nodes.Props
                 ShaderResource.SetInt("uHasNormalTexture", 0);
             }
 
-            ShaderResource.SetMatrix4("uModel", transform.ToMatrix());
+            ShaderResource.SetMatrix4("uModel", transform);
             ShaderResource.SetMatrix4("uView", Engine.Graphics.Camera.GetView());
             ShaderResource.SetMatrix4("uProjection", Engine.Graphics.Camera.GetProjection());
 
@@ -81,7 +81,7 @@ namespace OssianForge.Engine.Nodes.Props
         }
 
 
-        public void ApplyCull(Transform transform)
+        public void ApplyCull(Matrix4x4 transform)
         {
             ShaderResource.Apply();
             ShaderResource.SetVector3("uTopColor", new Vector3(0.4f, 0.6f, 1.0f));

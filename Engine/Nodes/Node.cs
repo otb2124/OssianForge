@@ -71,24 +71,12 @@ namespace OssianForge.Engine.Nodes
             var mesh = GetProperty<MeshProperty>();
             var materials = GetProperties<MaterialProperty>();
 
-            Engine.Graphics.Batch.DrawMesh(mesh, materials, transform);
+            // Draw this node's mesh
+            if (transform != null && mesh != null && materials.Count > 0)
+                Engine.Graphics.Batch.DrawMesh(mesh, materials, transform);
 
-            // 3. Opaque children FIRST (no sprites)
-            foreach (var child in Children)
-            {
-                if (child is Node n3d && n3d.GetProperty<SpriteProperty>() == null)
-                    child.OnRender();
-            }
-
-            // 4. Transparent children SECOND
-            foreach (var child in Children)
-            {
-                if (child is Node n3d && n3d.GetProperty<SpriteProperty>() != null)
-                    child.OnRender();
-            }
-
-            // 5. This node's own sprite LAST
-            if (sprite != null)
+            // Draw this node's sprite AFTER mesh
+            if (sprite != null && transform != null)
                 sprite.Draw(transform.Transform.Position, transform.Transform.Scale);
         }
     }

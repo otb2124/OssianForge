@@ -60,9 +60,10 @@ namespace OssianForge.Engine.Resources
                 new MeshResource("mesh.donut", "meshfile.donut"),
                 new MeshResource("mesh.donut56", "meshfile.donut56"),
                 new MeshResource("mesh.house", "meshfile.house"),
+
                 new MeshResource("mesh.cube", "fastmesh.cube"),
                 new MeshResource("mesh.plane", "fastmesh.plane"),
-                //new MeshResource("mesh.house", "meshfile.house"),
+                new MeshResource("mesh.quad", "fastmesh.quad"),
                 //new MeshResource("mesh.house", "meshfile.house"),
 
                 new ShaderResource("shader.basic", "shaderfile.basic.vert", "shaderfile.basic.frag"),

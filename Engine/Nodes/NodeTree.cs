@@ -32,8 +32,8 @@ namespace OssianForge.Engine.Nodes
             var lightNode = new Node();
             lightNode.Name = "light";
             lightNode.AddProperty(new TransformProperty(new Transform(new Vector3(0f, 5f, 0f), Vector3.Zero, Vector3.One)));
-            lightNode.AddProperty(LightProperty.White(intensity: 2.0f, radius: 40.0f));
-            //lightNode.AddProperty(new SpriteProperty("texturefile.light", new Vector2(10, 10)));
+            lightNode.AddProperty(LightProperty.White(intensity: 2.0f, radius: 30.0f));
+            lightNode.AddProperty(new SpriteProperty("texture.dices", new Vector2(15, 15)));
 
             //objects
             var house = new Node();
@@ -52,9 +52,11 @@ namespace OssianForge.Engine.Nodes
             plane.AddProperty(new MaterialProperty("texture.house.wood", "shader.basic"));
 
             scene.AddChild(sky);
-            scene.AddChild(lightNode);
+            
             scene.AddChild(house);
             scene.AddChild(plane);
+
+            scene.AddChild(lightNode);
 
             tree.AddChild(scene);
 
