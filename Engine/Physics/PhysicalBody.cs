@@ -15,17 +15,18 @@ namespace OssianForge.Engine.Physics
 
         public PhysicsBody(Node node)
         {
+            NodeId = node.Id;
             PhysicalProperty = node.GetProperty<PhysicalProperty>();
             ColliderProperty = node.GetProperty<ColliderProperty>();
             TransformProperty = node.GetProperty<TransformProperty>();
         }
 
-        public void OnUpdate(float delta)
+        public void OnUpdate(double delta)
         {
             var node = Engine.Nodes.NodeManager.GetNode(NodeId);
             PhysicalProperty = node.GetProperty<PhysicalProperty>();
             ColliderProperty = node.GetProperty<ColliderProperty>();
-            node.SetProperty(TransformProperty);
+            //node.SetProperty(TransformProperty);
         }
 
         public void AddForce(Vector3 force)

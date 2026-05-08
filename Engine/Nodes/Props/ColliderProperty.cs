@@ -51,17 +51,18 @@ namespace OssianForge.Engine.Nodes.Props
 
         public override Vector3 ResolveOverlap(ColliderProperty other, TransformProperty selfT, TransformProperty otherT)
         {
-            if (other is not BoxColliderProperty box) return Vector3.Zero;
+            if (other is SphereColliderProperty sphere)
+                return -sphere.ResolveOverlap(this, otherT, selfT); // negate — direction is flipped
 
+            // existing box vs box code...
             var aCenter = WorldCenter(selfT);
             var bCenter = WorldCenter(otherT);
             var aHalf = WorldHalfExtents(selfT);
-            var bHalf = box.WorldHalfExtents(otherT);
+            var bHalf = ((BoxColliderProperty)other).WorldHalfExtents(otherT);
 
             var diff = aCenter - bCenter;
             var overlap = (aHalf + bHalf) - new Vector3(MathF.Abs(diff.X), MathF.Abs(diff.Y), MathF.Abs(diff.Z));
 
-            // Push out along axis of least overlap
             if (overlap.X < overlap.Y && overlap.X < overlap.Z)
                 return new Vector3(MathF.Sign(diff.X) * overlap.X, 0, 0);
             if (overlap.Y < overlap.X && overlap.Y < overlap.Z)
@@ -109,13 +110,35 @@ namespace OssianForge.Engine.Nodes.Props
 
         public override Vector3 ResolveOverlap(ColliderProperty other, TransformProperty selfT, TransformProperty otherT)
         {
-            if (other is not SphereColliderProperty sphere) return Vector3.Zero;
+            if (other is SphereColliderProperty sphere)
+            {
+                var diff = WorldCenter(selfT) - sphere.WorldCenter(otherT);
+                float dist = diff.Length();
+                float overlap = WorldRadius(selfT) + sphere.WorldRadius(otherT) - dist;
+                if (overlap <= 0) return Vector3.Zero;
+                return Vector3.Normalize(diff) * overlap;
+            }
 
-            var diff = WorldCenter(selfT) - sphere.WorldCenter(otherT);
-            float dist = diff.Length();
-            float overlap = WorldRadius(selfT) + sphere.WorldRadius(otherT) - dist;
-            if (overlap <= 0) return Vector3.Zero;
-            return Vector3.Normalize(diff) * overlap;
+            if (other is BoxColliderProperty box)
+            {
+                var center = WorldCenter(selfT);
+                var boxMin = otherT.Transform.Position + box.Offset - box.Size * otherT.Transform.Scale * 0.5f;
+                var boxMax = otherT.Transform.Position + box.Offset + box.Size * otherT.Transform.Scale * 0.5f;
+                var closest = Vector3.Clamp(center, boxMin, boxMax);
+
+                var diff = center - closest;
+                float dist = diff.Length();
+                float overlap = WorldRadius(selfT) - dist;
+                if (overlap <= 0) return Vector3.Zero;
+
+                // If sphere center is inside box, diff is zero — push up by default
+                if (dist < 0.0001f)
+                    return new Vector3(0, overlap + WorldRadius(selfT), 0);
+
+                return Vector3.Normalize(diff) * overlap;
+            }
+
+            return Vector3.Zero;
         }
     }
 }

@@ -21,7 +21,7 @@ namespace OssianForge.Engine.Nodes
 
         public void OnLoad()
         {
-            NodeManager.OnLoad();
+            NodeManager.RegisterTree(NodeTree.GetTree());
         }
         public void OnUpdate(double delta)
         { 

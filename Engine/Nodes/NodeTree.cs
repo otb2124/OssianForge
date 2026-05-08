@@ -47,18 +47,22 @@ namespace OssianForge.Engine.Nodes
             house.AddProperty(new MaterialProperty("texture.house.wood", "shader.basic"));
 
             var plane = new Node();
+            plane.Id = "plane";
             plane.Name = "plane";
             plane.AddProperty(new TransformProperty(new Transform(new Vector3(0, 0, 0), Vector3.Zero, new Vector3(50, 1, 50))));
             plane.AddProperty(new MeshProperty("mesh.plane"));
             plane.AddProperty(new MaterialProperty("texture.house.wood", "shader.basic"));
-            plane.AddProperty(new BoxColliderProperty(new Vector3(50, 1, 50)));
+            plane.AddProperty(new BoxColliderProperty(Vector3.One));
+            plane.AddProperty(new PhysicalProperty(true, false));
 
             var ball = new Node();
+            ball.Id = "ball";
             ball.Name = "ball";
-            ball.AddProperty(new TransformProperty(new Transform(new Vector3(0, 5f, -5), Vector3.Zero, new Vector3(1, 1, 1))));
+            ball.AddProperty(new TransformProperty(new Transform(new Vector3(0, 50f, -5), Vector3.Zero, new Vector3(1, 1, 1))));
             ball.AddProperty(new MeshProperty("mesh.ball"));
             ball.AddProperty(new MaterialProperty("texture.house.wood", "shader.basic"));
-            ball.AddProperty(new SphereColliderProperty(1f));
+            ball.AddProperty(new SphereColliderProperty(0.5f));
+            ball.AddProperty(new PhysicalProperty(false, true, 1f, 1f));
 
             scene.AddChild(sky);
             scene.AddChild(house);

@@ -20,9 +20,18 @@ namespace OssianForge.Engine.Nodes
             Nodes = new List<Node>();
         }
 
-        public void OnLoad()
+
+        public void RegisterTree(Node root)
         {
-            Nodes.Add(NodeTree.GetTree());
+            foreach (var node in Flatten(root))
+                Nodes.Add(node);
+        }
+
+        private IEnumerable<Node> Flatten(Node node)
+        {
+            yield return node;
+            foreach (var child in node.Children.SelectMany(Flatten))
+                yield return child;
         }
 
         public void OnUpdate(double delta)

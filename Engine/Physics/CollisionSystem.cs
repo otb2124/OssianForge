@@ -4,51 +4,80 @@ using System.Numerics;
 
 namespace OssianForge.Engine.Physics
 {
-    public static class CollisionSystem
+    public class CollisionSystem
     {
-        public static void Process(List<Node> nodes)
+        public void OnUpdate(double delta)
         {
-            // Flat list of all nodes with colliders
-            var collidables = nodes
-                .SelectMany(Flatten)
+            var collidables = Engine.Nodes.NodeManager.Nodes
                 .Where(n => n.GetProperty<ColliderProperty>() != null &&
                             n.GetProperty<TransformProperty>() != null)
+                .Select(n => (
+                    Collider: n.GetProperty<ColliderProperty>(),
+                    Transform: n.GetProperty<TransformProperty>(),
+                    Node: n
+                ))
                 .ToList();
 
+            Console.WriteLine($"[Collision] Collidables found: {collidables.Count} — {string.Join(", ", collidables.Select(c => c.Node.Name))}");
+
+            Process(collidables);
+        }
+
+        public void Process(List<(ColliderProperty Collider, TransformProperty Transform, Node Node)> collidables)
+        {
             for (int i = 0; i < collidables.Count; i++)
             {
                 for (int j = i + 1; j < collidables.Count; j++)
                 {
-                    var a = collidables[i];
-                    var b = collidables[j];
+                    var (colA, tA, nodeA) = collidables[i];
+                    var (colB, tB, nodeB) = collidables[j];
 
-                    var colA = a.GetProperty<ColliderProperty>();
-                    var colB = b.GetProperty<ColliderProperty>();
-                    var tA = a.GetProperty<TransformProperty>();
-                    var tB = b.GetProperty<TransformProperty>();
+                    Console.WriteLine($"[Collision] Checking {nodeA.Name}({colA.GetType().Name}) vs {nodeB.Name}({colB.GetType().Name})");
+                    Console.WriteLine($"  posA={tA.Transform.Position} posB={tB.Transform.Position}");
 
-                    if (!colA.Intersects(colB, tA, tB)) continue;
+                    bool intersects = colA.Intersects(colB, tA, tB);
+                    Console.WriteLine($"  Intersects: {intersects}");
 
-                    // Fire callbacks
-                    colA.OnCollision?.Invoke(b);
-                    colB.OnCollision?.Invoke(a);
+                    if (!intersects) continue;
 
-                    // Push apart if not triggers
-                    if (!colA.IsTrigger && !colB.IsTrigger)
+                    if (colA.IsTrigger || colB.IsTrigger)
                     {
-                        var push = colA.ResolveOverlap(colB, tA, tB);
+                        Console.WriteLine($"  Trigger — skipping resolution");
+                        continue;
+                    }
+
+                    var push = colA.ResolveOverlap(colB, tA, tB);
+                    Console.WriteLine($"  Push vector: {push}");
+
+                    var physA = nodeA.GetProperty<PhysicalProperty>();
+                    var physB = nodeB.GetProperty<PhysicalProperty>();
+                    bool staticA = physA?.IsStatic ?? true;
+                    bool staticB = physB?.IsStatic ?? true;
+                    Console.WriteLine($"  staticA={staticA} staticB={staticB}");
+
+                    if (staticA && staticB) continue;
+
+                    if (staticA)
+                    {
+                        Console.WriteLine($"  Pushing {nodeB.Name} by -{push}");
+                        tB.Transform.Position -= push;
+                        Engine.Physics.PhysicsWorld.ReflectVelocity(nodeB.Id, push);
+                    }
+                    else if (staticB)
+                    {
+                        Console.WriteLine($"  Pushing {nodeA.Name} by +{push}");
+                        tA.Transform.Position += push;
+                        Engine.Physics.PhysicsWorld.ReflectVelocity(nodeA.Id, push);
+                    }
+                    else
+                    {
                         tA.Transform.Position += push * 0.5f;
                         tB.Transform.Position -= push * 0.5f;
+                        Engine.Physics.PhysicsWorld.ReflectVelocity(nodeA.Id, push);
+                        Engine.Physics.PhysicsWorld.ReflectVelocity(nodeB.Id, -push);
                     }
                 }
             }
-        }
-
-        private static IEnumerable<Node> Flatten(Node node)
-        {
-            yield return node;
-            foreach (var child in node.Children.SelectMany(Flatten))
-                yield return child;
         }
     }
 }

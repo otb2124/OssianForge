@@ -9,11 +9,13 @@ namespace OssianForge.Engine.Physics
     public class Physics
     {
 
-        public PhysicsWorld PhysicsWord;
+        public PhysicsWorld PhysicsWorld;
+        public CollisionSystem CollisionSystem;
 
         public Physics() 
         {
-            PhysicsWord = new PhysicsWorld();
+            PhysicsWorld = new PhysicsWorld();
+            CollisionSystem = new CollisionSystem();
         }
 
 
@@ -24,13 +26,15 @@ namespace OssianForge.Engine.Physics
 
         public void OnLoad()
         {
-            
+            PhysicsWorld.Register(Engine.Nodes.NodeManager.GetNode("plane"));
+            PhysicsWorld.Register(Engine.Nodes.NodeManager.GetNode("ball"));
         }
 
 
         public void OnUpdate(double delta)
         {
-            PhysicsWord.Step((float)delta);
+            PhysicsWorld.OnUpdate(delta);
+            CollisionSystem.OnUpdate(delta);
         }
 
         public void OnRender()
