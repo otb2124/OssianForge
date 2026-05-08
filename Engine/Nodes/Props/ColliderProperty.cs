@@ -44,61 +44,60 @@ namespace OssianForge.Engine.Nodes.Props
         // ResolveOverlap — returns the push vector for selfT
         // ----------------------------------------------------------------
         public Vector3 ResolveOverlap(ColliderProperty other,
-                               TransformProperty selfT, TransformProperty otherT)
+               TransformProperty selfT, TransformProperty otherT)
         {
-            // Find the combined AABB overlap and push along the smallest axis
+            const float minPush = 0.001f;
+
             var (aMin, aMax) = GetWorldAABB(selfT);
             var (bMin, bMax) = other.GetWorldAABB(otherT);
-
-            // Overlap on each axis
             float overlapX = MathF.Min(aMax.X, bMax.X) - MathF.Max(aMin.X, bMin.X);
             float overlapY = MathF.Min(aMax.Y, bMax.Y) - MathF.Max(aMin.Y, bMin.Y);
             float overlapZ = MathF.Min(aMax.Z, bMax.Z) - MathF.Max(aMin.Z, bMin.Z);
 
-            // Pick the axis with the smallest overlap (minimum penetration)
+            if (overlapX <= 0 || overlapY <= 0 || overlapZ <= 0)
+                return Vector3.Zero;
+
             if (overlapY <= overlapX && overlapY <= overlapZ)
             {
-                // Push on Y — determine direction
+                if (overlapY < minPush) return Vector3.Zero;
                 float centerAY = (aMin.Y + aMax.Y) * 0.5f;
                 float centerBY = (bMin.Y + bMax.Y) * 0.5f;
-                float dir = centerAY > centerBY ? 1f : -1f;
+                float dir = centerBY >= centerAY ? 1f : -1f;
                 return new Vector3(0, dir * overlapY, 0);
             }
             else if (overlapX <= overlapY && overlapX <= overlapZ)
             {
+                if (overlapX < minPush) return Vector3.Zero;
                 float centerAX = (aMin.X + aMax.X) * 0.5f;
                 float centerBX = (bMin.X + bMax.X) * 0.5f;
-                float dir = centerAX > centerBX ? 1f : -1f;
+                float dir = centerBX >= centerAX ? 1f : -1f;
                 return new Vector3(dir * overlapX, 0, 0);
             }
             else
             {
+                if (overlapZ < minPush) return Vector3.Zero;
                 float centerAZ = (aMin.Z + aMax.Z) * 0.5f;
                 float centerBZ = (bMin.Z + bMax.Z) * 0.5f;
-                float dir = centerAZ > centerBZ ? 1f : -1f;
+                float dir = centerBZ >= centerAZ ? 1f : -1f;
                 return new Vector3(0, 0, dir * overlapZ);
             }
         }
 
-        private (Vector3 Min, Vector3 Max) GetWorldAABB(TransformProperty t)
+        private (Vector3 Min, Vector3 Max) GetWorldAABB(TransformProperty t, float skin = 0f)
         {
             Vector3 worldMin = new Vector3(float.MaxValue);
             Vector3 worldMax = new Vector3(float.MinValue);
 
             foreach (var sub in ColliderResource.SubColliders)
-            {
                 foreach (var tri in sub.Triangles)
-                {
                     foreach (var v in new[] { tri.A, tri.B, tri.C })
                     {
                         var world = TransformPoint(v, t);
                         worldMin = Vector3.Min(worldMin, world);
                         worldMax = Vector3.Max(worldMax, world);
                     }
-                }
-            }
 
-            return (worldMin, worldMax);
+            return (worldMin - new Vector3(skin), worldMax + new Vector3(skin));
         }
 
 
@@ -106,14 +105,27 @@ namespace OssianForge.Engine.Nodes.Props
         // Helpers
         // ----------------------------------------------------------------
 
-        private static Vector3 TransformPoint(Vector3 local, TransformProperty t) =>
-            local * t.Transform.Scale + t.Transform.Position;
+        private static Vector3 TransformPoint(Vector3 local, TransformProperty t)
+        {
+            var matrix = t.Transform.ToMatrix();
+            return Vector3.Transform(local, matrix);
+        }
+
+        private static Vector3 TransformNormal(Vector3 normal, TransformProperty t)
+        {
+            var matrix = t.Transform.ToMatrix();
+            Matrix4x4.Invert(matrix, out var inv);
+            return Vector3.Normalize(Vector3.TransformNormal(normal, Matrix4x4.Transpose(inv)));
+        }
 
         private static bool NarrowPhase(SubCollider a, SubCollider b,
-                                        TransformProperty tA, TransformProperty tB)
+                                TransformProperty tA, TransformProperty tB)
         {
-            // Triangle vs triangle AABB overlap — good enough for most game meshes
             var (bMin, bMax) = b.WorldAABB(tB);
+            float skin = 0.01f;
+            bMin -= new Vector3(skin);
+            bMax += new Vector3(skin);
+
             foreach (var tri in a.Triangles)
             {
                 var wa = TransformPoint(tri.A, tA);
@@ -182,8 +194,7 @@ namespace OssianForge.Engine.Nodes.Props
             var (oMin, oMax) = other.WorldAABB(otherT);
             var oCenter = (oMin + oMax) * 0.5f;
             var wa = TransformPoint(tri.A, selfT);
-            var wn = Vector3.Normalize(Vector3.TransformNormal(tri.Normal,
-                Matrix4x4.CreateScale(selfT.Transform.Scale)));
+            var wn = TransformNormal(tri.Normal, selfT);
 
             float planeDist = Vector3.Dot(wn, oCenter) - Vector3.Dot(wn, wa);
             return MathF.Max(0f, -planeDist + 0.05f); // small bias

@@ -60,17 +60,39 @@ namespace OssianForge.Engine.Resources.Colliders
         // World-space AABB after applying transform scale+position
         public (Vector3 min, Vector3 max) WorldAABB(TransformProperty t)
         {
-            var center = t.Transform.Position;
-            var scaled = (LocalMax - LocalMin) * t.Transform.Scale * 0.5f;
-            var mid = (LocalMin + LocalMax) * 0.5f * t.Transform.Scale + center;
-            return (mid - scaled, mid + scaled);
+            var matrix = t.Transform.ToMatrix();
+
+            // Transform all 8 corners of the local AABB
+            Span<Vector3> corners = stackalloc Vector3[8];
+            corners[0] = Vector3.Transform(new Vector3(LocalMin.X, LocalMin.Y, LocalMin.Z), matrix);
+            corners[1] = Vector3.Transform(new Vector3(LocalMax.X, LocalMin.Y, LocalMin.Z), matrix);
+            corners[2] = Vector3.Transform(new Vector3(LocalMin.X, LocalMax.Y, LocalMin.Z), matrix);
+            corners[3] = Vector3.Transform(new Vector3(LocalMax.X, LocalMax.Y, LocalMin.Z), matrix);
+            corners[4] = Vector3.Transform(new Vector3(LocalMin.X, LocalMin.Y, LocalMax.Z), matrix);
+            corners[5] = Vector3.Transform(new Vector3(LocalMax.X, LocalMin.Y, LocalMax.Z), matrix);
+            corners[6] = Vector3.Transform(new Vector3(LocalMin.X, LocalMax.Y, LocalMax.Z), matrix);
+            corners[7] = Vector3.Transform(new Vector3(LocalMax.X, LocalMax.Y, LocalMax.Z), matrix);
+
+            var worldMin = corners[0];
+            var worldMax = corners[0];
+            for (int i = 1; i < 8; i++)
+            {
+                worldMin = Vector3.Min(worldMin, corners[i]);
+                worldMax = Vector3.Max(worldMax, corners[i]);
+            }
+            return (worldMin, worldMax);
         }
 
-        public bool AABBIntersects(SubCollider other,
-                                   TransformProperty selfT, TransformProperty otherT)
+        public bool AABBIntersects(SubCollider other, TransformProperty selfT, TransformProperty otherT)
         {
             var (aMin, aMax) = WorldAABB(selfT);
             var (bMin, bMax) = other.WorldAABB(otherT);
+
+            // Add skin thickness so flat meshes (planes) have detectable volume
+            float skin = 0.01f;
+            aMin -= new Vector3(skin);
+            aMax += new Vector3(skin);
+
             return aMin.X <= bMax.X && aMax.X >= bMin.X &&
                    aMin.Y <= bMax.Y && aMax.Y >= bMin.Y &&
                    aMin.Z <= bMax.Z && aMax.Z >= bMin.Z;

@@ -13,6 +13,9 @@ namespace OssianForge.Engine.Physics
         public ColliderProperty ColliderProperty;
         public TransformProperty TransformProperty;
 
+        public bool IsGrounded;
+        public float GroundedY = float.MinValue;
+
         public PhysicsBody(Node node)
         {
             NodeId = node.Id;

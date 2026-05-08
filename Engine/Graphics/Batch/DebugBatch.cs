@@ -60,13 +60,14 @@ namespace OssianForge.Engine.Graphics.Batch
         }
 
         public void DrawTriangles(IEnumerable<SubCollider.Triangle> triangles,
-                                  TransformProperty t, Vector3 color)
+                          TransformProperty t, Vector3 color)
         {
+            var matrix = t.Transform.ToMatrix();
             foreach (var tri in triangles)
             {
-                var wa = tri.A * t.Transform.Scale + t.Transform.Position;
-                var wb = tri.B * t.Transform.Scale + t.Transform.Position;
-                var wc = tri.C * t.Transform.Scale + t.Transform.Position;
+                var wa = Vector3.Transform(tri.A, matrix);
+                var wb = Vector3.Transform(tri.B, matrix);
+                var wc = Vector3.Transform(tri.C, matrix);
                 AddLine(wa, wb, color);
                 AddLine(wb, wc, color);
                 AddLine(wc, wa, color);

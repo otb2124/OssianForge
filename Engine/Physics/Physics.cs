@@ -32,8 +32,14 @@ namespace OssianForge.Engine.Physics
 
         public void OnUpdate(double delta)
         {
+            const int iterations = 4;
+
+            PhysicsWorld.ResetGrounded();
+
+            for (int i = 0; i < iterations; i++)
+                CollisionSystem.OnUpdate(delta);
+
             PhysicsWorld.OnUpdate(delta);
-            CollisionSystem.OnUpdate(delta);
         }
     }
 }

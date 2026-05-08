@@ -40,14 +40,14 @@ namespace OssianForge.Engine.Nodes
             var house = new Node();
             house.Name = "house";
             house.Id = "house";
-            house.AddProperty(new TransformProperty(new Transform(new Vector3(0, 0, -9), Vector3.Zero, Vector3.One)));
+            house.AddProperty(new TransformProperty(new Transform(new Vector3(0, 0.622f, -9), Vector3.Zero, Vector3.One)));
             house.AddProperty(new MeshProperty("mesh.house"));
             house.AddProperty(new MaterialProperty("texture.house.barrel", "shader.basic"));
             house.AddProperty(new MaterialProperty("texture.brick", "shader.basic"));
             house.AddProperty(new MaterialProperty("texture.house.windows", "shader.basic"));
             house.AddProperty(new MaterialProperty("texture.house.wood", "shader.basic"));
             house.AddProperty(new ColliderProperty("collider.house"));
-            //house.AddProperty(new PhysicalProperty(true, false));
+            house.AddProperty(new PhysicalProperty(true, false));
 
             var plane = new Node();
             plane.Id = "plane";

@@ -57,41 +57,56 @@ namespace OssianForge.Engine.Physics
         {
             var physA = nodeA.GetProperty<PhysicalProperty>();
             var physB = nodeB.GetProperty<PhysicalProperty>();
-
             bool staticA = physA?.IsStatic ?? true;
             bool staticB = physB?.IsStatic ?? true;
 
-            Console.WriteLine($"   → staticA={staticA}, staticB={staticB}");
-
-            if (staticA && staticB)
-            {
-                Console.WriteLine($"   → Both static → no resolution");
-                return;
-            }
+            if (staticA && staticB) return;
+            if (push == Vector3.Zero) return;
 
             var tA = nodeA.GetProperty<TransformProperty>();
             var tB = nodeB.GetProperty<TransformProperty>();
 
             if (staticA)
             {
-                Console.WriteLine($"   → Pushing {nodeB.Name} by -{push}");
-                tB.Transform.Position -= push;
+                // push already points in the direction to move B away from A
+                tB.Transform.Position += push;
                 Engine.Physics.PhysicsWorld.ReflectVelocity(nodeB.Id, push);
+                if (push.Y > 0)
+                {
+                    Engine.Physics.PhysicsWorld.SetGrounded(nodeB.Id, true, isOnStatic: true);
+                    Engine.Physics.PhysicsWorld.SetGroundedY(nodeB.Id, tB.Transform.Position.Y);
+                }
             }
             else if (staticB)
             {
-                Console.WriteLine($"   → Pushing {nodeA.Name} by +{push}");
-                tA.Transform.Position += push;
-                Engine.Physics.PhysicsWorld.ReflectVelocity(nodeA.Id, push);
+                // push points away from A toward B, so A needs to go opposite
+                tA.Transform.Position -= push;
+                Engine.Physics.PhysicsWorld.ReflectVelocity(nodeA.Id, -push);
+                if (push.Y < 0)
+                {
+                    Engine.Physics.PhysicsWorld.SetGrounded(nodeA.Id, true, isOnStatic: true);
+                    Engine.Physics.PhysicsWorld.SetGroundedY(nodeA.Id, tA.Transform.Position.Y);
+                }
             }
-            else // both dynamic
+            else
             {
-                Console.WriteLine($"   → Pushing both nodes");
-                tA.Transform.Position += push * 0.5f;
-                tB.Transform.Position -= push * 0.5f;
+                tA.Transform.Position -= push * 0.5f;
+                tB.Transform.Position += push * 0.5f;
+                Engine.Physics.PhysicsWorld.ReflectVelocity(nodeA.Id, -push);
+                Engine.Physics.PhysicsWorld.ReflectVelocity(nodeB.Id, push);
 
-                Engine.Physics.PhysicsWorld.ReflectVelocity(nodeA.Id, push);
-                Engine.Physics.PhysicsWorld.ReflectVelocity(nodeB.Id, -push);
+                if (push.Y > 0)
+                {
+                    // B is above A — B is resting on A
+                    Engine.Physics.PhysicsWorld.SetGrounded(nodeB.Id, true, isOnStatic: false);
+                    Engine.Physics.PhysicsWorld.SetGroundedY(nodeB.Id, tB.Transform.Position.Y);
+                }
+                if (push.Y < 0)
+                {
+                    // A is above B — A is resting on B
+                    Engine.Physics.PhysicsWorld.SetGrounded(nodeA.Id, true, isOnStatic: false);
+                    Engine.Physics.PhysicsWorld.SetGroundedY(nodeA.Id, tA.Transform.Position.Y);
+                }
             }
         }
     }

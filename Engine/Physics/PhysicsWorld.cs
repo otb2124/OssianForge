@@ -49,16 +49,94 @@ namespace OssianForge.Engine.Physics
             Step((float)delta);
         }
 
+        public void SetGrounded(string nodeId, bool grounded, bool isOnStatic = false)
+        {
+            var body = _bodies.FirstOrDefault(b => b.NodeId == nodeId);
+            if (body == null) return;
+            body.IsGrounded = grounded;
+            // Only pin GroundedY when resting on static geometry
+            if (!isOnStatic) body.GroundedY = float.MinValue;
+        }
+
+        public void ResetGrounded()
+        {
+            foreach (var body in _bodies)
+            {
+                if (body.PhysicalProperty.IsStatic) continue;
+
+                // Only clear grounded if moving upward — still grounded if stationary or falling
+                if (body.PhysicalProperty.Velocity.Y > 0.1f)
+                {
+                    body.IsGrounded = false;
+                    body.GroundedY = float.MinValue;
+                }
+                else
+                {
+                    // Keep grounded state but let collision re-confirm it
+                    body.IsGrounded = false;
+                    // Keep GroundedY — the pin stays active even if collision doesn't fire this frame
+                }
+            }
+        }
+
+        public bool IsGrounded(string nodeId)
+        {
+            var body = _bodies.FirstOrDefault(b => b.NodeId == nodeId);
+            return body?.IsGrounded ?? false;
+        }
+
+        public void SetGroundedY(string nodeId, float y)
+        {
+            var body = _bodies.FirstOrDefault(b => b.NodeId == nodeId);
+            if (body != null) body.GroundedY = y;
+        }
+
         public void Step(float delta)
         {
             foreach (var body in _bodies)
             {
                 if (body.PhysicalProperty.IsStatic) continue;
-                if (body.PhysicalProperty.UseGravity)
-                    body.PhysicalProperty.Velocity += Gravity * delta;
-                body.TransformProperty.Transform.Position += body.PhysicalProperty.Velocity * delta;
 
-                Console.WriteLine($"[Physics] {body.NodeId} pos={body.TransformProperty.Transform.Position} vel={body.PhysicalProperty.Velocity}");
+                if (body.IsGrounded && body.GroundedY > float.MinValue)
+                {
+                    body.PhysicalProperty.Velocity = new Vector3(
+                        body.PhysicalProperty.Velocity.X,
+                        0f,
+                        body.PhysicalProperty.Velocity.Z);
+                }
+                else
+                {
+                    if (body.PhysicalProperty.UseGravity)
+                        body.PhysicalProperty.Velocity += Gravity * delta;
+                }
+
+                body.PhysicalProperty.Velocity *= 0.98f;
+
+                if (body.PhysicalProperty.Velocity.LengthSquared() < 0.005f)
+                    body.PhysicalProperty.Velocity = Vector3.Zero;
+
+                body.TransformProperty.Transform.Position += new Vector3(
+                    body.PhysicalProperty.Velocity.X,
+                    body.IsGrounded ? 0f : body.PhysicalProperty.Velocity.Y,
+                    body.PhysicalProperty.Velocity.Z) * delta;
+
+                // Hard floor — never sink below last known ground contact
+                if (body.GroundedY > float.MinValue &&
+                    body.TransformProperty.Transform.Position.Y < body.GroundedY)
+                {
+                    body.TransformProperty.Transform.Position = new Vector3(
+                        body.TransformProperty.Transform.Position.X,
+                        body.GroundedY,
+                        body.TransformProperty.Transform.Position.Z);
+                    if (body.PhysicalProperty.Velocity.Y < 0)
+                        body.PhysicalProperty.Velocity = new Vector3(
+                            body.PhysicalProperty.Velocity.X, 0,
+                            body.PhysicalProperty.Velocity.Z);
+                }
+
+                // Clear GroundedY if object moves significantly upward (jumped/launched)
+                if (body.PhysicalProperty.Velocity.Y > 0.5f)
+                    body.GroundedY = float.MinValue;
             }
         }
 
@@ -66,8 +144,36 @@ namespace OssianForge.Engine.Physics
         {
             var body = _bodies.FirstOrDefault(b => b.NodeId == nodeId);
             if (body == null || pushNormal == Vector3.Zero) return;
+
             var normal = Vector3.Normalize(pushNormal);
-            body.PhysicalProperty.Velocity -= normal * Vector3.Dot(body.PhysicalProperty.Velocity, normal) * (1f + body.PhysicalProperty.Bounciness);
+            float relVel = Vector3.Dot(body.PhysicalProperty.Velocity, normal);
+
+            // Only reflect if actually moving into the surface with meaningful speed
+            // Below this threshold it's resting contact — just zero the component
+            const float restingThreshold = 0.5f;
+
+            if (relVel >= 0) return; // moving away, do nothing
+
+            if (MathF.Abs(relVel) < restingThreshold)
+            {
+                // Resting contact — cancel the velocity component, no bounce
+                body.PhysicalProperty.Velocity -= normal * relVel;
+                return;
+            }
+
+            float restitution = body.PhysicalProperty.Bounciness;
+            body.PhysicalProperty.Velocity -= normal * relVel * (1f + restitution);
+        }
+
+        public void ZeroDownwardVelocity(string nodeId)
+        {
+            var body = _bodies.FirstOrDefault(b => b.NodeId == nodeId);
+            if (body == null) return;
+            if (body.PhysicalProperty.Velocity.Y < 0)
+                body.PhysicalProperty.Velocity = new Vector3(
+                    body.PhysicalProperty.Velocity.X,
+                    0,
+                    body.PhysicalProperty.Velocity.Z);
         }
     }
 }
