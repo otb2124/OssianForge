@@ -11,9 +11,6 @@ namespace OssianForge.Engine.Physics
             var collidableNodes = Engine.Nodes.NodeManager
                 .GetNodesWithProperties(typeof(TransformProperty), typeof(ColliderProperty));
 
-            Console.WriteLine($"[Collision] Collidables found: {collidableNodes.Count} — " +
-                             $"{string.Join(", ", collidableNodes.Select(n => n.Name ?? n.Id ?? "Unnamed"))}");
-
             Process(collidableNodes);
         }
 
@@ -34,19 +31,15 @@ namespace OssianForge.Engine.Physics
                     if (colA == null || colB == null || tA == null || tB == null)
                         continue;
 
-                    Console.WriteLine($"[Collision] Checking {nodeA.Name} vs {nodeB.Name}");
-
                     bool intersects = colA.Intersects(colB, tA, tB);
                     if (!intersects) continue;
 
                     if (colA.IsTrigger || colB.IsTrigger)
                     {
-                        Console.WriteLine($"   → Trigger detected, skipping resolution");
                         continue;
                     }
 
                     var push = colA.ResolveOverlap(colB, tA, tB);
-                    Console.WriteLine($"   → Intersects! Push vector: {push}");
 
                     ResolvePhysicsResponse(nodeA, nodeB, push);
                 }

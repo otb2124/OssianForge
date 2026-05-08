@@ -22,7 +22,6 @@ namespace OssianForge.Engine.Physics
                 Register(node);
             }
 
-            Console.WriteLine($"[PhysicsWorld] Registered {_bodies.Count} physics bodies.");
         }
 
         public PhysicsBody Register(Node node)
@@ -35,7 +34,6 @@ namespace OssianForge.Engine.Physics
             var body = new PhysicsBody(node);
             _bodies.Add(body);
 
-            Console.WriteLine($"[PhysicsWorld] Registered node: {node.Name ?? node.Id}");
             return body;
         }
 
@@ -97,6 +95,13 @@ namespace OssianForge.Engine.Physics
             {
                 if (body.PhysicalProperty.IsStatic) continue;
 
+                // If we just bounced, the upward velocity should clear grounded immediately
+                if (body.PhysicalProperty.Velocity.Y > 0.1f)
+                {
+                    body.IsGrounded = false;
+                    body.GroundedY = float.MinValue;
+                }
+
                 if (body.IsGrounded && body.GroundedY > float.MinValue)
                 {
                     body.PhysicalProperty.Velocity = new Vector3(
@@ -148,21 +153,21 @@ namespace OssianForge.Engine.Physics
             var normal = Vector3.Normalize(pushNormal);
             float relVel = Vector3.Dot(body.PhysicalProperty.Velocity, normal);
 
-            // Only reflect if actually moving into the surface with meaningful speed
-            // Below this threshold it's resting contact — just zero the component
+            Console.WriteLine($"[ReflectVelocity] {nodeId} relVel={relVel:F3} bounciness={body.PhysicalProperty.Bounciness}");
+
+            if (relVel >= 0) return;
+
             const float restingThreshold = 0.5f;
-
-            if (relVel >= 0) return; // moving away, do nothing
-
             if (MathF.Abs(relVel) < restingThreshold)
             {
-                // Resting contact — cancel the velocity component, no bounce
+                Console.WriteLine($"[ReflectVelocity] {nodeId} resting contact, zeroing");
                 body.PhysicalProperty.Velocity -= normal * relVel;
                 return;
             }
 
             float restitution = body.PhysicalProperty.Bounciness;
             body.PhysicalProperty.Velocity -= normal * relVel * (1f + restitution);
+            Console.WriteLine($"[ReflectVelocity] {nodeId} bounced, new vel={body.PhysicalProperty.Velocity}");
         }
 
         public void ZeroDownwardVelocity(string nodeId)

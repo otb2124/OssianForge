@@ -65,39 +65,45 @@ namespace OssianForge.Engine.Nodes
             ball.AddProperty(new MeshProperty("mesh.ball"));
             ball.AddProperty(new MaterialProperty("texture.house.wood", "shader.basic"));
             ball.AddProperty(new ColliderProperty("collider.ball"));
-            ball.AddProperty(new PhysicalProperty(false, true, 1f, 0.1f));
+            ball.AddProperty(new PhysicalProperty(false, true, 1f, 1f));
 
-            var houseBall = new Node();
-            houseBall.Name = "houseBall";
-            houseBall.Id = "houseBall";
-            houseBall.AddProperty(new TransformProperty(new Transform(new Vector3(0, 20, -9), Vector3.Zero, Vector3.One)));
-            houseBall.AddProperty(new MeshProperty("mesh.house"));
-            houseBall.AddProperty(new MaterialProperty("texture.house.barrel", "shader.basic"));
-            houseBall.AddProperty(new MaterialProperty("texture.brick", "shader.basic"));
-            houseBall.AddProperty(new MaterialProperty("texture.house.windows", "shader.basic"));
-            houseBall.AddProperty(new MaterialProperty("texture.house.wood", "shader.basic"));
-            houseBall.AddProperty(new ColliderProperty("collider.house"));
-            houseBall.AddProperty(new PhysicalProperty(false, true, 100, 0f));
+            var cube = new Node();
+            cube.Id = "cube";
+            cube.Name = "cube";
+            cube.AddProperty(new TransformProperty(new Transform(new Vector3(0.5f, 30f, -7f), Vector3.Zero, new Vector3(0.5f, 0.5f, 0.5f))));
+            cube.AddProperty(new MeshProperty("mesh.cube"));
+            cube.AddProperty(new MaterialProperty("texture.house.wood", "shader.basic"));
+            cube.AddProperty(new ColliderProperty("collider.cube"));
+            cube.AddProperty(new PhysicalProperty(false, true, 1f, 1f));
 
-            var houseBall1 = new Node();
-            houseBall1.Name = "houseBall1";
-            houseBall1.Id = "houseBall1";
-            houseBall1.AddProperty(new TransformProperty(new Transform(new Vector3(0, 30, -9), new Vector3(0, 60, 60), Vector3.One)));
-            houseBall1.AddProperty(new MeshProperty("mesh.house"));
-            houseBall1.AddProperty(new MaterialProperty("texture.house.barrel", "shader.basic"));
-            houseBall1.AddProperty(new MaterialProperty("texture.brick", "shader.basic"));
-            houseBall1.AddProperty(new MaterialProperty("texture.house.windows", "shader.basic"));
-            houseBall1.AddProperty(new MaterialProperty("texture.house.wood", "shader.basic"));
-            houseBall1.AddProperty(new ColliderProperty("collider.house"));
-            houseBall1.AddProperty(new PhysicalProperty(false, true, 100, 0f));
+            var ball1 = new Node();
+            ball1.Id = "ball1";
+            ball1.Name = "ball1";
+            ball1.AddProperty(new TransformProperty(new Transform(new Vector3(0.25f, 40f, -7f), Vector3.Zero, new Vector3(0.5f, 0.5f, 0.5f))));
+            ball1.AddProperty(new MeshProperty("mesh.ball"));
+            ball1.AddProperty(new MaterialProperty("texture.house.wood", "shader.basic"));
+            ball1.AddProperty(new ColliderProperty("collider.ball"));
+            ball1.AddProperty(new PhysicalProperty(false, true, 1f, 1f));
+
+            var cube1 = new Node();
+            cube1.Id = "cube1";
+            cube1.Name = "cube1";
+            cube1.AddProperty(new TransformProperty(new Transform(new Vector3(0, 41f, -7f), Vector3.Zero, new Vector3(0.5f, 0.5f, 0.5f))));
+            cube1.AddProperty(new MeshProperty("mesh.cube"));
+            cube1.AddProperty(new MaterialProperty("texture.house.wood", "shader.basic"));
+            cube1.AddProperty(new ColliderProperty("collider.cube"));
+            cube1.AddProperty(new PhysicalProperty(false, true, 1f, 1f));
+
 
             scene.AddChild(sky);
-            scene.AddChild(house);
+            //scene.AddChild(house);
             scene.AddChild(plane);
             scene.AddChild(lightNode);
-            //scene.AddChild(ball);
-            scene.AddChild(houseBall);
-            scene.AddChild(houseBall1);
+            scene.AddChild(ball);
+            scene.AddChild(cube);
+            scene.AddChild(ball1);
+            scene.AddChild(cube1);
+            //scene.AddChild(houseBall1);
 
 
             tree.AddChild(scene);
