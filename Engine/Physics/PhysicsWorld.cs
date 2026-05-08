@@ -10,10 +10,32 @@ namespace OssianForge.Engine.Physics
 
         private readonly List<PhysicsBody> _bodies = new();
 
+
+        public void RegisterAll()
+        {
+            var physicsNodes = Engine.Nodes.NodeManager.GetNodesWithProperty<PhysicalProperty>();
+
+            _bodies.Clear();
+
+            foreach (var node in physicsNodes)
+            {
+                Register(node);
+            }
+
+            Console.WriteLine($"[PhysicsWorld] Registered {_bodies.Count} physics bodies.");
+        }
+
         public PhysicsBody Register(Node node)
         {
+            if (node == null) return null;
+
+            if (_bodies.Any(b => b.NodeId == node.Id))
+                return _bodies.First(b => b.NodeId == node.Id);
+
             var body = new PhysicsBody(node);
             _bodies.Add(body);
+
+            Console.WriteLine($"[PhysicsWorld] Registered node: {node.Name ?? node.Id}");
             return body;
         }
 

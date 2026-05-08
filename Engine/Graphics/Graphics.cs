@@ -61,7 +61,7 @@ namespace OssianForge.Engine.Graphics
             Batch.Init();
             DebugRenderer.Init();
 
-            DebugRenderer.Enabled = false;
+            DebugRenderer.Enabled = true;
         }
 
 

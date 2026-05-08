@@ -26,9 +26,7 @@ namespace OssianForge.Engine.Physics
 
         public void OnLoad()
         {
-            PhysicsWorld.Register(Engine.Nodes.NodeManager.GetNode("plane"));
-            PhysicsWorld.Register(Engine.Nodes.NodeManager.GetNode("houseBall"));
-            //PhysicsWorld.Register(Engine.Nodes.NodeManager.GetNode("house"));
+            PhysicsWorld.RegisterAll();
         }
 
 
