@@ -27,7 +27,8 @@ namespace OssianForge.Engine.Physics
         public void OnLoad()
         {
             PhysicsWorld.Register(Engine.Nodes.NodeManager.GetNode("plane"));
-            PhysicsWorld.Register(Engine.Nodes.NodeManager.GetNode("ball"));
+            PhysicsWorld.Register(Engine.Nodes.NodeManager.GetNode("houseBall"));
+            //PhysicsWorld.Register(Engine.Nodes.NodeManager.GetNode("house"));
         }
 
 
@@ -35,11 +36,6 @@ namespace OssianForge.Engine.Physics
         {
             PhysicsWorld.OnUpdate(delta);
             CollisionSystem.OnUpdate(delta);
-        }
-
-        public void OnRender()
-        {
-
         }
     }
 }

@@ -73,7 +73,7 @@ namespace OssianForge.Engine.Inputs
             }
         }
 
-        public void OnUpdate()
+        public void UpdateNodes()
         {
             if(this.GamePadCountChanged(out int count))
             {

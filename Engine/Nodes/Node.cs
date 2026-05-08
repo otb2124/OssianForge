@@ -43,6 +43,14 @@ namespace OssianForge.Engine.Nodes
                 Properties.Add(prop);
         }
 
+        public NodeProperty GetProperty(Type type)
+        {
+            if (type == null) return null;
+
+            return Properties.FirstOrDefault(p =>
+                p.GetType() == type || type.IsAssignableFrom(p.GetType()));
+        }
+
         public List<T> GetProperties<T>() where T : NodeProperty
             => Properties.OfType<T>().ToList();
 

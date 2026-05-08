@@ -1,4 +1,5 @@
-﻿using OssianForge.Engine.Resources.Meshes;
+﻿using OssianForge.Engine.Resources.Colliders;
+using OssianForge.Engine.Resources.Meshes;
 using OssianForge.Engine.Resources.Shaders;
 using OssianForge.Engine.Resources.Textures;
 using System;
@@ -79,6 +80,11 @@ namespace OssianForge.Engine.Resources
                 new TextureResource("texture.house.wood", "texturefile.house.wood"),
                 new TextureResource("texture.light", "texturefile.light"),
                 new TextureResource("texture.dices", "texturefile.dices"),
+
+                new ColliderResource("collider.house", "mesh.house"),
+                new ColliderResource("collider.ball", "mesh.ball"),
+                new ColliderResource("collider.plane", "mesh.plane"),
+                new ColliderResource("collider.cube", "mesh.cube")
             };
 
 

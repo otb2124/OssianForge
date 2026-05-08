@@ -1,144 +1,192 @@
-﻿using System.Numerics;
-using static OssianForge.Engine.Utils.Math;
+﻿using OssianForge.Engine.Resources.Colliders;
+using System;
+using System.Numerics;
 
 namespace OssianForge.Engine.Nodes.Props
 {
-    public abstract class ColliderProperty : NodeProperty
+
+
+    public class ColliderProperty : NodeProperty
     {
+
         public bool IsTrigger;
         public Action<Node> OnCollision;
+        public ColliderResource ColliderResource;
 
-        public abstract bool Intersects(ColliderProperty other, TransformProperty selfTransform, TransformProperty otherTransform);
-        public abstract Vector3 ResolveOverlap(ColliderProperty other, TransformProperty selfTransform, TransformProperty otherTransform);
-    }
-
-    public class BoxColliderProperty : ColliderProperty
-    {
-        public Vector3 Size; // half-extents
-        public Vector3 Offset;
-
-        public BoxColliderProperty(Vector3 size, Vector3 offset = default, bool isTrigger = false)
+        public ColliderProperty(string colliderId, bool isTrigger = false)
         {
-            Size = size;
-            Offset = offset;
+            ColliderResource = Engine.Resources.GetResource(colliderId) as ColliderResource;
             IsTrigger = isTrigger;
         }
 
-        private Vector3 WorldCenter(TransformProperty t) =>
-            t.Transform.Position + Offset;
-
-        private Vector3 WorldHalfExtents(TransformProperty t) =>
-            Size * t.Transform.Scale * 0.5f;
-
-        public override bool Intersects(ColliderProperty other, TransformProperty selfT, TransformProperty otherT)
+        // ----------------------------------------------------------------
+        // Broad + narrow phase Intersects
+        // ----------------------------------------------------------------
+        public bool Intersects(ColliderProperty other,
+                                        TransformProperty selfT, TransformProperty otherT)
         {
-            if (other is BoxColliderProperty box)
+            // Mesh vs Mesh
+            if (other is ColliderProperty otherMesh)
             {
-                var aMin = WorldCenter(selfT) - WorldHalfExtents(selfT);
-                var aMax = WorldCenter(selfT) + WorldHalfExtents(selfT);
-                var bMin = WorldCenter(otherT) - box.WorldHalfExtents(otherT);
-                var bMax = WorldCenter(otherT) + box.WorldHalfExtents(otherT);
-
-                return aMin.X <= bMax.X && aMax.X >= bMin.X &&
-                       aMin.Y <= bMax.Y && aMax.Y >= bMin.Y &&
-                       aMin.Z <= bMax.Z && aMax.Z >= bMin.Z;
+                foreach (var subA in ColliderResource.SubColliders)
+                    foreach (var subB in otherMesh.ColliderResource.SubColliders)
+                    {
+                        if (!subA.AABBIntersects(subB, selfT, otherT)) continue;
+                        if (NarrowPhase(subA, subB, selfT, otherT)) return true;
+                    }
+                return false;
             }
-            if (other is SphereColliderProperty sphere)
-                return sphere.Intersects(this, otherT, selfT);
 
             return false;
         }
 
-        public override Vector3 ResolveOverlap(ColliderProperty other, TransformProperty selfT, TransformProperty otherT)
+        // ----------------------------------------------------------------
+        // ResolveOverlap — returns the push vector for selfT
+        // ----------------------------------------------------------------
+        public Vector3 ResolveOverlap(ColliderProperty other,
+                               TransformProperty selfT, TransformProperty otherT)
         {
-            if (other is SphereColliderProperty sphere)
-                return -sphere.ResolveOverlap(this, otherT, selfT); // negate — direction is flipped
+            // Find the combined AABB overlap and push along the smallest axis
+            var (aMin, aMax) = GetWorldAABB(selfT);
+            var (bMin, bMax) = other.GetWorldAABB(otherT);
 
-            // existing box vs box code...
-            var aCenter = WorldCenter(selfT);
-            var bCenter = WorldCenter(otherT);
-            var aHalf = WorldHalfExtents(selfT);
-            var bHalf = ((BoxColliderProperty)other).WorldHalfExtents(otherT);
+            // Overlap on each axis
+            float overlapX = MathF.Min(aMax.X, bMax.X) - MathF.Max(aMin.X, bMin.X);
+            float overlapY = MathF.Min(aMax.Y, bMax.Y) - MathF.Max(aMin.Y, bMin.Y);
+            float overlapZ = MathF.Min(aMax.Z, bMax.Z) - MathF.Max(aMin.Z, bMin.Z);
 
-            var diff = aCenter - bCenter;
-            var overlap = (aHalf + bHalf) - new Vector3(MathF.Abs(diff.X), MathF.Abs(diff.Y), MathF.Abs(diff.Z));
-
-            if (overlap.X < overlap.Y && overlap.X < overlap.Z)
-                return new Vector3(MathF.Sign(diff.X) * overlap.X, 0, 0);
-            if (overlap.Y < overlap.X && overlap.Y < overlap.Z)
-                return new Vector3(0, MathF.Sign(diff.Y) * overlap.Y, 0);
-            return new Vector3(0, 0, MathF.Sign(diff.Z) * overlap.Z);
-        }
-    }
-
-    public class SphereColliderProperty : ColliderProperty
-    {
-        public float Radius;
-        public Vector3 Offset;
-
-        public SphereColliderProperty(float radius, Vector3 offset = default, bool isTrigger = false)
-        {
-            Radius = radius;
-            Offset = offset;
-            IsTrigger = isTrigger;
-        }
-
-        private Vector3 WorldCenter(TransformProperty t) =>
-            t.Transform.Position + Offset;
-
-        private float WorldRadius(TransformProperty t) =>
-            Radius * MathF.Max(t.Transform.Scale.X, MathF.Max(t.Transform.Scale.Y, t.Transform.Scale.Z));
-
-        public override bool Intersects(ColliderProperty other, TransformProperty selfT, TransformProperty otherT)
-        {
-            if (other is SphereColliderProperty sphere)
+            // Pick the axis with the smallest overlap (minimum penetration)
+            if (overlapY <= overlapX && overlapY <= overlapZ)
             {
-                float dist = Vector3.Distance(WorldCenter(selfT), sphere.WorldCenter(otherT));
-                return dist < WorldRadius(selfT) + sphere.WorldRadius(otherT);
+                // Push on Y — determine direction
+                float centerAY = (aMin.Y + aMax.Y) * 0.5f;
+                float centerBY = (bMin.Y + bMax.Y) * 0.5f;
+                float dir = centerAY > centerBY ? 1f : -1f;
+                return new Vector3(0, dir * overlapY, 0);
             }
-            if (other is BoxColliderProperty box)
+            else if (overlapX <= overlapY && overlapX <= overlapZ)
             {
-                // Closest point on box to sphere center
-                var center = WorldCenter(selfT);
-                var boxMin = otherT.Transform.Position + box.Offset - box.Size * otherT.Transform.Scale * 0.5f;
-                var boxMax = otherT.Transform.Position + box.Offset + box.Size * otherT.Transform.Scale * 0.5f;
-                var closest = Vector3.Clamp(center, boxMin, boxMax);
-                return Vector3.Distance(center, closest) < WorldRadius(selfT);
+                float centerAX = (aMin.X + aMax.X) * 0.5f;
+                float centerBX = (bMin.X + bMax.X) * 0.5f;
+                float dir = centerAX > centerBX ? 1f : -1f;
+                return new Vector3(dir * overlapX, 0, 0);
+            }
+            else
+            {
+                float centerAZ = (aMin.Z + aMax.Z) * 0.5f;
+                float centerBZ = (bMin.Z + bMax.Z) * 0.5f;
+                float dir = centerAZ > centerBZ ? 1f : -1f;
+                return new Vector3(0, 0, dir * overlapZ);
+            }
+        }
+
+        private (Vector3 Min, Vector3 Max) GetWorldAABB(TransformProperty t)
+        {
+            Vector3 worldMin = new Vector3(float.MaxValue);
+            Vector3 worldMax = new Vector3(float.MinValue);
+
+            foreach (var sub in ColliderResource.SubColliders)
+            {
+                foreach (var tri in sub.Triangles)
+                {
+                    foreach (var v in new[] { tri.A, tri.B, tri.C })
+                    {
+                        var world = TransformPoint(v, t);
+                        worldMin = Vector3.Min(worldMin, world);
+                        worldMax = Vector3.Max(worldMax, world);
+                    }
+                }
+            }
+
+            return (worldMin, worldMax);
+        }
+
+
+        // ----------------------------------------------------------------
+        // Helpers
+        // ----------------------------------------------------------------
+
+        private static Vector3 TransformPoint(Vector3 local, TransformProperty t) =>
+            local * t.Transform.Scale + t.Transform.Position;
+
+        private static bool NarrowPhase(SubCollider a, SubCollider b,
+                                        TransformProperty tA, TransformProperty tB)
+        {
+            // Triangle vs triangle AABB overlap — good enough for most game meshes
+            var (bMin, bMax) = b.WorldAABB(tB);
+            foreach (var tri in a.Triangles)
+            {
+                var wa = TransformPoint(tri.A, tA);
+                var wb = TransformPoint(tri.B, tA);
+                var wc = TransformPoint(tri.C, tA);
+                if (TriangleAABB(wa, wb, wc, bMin, bMax)) return true;
             }
             return false;
         }
 
-        public override Vector3 ResolveOverlap(ColliderProperty other, TransformProperty selfT, TransformProperty otherT)
+        private static bool TriangleAABB(Vector3 a, Vector3 b, Vector3 c,
+                                         Vector3 boxMin, Vector3 boxMax)
         {
-            if (other is SphereColliderProperty sphere)
+            var triMin = Vector3.Min(a, Vector3.Min(b, c));
+            var triMax = Vector3.Max(a, Vector3.Max(b, c));
+            return triMin.X <= boxMax.X && triMax.X >= boxMin.X &&
+                   triMin.Y <= boxMax.Y && triMax.Y >= boxMin.Y &&
+                   triMin.Z <= boxMax.Z && triMax.Z >= boxMin.Z;
+        }
+
+        private static float PointTriangleDist(Vector3 p, Vector3 a, Vector3 b, Vector3 c)
+        {
+            // Closest point on triangle to p
+            var ab = b - a; var ac = c - a; var ap = p - a;
+            float d1 = Vector3.Dot(ab, ap), d2 = Vector3.Dot(ac, ap);
+            if (d1 <= 0 && d2 <= 0) return Vector3.Distance(p, a);
+
+            var bp = p - b;
+            float d3 = Vector3.Dot(ab, bp), d4 = Vector3.Dot(ac, bp);
+            if (d3 >= 0 && d4 <= d3) return Vector3.Distance(p, b);
+
+            var cp = p - c;
+            float d5 = Vector3.Dot(ab, cp), d6 = Vector3.Dot(ac, cp);
+            if (d6 >= 0 && d5 <= d6) return Vector3.Distance(p, c);
+
+            float vc = d1 * d4 - d3 * d2;
+            if (vc <= 0 && d1 >= 0 && d3 <= 0)
             {
-                var diff = WorldCenter(selfT) - sphere.WorldCenter(otherT);
-                float dist = diff.Length();
-                float overlap = WorldRadius(selfT) + sphere.WorldRadius(otherT) - dist;
-                if (overlap <= 0) return Vector3.Zero;
-                return Vector3.Normalize(diff) * overlap;
+                float v = d1 / (d1 - d3);
+                return Vector3.Distance(p, a + v * ab);
+            }
+            float vb = d5 * d2 - d1 * d6;
+            if (vb <= 0 && d2 >= 0 && d6 <= 0)
+            {
+                float w = d2 / (d2 - d6);
+                return Vector3.Distance(p, a + w * ac);
+            }
+            float va = d3 * d6 - d5 * d4;
+            if (va <= 0 && (d4 - d3) >= 0 && (d5 - d6) >= 0)
+            {
+                float w = (d4 - d3) / ((d4 - d3) + (d5 - d6));
+                return Vector3.Distance(p, b + w * (c - b));
             }
 
-            if (other is BoxColliderProperty box)
-            {
-                var center = WorldCenter(selfT);
-                var boxMin = otherT.Transform.Position + box.Offset - box.Size * otherT.Transform.Scale * 0.5f;
-                var boxMax = otherT.Transform.Position + box.Offset + box.Size * otherT.Transform.Scale * 0.5f;
-                var closest = Vector3.Clamp(center, boxMin, boxMax);
+            float denom = 1f / (va + vb + vc);
+            var closest = a + ab * (vb * denom) + ac * (vc * denom);
+            return Vector3.Distance(p, closest);
+        }
 
-                var diff = center - closest;
-                float dist = diff.Length();
-                float overlap = WorldRadius(selfT) - dist;
-                if (overlap <= 0) return Vector3.Zero;
+        private static float EstimatePenetrationDepth(SubCollider.Triangle tri,
+                                                      SubCollider other,
+                                                      TransformProperty selfT,
+                                                      TransformProperty otherT)
+        {
+            // Project AABB of other onto triangle normal, compare with triangle plane
+            var (oMin, oMax) = other.WorldAABB(otherT);
+            var oCenter = (oMin + oMax) * 0.5f;
+            var wa = TransformPoint(tri.A, selfT);
+            var wn = Vector3.Normalize(Vector3.TransformNormal(tri.Normal,
+                Matrix4x4.CreateScale(selfT.Transform.Scale)));
 
-                // If sphere center is inside box, diff is zero — push up by default
-                if (dist < 0.0001f)
-                    return new Vector3(0, overlap + WorldRadius(selfT), 0);
-
-                return Vector3.Normalize(diff) * overlap;
-            }
-
-            return Vector3.Zero;
+            float planeDist = Vector3.Dot(wn, oCenter) - Vector3.Dot(wn, wa);
+            return MathF.Max(0f, -planeDist + 0.05f); // small bias
         }
     }
 }

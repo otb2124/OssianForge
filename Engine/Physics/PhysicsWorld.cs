@@ -24,11 +24,6 @@ namespace OssianForge.Engine.Physics
 
         public void OnUpdate(double delta)
         {
-            foreach (PhysicsBody body in _bodies)
-            {
-                body.OnUpdate(delta);
-            }
-
             Step((float)delta);
         }
 

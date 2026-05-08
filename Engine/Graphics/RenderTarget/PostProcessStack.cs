@@ -64,7 +64,7 @@ namespace OssianForge.Engine.Graphics.RenderTarget
 
         /// <summary>
         /// Call this INSTEAD of your manual Clear+Render. 
-        /// Binds the scene FBO so your normal OnRender draws into it.
+        /// Binds the scene FBO so your normal RenderNodes draws into it.
         /// </summary>
         public void BeginScene()
         {
@@ -74,7 +74,7 @@ namespace OssianForge.Engine.Graphics.RenderTarget
         }
 
         /// <summary>
-        /// Call at the END of OnRender. Runs all enabled passes and blits to screen.
+        /// Call at the END of RenderNodes. Runs all enabled passes and blits to screen.
         /// </summary>
         public void EndScene()
         {

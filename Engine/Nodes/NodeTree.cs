@@ -39,36 +39,52 @@ namespace OssianForge.Engine.Nodes
             //objects
             var house = new Node();
             house.Name = "house";
-            house.AddProperty(new TransformProperty(new Transform(new Vector3(0, 0, -10), Vector3.Zero, Vector3.One)));
+            house.Id = "house";
+            house.AddProperty(new TransformProperty(new Transform(new Vector3(0, 0, -9), Vector3.Zero, Vector3.One)));
             house.AddProperty(new MeshProperty("mesh.house"));
             house.AddProperty(new MaterialProperty("texture.house.barrel", "shader.basic"));
             house.AddProperty(new MaterialProperty("texture.brick", "shader.basic"));
             house.AddProperty(new MaterialProperty("texture.house.windows", "shader.basic"));
             house.AddProperty(new MaterialProperty("texture.house.wood", "shader.basic"));
+            house.AddProperty(new ColliderProperty("collider.house"));
+            house.AddProperty(new PhysicalProperty(true, false));
 
             var plane = new Node();
             plane.Id = "plane";
             plane.Name = "plane";
-            plane.AddProperty(new TransformProperty(new Transform(new Vector3(0, 0, 0), Vector3.Zero, new Vector3(50, 1, 50))));
-            plane.AddProperty(new MeshProperty("mesh.plane"));
+            plane.AddProperty(new TransformProperty(new Transform(new Vector3(0, 0, -9), Vector3.Zero, new Vector3(10, 1, 10))));
+            plane.AddProperty(new MeshProperty("mesh.cube"));
             plane.AddProperty(new MaterialProperty("texture.house.wood", "shader.basic"));
-            plane.AddProperty(new BoxColliderProperty(Vector3.One));
+            plane.AddProperty(new ColliderProperty("collider.cube"));
             plane.AddProperty(new PhysicalProperty(true, false));
 
             var ball = new Node();
             ball.Id = "ball";
             ball.Name = "ball";
-            ball.AddProperty(new TransformProperty(new Transform(new Vector3(0, 50f, -5), Vector3.Zero, new Vector3(1, 1, 1))));
+            ball.AddProperty(new TransformProperty(new Transform(new Vector3(0, 30f, -7f), Vector3.Zero, new Vector3(0.5f, 0.5f, 0.5f))));
             ball.AddProperty(new MeshProperty("mesh.ball"));
             ball.AddProperty(new MaterialProperty("texture.house.wood", "shader.basic"));
-            ball.AddProperty(new SphereColliderProperty(0.5f));
-            ball.AddProperty(new PhysicalProperty(false, true, 1f, 1f));
+            ball.AddProperty(new ColliderProperty("collider.ball"));
+            ball.AddProperty(new PhysicalProperty(false, true, 1000f, 0f));
+
+            var houseBall = new Node();
+            houseBall.Name = "houseBall";
+            houseBall.Id = "houseBall";
+            houseBall.AddProperty(new TransformProperty(new Transform(new Vector3(0, 20, -9), Vector3.Zero, Vector3.One)));
+            houseBall.AddProperty(new MeshProperty("mesh.house"));
+            houseBall.AddProperty(new MaterialProperty("texture.house.barrel", "shader.basic"));
+            houseBall.AddProperty(new MaterialProperty("texture.brick", "shader.basic"));
+            houseBall.AddProperty(new MaterialProperty("texture.house.windows", "shader.basic"));
+            houseBall.AddProperty(new MaterialProperty("texture.house.wood", "shader.basic"));
+            houseBall.AddProperty(new ColliderProperty("collider.house"));
+            houseBall.AddProperty(new PhysicalProperty(false, true, 1, 1f));
 
             scene.AddChild(sky);
-            scene.AddChild(house);
+            //scene.AddChild(house);
             scene.AddChild(plane);
             scene.AddChild(lightNode);
             scene.AddChild(ball);
+            scene.AddChild(houseBall);
 
 
             tree.AddChild(scene);

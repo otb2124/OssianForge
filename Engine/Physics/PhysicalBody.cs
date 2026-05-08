@@ -21,14 +21,6 @@ namespace OssianForge.Engine.Physics
             TransformProperty = node.GetProperty<TransformProperty>();
         }
 
-        public void OnUpdate(double delta)
-        {
-            var node = Engine.Nodes.NodeManager.GetNode(NodeId);
-            PhysicalProperty = node.GetProperty<PhysicalProperty>();
-            ColliderProperty = node.GetProperty<ColliderProperty>();
-            //node.SetProperty(TransformProperty);
-        }
-
         public void AddForce(Vector3 force)
         {
             if (!PhysicalProperty.IsStatic)

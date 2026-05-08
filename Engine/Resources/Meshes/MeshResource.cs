@@ -73,6 +73,10 @@ namespace OssianForge.Engine.Resources.Meshes
         protected uint _vertexCount;
         public int MaterialIndex;
 
+        public float[] RawVertices;
+        public bool HasNormals;
+        public bool HasUV;
+
         public SubMeshResource(float[] vertices, int materialIndex = 0, bool hasUV = false, bool hasNormals = false)
         {
             MaterialIndex = materialIndex;
@@ -82,6 +86,10 @@ namespace OssianForge.Engine.Resources.Meshes
 
         protected void Init(float[] vertices, bool hasUV, bool hasNormals)
         {
+            RawVertices = vertices;
+            HasUV = hasUV;
+            HasNormals = hasNormals;
+
             int stride = 3;
             if (hasNormals) stride += 3;
             if (hasUV) stride += 2;

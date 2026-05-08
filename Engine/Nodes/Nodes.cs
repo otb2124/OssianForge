@@ -25,12 +25,13 @@ namespace OssianForge.Engine.Nodes
         }
         public void OnUpdate(double delta)
         { 
-            NodeManager.OnUpdate(delta);
+            NodeManager.UpdateNodes(delta);
         }
 
         public void OnRender(double delta)
         {
-            NodeManager.OnRender(delta);
+            NodeManager.RenderNodes(delta);
+            NodeManager.RenderDebugNodes(delta);
         }
     }
 }
