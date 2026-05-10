@@ -61,7 +61,7 @@ namespace OssianForge.Engine.Nodes
             var ball = new Node();
             ball.Id = "ball";
             ball.Name = "ball";
-            ball.AddProperty(new TransformProperty(new Transform(new Vector3(0, 30f, -7f), Vector3.Zero, new Vector3(0.5f, 0.5f, 0.5f))));
+            ball.AddProperty(new TransformProperty(new Transform(new Vector3(0, 32f, -7f), Vector3.Zero, new Vector3(0.5f, 0.5f, 0.5f))));
             ball.AddProperty(new MeshProperty("mesh.ball"));
             ball.AddProperty(new MaterialProperty("texture.house.wood", "shader.basic"));
             ball.AddProperty(new ColliderProperty("collider.ball"));
