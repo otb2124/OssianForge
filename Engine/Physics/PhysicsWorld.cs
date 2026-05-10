@@ -7,87 +7,38 @@ namespace OssianForge.Engine.Physics
     public class PhysicsWorld
     {
         public Vector3 Gravity = new Vector3(0, -9.81f, 0);
-
         private readonly List<PhysicsBody> _bodies = new();
 
+        // ----------------------------------------------------------------
+        // Registration
+        // ----------------------------------------------------------------
 
         public void RegisterAll()
         {
             var physicsNodes = Engine.Nodes.NodeManager.GetNodesWithProperty<PhysicalProperty>();
-
             _bodies.Clear();
-
             foreach (var node in physicsNodes)
-            {
                 Register(node);
-            }
-
         }
 
         public PhysicsBody Register(Node node)
         {
             if (node == null) return null;
-
             if (_bodies.Any(b => b.NodeId == node.Id))
                 return _bodies.First(b => b.NodeId == node.Id);
-
             var body = new PhysicsBody(node);
             _bodies.Add(body);
-
             return body;
         }
 
-        public void Unregister(Node node)
-        {
+        public void Unregister(Node node) =>
             _bodies.RemoveAll(b => b.NodeId == node.Id);
-        }
 
-        public void OnUpdate(double delta)
-        {
-            Step((float)delta);
-        }
+        // ----------------------------------------------------------------
+        // Per-frame step
+        // ----------------------------------------------------------------
 
-        public void SetGrounded(string nodeId, bool grounded, bool isOnStatic = false)
-        {
-            var body = _bodies.FirstOrDefault(b => b.NodeId == nodeId);
-            if (body == null) return;
-            body.IsGrounded = grounded;
-            // Only pin GroundedY when resting on static geometry
-            if (!isOnStatic) body.GroundedY = float.MinValue;
-        }
-
-        public void ResetGrounded()
-        {
-            foreach (var body in _bodies)
-            {
-                if (body.PhysicalProperty.IsStatic) continue;
-
-                // Only clear grounded if moving upward — still grounded if stationary or falling
-                if (body.PhysicalProperty.Velocity.Y > 0.1f)
-                {
-                    body.IsGrounded = false;
-                    body.GroundedY = float.MinValue;
-                }
-                else
-                {
-                    // Keep grounded state but let collision re-confirm it
-                    body.IsGrounded = false;
-                    // Keep GroundedY — the pin stays active even if collision doesn't fire this frame
-                }
-            }
-        }
-
-        public bool IsGrounded(string nodeId)
-        {
-            var body = _bodies.FirstOrDefault(b => b.NodeId == nodeId);
-            return body?.IsGrounded ?? false;
-        }
-
-        public void SetGroundedY(string nodeId, float y)
-        {
-            var body = _bodies.FirstOrDefault(b => b.NodeId == nodeId);
-            if (body != null) body.GroundedY = y;
-        }
+        public void OnUpdate(double delta) => Step((float)delta);
 
         public void Step(float delta)
         {
@@ -95,7 +46,6 @@ namespace OssianForge.Engine.Physics
             {
                 if (body.PhysicalProperty.IsStatic) continue;
 
-                // If we just bounced, the upward velocity should clear grounded immediately
                 if (body.PhysicalProperty.Velocity.Y > 0.1f)
                 {
                     body.IsGrounded = false;
@@ -105,8 +55,7 @@ namespace OssianForge.Engine.Physics
                 if (body.IsGrounded && body.GroundedY > float.MinValue)
                 {
                     body.PhysicalProperty.Velocity = new Vector3(
-                        body.PhysicalProperty.Velocity.X,
-                        0f,
+                        body.PhysicalProperty.Velocity.X, 0f,
                         body.PhysicalProperty.Velocity.Z);
                 }
                 else
@@ -125,7 +74,6 @@ namespace OssianForge.Engine.Physics
                     body.IsGrounded ? 0f : body.PhysicalProperty.Velocity.Y,
                     body.PhysicalProperty.Velocity.Z) * delta;
 
-                // Hard floor — never sink below last known ground contact
                 if (body.GroundedY > float.MinValue &&
                     body.TransformProperty.Transform.Position.Y < body.GroundedY)
                 {
@@ -139,46 +87,135 @@ namespace OssianForge.Engine.Physics
                             body.PhysicalProperty.Velocity.Z);
                 }
 
-                // Clear GroundedY if object moves significantly upward (jumped/launched)
                 if (body.PhysicalProperty.Velocity.Y > 0.5f)
                     body.GroundedY = float.MinValue;
             }
         }
 
-        public void ReflectVelocity(string nodeId, Vector3 pushNormal)
+        // ----------------------------------------------------------------
+        // Collision response — called by CollisionSystem
+        // ----------------------------------------------------------------
+
+        public void ResolveCollision(Node nodeA, Node nodeB, Vector3 push)
         {
-            var body = _bodies.FirstOrDefault(b => b.NodeId == nodeId);
+            var physA = nodeA.GetProperty<PhysicalProperty>();
+            var physB = nodeB.GetProperty<PhysicalProperty>();
+            bool staticA = physA?.IsStatic ?? true;
+            bool staticB = physB?.IsStatic ?? true;
+
+            if (staticA && staticB) return;
+            if (push == Vector3.Zero) return;
+
+            var tA = nodeA.GetProperty<TransformProperty>();
+            var tB = nodeB.GetProperty<TransformProperty>();
+
+            if (staticA)
+            {
+                tB.Transform.Position += push;
+                ReflectVelocity(nodeB.Id, push, againstStatic: true);
+                if (push.Y > 0)
+                {
+                    SetGrounded(nodeB.Id, true, isOnStatic: true);
+                    SetGroundedY(nodeB.Id, tB.Transform.Position.Y);
+                }
+            }
+            else if (staticB)
+            {
+                tA.Transform.Position -= push;
+                ReflectVelocity(nodeA.Id, -push, againstStatic: true);
+                if (push.Y < 0)
+                {
+                    SetGrounded(nodeA.Id, true, isOnStatic: true);
+                    SetGroundedY(nodeA.Id, tA.Transform.Position.Y);
+                }
+            }
+            else
+            {
+                tA.Transform.Position -= push * 0.5f;
+                tB.Transform.Position += push * 0.5f;
+                ReflectVelocity(nodeA.Id, -push, againstStatic: false);
+                ReflectVelocity(nodeB.Id, push, againstStatic: false);
+
+                if (push.Y > 0)
+                {
+                    SetGrounded(nodeB.Id, true, isOnStatic: false);
+                    SetGroundedY(nodeB.Id, tB.Transform.Position.Y);
+                }
+                if (push.Y < 0)
+                {
+                    SetGrounded(nodeA.Id, true, isOnStatic: false);
+                    SetGroundedY(nodeA.Id, tA.Transform.Position.Y);
+                }
+            }
+        }
+
+        // ----------------------------------------------------------------
+        // Grounded state
+        // ----------------------------------------------------------------
+
+        public void SetGrounded(string nodeId, bool grounded, bool isOnStatic = false)
+        {
+            var body = GetBody(nodeId);
+            if (body == null) return;
+            body.IsGrounded = grounded;
+            if (!isOnStatic) body.GroundedY = float.MinValue;
+        }
+
+        public void SetGroundedY(string nodeId, float y)
+        {
+            var body = GetBody(nodeId);
+            if (body != null) body.GroundedY = y;
+        }
+
+        public bool IsGrounded(string nodeId) =>
+            GetBody(nodeId)?.IsGrounded ?? false;
+
+        public void ResetGrounded()
+        {
+            foreach (var body in _bodies)
+            {
+                if (body.PhysicalProperty.IsStatic) continue;
+                body.IsGrounded = false;
+            }
+        }
+
+        // ----------------------------------------------------------------
+        // Velocity
+        // ----------------------------------------------------------------
+
+        public void ReflectVelocity(string nodeId, Vector3 pushNormal, bool againstStatic = false)
+        {
+            var body = GetBody(nodeId);
             if (body == null || pushNormal == Vector3.Zero) return;
 
             var normal = Vector3.Normalize(pushNormal);
             float relVel = Vector3.Dot(body.PhysicalProperty.Velocity, normal);
 
-            Console.WriteLine($"[ReflectVelocity] {nodeId} relVel={relVel:F3} bounciness={body.PhysicalProperty.Bounciness}");
-
             if (relVel >= 0) return;
 
-            const float restingThreshold = 0.5f;
-            if (MathF.Abs(relVel) < restingThreshold)
+            if (againstStatic && MathF.Abs(relVel) < 0.5f)
             {
-                Console.WriteLine($"[ReflectVelocity] {nodeId} resting contact, zeroing");
                 body.PhysicalProperty.Velocity -= normal * relVel;
                 return;
             }
 
-            float restitution = body.PhysicalProperty.Bounciness;
-            body.PhysicalProperty.Velocity -= normal * relVel * (1f + restitution);
-            Console.WriteLine($"[ReflectVelocity] {nodeId} bounced, new vel={body.PhysicalProperty.Velocity}");
+            body.PhysicalProperty.Velocity -= normal * relVel * (1f + body.PhysicalProperty.Bounciness);
         }
 
         public void ZeroDownwardVelocity(string nodeId)
         {
-            var body = _bodies.FirstOrDefault(b => b.NodeId == nodeId);
-            if (body == null) return;
-            if (body.PhysicalProperty.Velocity.Y < 0)
-                body.PhysicalProperty.Velocity = new Vector3(
-                    body.PhysicalProperty.Velocity.X,
-                    0,
-                    body.PhysicalProperty.Velocity.Z);
+            var body = GetBody(nodeId);
+            if (body == null || body.PhysicalProperty.Velocity.Y >= 0) return;
+            body.PhysicalProperty.Velocity = new Vector3(
+                body.PhysicalProperty.Velocity.X, 0,
+                body.PhysicalProperty.Velocity.Z);
         }
+
+        // ----------------------------------------------------------------
+        // Private
+        // ----------------------------------------------------------------
+
+        private PhysicsBody? GetBody(string nodeId) =>
+            _bodies.FirstOrDefault(b => b.NodeId == nodeId);
     }
 }
