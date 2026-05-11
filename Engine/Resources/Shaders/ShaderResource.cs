@@ -43,7 +43,9 @@ namespace OssianForge.Engine.Resources.Shaders
                 Engine.Graphics.Batch.OpenGL.DetachShader(Handle, sub.Handle);
         }
 
-        public void Apply() => Engine.Graphics.Batch.OpenGL.UseProgram(Handle);
+        public virtual void Apply(ApplyContext context) { }
+
+        public void Use() => Engine.Graphics.Batch.OpenGL.UseProgram(Handle);
 
         public void Dispose()
         {
@@ -64,6 +66,12 @@ namespace OssianForge.Engine.Resources.Shaders
 
         public void SetVector3(string name, Vector3 value)
             => Engine.Graphics.Batch.OpenGL.Uniform3(Engine.Graphics.Batch.OpenGL.GetUniformLocation(Handle, name), value.X, value.Y, value.Z);
+
+        public void SetVector3Indexed(string array, int i, string field, Vector3 v)
+             => SetVector3($"{array}[{i}].{field}", v);
+
+        public void SetFloatIndexed(string array, int i, string field, float v)
+            => SetFloat($"{array}[{i}].{field}", v);
     }
 
 
@@ -85,5 +93,26 @@ namespace OssianForge.Engine.Resources.Shaders
                 ?? throw new Exception($"ShaderFile not found: '{FileId}'");
             Handle = ShaderFile.Compiled;
         }
+    }
+
+
+    public struct ApplyContext
+    {
+        public Matrix4x4 Model;
+        public Matrix4x4 View;
+        public Matrix4x4 Projection;
+        public Matrix4x4 ViewNoTranslation;
+        public uint? DiffuseTextureSlot;
+        public uint? NormalTextureSlot;
+        public bool HasNormalTexture;
+        public List<LightData> Lights;  // replaces the four LightPos/Color/etc fields
+    }
+
+    public struct LightData
+    {
+        public Vector3 Position;
+        public Vector3 Color;
+        public float Intensity;
+        public float Radius;
     }
 }

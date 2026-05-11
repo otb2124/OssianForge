@@ -34,7 +34,7 @@ namespace OssianForge.Engine.Graphics.RenderTarget
         {
             var gl = Engine.Graphics.Batch.OpenGL;
 
-            ShaderResource.Apply();
+            ShaderResource.Use();
 
             gl.ActiveTexture(Silk.NET.OpenGL.TextureUnit.Texture0);
             gl.BindTexture(Silk.NET.OpenGL.TextureTarget.Texture2D, inputTexture);

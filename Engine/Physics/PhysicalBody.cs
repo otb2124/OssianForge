@@ -49,7 +49,7 @@ namespace OssianForge.Engine.Physics
                     var b = sourceMesh.Vertices[idx.IndexB];
                     var c = sourceMesh.Vertices[idx.IndexC];
 
-                    // Apply scale, then rotation, then position
+                    // Use scale, then rotation, then position
                     a = TransformJVertex(a, t);
                     b = TransformJVertex(b, t);
                     c = TransformJVertex(c, t);

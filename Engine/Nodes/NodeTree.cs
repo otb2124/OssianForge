@@ -1,10 +1,5 @@
 ﻿using OssianForge.Engine.Nodes.Props;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
 using static OssianForge.Engine.Utils.Math;
 
 namespace OssianForge.Engine.Nodes
@@ -24,7 +19,7 @@ namespace OssianForge.Engine.Nodes
             var sky = new Node();
             sky.Name = "Skybox";
             sky.AddProperty(new TransformProperty());
-            sky.AddProperty(new MeshProperty("mesh.cube"));
+            sky.AddProperty(new MeshProperty("mesh.ball"));
             sky.AddProperty(new MaterialProperty("texture.brick", "shader.skybox", true));
 
 
@@ -32,9 +27,16 @@ namespace OssianForge.Engine.Nodes
             var lightNode = new Node();
             lightNode.Name = "light";
             lightNode.AddProperty(new TransformProperty(new Transform(new Vector3(0f, 5f, 0f), Vector3.Zero, new Vector3(10, 10, 10))));
-            lightNode.AddProperty(EmissionProperty.White(intensity: 2.0f, radius: 30.0f));
+            lightNode.AddProperty(EmissionProperty.White(intensity: 1f, radius: 30.0f));
             lightNode.AddProperty(new MeshProperty("mesh.quad", true));
             lightNode.AddProperty(new MaterialProperty("texture.light", "shader.sprite"));
+
+            var lightNode1 = new Node();
+            lightNode1.Name = "light1";
+            lightNode1.AddProperty(new TransformProperty(new Transform(new Vector3(0f, 5f, -10f), Vector3.Zero, new Vector3(10, 10, 10))));
+            lightNode1.AddProperty(EmissionProperty.White(intensity: 1f, radius: 30.0f));
+            lightNode1.AddProperty(new MeshProperty("mesh.quad", true));
+            lightNode1.AddProperty(new MaterialProperty("texture.light", "shader.sprite"));
 
             //objects
             var house = new Node();
@@ -111,6 +113,7 @@ namespace OssianForge.Engine.Nodes
             scene.AddChild(house);
             scene.AddChild(plane);
             scene.AddChild(lightNode);
+            scene.AddChild(lightNode1);
             scene.AddChild(ball);
             scene.AddChild(cube);
             scene.AddChild(ball1);

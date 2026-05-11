@@ -67,9 +67,9 @@ namespace OssianForge.Engine.Resources
                 new MeshResource("mesh.quad", "fastmesh.quad"),
                 new MeshResource("mesh.ball", "fastmesh.ball"),
 
-                new ShaderResource("shader.basic", "shaderfile.basic.vert", "shaderfile.basic.frag"),
-                new ShaderResource("shader.skybox", "shaderfile.skybox.vert", "shaderfile.skybox.frag"),
-                new ShaderResource("shader.sprite", "shaderfile.sprite.vert", "shaderfile.sprite.frag"),
+                new BasicShaderResource("shader.basic", "shaderfile.basic.vert", "shaderfile.basic.frag"),
+                new SkyboxShaderResource("shader.skybox", "shaderfile.skybox.vert", "shaderfile.skybox.frag"),
+                new SpriteShaderResource("shader.sprite", "shaderfile.sprite.vert", "shaderfile.sprite.frag"),
                 new ShaderResource("shader.post", "shaderfile.post.vert", "shaderfile.post.frag"),
 
                 new TextureResource("texture.donut.icing", "texturefile.IcingBaseColor"),
