@@ -94,16 +94,28 @@ namespace OssianForge.Engine.Nodes
             cube1.AddProperty(new ColliderProperty("collider.cube"));
             cube1.AddProperty(new PhysicalProperty(false, true, 1f, 1f));
 
+            var houseBall1 = new Node();
+            houseBall1.Id = "houseBall1";
+            houseBall1.Name = "houseBall1";
+            houseBall1.AddProperty(new TransformProperty(new Transform(new Vector3(0, 20f, -5), Vector3.Zero, Vector3.One)));
+            houseBall1.AddProperty(new MeshProperty("mesh.house"));
+            houseBall1.AddProperty(new MaterialProperty("texture.house.barrel", "shader.basic"));
+            houseBall1.AddProperty(new MaterialProperty("texture.brick", "shader.basic"));
+            houseBall1.AddProperty(new MaterialProperty("texture.house.windows", "shader.basic"));
+            houseBall1.AddProperty(new MaterialProperty("texture.house.wood", "shader.basic"));
+            houseBall1.AddProperty(new ColliderProperty("collider.house"));
+            houseBall1.AddProperty(new PhysicalProperty(false, true, 1f, 1f));
+
 
             scene.AddChild(sky);
-            //scene.AddChild(house);
+            scene.AddChild(house);
             scene.AddChild(plane);
             scene.AddChild(lightNode);
             scene.AddChild(ball);
             scene.AddChild(cube);
             scene.AddChild(ball1);
             scene.AddChild(cube1);
-            //scene.AddChild(houseBall1);
+            scene.AddChild(houseBall1);
 
 
             tree.AddChild(scene);

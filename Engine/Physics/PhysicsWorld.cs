@@ -65,16 +65,6 @@ namespace OssianForge.Engine.Physics
                 body.SyncFromJitter();
         }
 
-        // Kept so CollisionSystem and any external callers still compile
-        public void ResolveCollision(Node nodeA, Node nodeB, Vector3 push) { }
-        public void ResetGrounded() { }
-
-        public bool IsGrounded(string nodeId)
-        {
-            var body = _bodies.FirstOrDefault(b => b.NodeId == nodeId);
-            if (body?.JitterBody == null) return false;
-            return MathF.Abs(body.JitterBody.Velocity.Y) < 0.1f;
-        }
 
         public PhysicsBody? GetBody(string nodeId) =>
             _bodies.FirstOrDefault(b => b.NodeId == nodeId);
