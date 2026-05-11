@@ -10,6 +10,8 @@ using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using OssianForge.Engine.Graphics.Batch;
+using Silk.NET.Input;
+using OssianForge.Engine.Graphics.Console;
 
 namespace OssianForge.Engine.Graphics
 {
@@ -45,6 +47,7 @@ namespace OssianForge.Engine.Graphics
             };
 
             Window = Silk.NET.Windowing.Window.Create(options);
+            ConsoleUtils.SetPosition(200, 800);
 
             Batch = new Batch.Batch();
 

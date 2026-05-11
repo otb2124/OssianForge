@@ -21,6 +21,7 @@ namespace OssianForge.Engine.Inputs
             var input = Engine.Graphics.Window.CreateInput();
             keyboard.Initialize(input.Keyboards[0]);
             mouse.Initialize(input.Mice[0]);
+            mouse.SetCursorMode(CursorMode.Disabled);
         }
 
         public void OnUpdate(double delta)

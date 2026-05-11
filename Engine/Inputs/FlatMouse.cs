@@ -57,5 +57,13 @@ namespace OssianForge.Engine.Inputs
                 .Where(IsMouseButtonDown)
                 .ToList();
         }
+
+        public void SetCursorMode(CursorMode mode)
+        {
+            if (_mouse?.Cursor != null && _mouse.Cursor.IsSupported(mode))
+            {
+                _mouse.Cursor.CursorMode = mode;
+            }
+        }
     }
 }
