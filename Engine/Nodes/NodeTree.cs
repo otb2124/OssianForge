@@ -70,7 +70,7 @@ namespace OssianForge.Engine.Nodes
             var cube = new Node();
             cube.Id = "cube";
             cube.Name = "cube";
-            cube.AddProperty(new TransformProperty(new Transform(new Vector3(0.5f, 30f, -7f), Vector3.Zero, new Vector3(0.5f, 0.5f, 0.5f))));
+            cube.AddProperty(new TransformProperty(new Transform(new Vector3(0.5f, 30f, -7f), Vector3.Zero, new Vector3(1f, 0.5f, 0.5f))));
             cube.AddProperty(new MeshProperty("mesh.cube"));
             cube.AddProperty(new MaterialProperty("texture.house.wood", "shader.basic"));
             cube.AddProperty(new ColliderProperty("collider.cube"));
@@ -88,7 +88,7 @@ namespace OssianForge.Engine.Nodes
             var cube1 = new Node();
             cube1.Id = "cube1";
             cube1.Name = "cube1";
-            cube1.AddProperty(new TransformProperty(new Transform(new Vector3(0, 41f, -7f), Vector3.Zero, new Vector3(0.5f, 0.5f, 0.5f))));
+            cube1.AddProperty(new TransformProperty(new Transform(new Vector3(0, 41f, -7f), new Vector3(10, 0, 0), new Vector3(0.5f, 2f, 0.5f))));
             cube1.AddProperty(new MeshProperty("mesh.cube"));
             cube1.AddProperty(new MaterialProperty("texture.house.wood", "shader.basic"));
             cube1.AddProperty(new ColliderProperty("collider.cube"));

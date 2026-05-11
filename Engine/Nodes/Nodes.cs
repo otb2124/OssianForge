@@ -30,8 +30,7 @@ namespace OssianForge.Engine.Nodes
 
         public void OnRender(double delta)
         {
-            NodeManager.RenderNodes(delta);
-            NodeManager.RenderDebugNodes(delta);
+            NodeManager.RenderNodes(delta); 
         }
     }
 }

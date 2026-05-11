@@ -1,17 +1,15 @@
-﻿using OssianForge.Engine.Resources.Meshes;
-using System.Numerics;
+﻿using Jitter2.Collision.Shapes;
+using Jitter2.LinearMath;
+using OssianForge.Engine.Resources.Meshes;
 
 namespace OssianForge.Engine.Resources.Colliders
 {
-    /// <summary>
-    /// Created with a MeshResource reference.
-    /// Call Load() once — bakes all SubMeshColliders from the mesh data.
-    /// </summary>
     public class ColliderResource : Resource, IDisposable
     {
-        public List<SubCollider> SubColliders = new();
-
         public string MeshResourceId;
+        public TriangleMesh? TriangleMesh;
+        public List<JVector> Points = new();
+
         private MeshResource _source;
 
         public ColliderResource(string id, string meshResourceId)
@@ -22,19 +20,35 @@ namespace OssianForge.Engine.Resources.Colliders
 
         public override void Load()
         {
-            SubColliders.Clear();
+            Points.Clear();
 
             _source = Engine.Resources.GetResource(MeshResourceId) as MeshResource;
 
-            // Mirror the submesh layout exactly
+            var triangles = new List<JTriangle>();
+
             foreach (var sub in _source.SubMeshes)
             {
-                var col = new SubCollider();
-                col.Bake(sub.RawVertices, sub.HasNormals, sub.HasUV);
-                SubColliders.Add(col);
+                int stride = 3;
+                if (sub.HasNormals) stride += 3;
+                if (sub.HasUV) stride += 2;
+
+                var v = sub.RawVertices;
+                for (int i = 0; i + stride * 3 <= v.Length; i += stride * 3)
+                {
+                    var a = new JVector(v[i], v[i + 1], v[i + 2]);
+                    var b = new JVector(v[i + stride], v[i + stride + 1], v[i + stride + 2]);
+                    var c = new JVector(v[i + stride * 2], v[i + stride * 2 + 1], v[i + stride * 2 + 2]);
+
+                    triangles.Add(new JTriangle(a, b, c));
+                    Points.Add(a);
+                    Points.Add(b);
+                    Points.Add(c);
+                }
             }
+
+            TriangleMesh = new TriangleMesh(triangles, ignoreDegenerated: true);
         }
 
-        public void Dispose() { /* no GPU resources */ }
+        public void Dispose() { }
     }
 }

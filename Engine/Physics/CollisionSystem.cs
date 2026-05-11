@@ -1,6 +1,5 @@
 ﻿using OssianForge.Engine.Nodes;
 using OssianForge.Engine.Nodes.Props;
-using System.Numerics;
 
 namespace OssianForge.Engine.Physics
 {
@@ -8,31 +7,36 @@ namespace OssianForge.Engine.Physics
     {
         public void OnUpdate(double delta)
         {
-            var collidableNodes = Engine.Nodes.NodeManager
+            var nodes = Engine.Nodes.NodeManager
                 .GetNodesWithProperties(typeof(TransformProperty), typeof(ColliderProperty));
-            Process(collidableNodes);
+            CheckTriggers(nodes);
         }
 
-        public void Process(List<Node> collidableNodes)
+        private void CheckTriggers(List<Node> nodes)
         {
-            for (int i = 0; i < collidableNodes.Count; i++)
-                for (int j = i + 1; j < collidableNodes.Count; j++)
+            for (int i = 0; i < nodes.Count; i++)
+                for (int j = i + 1; j < nodes.Count; j++)
                 {
-                    var nodeA = collidableNodes[i];
-                    var nodeB = collidableNodes[j];
+                    var colA = nodes[i].GetProperty<ColliderProperty>();
+                    var colB = nodes[j].GetProperty<ColliderProperty>();
+                    if (colA == null || colB == null) continue;
+                    if (!colA.IsTrigger && !colB.IsTrigger) continue;
 
-                    var colA = nodeA.GetProperty<ColliderProperty>();
-                    var colB = nodeB.GetProperty<ColliderProperty>();
-                    var tA = nodeA.GetProperty<TransformProperty>();
-                    var tB = nodeB.GetProperty<TransformProperty>();
+                    var bodyA = Engine.Physics.PhysicsWorld.GetBody(nodes[i].Id);
+                    var bodyB = Engine.Physics.PhysicsWorld.GetBody(nodes[j].Id);
+                    if (bodyA == null || bodyB == null) continue;
 
-                    if (colA == null || colB == null || tA == null || tB == null) continue;
-                    if (!colA.Intersects(colB, tA, tB)) continue;
-                    if (colA.IsTrigger || colB.IsTrigger) continue;
+                    // Both static (NullBody) — skip, triggers need at least one dynamic
+                    if (bodyA.JitterBody == null && bodyB.JitterBody == null) continue;
 
-                    var push = colA.ResolveOverlap(colB, tA, tB);
+                    var posA = bodyA.JitterBody?.Position ?? default;
+                    var posB = bodyB.JitterBody?.Position ?? default;
 
-                    Engine.Physics.PhysicsWorld.ResolveCollision(nodeA, nodeB, push);
+                    if ((posA - posB).Length() < 2f)
+                    {
+                        colA.OnCollision?.Invoke(nodes[j]);
+                        colB.OnCollision?.Invoke(nodes[i]);
+                    }
                 }
         }
     }

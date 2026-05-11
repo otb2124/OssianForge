@@ -1,27 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Jitter2;
 
 namespace OssianForge.Engine.Physics
 {
     public class Physics
     {
-
         public PhysicsWorld PhysicsWorld;
         public CollisionSystem CollisionSystem;
 
-        public Physics() 
+        public Physics()
         {
             PhysicsWorld = new PhysicsWorld();
             CollisionSystem = new CollisionSystem();
-        }
-
-
-        public void Initialize()
-        {
-
         }
 
         public void OnLoad()
@@ -29,17 +18,12 @@ namespace OssianForge.Engine.Physics
             PhysicsWorld.RegisterAll();
         }
 
-
         public void OnUpdate(double delta)
         {
-            const int iterations = 4;
-
-            PhysicsWorld.ResetGrounded();
-
-            for (int i = 0; i < iterations; i++)
-                CollisionSystem.OnUpdate(delta);
-
+            // Jitter steps first — it integrates, detects, and resolves all at once
             PhysicsWorld.OnUpdate(delta);
+            // Trigger-only check on top
+            CollisionSystem.OnUpdate(delta);
         }
     }
 }

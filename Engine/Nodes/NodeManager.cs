@@ -49,25 +49,6 @@ namespace OssianForge.Engine.Nodes
             }
         }
 
-        public void RenderDebugNodes(double delta)
-        {
-            Engine.Graphics.DebugRenderer.BeginFrame();
-            foreach (var node in Engine.Nodes.NodeManager.Nodes)
-                CollectDebug(node);
-            Engine.Graphics.DebugRenderer.EndFrame();
-        }
-
-        private void CollectDebug(Node node)
-        {
-            var col = node.GetProperty<ColliderProperty>();
-            var t = node.GetProperty<TransformProperty>();
-            if (col != null && t != null)
-                Engine.Graphics.DebugRenderer.DrawCollider(col, t);
-            foreach (var child in node.Children)
-                CollectDebug(child);
-        }
-
-
         public void AddNode(Node node)
         {
             Nodes.Add(node);

@@ -9,6 +9,7 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using OssianForge.Engine.Graphics.Batch;
 
 namespace OssianForge.Engine.Graphics
 {
@@ -17,7 +18,6 @@ namespace OssianForge.Engine.Graphics
         public IWindow Window;
 
         public Batch.Batch Batch;
-        public Batch.DebugRenderer DebugRenderer;
 
         public double CurrentDelta;
         public Vector2D<int> WindowSize;
@@ -47,7 +47,6 @@ namespace OssianForge.Engine.Graphics
             Window = Silk.NET.Windowing.Window.Create(options);
 
             Batch = new Batch.Batch();
-            DebugRenderer = new Batch.DebugRenderer();
 
             Camera = new Camera.Camera
             {
@@ -59,9 +58,6 @@ namespace OssianForge.Engine.Graphics
         public void InitializeBatch()
         {
             Batch.Init();
-            DebugRenderer.Init();
-
-            DebugRenderer.Enabled = true;
         }
 
 

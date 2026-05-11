@@ -35,7 +35,6 @@ namespace OssianForge.Engine
             Resources.Initialize();
             Nodes.Initialize();
             Inputs.Initialize();
-            Physics.Initialize();
         }
 
         public static void OnRun()

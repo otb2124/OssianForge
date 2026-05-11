@@ -9,6 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Jitter2" Version="2.8.5" />
     <PackageReference Include="Silk.NET.Assimp" Version="2.23.0" />
     <PackageReference Include="Silk.NET.Input" Version="2.23.0" />
     <PackageReference Include="Silk.NET.Maths" Version="2.23.0" />
@@ -40,6 +41,12 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Content\ShaderFiles\Basic.vert">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Content\ShaderFiles\debugline.frag">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Content\ShaderFiles\debugline.vert">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Content\ShaderFiles\post.frag">
