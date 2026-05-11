@@ -52,6 +52,20 @@ namespace OssianForge.Engine.Resources
                 { "texturefile.brick.n",  "TextureFiles/brick_n.jpg" },
                 { "texturefile.light",  "TextureFiles/point_light_sprite.png" },
                 { "texturefile.dices",  "TextureFiles/dices.png" },
+
+                { "texturefile.cubemap.skybox.sea.right", "TextureFiles/panoramic-sea-right.png" },
+                { "texturefile.cubemap.skybox.sea.left", "TextureFiles/panoramic-sea-left.png" },
+                { "texturefile.cubemap.skybox.sea.top", "TextureFiles/panoramic-sea-top.png" },
+                { "texturefile.cubemap.skybox.sea.bottom", "TextureFiles/panoramic-sea-bottom.png" },
+                { "texturefile.cubemap.skybox.sea.front", "TextureFiles/panoramic-sea-front.png" },
+                { "texturefile.cubemap.skybox.sea.back", "TextureFiles/panoramic-sea-back.png" },
+
+                { "texturefile.cubemap.skybox.sky.right", "TextureFiles/panoramic-sky-right.png" },
+                { "texturefile.cubemap.skybox.sky.left", "TextureFiles/panoramic-sky-left.png" },
+                { "texturefile.cubemap.skybox.sky.top", "TextureFiles/panoramic-sky-top.png" },
+                { "texturefile.cubemap.skybox.sky.bottom", "TextureFiles/panoramic-sky-bottom.png" },
+                { "texturefile.cubemap.skybox.sky.front", "TextureFiles/panoramic-sky-front.png" },
+                { "texturefile.cubemap.skybox.sky.back", "TextureFiles/panoramic-sky-back.png" }
             };
 
 
@@ -80,6 +94,21 @@ namespace OssianForge.Engine.Resources
                 new TextureResource("texture.house.wood", "texturefile.house.wood"),
                 new TextureResource("texture.light", "texturefile.light"),
                 new TextureResource("texture.dices", "texturefile.dices"),
+                new TextureResource("texture.cubemap.skybox.sea.right", "texturefile.cubemap.skybox.sea.right"),
+                new TextureResource("texture.cubemap.skybox.sea.left", "texturefile.cubemap.skybox.sea.left"),
+                new TextureResource("texture.cubemap.skybox.sea.top", "texturefile.cubemap.skybox.sea.top"),
+                new TextureResource("texture.cubemap.skybox.sea.bottom", "texturefile.cubemap.skybox.sea.bottom"),
+                new TextureResource("texture.cubemap.skybox.sea.front", "texturefile.cubemap.skybox.sea.front"),
+                new TextureResource("texture.cubemap.skybox.sea.back", "texturefile.cubemap.skybox.sea.back"),
+                new TextureResource("texture.cubemap.skybox.sky.right", "texturefile.cubemap.skybox.sky.right"),
+                new TextureResource("texture.cubemap.skybox.sky.left", "texturefile.cubemap.skybox.sky.left"),
+                new TextureResource("texture.cubemap.skybox.sky.top", "texturefile.cubemap.skybox.sky.top"),
+                new TextureResource("texture.cubemap.skybox.sky.bottom", "texturefile.cubemap.skybox.sky.bottom"),
+                new TextureResource("texture.cubemap.skybox.sky.front", "texturefile.cubemap.skybox.sky.front"),
+                new TextureResource("texture.cubemap.skybox.sky.back", "texturefile.cubemap.skybox.sky.back"),
+
+                new CubemapTextureResource("cubemap.skybox.sea", "texture.cubemap.skybox.sea.right", "texture.cubemap.skybox.sea.left", "texture.cubemap.skybox.sea.top", "texture.cubemap.skybox.sea.bottom", "texture.cubemap.skybox.sea.front", "texture.cubemap.skybox.sea.back"),
+                new CubemapTextureResource("cubemap.skybox.sky", "texture.cubemap.skybox.sky.right", "texture.cubemap.skybox.sky.left", "texture.cubemap.skybox.sky.top", "texture.cubemap.skybox.sky.bottom", "texture.cubemap.skybox.sky.front", "texture.cubemap.skybox.sky.back"),
 
                 new ColliderResource("collider.house", "mesh.house"),
                 new ColliderResource("collider.ball", "mesh.ball"),

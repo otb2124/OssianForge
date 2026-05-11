@@ -106,6 +106,7 @@ namespace OssianForge.Engine.Resources.Shaders
         public uint? NormalTextureSlot;
         public bool HasNormalTexture;
         public List<LightData> Lights;  // replaces the four LightPos/Color/etc fields
+        public uint? SkyboxTextureSlot;
     }
 
     public struct LightData

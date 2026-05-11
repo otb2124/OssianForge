@@ -39,17 +39,6 @@ namespace OssianForge.Engine.Graphics.Batch
             OpenGL.ClearColor(1.0f, 0.0f, 1.0f, 1.0f);
         }
 
-        public void BeginCull()
-        {
-            OpenGL.DepthFunc(DepthFunction.Lequal);
-            OpenGL.DepthMask(false);
-        }
-
-        public void EndCull()
-        {
-            OpenGL.DepthMask(true);
-            OpenGL.DepthFunc(DepthFunction.Less);
-        }
 
         public void BeginBillbord()
         {
@@ -79,9 +68,7 @@ namespace OssianForge.Engine.Graphics.Batch
                     int matIndex = subMesh.MaterialIndex - minMatIndex;
                     if (matIndex < 0 || matIndex >= materials.Count) continue;
 
-                    if (materials[matIndex].IsCull)
-                        DrawCull(subMesh, materials[matIndex], transform);
-                    else if (mesh.IsBillboard)
+                    if (mesh.IsBillboard)
                         DrawBillbord(subMesh, materials[matIndex], transform);
                     else
                         DrawSubMesh(subMesh, materials[matIndex], transform.Transform.ToMatrix());
@@ -89,19 +76,10 @@ namespace OssianForge.Engine.Graphics.Batch
             }
         }
 
-        public void DrawCull(SubMeshResource subMesh, MaterialProperty material, TransformProperty transform)
-        {
-            BeginCull();
-            DrawSubMesh(subMesh, material, transform.Transform.ToMatrix());
-            EndCull();
-        }
-
         public void DrawBillbord(SubMeshResource subMesh, MaterialProperty material, TransformProperty transform)
         {
             BeginBillbord();
             DrawSubMesh(subMesh, material, Engine.Graphics.Camera.GetBillboardMatrix(transform.Transform));
-            material.ShaderResource.SetVector3("uColor", new Vector3(1f, 1f, 1f));
-            material.ShaderResource.SetFloat("uAlpha", 1f);
             EndBillbord();
         }
 
@@ -109,6 +87,7 @@ namespace OssianForge.Engine.Graphics.Batch
         {
             material.Apply(matrix);
             subMesh.Draw();
+            material.PostApply();
         }
 
         public void Clear()
