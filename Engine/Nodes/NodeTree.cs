@@ -19,7 +19,7 @@ namespace OssianForge.Engine.Nodes
             var sky = new Node();
             sky.Name = "Skybox";
             sky.AddProperty(new TransformProperty());
-            sky.AddProperty(new MeshProperty("mesh.ball"));
+            sky.AddProperty(new MeshProperty("mesh.cube"));
             sky.AddProperty(new CubemapMaterialProperty("cubemap.skybox.sky", "shader.skybox"));
 
 
