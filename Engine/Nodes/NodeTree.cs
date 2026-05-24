@@ -15,7 +15,6 @@ namespace OssianForge.Engine.Nodes
             var scene = new Node();
             scene.Name = "scene";
 
-
             var camera = new Node();
             camera.Id = "camera";
             camera.Name = "Camera";

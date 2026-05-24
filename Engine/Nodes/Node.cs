@@ -60,6 +60,17 @@ namespace OssianForge.Engine.Nodes
         public List<T> GetChildren<T>() where T : Node
             => Children.OfType<T>().ToList();
 
+
+
+
+
+
+
+
+
+
+
+
         public virtual void OnUpdate(double delta)
         {
             foreach (var child in Children)
@@ -75,6 +86,13 @@ namespace OssianForge.Engine.Nodes
             if (camera != null)
                 camera.Camera.OnUpdate(delta);
         }
+
+
+
+
+
+
+
 
         public virtual void OnRender(double delta)
         {
