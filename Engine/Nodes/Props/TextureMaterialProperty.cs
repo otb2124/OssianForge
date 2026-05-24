@@ -44,7 +44,7 @@ namespace OssianForge.Engine.Nodes.Props
             {
                 Model = transform,
                 View = view,
-                Projection = Engine.Graphics.Camera.GetProjection(),
+                Projection = Engine.Graphics.GetCurrentCamera().GetProjection(),
                 ViewNoTranslation = viewNoTranslation,
                 DiffuseTextureSlot = diffuseSlot,
                 NormalTextureSlot = normalSlot,

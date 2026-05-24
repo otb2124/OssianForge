@@ -38,14 +38,14 @@ namespace OssianForge.Engine.Nodes
         public void UpdateNodes(double delta)
         {
             foreach (var node in Nodes)
-                node.OnUpdate();
+                node.OnUpdate(delta);
         }
 
         public void RenderNodes(double delta)
         {
             foreach (var node in Nodes)
             {
-                node.OnRender();
+                node.OnRender(delta);
             }
         }
 

@@ -22,16 +22,9 @@ namespace OssianForge.Engine.Graphics.Camera
         private const float MinFov = 10f;
         private const float MaxFov = 120f;
 
-        // Forward direction derived from yaw/pitch
-        private Vector3 GetForward()
+        public Camera()
         {
-            float yawRad = float.DegreesToRadians(_yaw);
-            float pitchRad = float.DegreesToRadians(_pitch);
-            return Vector3.Normalize(new Vector3(
-                MathF.Cos(pitchRad) * MathF.Cos(yawRad),
-                MathF.Sin(pitchRad),
-                MathF.Cos(pitchRad) * MathF.Sin(yawRad)
-            ));
+            AspectRatio = (float)Engine.Graphics.WindowSize.X / Engine.Graphics.WindowSize.Y;
         }
 
         public void OnUpdate(double delta)
@@ -122,6 +115,18 @@ namespace OssianForge.Engine.Graphics.Camera
                 Matrix4x4.CreateTranslation(transform.Position);
 
             return model;
+        }
+
+        // Forward direction derived from yaw/pitch
+        private Vector3 GetForward()
+        {
+            float yawRad = float.DegreesToRadians(_yaw);
+            float pitchRad = float.DegreesToRadians(_pitch);
+            return Vector3.Normalize(new Vector3(
+                MathF.Cos(pitchRad) * MathF.Cos(yawRad),
+                MathF.Sin(pitchRad),
+                MathF.Cos(pitchRad) * MathF.Sin(yawRad)
+            ));
         }
     }
 }

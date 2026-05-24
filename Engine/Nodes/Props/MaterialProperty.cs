@@ -23,7 +23,7 @@ namespace OssianForge.Engine.Nodes.Props
 
         protected (Matrix4x4 view, Matrix4x4 viewNoTranslation) GetViewMatrices()
         {
-            var view = Engine.Graphics.Camera.GetView();
+            var view = Engine.Graphics.GetCurrentCamera().GetView();
             var viewNoTranslation = new Matrix4x4(
                 view.M11, view.M12, view.M13, 0,
                 view.M21, view.M22, view.M23, 0,

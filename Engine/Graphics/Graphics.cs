@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using OssianForge.Engine.Graphics.Batch;
 using Silk.NET.Input;
 using OssianForge.Engine.Graphics.Console;
+using OssianForge.Engine.Nodes.Props;
 
 namespace OssianForge.Engine.Graphics
 {
@@ -26,7 +27,7 @@ namespace OssianForge.Engine.Graphics
         public string WindowTitle;
         public Vector2D<int> Resolution;
 
-        public Camera.Camera Camera;
+        public string CurrentCameraNode;
 
         public PostProcessStack PostProcess;
         
@@ -50,12 +51,6 @@ namespace OssianForge.Engine.Graphics
             ConsoleUtils.SetPosition(200, 800);
 
             Batch = new Batch.Batch();
-
-            Camera = new Camera.Camera
-            {
-                Position = new Vector3(0, 1.5f, 3f),  // slightly above
-                AspectRatio = (float)WindowSize.X / WindowSize.Y
-            };
         }
 
         public void InitializeBatch()
@@ -73,12 +68,6 @@ namespace OssianForge.Engine.Graphics
         }
 
 
-        public void OnUpdate(double delta)
-        {
-            Camera.OnUpdate(delta);
-        }
-
-
         public void OnRender(double delta)
         {
             CurrentDelta = delta;
@@ -93,6 +82,25 @@ namespace OssianForge.Engine.Graphics
         {
             Batch.OnResize(size);
             PostProcess.Resize(size.X, size.Y);
+        }
+
+        public Camera.Camera GetCurrentCamera()
+        {
+            var cameraNode = Engine.Nodes.NodeManager.GetNodeWithProperty<CameraProperty>();
+
+            if (cameraNode == null)
+                return null;
+
+            if(cameraNode.Id == CurrentCameraNode)
+            {
+                return cameraNode.GetProperty<CameraProperty>().Camera;
+            }
+            else
+            {
+                CurrentCameraNode = cameraNode.Id;
+                return cameraNode.GetProperty<CameraProperty>().Camera;
+            }
+
         }
     }
 }

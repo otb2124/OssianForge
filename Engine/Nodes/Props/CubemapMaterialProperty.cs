@@ -34,7 +34,7 @@ namespace OssianForge.Engine.Nodes.Props
             ShaderResource.Apply(new ApplyContext
             {
                 ViewNoTranslation = viewNoTranslation,
-                Projection = Engine.Graphics.Camera.GetProjection(),
+                Projection = Engine.Graphics.GetCurrentCamera().GetProjection(),
                 SkyboxTextureSlot = 0,
             });
         }

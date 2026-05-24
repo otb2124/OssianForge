@@ -60,28 +60,31 @@ namespace OssianForge.Engine.Nodes
         public List<T> GetChildren<T>() where T : Node
             => Children.OfType<T>().ToList();
 
-        public virtual void OnUpdate()
+        public virtual void OnUpdate(double delta)
         {
             foreach (var child in Children)
-                child.OnUpdate();
+                child.OnUpdate(delta);
 
-            ProcessPropUpdate();
+            ProcessPropUpdate(delta);
         }
 
-        public virtual void ProcessPropUpdate()
+        public virtual void ProcessPropUpdate(double delta)
         {
+            var camera = GetProperty<CameraProperty>();
 
+            if (camera != null)
+                camera.Camera.OnUpdate(delta);
         }
 
-        public virtual void OnRender()
+        public virtual void OnRender(double delta)
         {
             foreach (var child in Children)
-                child.OnRender();
+                child.OnRender(delta);
 
-            ProcessPropRender();
+            ProcessPropRender(delta);
         }
 
-        public virtual void ProcessPropRender()
+        public virtual void ProcessPropRender(double delta)
         {
             var transform = GetProperty<TransformProperty>();
             var mesh = GetProperty<MeshProperty>();

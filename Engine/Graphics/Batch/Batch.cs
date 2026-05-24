@@ -79,7 +79,7 @@ namespace OssianForge.Engine.Graphics.Batch
         public void DrawBillbord(SubMeshResource subMesh, MaterialProperty material, TransformProperty transform)
         {
             BeginBillbord();
-            DrawSubMesh(subMesh, material, Engine.Graphics.Camera.GetBillboardMatrix(transform.Transform));
+            DrawSubMesh(subMesh, material, Engine.Graphics.GetCurrentCamera().GetBillboardMatrix(transform.Transform));
             EndBillbord();
         }
 

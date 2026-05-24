@@ -15,6 +15,12 @@ namespace OssianForge.Engine.Nodes
             var scene = new Node();
             scene.Name = "scene";
 
+
+            var camera = new Node();
+            camera.Id = "camera";
+            camera.Name = "Camera";
+            camera.AddProperty(new CameraProperty());
+
             //skybox
             var sky = new Node();
             sky.Name = "Skybox";
@@ -107,7 +113,7 @@ namespace OssianForge.Engine.Nodes
             houseBall1.AddProperty(new ColliderProperty("collider.house"));
             houseBall1.AddProperty(new PhysicalProperty(false, true, 1f, 1f));
 
-
+            scene.AddChild(camera);
             scene.AddChild(sky);
             scene.AddChild(house);
             scene.AddChild(plane);

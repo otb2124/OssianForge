@@ -66,7 +66,6 @@ namespace OssianForge.Engine
         {
             Nodes.OnUpdate(delta);
             Inputs.OnUpdate(delta);
-            Graphics.OnUpdate(delta);
             Physics.OnUpdate(delta);
         }
 
