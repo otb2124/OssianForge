@@ -81,10 +81,10 @@ namespace OssianForge.Engine.Nodes
 
         public virtual void ProcessPropUpdate(double delta)
         {
-            var camera = GetProperty<CameraProperty>();
-
-            if (camera != null)
-                camera.Camera.OnUpdate(delta);
+            foreach (var property in Properties)
+            {
+                property.OnUpdate(this, delta);
+            }
         }
 
 
@@ -104,12 +104,10 @@ namespace OssianForge.Engine.Nodes
 
         public virtual void ProcessPropRender(double delta)
         {
-            var transform = GetProperty<TransformProperty>();
-            var mesh = GetProperty<MeshProperty>();
-            var materials = GetProperties<MaterialProperty>();
-
-            if (transform != null && mesh != null && materials.Count > 0)
-                Engine.Graphics.Batch.DrawMesh(mesh, materials, transform);
+            foreach (var property in Properties)
+            {
+                property.OnRender(this, delta);
+            }
         }
     }
 }

@@ -15,5 +15,10 @@ namespace OssianForge.Engine.Nodes.Props
         {
             Camera = new Camera();
         }
+
+        public override void OnUpdate(Node node, double delta)
+        {
+            Camera.OnUpdate(delta);
+        }
     }
 }

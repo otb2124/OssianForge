@@ -19,7 +19,6 @@ namespace OssianForge.Engine.Resources.Scripts
             var scriptFile = Engine.Resources.GetResourceFile(_scriptFileId) as ScriptFile
                 ?? throw new Exception($"ScriptFile not found: '{_scriptFileId}'");
 
-            // find the single public type in the compiled assembly
             var types = scriptFile.CompiledAssembly.GetExportedTypes();
 
             ScriptType = types.Length == 1
@@ -29,15 +28,23 @@ namespace OssianForge.Engine.Resources.Scripts
                                          $"Found: {string.Join(", ", types.Select(t => t.Name))}");
         }
 
-        // "scriptfile.idleState" → "IdleState"
         private static string DeriveName(string scriptFileId)
         {
             var part = scriptFileId.Split('.')[^1];
             return char.ToUpper(part[0]) + part.Substring(1);
         }
 
-        public T CreateInstance<T>(params object[] args) where T : class
-            => Activator.CreateInstance(ScriptType, args) as T
-               ?? throw new Exception($"Failed to create instance of '{ScriptType.Name}'");
+        public T CreateInstance<T>(string typeName, params object[] args) where T : class
+        {
+            var scriptFile = Engine.Resources.GetResourceFile(_scriptFileId) as ScriptFile
+                ?? throw new Exception($"ScriptFile not found: '{_scriptFileId}'");
+
+            var type = scriptFile.CompiledAssembly.GetExportedTypes()
+                .FirstOrDefault(t => t.Name == typeName)
+                ?? throw new Exception($"Type '{typeName}' not found in script '{_scriptFileId}'");
+
+            return Activator.CreateInstance(type, args) as T
+                ?? throw new Exception($"Failed to create instance of '{typeName}'");
+        }
     }
 }

@@ -33,6 +33,16 @@ namespace OssianForge.Engine.Nodes.Props
         {
             MeshResource?.Dispose();
         }
+
+        public override void OnRender(Node node, double delta)
+        {
+            var transform = node.GetProperty<TransformProperty>();
+            var mesh = node.GetProperty<MeshProperty>();
+            var materials = node.GetProperties<MaterialProperty>();
+
+            if (transform != null && mesh != null && materials.Count > 0)
+                Engine.Graphics.Batch.DrawMesh(mesh, materials, transform);
+        }
     }
 
 

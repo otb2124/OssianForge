@@ -1,4 +1,5 @@
 ﻿using OssianForge.Engine.Nodes.Props;
+using OssianForge.Engine.Resources.Scripts;
 using System.Numerics;
 using static OssianForge.Engine.Utils.Math;
 
@@ -35,6 +36,7 @@ namespace OssianForge.Engine.Nodes
             lightNode.AddProperty(EmissionProperty.White(intensity: 1f, radius: 30.0f));
             lightNode.AddProperty(new MeshProperty("mesh.quad", true));
             lightNode.AddProperty(new TextureMaterialProperty("texture.light", "shader.sprite"));
+            lightNode.AddProperty((Engine.Resources.GetResource("script.MyCustomProperty") as ScriptResource).CreateInstance<NodeProperty>("MyCustomProperty"));
 
             var lightNode1 = new Node();
             lightNode1.Name = "light1";
