@@ -1,5 +1,6 @@
 ﻿using OssianForge.Engine.Resources.Colliders;
 using OssianForge.Engine.Resources.Meshes;
+using OssianForge.Engine.Resources.Scripts;
 using OssianForge.Engine.Resources.Shaders;
 using OssianForge.Engine.Resources.Textures;
 using System;
@@ -65,7 +66,9 @@ namespace OssianForge.Engine.Resources
                 { "texturefile.cubemap.skybox.sky.top", "TextureFiles/panoramic-sky-top.png" },
                 { "texturefile.cubemap.skybox.sky.bottom", "TextureFiles/panoramic-sky-bottom.png" },
                 { "texturefile.cubemap.skybox.sky.front", "TextureFiles/panoramic-sky-front.png" },
-                { "texturefile.cubemap.skybox.sky.back", "TextureFiles/panoramic-sky-back.png" }
+                { "texturefile.cubemap.skybox.sky.back", "TextureFiles/panoramic-sky-back.png" },
+
+                { "scriptfile.MyCustomProperty", "ScriptFiles/MyCustomProperty.cs" }
             };
 
 
@@ -113,7 +116,9 @@ namespace OssianForge.Engine.Resources
                 new ColliderResource("collider.house", "mesh.house"),
                 new ColliderResource("collider.ball", "mesh.ball"),
                 new ColliderResource("collider.plane", "mesh.plane"),
-                new ColliderResource("collider.cube", "mesh.cube")
+                new ColliderResource("collider.cube", "mesh.cube"),
+
+                new ScriptResource("script.MyCustomProperty", "scriptfile.MyCustomProperty")
             };
 
 
@@ -127,6 +132,7 @@ namespace OssianForge.Engine.Resources
                     "shaderfile" => new ShaderFiles.ShaderFile(id, path),
                     "meshfile" => new MeshFiles.MeshFile(id, path),
                     "texturefile" => new TextureFiles.TextureFile(id, path),
+                    "scriptfile" => new Scripts.ScriptFile(id, path),
                     _ => throw new Exception($"Unknown resource type for id: '{id}'")
                 };
 
