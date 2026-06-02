@@ -15,6 +15,7 @@ namespace OssianForge.Engine.Nodes
 
             var scene = new Node();
             scene.Name = "scene";
+            scene.Id = "scene";
 
             var camera = new Node();
             camera.Id = "camera";
@@ -28,6 +29,7 @@ namespace OssianForge.Engine.Nodes
             sky.AddProperty(new MeshProperty("mesh.cube"));
             sky.AddProperty(new CubemapMaterialProperty("cubemap.skybox.sky", "shader.skybox"));
 
+            var inst = Engine.Resources.CreateScriptResourceInstance<NodeProperty>("script.MyCustomProperty", "MyCustomProperty");
 
             //light
             var lightNode = new Node();
@@ -36,7 +38,7 @@ namespace OssianForge.Engine.Nodes
             lightNode.AddProperty(EmissionProperty.White(intensity: 1f, radius: 30.0f));
             lightNode.AddProperty(new MeshProperty("mesh.quad", true));
             lightNode.AddProperty(new TextureMaterialProperty("texture.light", "shader.sprite"));
-            lightNode.AddProperty((Engine.Resources.GetResource("script.MyCustomProperty") as ScriptResource).CreateInstance<NodeProperty>("MyCustomProperty"));
+            //lightNode.AddProperty(Engine.Resources.CreateScriptResourceInstance<NodeProperty>("script.MyCustomProperty", "MyCustomProperty"));
 
             var lightNode1 = new Node();
             lightNode1.Name = "light1";

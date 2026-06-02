@@ -19,6 +19,7 @@ namespace OssianForge.Engine
         public static Nodes.Nodes Nodes;
         public static Inputs.Inputs Inputs;
         public static Physics.Physics Physics;
+        public static Utils.Console.DebugConsole DebugConsole;
 
         public static void Create()
         {
@@ -27,6 +28,7 @@ namespace OssianForge.Engine
             Nodes = new Nodes.Nodes();
             Inputs = new Inputs.Inputs();
             Physics = new Physics.Physics();
+            DebugConsole = new Utils.Console.DebugConsole();
         }
 
         public static void Initialize()
@@ -60,6 +62,7 @@ namespace OssianForge.Engine
             Nodes.OnLoad();
             Inputs.OnLoad();
             Physics.OnLoad();
+            DebugConsole.Start();
         }
 
         public static void OnUpdate(double delta)

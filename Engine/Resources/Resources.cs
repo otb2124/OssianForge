@@ -162,5 +162,10 @@ namespace OssianForge.Engine.Resources
         {
             return ResourceList.FirstOrDefault(r => r.Id == id);
         }
+
+        public T CreateScriptResourceInstance<T>(string resourceId, string typeName, params object[] args) where T : class
+        {
+            return (GetResource(resourceId) as ScriptResource).CreateInstance<T>(typeName, args);
+        }
     }
 }

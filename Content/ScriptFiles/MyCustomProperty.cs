@@ -16,7 +16,7 @@ namespace OssianForge.Engine.Nodes.Props
 
         public override void OnUpdate(Node node, double delta)
         {
-            //Console.WriteLine("custom property update");
+            Console.WriteLine("custom property update");
         }
     }
 }

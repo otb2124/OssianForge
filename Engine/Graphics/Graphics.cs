@@ -11,8 +11,8 @@ using System.Text;
 using System.Threading.Tasks;
 using OssianForge.Engine.Graphics.Batch;
 using Silk.NET.Input;
-using OssianForge.Engine.Graphics.Console;
 using OssianForge.Engine.Nodes.Props;
+using OssianForge.Engine.Utils.Console;
 
 namespace OssianForge.Engine.Graphics
 {

@@ -1,4 +1,5 @@
 ﻿using OssianForge.Engine.Nodes.Props;
+using System.Collections.Concurrent;
 using System.Diagnostics;
 
 namespace OssianForge.Engine.Nodes
@@ -7,6 +8,7 @@ namespace OssianForge.Engine.Nodes
     {
 
         public List<Node> Nodes = new List<Node>();
+        private static readonly ConcurrentQueue<Action> _pendingActions = new();
 
         public NodeManager() { }
 
@@ -32,6 +34,8 @@ namespace OssianForge.Engine.Nodes
 
         public void UpdateNodes(double delta)
         {
+            FlushPendingActions();
+
             foreach (var node in Nodes)
                 node.OnUpdate(delta);
         }
@@ -171,5 +175,14 @@ namespace OssianForge.Engine.Nodes
             }
             return true;
         }
+
+
+        public void FlushPendingActions()
+        {
+            while (_pendingActions.TryDequeue(out var action))
+                action();
+        }
+
+        public static void Enqueue(Action action) => _pendingActions.Enqueue(action);
     }
 }

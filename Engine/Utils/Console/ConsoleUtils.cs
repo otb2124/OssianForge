@@ -6,16 +6,16 @@ using System.Threading.Tasks;
 using System.Runtime.InteropServices;
 using System;
 
-namespace OssianForge.Engine.Graphics.Console
+namespace OssianForge.Engine.Utils.Console
 {
-    
+
     public static class ConsoleUtils
     {
         [DllImport("kernel32.dll")]
-        private static extern IntPtr GetConsoleWindow();
+        private static extern nint GetConsoleWindow();
 
         [DllImport("user32.dll")]
-        private static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter,
+        private static extern bool SetWindowPos(nint hWnd, nint hWndInsertAfter,
             int X, int Y, int cx, int cy, uint uFlags);
 
         private const uint SWP_NOSIZE = 0x0001;
@@ -23,10 +23,10 @@ namespace OssianForge.Engine.Graphics.Console
 
         public static void SetPosition(int x, int y)
         {
-            IntPtr consoleHandle = GetConsoleWindow();
-            if (consoleHandle != IntPtr.Zero)
+            nint consoleHandle = GetConsoleWindow();
+            if (consoleHandle != nint.Zero)
             {
-                SetWindowPos(consoleHandle, IntPtr.Zero, x, y, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
+                SetWindowPos(consoleHandle, nint.Zero, x, y, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
             }
         }
     }
