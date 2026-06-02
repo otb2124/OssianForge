@@ -68,7 +68,7 @@ namespace OssianForge.Engine.Resources
                 { "texturefile.cubemap.skybox.sky.front", "TextureFiles/panoramic-sky-front.png" },
                 { "texturefile.cubemap.skybox.sky.back", "TextureFiles/panoramic-sky-back.png" },
 
-                { "scriptfile.MyCustomProperty", "ScriptFiles/MyCustomProperty.cs" }
+                //{ "scriptfile.StateProperty", "ScriptFiles/Nodes/Props/StateProperty.cs" }
             };
 
 
@@ -118,7 +118,7 @@ namespace OssianForge.Engine.Resources
                 new ColliderResource("collider.plane", "mesh.plane"),
                 new ColliderResource("collider.cube", "mesh.cube"),
 
-                new ScriptResource("script.MyCustomProperty", "scriptfile.MyCustomProperty")
+                //new ScriptResource("script.StateProperty", "scriptfile.StateProperty")
             };
 
 

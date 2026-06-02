@@ -1,12 +1,13 @@
 ﻿using System;
+using OssianForge.Engine.Nodes.Models;
 using OssianForge.Engine.Nodes.Props;
-using OssianForge.Engine.Nodes;
 
 namespace OssianForge.Engine.Nodes.Props
 {
-    public class MyCustomProperty : NodeProperty
+    public class StateProperty : NodeProperty
     {
 
+        public State CurrentState;
 
         public override void OnStart()
         {
