@@ -4,10 +4,18 @@ using Silk.NET.OpenGL;
 
 namespace OssianForge.Engine.Resources.Meshes
 {
+
+    public class Bone
+    {
+        public string Id;
+        //etc
+    }
+
     public class MeshResource : Resource, IDisposable
     {
 
         public List<SubMeshResource> SubMeshes = new();
+        public List<Bone> Bones = new();
 
         public string ResourceId;
 

@@ -39,9 +39,7 @@ namespace OssianForge.Engine.Resources
                 { "shaderfile.post.vert", "ShaderFiles/post.vert"},
                 { "shaderfile.post.frag", "ShaderFiles/post.frag"},
 
-                { "meshfile.donut", "MeshFiles/donut-v2.obj"},
-                { "meshfile.donut56", "MeshFiles/donut-v56.obj"},
-                { "meshfile.house", "MeshFiles/house.obj"},
+                { "meshfile.remy", "MeshFiles/remy.fbx"},
 
                 { "texturefile.IcingBaseColor",  "TextureFiles/IcingBaseColor.jpg" },
                 { "texturefile.DonutBaseColor",  "TextureFiles/DonutBaseColor.jpg" },
@@ -75,9 +73,7 @@ namespace OssianForge.Engine.Resources
 
             ResourceList = new List<Resource>
             {
-                new MeshResource("mesh.donut", "meshfile.donut"),
-                new MeshResource("mesh.donut56", "meshfile.donut56"),
-                new MeshResource("mesh.house", "meshfile.house"),
+                new MeshResource("mesh.remy", "meshfile.remy"),
 
                 new MeshResource("mesh.cube", "fastmesh.cube"),
                 new MeshResource("mesh.plane", "fastmesh.plane"),
@@ -113,7 +109,8 @@ namespace OssianForge.Engine.Resources
                 new CubemapTextureResource("cubemap.skybox.sea", "texture.cubemap.skybox.sea.right", "texture.cubemap.skybox.sea.left", "texture.cubemap.skybox.sea.top", "texture.cubemap.skybox.sea.bottom", "texture.cubemap.skybox.sea.front", "texture.cubemap.skybox.sea.back"),
                 new CubemapTextureResource("cubemap.skybox.sky", "texture.cubemap.skybox.sky.right", "texture.cubemap.skybox.sky.left", "texture.cubemap.skybox.sky.top", "texture.cubemap.skybox.sky.bottom", "texture.cubemap.skybox.sky.front", "texture.cubemap.skybox.sky.back"),
 
-                new ColliderResource("collider.house", "mesh.house"),
+                new ColliderResource("collider.remy", "mesh.remy"),
+
                 new ColliderResource("collider.ball", "mesh.ball"),
                 new ColliderResource("collider.plane", "mesh.plane"),
                 new ColliderResource("collider.cube", "mesh.cube"),

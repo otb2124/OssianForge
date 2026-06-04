@@ -4,17 +4,13 @@ using OssianForge.Engine.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
 using File = System.IO.File;
 
 namespace OssianForge.Engine.Resources.MeshFiles
 {
     public class MeshFile : ResourceFile
     {
-
         public List<(float[] Vertices, int MaterialIndex)> SubMeshes = new();
 
         public MeshFile(string id, string path)
@@ -27,18 +23,15 @@ namespace OssianForge.Engine.Resources.MeshFiles
         {
             string globalPath = ResourceFile.CONTENT_FOLDER_PATH + "/" + Path;
 
-            SanitizeMtl(globalPath);
-
             using var assimp = Assimp.GetApi();
-            
 
             unsafe
             {
                 var scene = assimp.ImportFile(globalPath,
-                (uint)(PostProcessSteps.Triangulate |
-                       PostProcessSteps.FlipUVs |
-                       PostProcessSteps.GenerateNormals |
-                       PostProcessSteps.JoinIdenticalVertices));
+                    (uint)(PostProcessSteps.Triangulate |
+                           PostProcessSteps.GenerateNormals |
+                           PostProcessSteps.JoinIdenticalVertices |
+                           PostProcessSteps.PreTransformVertices));
 
                 if (scene == null || scene->MFlags == Assimp.SceneFlagsIncomplete || scene->MRootNode == null)
                 {
@@ -46,6 +39,22 @@ namespace OssianForge.Engine.Resources.MeshFiles
                     throw new Exception($"Failed to load model: {globalPath}\nAssimp error: {assimpError}");
                 }
 
+                float unitScale = 0.01f;
+                var metadata = scene->MMetaData;
+                if (metadata != null)
+                {
+                    for (uint k = 0; k < metadata->MNumProperties; k++)
+                    {
+                        string key = metadata->MKeys[k].AsString;
+                        if (key == "UnitScaleFactor")
+                        {
+                            var entry = metadata->MValues[k];
+                            if (entry.MType == MetadataType.Double)
+                                unitScale = (float)(*(double*)entry.MData) * 0.01f;
+                            break;
+                        }
+                    }
+                }
 
                 for (uint m = 0; m < scene->MNumMeshes; m++)
                 {
@@ -62,11 +71,11 @@ namespace OssianForge.Engine.Resources.MeshFiles
 
                             // Position
                             var pos = mesh->MVertices[index];
-                            verts.Add(pos.X);
-                            verts.Add(pos.Y);
-                            verts.Add(pos.Z);
+                            verts.Add(pos.X * unitScale);
+                            verts.Add(pos.Y * unitScale);
+                            verts.Add(pos.Z * unitScale);
 
-                            // Normal
+                            // Normal (direction — not scaled)
                             if (mesh->MNormals != null)
                             {
                                 var n = mesh->MNormals[index];
@@ -98,24 +107,9 @@ namespace OssianForge.Engine.Resources.MeshFiles
 
                     SubMeshes.Add((verts.ToArray(), materialIndex));
                 }
+
                 assimp.FreeScene(scene);
             }
         }
-
-        private void SanitizeMtl(string objPath)
-        {
-            string mtlPath = System.IO.Path.ChangeExtension(objPath, ".mtl");
-            if (!File.Exists(mtlPath)) return;
-
-            var allowed = new[] { "#", "newmtl", "Ka", "Kd", "Ks", "Ke", "Ni", "d", "illum" };
-
-            var cleaned = File.ReadAllLines(mtlPath)
-                .Where(l => string.IsNullOrWhiteSpace(l) || allowed.Any(p => l.TrimStart().StartsWith(p)))
-                .ToArray();
-
-            File.WriteAllLines(mtlPath, cleaned);
-        }
-
-
     }
 }

@@ -24,7 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="Content\ScriptFiles\Nodes\Models\State.cs">
+    <Compile Update="Content\ScriptFiles\Nodes\Models\States\State.cs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Compile>
     <Compile Update="Content\ScriptFiles\Nodes\Props\InputControlProperty.cs">
@@ -36,22 +36,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Content\MeshFiles\donut-v2.mtl">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Content\MeshFiles\donut-v2.obj">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Content\MeshFiles\donut-v56.mtl">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Content\MeshFiles\donut-v56.obj">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Content\MeshFiles\house.mtl">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Content\MeshFiles\house.obj">
+    <None Update="Content\MeshFiles\remy.fbx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Content\ShaderFiles\Basic.frag">
