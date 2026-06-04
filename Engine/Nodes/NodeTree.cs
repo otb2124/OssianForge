@@ -104,8 +104,11 @@ namespace OssianForge.Engine.Nodes
             remy.AddProperty(new TextureMaterialProperty("texture.house.wood", "shader.basic"));
             remy.AddProperty(new TextureMaterialProperty("texture.house.wood", "shader.basic"));
             remy.AddProperty(new TextureMaterialProperty("texture.house.wood", "shader.basic"));
-            //remy.AddProperty(new ColliderProperty("collider.remy"));
-            //remy.AddProperty(new PhysicalProperty(false, true, 1f, 1f));
+            remy.AddProperty(new ColliderProperty("collider.remy"));
+            remy.AddProperty(new PhysicalProperty(false, true, 1f, 1f));
+            remy.AddProperty(new AnimationProperty("animation.remy"));
+
+            remy.GetProperty<AnimationProperty>().Play("idle");
 
             scene.AddChild(camera);
             scene.AddChild(sky);

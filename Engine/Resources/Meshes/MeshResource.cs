@@ -5,21 +5,14 @@ using Silk.NET.OpenGL;
 namespace OssianForge.Engine.Resources.Meshes
 {
 
-    public class Bone
-    {
-        public string Id;
-        //etc
-    }
-
     public class MeshResource : Resource, IDisposable
     {
-
         public List<SubMeshResource> SubMeshes = new();
-        public List<Bone> Bones = new();
+        public SkeletonNode Skeleton;
 
         public string ResourceId;
 
-        public MeshResource(string id, string meshId) 
+        public MeshResource(string id, string meshId)
         {
             Id = id;
             ResourceId = meshId;
@@ -50,26 +43,23 @@ namespace OssianForge.Engine.Resources.Meshes
                 var meshFile = Engine.Resources.GetResourceFile(ResourceId) as MeshFile
                     ?? throw new Exception($"MeshFile not found: '{ResourceId}'");
 
-                foreach (var (verts, matIndex) in meshFile.SubMeshes)
+                Skeleton = meshFile.RootNode;
+
+                foreach (var (verts, matIndex, bones) in meshFile.SubMeshes)
                     SubMeshes.Add(new SubMeshResource(verts, matIndex, hasUV: true, hasNormals: true));
             }
         }
 
-
         public void Draw()
         {
             foreach (SubMeshResource submesh in SubMeshes)
-            {
                 submesh.Draw();
-            }
         }
 
         public void Dispose()
         {
             foreach (SubMeshResource submesh in SubMeshes)
-            {
                 submesh.Dispose();
-            }
         }
     }
 

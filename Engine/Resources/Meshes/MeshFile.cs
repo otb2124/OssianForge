@@ -9,9 +9,30 @@ using File = System.IO.File;
 
 namespace OssianForge.Engine.Resources.MeshFiles
 {
+    public class BoneWeight
+    {
+        public int VertexIndex;
+        public float Weight;
+    }
+
+    public class BoneData
+    {
+        public string Name;
+        public Matrix4x4 OffsetMatrix;        // mesh space → bone space
+        public List<BoneWeight> Weights = new();
+    }
+
+    public class SkeletonNode
+    {
+        public string Name;
+        public Matrix4x4 LocalTransform;
+        public List<SkeletonNode> Children = new();
+    }
+
     public class MeshFile : ResourceFile
     {
-        public List<(float[] Vertices, int MaterialIndex)> SubMeshes = new();
+        public List<(float[] Vertices, int MaterialIndex, List<BoneData> Bones)> SubMeshes = new();
+        public SkeletonNode RootNode;          // the shared skeleton hierarchy
 
         public MeshFile(string id, string path)
         {
@@ -30,8 +51,8 @@ namespace OssianForge.Engine.Resources.MeshFiles
                 var scene = assimp.ImportFile(globalPath,
                     (uint)(PostProcessSteps.Triangulate |
                            PostProcessSteps.GenerateNormals |
-                           PostProcessSteps.JoinIdenticalVertices |
-                           PostProcessSteps.PreTransformVertices));
+                           PostProcessSteps.JoinIdenticalVertices));
+                // NOTE: PreTransformVertices removed — it destroys skeleton data
 
                 if (scene == null || scene->MFlags == Assimp.SceneFlagsIncomplete || scene->MRootNode == null)
                 {
@@ -56,6 +77,10 @@ namespace OssianForge.Engine.Resources.MeshFiles
                     }
                 }
 
+                // Build the shared skeleton hierarchy from the scene node tree
+                RootNode = BuildSkeletonNode(scene->MRootNode);
+
+                // Process meshes
                 for (uint m = 0; m < scene->MNumMeshes; m++)
                 {
                     var mesh = scene->MMeshes[m];
@@ -69,13 +94,11 @@ namespace OssianForge.Engine.Resources.MeshFiles
                         {
                             uint index = face.MIndices[j];
 
-                            // Position
                             var pos = mesh->MVertices[index];
                             verts.Add(pos.X * unitScale);
                             verts.Add(pos.Y * unitScale);
                             verts.Add(pos.Z * unitScale);
 
-                            // Normal (direction — not scaled)
                             if (mesh->MNormals != null)
                             {
                                 var n = mesh->MNormals[index];
@@ -90,7 +113,6 @@ namespace OssianForge.Engine.Resources.MeshFiles
                                 verts.Add(0f);
                             }
 
-                            // UV
                             if (mesh->MTextureCoords[0] != null)
                             {
                                 var uv = mesh->MTextureCoords[0][index];
@@ -105,11 +127,52 @@ namespace OssianForge.Engine.Resources.MeshFiles
                         }
                     }
 
-                    SubMeshes.Add((verts.ToArray(), materialIndex));
+                    // Collect bone data for this mesh
+                    var bones = new List<BoneData>();
+                    for (uint b = 0; b < mesh->MNumBones; b++)
+                    {
+                        var bone = mesh->MBones[b];
+                        var boneData = new BoneData
+                        {
+                            Name = bone->MName.AsString,
+                            OffsetMatrix = ToMatrix4x4(bone->MOffsetMatrix)
+                        };
+
+                        for (uint w = 0; w < bone->MNumWeights; w++)
+                        {
+                            boneData.Weights.Add(new BoneWeight
+                            {
+                                VertexIndex = (int)bone->MWeights[w].MVertexId,
+                                Weight = bone->MWeights[w].MWeight
+                            });
+                        }
+
+                        bones.Add(boneData);
+                    }
+
+                    SubMeshes.Add((verts.ToArray(), materialIndex, bones));
                 }
 
                 assimp.FreeScene(scene);
             }
         }
+
+        private unsafe SkeletonNode BuildSkeletonNode(Node* node)
+        {
+            if (node == null) return null;
+
+            var skNode = new SkeletonNode
+            {
+                Name = node->MName.AsString,
+                LocalTransform = ToMatrix4x4(node->MTransformation)
+            };
+
+            for (uint i = 0; i < node->MNumChildren; i++)
+                skNode.Children.Add(BuildSkeletonNode(node->MChildren[i]));
+
+            return skNode;
+        }
+
+        private static Matrix4x4 ToMatrix4x4(System.Numerics.Matrix4x4 m) => m; // Assimp uses row-major, System.Numerics too — direct cast is fine
     }
 }

@@ -1,4 +1,5 @@
-﻿using OssianForge.Engine.Resources.Colliders;
+﻿using OssianForge.Engine.Resources.Animations;
+using OssianForge.Engine.Resources.Colliders;
 using OssianForge.Engine.Resources.Meshes;
 using OssianForge.Engine.Resources.Scripts;
 using OssianForge.Engine.Resources.Shaders;
@@ -41,6 +42,10 @@ namespace OssianForge.Engine.Resources
 
                 { "meshfile.remy", "MeshFiles/remy.fbx"},
 
+                { "animationfile.remy.idle", "AnimationFiles/remy.idle.fbx" },
+                { "animationfile.remy.walking", "AnimationFiles/remy.walking.fbx" },
+                { "animationfile.remy.jumping", "AnimationFiles/remy.jumping.fbx" },
+
                 { "texturefile.IcingBaseColor",  "TextureFiles/IcingBaseColor.jpg" },
                 { "texturefile.DonutBaseColor",  "TextureFiles/DonutBaseColor.jpg" },
                 { "texturefile.house.barrel",  "TextureFiles/barrel.jpg" },
@@ -73,12 +78,14 @@ namespace OssianForge.Engine.Resources
 
             ResourceList = new List<Resource>
             {
-                new MeshResource("mesh.remy", "meshfile.remy"),
-
                 new MeshResource("mesh.cube", "fastmesh.cube"),
                 new MeshResource("mesh.plane", "fastmesh.plane"),
                 new MeshResource("mesh.quad", "fastmesh.quad"),
                 new MeshResource("mesh.ball", "fastmesh.ball"),
+
+                new MeshResource("mesh.remy", "meshfile.remy"),
+
+                new AnimationResource("animation.remy", "animationfile.remy.idle", "animationfile.remy.walking", "animationfile.remy.jumping"),
 
                 new BasicShaderResource("shader.basic", "shaderfile.basic.vert", "shaderfile.basic.frag"),
                 new SkyboxShaderResource("shader.skybox", "shaderfile.skybox.vert", "shaderfile.skybox.frag"),
@@ -130,6 +137,7 @@ namespace OssianForge.Engine.Resources
                     "meshfile" => new MeshFiles.MeshFile(id, path),
                     "texturefile" => new TextureFiles.TextureFile(id, path),
                     "scriptfile" => new Scripts.ScriptFile(id, path),
+                    "animationfile" => new Animations.AnimationFile(id, path),
                     _ => throw new Exception($"Unknown resource type for id: '{id}'")
                 };
 
