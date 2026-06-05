@@ -55,24 +55,41 @@ namespace OssianForge.Engine.Graphics.Batch
             OpenGL.Disable(EnableCap.Blend);
         }
 
-        
 
-        public void DrawMesh(MeshProperty mesh, List<MaterialProperty> materials, TransformProperty transform)
+
+        public void DrawMesh(MeshProperty mesh, List<MaterialProperty> materials, TransformProperty transform, AnimationProperty animation = null)
         {
-            if (mesh != null)
+            if (mesh == null) return;
+
+            int minMatIndex = mesh.MeshResource.SubMeshes.Count > 0
+                ? mesh.MeshResource.SubMeshes.Min(s => s.MaterialIndex) : 0;
+
+            foreach (var subMesh in mesh.MeshResource.SubMeshes)
             {
-                int minMatIndex = mesh.MeshResource.SubMeshes.Count > 0 ? mesh.MeshResource.SubMeshes.Min(s => s.MaterialIndex) : 0;
+                int matIndex = subMesh.MaterialIndex - minMatIndex;
+                if (matIndex < 0 || matIndex >= materials.Count) continue;
 
-                foreach (var subMesh in mesh.MeshResource.SubMeshes)
+                Matrix4x4[] palette = null;
+                if (animation?.BonePalette != null && animation.BonePalette.Length > 0
+                    && mesh.MeshResource.AllBones != null)
                 {
-                    int matIndex = subMesh.MaterialIndex - minMatIndex;
-                    if (matIndex < 0 || matIndex >= materials.Count) continue;
-
-                    if (mesh.IsBillboard)
-                        DrawBillbord(subMesh, materials[matIndex], transform);
-                    else
-                        DrawSubMesh(subMesh, materials[matIndex], transform.Transform.ToMatrix());
+                    // Build a palette in THIS submesh's bone order
+                    palette = new Matrix4x4[subMesh.Bones.Count];
+                    for (int i = 0; i < subMesh.Bones.Count; i++)
+                    {
+                        int unifiedIdx = mesh.MeshResource.AllBones
+                            .FindIndex(b => b.Name == subMesh.Bones[i].Name);
+                        palette[i] = unifiedIdx >= 0
+                            ? animation.BonePalette[unifiedIdx]
+                            : Matrix4x4.Identity;
+                    }
                 }
+
+                if (mesh.IsBillboard)
+                    DrawBillbord(subMesh, materials[matIndex], transform);
+                else
+                    DrawSubMesh(subMesh, materials[matIndex],
+                        transform.Transform.ToMatrix(), palette);
             }
         }
 
@@ -83,9 +100,15 @@ namespace OssianForge.Engine.Graphics.Batch
             EndBillbord();
         }
 
-        public void DrawSubMesh(SubMeshResource subMesh, MaterialProperty material, Matrix4x4 matrix)
+        public void DrawSubMesh(SubMeshResource subMesh, MaterialProperty material, Matrix4x4 matrix, Matrix4x4[] bonePalette = null)
         {
             material.Apply(matrix);
+
+            if (bonePalette != null && bonePalette.Length > 0)
+                material.ShaderResource.SetBonePalette(bonePalette);
+            else
+                material.ShaderResource.SetInt("uSkinned", 0);
+
             subMesh.Draw();
             material.PostApply();
         }

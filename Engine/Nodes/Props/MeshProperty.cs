@@ -39,9 +39,10 @@ namespace OssianForge.Engine.Nodes.Props
             var transform = node.GetProperty<TransformProperty>();
             var mesh = node.GetProperty<MeshProperty>();
             var materials = node.GetProperties<MaterialProperty>();
+            var animation = node.GetProperty<AnimationProperty>(); // grab it
 
             if (transform != null && mesh != null && materials.Count > 0)
-                Engine.Graphics.Batch.DrawMesh(mesh, materials, transform);
+                Engine.Graphics.Batch.DrawMesh(mesh, materials, transform, animation);
         }
     }
 

@@ -6,14 +6,12 @@ namespace OssianForge.Engine.Resources.Animations
 {
     public class AnimationResource : Resource
     {
-        // All clips loaded from the provided animation files
         public List<AnimationClip> Clips = new();
 
-        // Playback state
         public AnimationClip CurrentClip { get; private set; }
         public bool IsPlaying { get; private set; }
         public bool IsLooping { get; private set; }
-        public double CurrentTime { get; private set; } // in ticks
+        public double CurrentTime { get; private set; }
 
         private readonly string[] _animationFileIds;
 
@@ -29,18 +27,14 @@ namespace OssianForge.Engine.Resources.Animations
             {
                 var animFile = Engine.Resources.GetResourceFile(fileId) as AnimationFile
                     ?? throw new Exception($"AnimationFile not found: '{fileId}'");
-
                 Clips.AddRange(animFile.Clips);
             }
         }
-
-        // --- Playback controls ---
 
         public void Play(string clipName, bool loop = true)
         {
             var clip = Clips.Find(c => c.Name == clipName)
                 ?? throw new Exception($"AnimationResource clip not found: '{clipName}'");
-
             CurrentClip = clip;
             CurrentTime = 0;
             IsPlaying = true;
@@ -51,99 +45,87 @@ namespace OssianForge.Engine.Resources.Animations
         {
             if (clipIndex < 0 || clipIndex >= Clips.Count)
                 throw new IndexOutOfRangeException($"Clip index {clipIndex} out of range.");
-
             CurrentClip = Clips[clipIndex];
             CurrentTime = 0;
             IsPlaying = true;
             IsLooping = loop;
         }
 
-        public void Stop()
-        {
-            IsPlaying = false;
-            CurrentTime = 0;
-        }
+        public void Stop() { IsPlaying = false; CurrentTime = 0; }
+        public void Pause() { IsPlaying = false; }
+        public void Resume() { if (CurrentClip != null) IsPlaying = true; }
 
-        public void Pause() => IsPlaying = false;
-
-        public void Resume()
-        {
-            if (CurrentClip != null)
-                IsPlaying = true;
-        }
-
-        // Call this every frame with delta time in seconds
         public void Update(double deltaTime)
         {
             if (!IsPlaying || CurrentClip == null) return;
-
-            double ticksPerSecond = CurrentClip.TicksPerSecond > 0 ? CurrentClip.TicksPerSecond : 25.0;
-            CurrentTime += deltaTime * ticksPerSecond;
-
+            double tps = CurrentClip.TicksPerSecond > 0 ? CurrentClip.TicksPerSecond : 25.0;
+            CurrentTime += deltaTime * tps;
             if (CurrentTime >= CurrentClip.DurationTicks)
             {
-                if (IsLooping)
-                    CurrentTime %= CurrentClip.DurationTicks;
-                else
-                    Stop();
+                if (IsLooping) CurrentTime %= CurrentClip.DurationTicks;
+                else Stop();
             }
         }
 
-        // --- Sampling ---
-
-        // Returns the interpolated local transform matrix for a given bone at CurrentTime
         public Matrix4x4 GetBoneTransform(string boneName)
         {
             if (CurrentClip == null) return Matrix4x4.Identity;
-
-            var channel = CurrentClip.Channels.Find(c => c.BoneName == boneName);
-            if (channel == null) return Matrix4x4.Identity;
-
-            var position = InterpolatePosition(channel);
-            var rotation = InterpolateRotation(channel);
-            var scale = InterpolateScale(channel);
-
-            return Matrix4x4.CreateScale(scale)
-                 * Matrix4x4.CreateFromQuaternion(rotation)
-                 * Matrix4x4.CreateTranslation(position);
+            var ch = CurrentClip.Channels.Find(c => c.BoneName == boneName);
+            return ch == null ? Matrix4x4.Identity : BuildLocalMatrix(ch);
         }
 
-        // --- Interpolation helpers ---
-
-        private Vector3 InterpolatePosition(BoneChannel channel)
+        public Matrix4x4? TryGetBoneTransform(string boneName)
         {
-            if (channel.PositionKeys.Count == 1)
-                return channel.PositionKeys[0].Value;
-
-            int i = FindKeyIndex(channel.PositionKeys, CurrentTime);
-            int next = Math.Min(i + 1, channel.PositionKeys.Count - 1);
-
-            float t = GetFactor(channel.PositionKeys[i].Time, channel.PositionKeys[next].Time);
-            return Vector3.Lerp(channel.PositionKeys[i].Value, channel.PositionKeys[next].Value, t);
+            if (CurrentClip == null) return null;
+            var ch = CurrentClip.Channels.Find(c => c.BoneName == boneName);
+            return ch == null ? null : BuildLocalMatrix(ch);
         }
 
-        private Quaternion InterpolateRotation(BoneChannel channel)
+        // System.Numerics memory layout is identical to OpenGL column-major layout —
+        // both CreateScale/CreateFromQuaternion/CreateTranslation and Assimp nodes
+        // after Transpose() end up in the same layout. No extra transpose needed here.
+        private Matrix4x4 BuildLocalMatrix(BoneChannel ch)
         {
-            if (channel.RotationKeys.Count == 1)
-                return channel.RotationKeys[0].Value;
+            var T = InterpolatePosition(ch);
+            var R = InterpolateRotation(ch);
+            var S = InterpolateScale(ch);
 
-            int i = FindKeyIndex(channel.RotationKeys, CurrentTime);
-            int next = Math.Min(i + 1, channel.RotationKeys.Count - 1);
-
-            float t = GetFactor(channel.RotationKeys[i].Time, channel.RotationKeys[next].Time);
-            return Quaternion.Slerp(channel.RotationKeys[i].Value, channel.RotationKeys[next].Value, t);
+            // Row-vector convention: S then R then T (applied left-to-right).
+            // This matches what Assimp decomposed and what MeshFile.LocalTransform
+            // was storing after its Transpose() call.
+            return Matrix4x4.CreateScale(S)
+                 * Matrix4x4.CreateFromQuaternion(R)
+                 * Matrix4x4.CreateTranslation(T);
         }
 
-        private Vector3 InterpolateScale(BoneChannel channel)
+        private Vector3 InterpolatePosition(BoneChannel ch)
         {
-            if (channel.ScaleKeys.Count == 1)
-                return channel.ScaleKeys[0].Value;
+            if (ch.PositionKeys.Count == 0) return Vector3.Zero;
+            if (ch.PositionKeys.Count == 1) return ch.PositionKeys[0].Value;
+            int i = FindKeyIndex(ch.PositionKeys, CurrentTime);
+            int n = Math.Min(i + 1, ch.PositionKeys.Count - 1);
+            return Vector3.Lerp(ch.PositionKeys[i].Value, ch.PositionKeys[n].Value,
+                                GetFactor(ch.PositionKeys[i].Time, ch.PositionKeys[n].Time));
+        }
 
-            int i = FindKeyIndex(channel.ScaleKeys, CurrentTime);
-            int next = Math.Min(i + 1, channel.ScaleKeys.Count - 1);
+        private Quaternion InterpolateRotation(BoneChannel ch)
+        {
+            if (ch.RotationKeys.Count == 0) return Quaternion.Identity;
+            if (ch.RotationKeys.Count == 1) return ch.RotationKeys[0].Value;
+            int i = FindKeyIndex(ch.RotationKeys, CurrentTime);
+            int n = Math.Min(i + 1, ch.RotationKeys.Count - 1);
+            return Quaternion.Slerp(ch.RotationKeys[i].Value, ch.RotationKeys[n].Value,
+                                    GetFactor(ch.RotationKeys[i].Time, ch.RotationKeys[n].Time));
+        }
 
-            float t = GetFactor(channel.ScaleKeys[i].Time, channel.ScaleKeys[next].Time);
-            return Vector3.Lerp(channel.ScaleKeys[i].Value, channel.ScaleKeys[next].Value, t);
+        private Vector3 InterpolateScale(BoneChannel ch)
+        {
+            if (ch.ScaleKeys.Count == 0) return Vector3.One;
+            if (ch.ScaleKeys.Count == 1) return ch.ScaleKeys[0].Value;
+            int i = FindKeyIndex(ch.ScaleKeys, CurrentTime);
+            int n = Math.Min(i + 1, ch.ScaleKeys.Count - 1);
+            return Vector3.Lerp(ch.ScaleKeys[i].Value, ch.ScaleKeys[n].Value,
+                                GetFactor(ch.ScaleKeys[i].Time, ch.ScaleKeys[n].Time));
         }
 
         private int FindKeyIndex<T>(List<T> keys, double time) where T : VectorKey
@@ -153,7 +135,6 @@ namespace OssianForge.Engine.Resources.Animations
             return keys.Count - 2;
         }
 
-        // Overload for QuatKey since it doesn't share a base with VectorKey
         private int FindKeyIndex(List<QuatKey> keys, double time)
         {
             for (int i = 0; i < keys.Count - 1; i++)
@@ -163,9 +144,9 @@ namespace OssianForge.Engine.Resources.Animations
 
         private float GetFactor(double lastTime, double nextTime)
         {
-            double delta = nextTime - lastTime;
-            if (delta <= 0) return 0f;
-            return (float)((CurrentTime - lastTime) / delta);
+            double d = nextTime - lastTime;
+            if (d <= 0) return 0f;
+            return Math.Clamp((float)((CurrentTime - lastTime) / d), 0f, 1f);
         }
     }
 }

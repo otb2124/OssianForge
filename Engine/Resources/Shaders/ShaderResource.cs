@@ -52,6 +52,14 @@ namespace OssianForge.Engine.Resources.Shaders
             Engine.Graphics.Batch.OpenGL.DeleteProgram(Handle);
         }
 
+        public void SetBonePalette(Matrix4x4[] palette)
+        {
+            SetInt("uSkinned", 1);
+
+            for (int i = 0; i < palette.Length; i++)
+                SetMatrix4($"uBones[{i}]", palette[i]);
+        }
+
         public void SetMatrix4(string name, Matrix4x4 matrix)
         {
             int loc = Engine.Graphics.Batch.OpenGL.GetUniformLocation(Handle, name);
