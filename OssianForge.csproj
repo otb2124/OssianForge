@@ -13,6 +13,156 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Content\MeshFiles\remy.fbx" />
+    <None Remove="Content\ShaderFiles\Basic.frag" />
+    <None Remove="Content\ShaderFiles\Basic.vert" />
+    <None Remove="Content\ShaderFiles\debugline.frag" />
+    <None Remove="Content\ShaderFiles\debugline.vert" />
+    <None Remove="Content\ShaderFiles\post.frag" />
+    <None Remove="Content\ShaderFiles\post.vert" />
+    <None Remove="Content\ShaderFiles\skybox.frag" />
+    <None Remove="Content\ShaderFiles\skybox.vert" />
+    <None Remove="Content\ShaderFiles\sprite.frag" />
+    <None Remove="Content\ShaderFiles\sprite.vert" />
+    <None Remove="Content\TextureFiles\barrel.jpg" />
+    <None Remove="Content\TextureFiles\brick.png" />
+    <None Remove="Content\TextureFiles\brick_d.jpg" />
+    <None Remove="Content\TextureFiles\brick_n.jpg" />
+    <None Remove="Content\TextureFiles\dices.png" />
+    <None Remove="Content\TextureFiles\DonutBaseColor.jpg" />
+    <None Remove="Content\TextureFiles\house_brick.jpg" />
+    <None Remove="Content\TextureFiles\house_windows.jpg" />
+    <None Remove="Content\TextureFiles\house_wood.jpg" />
+    <None Remove="Content\TextureFiles\IcingBaseColor.jpg" />
+    <None Remove="Content\TextureFiles\panoramic-sea-back.png" />
+    <None Remove="Content\TextureFiles\panoramic-sea-bottom.png" />
+    <None Remove="Content\TextureFiles\panoramic-sea-front.png" />
+    <None Remove="Content\TextureFiles\panoramic-sea-left.png" />
+    <None Remove="Content\TextureFiles\panoramic-sea-right.png" />
+    <None Remove="Content\TextureFiles\panoramic-sea-top.png" />
+    <None Remove="Content\TextureFiles\panoramic-sky-back.png" />
+    <None Remove="Content\TextureFiles\panoramic-sky-bottom.png" />
+    <None Remove="Content\TextureFiles\panoramic-sky-front.png" />
+    <None Remove="Content\TextureFiles\panoramic-sky-left.png" />
+    <None Remove="Content\TextureFiles\panoramic-sky-right.png" />
+    <None Remove="Content\TextureFiles\panoramic-sky-top.png" />
+    <None Remove="Content\TextureFiles\point_light.png" />
+    <None Remove="Content\TextureFiles\point_light_sprite.png" />
+    <None Remove="Content\TextureFiles\wood.jpg" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Content\MeshFiles\remy.fbx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\ShaderFiles\Basic.frag">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\ShaderFiles\Basic.vert">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\ShaderFiles\debugline.frag">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\ShaderFiles\debugline.vert">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\ShaderFiles\post.frag">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\ShaderFiles\post.vert">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\ShaderFiles\skybox.frag">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\ShaderFiles\skybox.vert">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\ShaderFiles\sprite.frag">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\ShaderFiles\sprite.vert">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\TextureFiles\barrel.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\TextureFiles\brick.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\TextureFiles\brick_d.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\TextureFiles\brick_n.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\TextureFiles\dices.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\TextureFiles\DonutBaseColor.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\TextureFiles\house_brick.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\TextureFiles\house_windows.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\TextureFiles\house_wood.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\TextureFiles\IcingBaseColor.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\TextureFiles\panoramic-sea-back.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\TextureFiles\panoramic-sea-bottom.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\TextureFiles\panoramic-sea-front.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\TextureFiles\panoramic-sea-left.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\TextureFiles\panoramic-sea-right.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\TextureFiles\panoramic-sea-top.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\TextureFiles\panoramic-sky-back.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\TextureFiles\panoramic-sky-bottom.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\TextureFiles\panoramic-sky-front.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\TextureFiles\panoramic-sky-left.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\TextureFiles\panoramic-sky-right.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\TextureFiles\panoramic-sky-top.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\TextureFiles\point_light.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\TextureFiles\point_light_sprite.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\TextureFiles\wood.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Jitter2" Version="2.8.5" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="5.3.0" />
     <PackageReference Include="Silk.NET.Assimp" Version="2.23.0" />
@@ -36,121 +186,22 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="Content\AnimationFiles\remy.backflip.fbx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Content\AnimationFiles\remy.idle.fbx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Content\AnimationFiles\remy.jumping.fbx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Content\AnimationFiles\remy.jumping_jacks.fbx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Content\AnimationFiles\remy.walking.fbx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Content\MeshFiles\remy.fbx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Content\ShaderFiles\Basic.frag">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Content\ShaderFiles\Basic.vert">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Content\ShaderFiles\debugline.frag">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Content\ShaderFiles\debugline.vert">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Content\ShaderFiles\post.frag">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Content\ShaderFiles\post.vert">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Content\ShaderFiles\sprite.frag">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Content\ShaderFiles\sprite.vert">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Content\ShaderFiles\skybox.frag">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Content\ShaderFiles\skybox.vert">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Content\TextureFiles\barrel.jpg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Content\TextureFiles\brick.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Content\TextureFiles\brick_d.jpg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Content\TextureFiles\brick_n.jpg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Content\TextureFiles\dices.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Content\TextureFiles\DonutBaseColor.jpg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Content\TextureFiles\house_brick.jpg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Content\TextureFiles\house_windows.jpg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Content\TextureFiles\house_wood.jpg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Content\TextureFiles\IcingBaseColor.jpg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Content\TextureFiles\panoramic-sea-back.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Content\TextureFiles\panoramic-sea-bottom.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Content\TextureFiles\panoramic-sea-front.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Content\TextureFiles\panoramic-sea-left.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Content\TextureFiles\panoramic-sea-right.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Content\TextureFiles\panoramic-sea-top.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Content\TextureFiles\panoramic-sky-back.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Content\TextureFiles\panoramic-sky-bottom.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Content\TextureFiles\panoramic-sky-front.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Content\TextureFiles\panoramic-sky-left.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Content\TextureFiles\panoramic-sky-right.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Content\TextureFiles\panoramic-sky-top.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Content\TextureFiles\point_light.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Content\TextureFiles\point_light_sprite.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Content\TextureFiles\wood.jpg">
+    <None Update="Content\AnimationFiles\remy.waving.fbx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

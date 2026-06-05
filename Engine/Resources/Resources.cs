@@ -4,11 +4,6 @@ using OssianForge.Engine.Resources.Meshes;
 using OssianForge.Engine.Resources.Scripts;
 using OssianForge.Engine.Resources.Shaders;
 using OssianForge.Engine.Resources.Textures;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OssianForge.Engine.Resources
 {
@@ -45,6 +40,9 @@ namespace OssianForge.Engine.Resources
                 { "animationfile.remy.idle", "AnimationFiles/remy.idle.fbx" },
                 { "animationfile.remy.walking", "AnimationFiles/remy.walking.fbx" },
                 { "animationfile.remy.jumping", "AnimationFiles/remy.jumping.fbx" },
+                { "animationfile.remy.jumping_jacks", "AnimationFiles/remy.jumping_jacks.fbx" },
+                { "animationfile.remy.backflip", "AnimationFiles/remy.backflip.fbx" },
+                { "animationfile.remy.waving", "AnimationFiles/remy.waving.fbx" },
 
                 { "texturefile.IcingBaseColor",  "TextureFiles/IcingBaseColor.jpg" },
                 { "texturefile.DonutBaseColor",  "TextureFiles/DonutBaseColor.jpg" },
@@ -85,7 +83,7 @@ namespace OssianForge.Engine.Resources
 
                 new MeshResource("mesh.remy", "meshfile.remy"),
 
-                new AnimationResource("animation.remy", "animationfile.remy.idle", "animationfile.remy.walking", "animationfile.remy.jumping"),
+                new AnimationResource("animation.remy", "animationfile.remy.idle", "animationfile.remy.walking", "animationfile.remy.jumping", "animationfile.remy.jumping_jacks", "animationfile.remy.waving", "animationfile.remy.backflip"),
 
                 new BasicShaderResource("shader.basic", "shaderfile.basic.vert", "shaderfile.basic.frag"),
                 new SkyboxShaderResource("shader.skybox", "shaderfile.skybox.vert", "shaderfile.skybox.frag"),

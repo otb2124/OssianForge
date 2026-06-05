@@ -29,6 +29,10 @@ namespace OssianForge.Engine.Resources.Animations
                     ?? throw new Exception($"AnimationFile not found: '{fileId}'");
                 Clips.AddRange(animFile.Clips);
             }
+
+            // Log all loaded clip names so you know exactly what to call Play() with
+            foreach (var clip in Clips)
+                Console.WriteLine($"[ANIMRSOURCE] Loaded clip: '{clip.Name}'");
         }
 
         public void Play(string clipName, bool loop = true)

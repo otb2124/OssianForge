@@ -54,28 +54,21 @@ namespace OssianForge.Engine.Nodes.Props
             Matrix4x4? animated = AnimationResource.TryGetBoneTransform(node.Name);
             Matrix4x4 local = animated ?? node.LocalTransform;
 
-            // --- CONVENTION PROOF ---
-            // System.Numerics uses ROW-VECTOR convention: v' = v * M.
-            // Uploading a System.Numerics matrix with UniformMatrix4(transpose=false)
-            // causes OpenGL to see it transposed (because SN is row-major, GL is column-major).
-            // GLSL then does mat*vec, which is (SN_matrix^T)^T * v = SN_matrix * v.
-            // Net result: GLSL mat*vec == C# v*mat. The two conventions are consistent.
-            //
-            // Global transform in column-vector:
-            //   G_child_col = G_parent_col * L_child_col
-            //
-            // Transposing both sides (col→row):
-            //   G_child_rv = (G_parent_col * L_child_col)^T
-            //              = L_child_col^T * G_parent_col^T
-            //              = L_child_rv  *  G_parent_rv
-            //
-            // Therefore in row-vector: global = local * parentTransform
+            // Row-vector convention (System.Numerics): global = local * parentTransform.
+            // See convention proof in comments below.
             Matrix4x4 global = local * parentTransform;
 
             int idx = bones.FindIndex(b => b.Name == node.Name);
             if (idx >= 0)
             {
-                // Skinning formula derivation (column-vector standard):
+                // --- CONVENTION PROOF ---
+                // System.Numerics uses ROW-VECTOR convention: v' = v * M.
+                // Uploading a System.Numerics matrix with UniformMatrix4(transpose=false)
+                // causes OpenGL to see it transposed (because SN is row-major, GL is column-major).
+                // GLSL then does mat*vec, which is (SN_matrix^T)^T * v = SN_matrix * v.
+                // Net result: GLSL mat*vec == C# v*mat. The two conventions are consistent.
+                //
+                // Skinning formula (column-vector standard):
                 //   v_skinned_col = AnimGlobal_col * OffsetMatrix_col * v_col
                 //
                 // In row-vector: palette_rv = (AnimGlobal_col * OffsetMatrix_col)^T
@@ -87,10 +80,30 @@ namespace OssianForge.Engine.Nodes.Props
                 // so palette == Identity — vertices stay exactly where they are. ✓
                 palette[idx] = bones[idx].OffsetMatrix * global;
                 matched++;
-            }
 
-            foreach (var child in node.Children)
-                WalkSkeleton(child, global, bones, palette, ref matched);
+                // This node IS a real bone — propagate its full global transform to children.
+                foreach (var child in node.Children)
+                    WalkSkeleton(child, global, bones, palette, ref matched);
+            }
+            else
+            {
+                // This node is NOT a bone (e.g. scene RootNode, Armature helper, or any
+                // other FBX structural node that has no OffsetMatrix in the mesh).
+                //
+                // FIX: Do NOT accumulate its local transform into parentTransform.
+                //
+                // The OffsetMatrix for every real bone is already the full inverse bind-pose
+                // in mesh space, computed by Assimp from the entire chain root→bone. If we
+                // also fold non-bone ancestor transforms into `global`, those transforms get
+                // applied twice — once via the accumulated parentTransform here, and once
+                // implicitly inside the OffsetMatrix — causing the legs/hips to explode.
+                //
+                // Passing `parentTransform` unchanged (instead of `global`) makes non-bone
+                // nodes transparent to the skinning math. Only actual bone nodes contribute
+                // to the accumulated global transform.
+                foreach (var child in node.Children)
+                    WalkSkeleton(child, parentTransform, bones, palette, ref matched);
+            }
         }
 
         public Matrix4x4 GetBoneTransform(string boneName)

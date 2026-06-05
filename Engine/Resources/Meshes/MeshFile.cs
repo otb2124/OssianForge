@@ -76,28 +76,13 @@ namespace OssianForge.Engine.Resources.MeshFiles
                 var metadata = scene->MMetaData;
                 if (metadata != null)
                 {
-                    //Console.WriteLine($"[MESH] Metadata keys ({metadata->MNumProperties}):");
                     for (uint k = 0; k < metadata->MNumProperties; k++)
                     {
                         string key = metadata->MKeys[k].AsString;
                         var entry = metadata->MValues[k];
 
-                        // Log every key so we can see what Assimp provides.
-                        string valueStr = entry.MType switch
-                        {
-                            MetadataType.Double => (*(double*)entry.MData).ToString("F6"),
-                            MetadataType.Float => (*(float*)entry.MData).ToString("F6"),
-                            MetadataType.Int32 => (*(int*)entry.MData).ToString(),
-                            MetadataType.Int64 => (*(long*)entry.MData).ToString(),
-                            MetadataType.Bool => (*(bool*)entry.MData).ToString(),
-                            _ => $"<type {entry.MType}>"
-                        };
-                        //Console.WriteLine($"  [{k}] \"{key}\" ({entry.MType}) = {valueStr}");
-
                         if (key == "UnitScaleFactor")
                         {
-                            // Assimp may store this as Double, Float, or Int32 depending
-                            // on the FBX exporter. Handle all three.
                             double raw = entry.MType switch
                             {
                                 MetadataType.Double => *(double*)entry.MData,
@@ -106,23 +91,11 @@ namespace OssianForge.Engine.Resources.MeshFiles
                                 MetadataType.Int64 => *(long*)entry.MData,
                                 _ => 1.0
                             };
-                            // UnitScaleFactor is centimetres-per-unit in the FBX sense:
-                            //   1   → file is already in metres  (scale = 1.0)
-                            //   100 → file is in centimetres     (scale = 0.01)
                             unitScale = (float)(raw * 0.01);
-                            //Console.WriteLine($"[MESH] UnitScaleFactor={raw} → unitScale={unitScale}");
                         }
                     }
                 }
-                else
-                {
-                    //Console.WriteLine("[MESH] No metadata found in scene.");
-                }
 
-                // Safety-net: if unitScale is still 1 (nothing found or factor was 1),
-                // check whether the first vertex position looks like centimetres by
-                // seeing if the mesh is unreasonably large (>10 units on any axis).
-                // Mixamo FBX without metadata is always centimetres.
                 if (unitScale == 1f && scene->MNumMeshes > 0)
                 {
                     var firstMesh = scene->MMeshes[0];
@@ -131,23 +104,11 @@ namespace OssianForge.Engine.Resources.MeshFiles
                         var p = firstMesh->MVertices[0];
                         float maxCoord = Math.Max(Math.Abs(p.X), Math.Max(Math.Abs(p.Y), Math.Abs(p.Z)));
                         if (maxCoord > 10f)
-                        {
                             unitScale = 0.01f;
-                            //Console.WriteLine($"[MESH] No UnitScaleFactor found but first vertex coord is {maxCoord:F1}" + $" — assuming centimetres, applying unitScale=0.01");
-                        }
-                        else
-                        {
-                            //Console.WriteLine($"[MESH] No UnitScaleFactor found, first vertex coord={maxCoord:F3}, keeping unitScale=1");
-                        }
                     }
                 }
 
-                //Console.WriteLine($"[MESH] Final unitScale = {unitScale}");
-
                 RootNode = BuildSkeletonNode(scene->MRootNode);
-                // Scale every skeleton-node translation so bone positions are in the
-                // same units as the (already-scaled) vertex positions.
-                // In System.Numerics row-vector layout, translation is in M41/M42/M43.
                 if (unitScale != 1f)
                     ScaleSkeletonTranslations(RootNode, unitScale);
 
@@ -157,9 +118,6 @@ namespace OssianForge.Engine.Resources.MeshFiles
                     int materialIndex = (int)mesh->MMaterialIndex;
                     var verts = new List<float>();
 
-                    // Map each original Assimp vertex index to all flat VBO positions it was
-                    // emitted at during face unrolling. Bone weights from Assimp reference
-                    // original indices; we need them in flat VBO space for UploadBoneData.
                     int originalVertexCount = (int)mesh->MNumVertices;
                     var originalToFlat = new List<int>[originalVertexCount];
                     for (int i = 0; i < originalVertexCount; i++)
@@ -204,9 +162,6 @@ namespace OssianForge.Engine.Resources.MeshFiles
                         var bone = mesh->MBones[b];
                         var offsetMatrix = ToMatrix4x4(bone->MOffsetMatrix);
 
-                        // OffsetMatrix encodes the inverse bind-pose in the FBX file's
-                        // native units. Its translation column must match the scaled vertices.
-                        // In System.Numerics row-vector: translation lives in M41/M42/M43.
                         if (unitScale != 1f)
                         {
                             offsetMatrix.M41 *= unitScale;
@@ -242,8 +197,8 @@ namespace OssianForge.Engine.Resources.MeshFiles
             string rawName = node->MName.AsString;
             string realName = StripPivotSuffix(rawName);
 
-            // Each Assimp node's MTransformation is stored row-major (column-vector convention).
-            // Transposing it gives us the equivalent row-vector matrix (System.Numerics convention).
+            // Assimp stores MTransformation in column-vector convention (row-major memory).
+            // Transpose → row-vector convention (System.Numerics).
             Matrix4x4 combinedLocal = Matrix4x4.Transpose(node->MTransformation);
             var realChildren = new List<SkeletonNode>();
 
@@ -268,38 +223,37 @@ namespace OssianForge.Engine.Resources.MeshFiles
         }
 
         /// <summary>
-        /// Absorbs a chain of FBX pivot helper nodes (all belonging to the same real bone)
-        /// into a single combined local transform, and surfaces any real child bones it
-        /// discovers along the way into <paramref name="realChildren"/>.
+        /// Absorbs a chain of FBX pivot helper nodes (all sharing the same real bone name)
+        /// into a single combined local transform.
         ///
-        /// FBX pivot chain (Assimp column-vector order, parent → child):
-        ///   Bone  →  Bone_Translation  →  Bone_PreRotation  →  Bone_Rotation  → ...
-        /// Each child's transform is LOCAL to its parent. The full combined local is:
-        ///   Trans_col * PreRot_col * Rot_col * PostRot_col * Scale_col   (column-vector)
+        /// In row-vector convention (System.Numerics), transforms compose left-to-right:
+        ///   v' = v * A * B   means "apply A first, then B"
+        ///   WorldChild = WorldParent * LocalChild
         ///
-        /// After Transpose (→ row-vector, System.Numerics convention), the equivalent is:
-        ///   Scale_rv * PostRot_rv * Rot_rv * PreRot_rv * Trans_rv
-        /// which is built by prepending each new pivot to the LEFT:
-        ///   accumulated = pivotLocal * accumulated   ← NEW pivot on LEFT
+        /// The FBX pivot chain in tree order (each node is a LOCAL child of the previous):
+        ///   Bone → Bone_Translation → Bone_PreRotation → Bone_Rotation → Bone_PostRotation → Bone_Scale
         ///
-        /// The previous code used  accumulated = accumulated * pivotLocal  (right-append),
-        /// which is the WRONG order in row-vector space and produced incorrect bone rotations,
-        /// causing the Y-translation (~209 cm) to bleed into X/Z through the rotation part
-        /// of the offset matrix and producing the "mountain" deformation.
+        /// Combined local in row-vector (each successive pivot RIGHT-appended):
+        ///   Combined = Local_Bone * Local_Trans * Local_PreRot * Local_Rot * Local_PostRot * Local_Scale
+        ///
+        /// Therefore: accumulated = accumulated * pivotLocal  (RIGHT-append each new pivot)
+        ///
+        /// History note: a previous version used LEFT-prepend (pivotLocal * accumulated),
+        /// based on a transposition derivation that double-counted the transpose step.
+        /// Left-prepend gives the reverse order, producing mirrored/exploded limbs on
+        /// animations that exercise the full 3-axis rotation range (e.g. jump, overhead).
+        /// Walk cycles mostly swing arms forward/back and hide the error. Jump does not.
         /// </summary>
         private unsafe Matrix4x4 AbsorbPivotChain(Node* pivotNode, Matrix4x4 accumulated,
                                                    List<SkeletonNode> realChildren)
         {
             string pivotReal = StripPivotSuffix(pivotNode->MName.AsString);
 
-            // Transpose: Assimp row-major (col-vector) → row-vector (System.Numerics)
+            // Transpose: Assimp column-vector (row-major) → row-vector (System.Numerics)
             Matrix4x4 pivotLocal = Matrix4x4.Transpose(pivotNode->MTransformation);
 
-            // BUG FIX: prepend the new pivot on the LEFT so the pivot chain builds up
-            // in the correct order for row-vector convention.
-            // Previous: accumulated = accumulated * pivotLocal  (wrong — right-append)
-            // Correct:  accumulated = pivotLocal * accumulated  (left-prepend)
-            accumulated = pivotLocal * accumulated;
+            // RIGHT-append: each successive pivot in the chain is applied after the previous.
+            accumulated = accumulated * pivotLocal;
 
             for (uint i = 0; i < pivotNode->MNumChildren; i++)
             {
@@ -323,11 +277,6 @@ namespace OssianForge.Engine.Resources.MeshFiles
             return name;
         }
 
-        /// <summary>
-        /// Recursively scales the translation part of every skeleton node's LocalTransform.
-        /// In System.Numerics row-vector convention, translation is stored in M41/M42/M43.
-        /// Must be called after BuildSkeletonNode so that pivot chains are already collapsed.
-        /// </summary>
         private static void ScaleSkeletonTranslations(SkeletonNode node, float scale)
         {
             node.LocalTransform.M41 *= scale;
