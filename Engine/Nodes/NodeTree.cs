@@ -108,7 +108,7 @@ namespace OssianForge.Engine.Nodes
             remy.AddProperty(new PhysicalProperty(false, true, 1f, 1f));
             remy.AddProperty(new AnimationProperty("animation.remy"));
 
-            remy.GetProperty<AnimationProperty>().Play("idle");
+            remy.GetProperty<AnimationProperty>().Play("jumping");
 
             scene.AddChild(camera);
             scene.AddChild(sky);

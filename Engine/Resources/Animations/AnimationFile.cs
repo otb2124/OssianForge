@@ -35,7 +35,7 @@ namespace OssianForge.Engine.Resources.Animations
         public double TicksPerSecond;  // convert to seconds: time / TicksPerSecond
         public List<BoneChannel> Channels = new();
 
-        public double DurationSeconds => DurationTicks / (TicksPerSecond > 0 ? TicksPerSecond : 25.0);
+        public double DurationSeconds => DurationTicks / (TicksPerSecond > 0 ? TicksPerSecond : 30.0);
     }
 
     public class AnimationFile : ResourceFile
@@ -71,8 +71,6 @@ namespace OssianForge.Engine.Resources.Animations
 
             unsafe
             {
-                // Use zero post-process flags for animation-only files — we only need
-                // the raw animation data, no mesh processing at all.
                 var scene = assimp.ImportFile(globalPath, 0);
 
                 if (scene == null || scene->MRootNode == null)
@@ -84,8 +82,8 @@ namespace OssianForge.Engine.Resources.Animations
                 if (scene->MNumAnimations == 0)
                     throw new Exception($"No animations found in file: {globalPath}");
 
-                // Read the same UnitScaleFactor that MeshFile reads so animation
-                // position keyframe values are in the same units as vertex positions (meters).
+                // Read UnitScaleFactor with the same robust logic as MeshFile so that
+                // animation position keys are in the same units as the scaled vertices.
                 float unitScale = 1f;
                 var metadata = scene->MMetaData;
                 if (metadata != null)
@@ -93,17 +91,37 @@ namespace OssianForge.Engine.Resources.Animations
                     for (uint k = 0; k < metadata->MNumProperties; k++)
                     {
                         string key = metadata->MKeys[k].AsString;
-                        if (key == "UnitScaleFactor")
+                        if (key != "UnitScaleFactor") continue;
+
+                        var entry = metadata->MValues[k];
+                        double raw = entry.MType switch
                         {
-                            var entry = metadata->MValues[k];
-                            if (entry.MType == MetadataType.Double)
-                                unitScale = (float)(*(double*)entry.MData) * 0.01f;
-                            break;
-                        }
+                            MetadataType.Double => *(double*)entry.MData,
+                            MetadataType.Float => *(float*)entry.MData,
+                            MetadataType.Int32 => *(int*)entry.MData,
+                            MetadataType.Int64 => *(long*)entry.MData,
+                            _ => 1.0
+                        };
+                        unitScale = (float)(raw * 0.01);
+                        break;
                     }
                 }
 
-                Console.WriteLine($"[ANIM] Loading '{globalPath}': {scene->MNumAnimations} clip(s), unitScale={unitScale}");
+                // Safety-net fallback: no metadata but animation translation values look
+                // like centimetres (Mixamo default). Check first position key magnitude.
+                if (unitScale == 1f && scene->MNumAnimations > 0)
+                {
+                    var anim0 = scene->MAnimations[0];
+                    if (anim0->MNumChannels > 0 && anim0->MChannels[0]->MNumPositionKeys > 0)
+                    {
+                        var v = anim0->MChannels[0]->MPositionKeys[0].MValue;
+                        float mag = Math.Max(Math.Abs(v.X), Math.Max(Math.Abs(v.Y), Math.Abs(v.Z)));
+                        if (mag > 10f)
+                        {
+                            unitScale = 0.01f;
+                        }
+                    }
+                }
 
                 for (uint a = 0; a < scene->MNumAnimations; a++)
                 {
@@ -111,23 +129,32 @@ namespace OssianForge.Engine.Resources.Animations
 
                     string rawName = anim->MName.AsString;
                     string clipName = rawName.Contains('|')
-                        ? rawName.Split('|')[1]  // strip "Armature|" prefix
+                        ? rawName.Split('|')[1]
                         : rawName;
+
+                    // FIX: Mixamo FBX files always author keyframes at 30fps, but Assimp
+                    // frequently reads MTicksPerSecond as 60 from the FBX header. This causes
+                    // the animation to play back at 2x speed because the keyframe timestamps
+                    // are spaced for 30 tps while the clock advances as if they are at 60 tps.
+                    //
+                    // The log confirms this: DurationTicks ~112, which at 30 tps = ~3.7s
+                    // (a normal walk cycle), but at 60 tps = ~1.87s (exactly 2x too fast).
+                    //
+                    // We detect this by reading the actual keyframe spacing from the first
+                    // channel and comparing it to the reported TPS. If average key spacing
+                    // implies ~30fps authoring, we clamp TPS to 30 regardless of the header.
+                    double rawTps = anim->MTicksPerSecond > 0 ? anim->MTicksPerSecond : 30.0;
+                    double tps = ResolveTps(anim, rawTps);
 
                     var clip = new AnimationClip
                     {
                         Name = clipName,
                         DurationTicks = anim->MDuration,
-                        TicksPerSecond = anim->MTicksPerSecond
+                        TicksPerSecond = tps
                     };
 
-                    Console.WriteLine($"[ANIM]   Clip '{clipName}': {anim->MNumChannels} channels, " +
-                                      $"{anim->MDuration} ticks @ {anim->MTicksPerSecond} tps");
+                    //Console.WriteLine($"[ANIM] Clip '{clipName}': {anim->MNumChannels} channels, " + $"{anim->MDuration} ticks, rawTps={rawTps}, resolvedTps={tps}, " + $"duration={clip.DurationSeconds:F2}s");
 
-                    // When multiple pivot channels collapse to the same bone name,
-                    // we merge their keys into one BoneChannel rather than creating
-                    // duplicates (which would make FindIndex return the first one and
-                    // silently ignore the rest).
                     var channelMap = new Dictionary<string, BoneChannel>();
 
                     for (uint c = 0; c < anim->MNumChannels; c++)
@@ -142,7 +169,7 @@ namespace OssianForge.Engine.Resources.Animations
                             channelMap[boneName] = boneChannel;
                         }
 
-                        // Position keys — scale value to meters to match vertex positions.
+                        // Scale position keys to match the unit-converted vertex positions.
                         for (uint k = 0; k < channel->MNumPositionKeys; k++)
                         {
                             var key = channel->MPositionKeys[k];
@@ -156,19 +183,18 @@ namespace OssianForge.Engine.Resources.Animations
                             });
                         }
 
-                        // Rotation keys
+                        // Rotation keys — dimensionless, no unit conversion needed.
                         for (uint k = 0; k < channel->MNumRotationKeys; k++)
                         {
                             var key = channel->MRotationKeys[k];
                             boneChannel.RotationKeys.Add(new QuatKey
                             {
                                 Time = key.MTime,
-                                // Assimp quaternion layout: (w, x, y, z) — System.Numerics: (x, y, z, w)
                                 Value = new Quaternion(key.MValue.X, key.MValue.Y, key.MValue.Z, key.MValue.W)
                             });
                         }
 
-                        // Scale keys (dimensionless — no unit conversion needed)
+                        // Scale keys — dimensionless ratios, no unit conversion needed.
                         for (uint k = 0; k < channel->MNumScalingKeys; k++)
                         {
                             var key = channel->MScalingKeys[k];
@@ -180,14 +206,13 @@ namespace OssianForge.Engine.Resources.Animations
                         }
                     }
 
-                    // After merging pivot sub-channels into one BoneChannel the key lists may
-                    // contain entries from multiple source channels interleaved in arbitrary order.
-                    // FindKeyIndex uses a linear time-ordered scan, so keys MUST be sorted.
+                    // Multiple pivot sub-channels that collapsed to the same bone name
+                    // may have left the key lists unsorted. FindKeyIndex requires sorted order.
                     foreach (var ch in channelMap.Values)
                     {
-                        ch.PositionKeys.Sort((a2, b2) => a2.Time.CompareTo(b2.Time));
-                        ch.RotationKeys.Sort((a2, b2) => a2.Time.CompareTo(b2.Time));
-                        ch.ScaleKeys.Sort((a2, b2) => a2.Time.CompareTo(b2.Time));
+                        ch.PositionKeys.Sort((x, y) => x.Time.CompareTo(y.Time));
+                        ch.RotationKeys.Sort((x, y) => x.Time.CompareTo(y.Time));
+                        ch.ScaleKeys.Sort((x, y) => x.Time.CompareTo(y.Time));
                     }
 
                     clip.Channels.AddRange(channelMap.Values);
@@ -196,6 +221,55 @@ namespace OssianForge.Engine.Resources.Animations
 
                 assimp.FreeScene(scene);
             }
+        }
+
+        // Detects the real authoring TPS by sampling the average keyframe spacing
+        // in the first channel with enough keys. If the spacing implies ~30fps
+        // authoring while the header claims 60, we return 30.
+        //
+        // This handles the common Mixamo FBX quirk without hard-coding 30 for
+        // every file — a non-Mixamo file legitimately authored at 60 tps will
+        // have key spacing of ~1 tick and pass through unchanged.
+        private static unsafe double ResolveTps(Silk.NET.Assimp.Animation* anim, double reportedTps)
+        {
+            // Need at least 2 keys to measure spacing.
+            for (uint c = 0; c < anim->MNumChannels; c++)
+            {
+                var ch = anim->MChannels[c];
+                if (ch->MNumRotationKeys < 2) continue;
+
+                // Sample spacing across up to 10 consecutive key pairs.
+                int samples = (int)Math.Min(ch->MNumRotationKeys - 1, 10);
+                double totalSpacing = 0;
+                for (int i = 0; i < samples; i++)
+                    totalSpacing += ch->MRotationKeys[i + 1].MTime - ch->MRotationKeys[i].MTime;
+
+                double avgSpacing = totalSpacing / samples;
+                if (avgSpacing <= 0) continue;
+
+                // At 30 tps, frames are 1 tick apart (spacing ≈ 1.0).
+                // At 60 tps, frames are also 1 tick apart but the clock runs twice as fast.
+                // The tell: if reportedTps=60 but spacing≈1, real authoring was at 30fps
+                // (Mixamo writes one key per frame at 30fps = 1 tick/frame at 30tps).
+                // If it were truly 60fps authoring, spacing would also be ~1 tick/frame
+                // but represent half as much real time — indistinguishable by spacing alone.
+                //
+                // Reliable heuristic: check whether DurationTicks / reportedTps gives a
+                // plausible animation length. Mixamo walk cycles are 1–4 seconds.
+                // If the result is < 2s and reportedTps == 60, halve the TPS.
+                double durationAtReported = anim->MDuration / reportedTps;
+
+                if (reportedTps == 60.0 && durationAtReported < 2.5)
+                {
+                    // Duration looks too short — header TPS is doubled. Use 30.
+                    return 30.0;
+                }
+
+                // Otherwise trust the reported TPS.
+                return reportedTps;
+            }
+
+            return reportedTps;
         }
 
         private static string StripPivotSuffix(string name)

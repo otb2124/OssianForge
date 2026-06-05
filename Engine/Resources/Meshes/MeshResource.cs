@@ -56,7 +56,7 @@ namespace OssianForge.Engine.Resources.Meshes
                             AllBones.Add(bone);
                 }
 
-                Console.WriteLine($"[MESH] Loaded '{ResourceId}': {SubMeshes.Count} submeshes, {AllBones.Count} unique bones");
+                //Console.WriteLine($"[MESH] Loaded '{ResourceId}': {SubMeshes.Count} submeshes, {AllBones.Count} unique bones");
             }
         }
 

@@ -26,6 +26,8 @@ namespace OssianForge.Engine.Graphics
         public Vector2D<int> WindowSize;
         public string WindowTitle;
         public Vector2D<int> Resolution;
+        public const int TargetFramesPerSecond = 0;
+        public const int TargetUpdatesPerSecond = 0;
 
         public string CurrentCameraNode;
 
@@ -44,7 +46,9 @@ namespace OssianForge.Engine.Graphics
             var options = WindowOptions.Default with
             {
                 Size = WindowSize,
-                Title = WindowTitle
+                Title = WindowTitle,
+                FramesPerSecond = TargetFramesPerSecond,
+                UpdatesPerSecond = TargetUpdatesPerSecond,
             };
 
             Window = Silk.NET.Windowing.Window.Create(options);

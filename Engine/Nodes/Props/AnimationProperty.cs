@@ -12,8 +12,6 @@ namespace OssianForge.Engine.Nodes.Props
         public AnimationResource AnimationResource { get; private set; }
         public Matrix4x4[] BonePalette { get; private set; } = Array.Empty<Matrix4x4>();
 
-        private bool _loggedOnce = false;
-
         public AnimationProperty(string animationResourceId)
         {
             AnimationResource = Engine.Resources.GetResource(animationResourceId) as AnimationResource
@@ -48,43 +46,6 @@ namespace OssianForge.Engine.Nodes.Props
 
             int matched = 0;
             WalkSkeleton(skeleton, Matrix4x4.Identity, allBones, BonePalette, ref matched);
-
-            if (!_loggedOnce)
-            {
-                _loggedOnce = true;
-                Console.WriteLine($"[ANIM] Palette built: {matched}/{allBones.Count} bones matched.");
-
-                // Helper: format a matrix translation row
-                static string T(Matrix4x4 m) => $"({m.M41:F3}, {m.M42:F3}, {m.M43:F3})";
-                static string D(Matrix4x4 m) // diagonal (scale/rotation sanity)
-                    => $"diag=({m.M11:F3},{m.M22:F3},{m.M33:F3},{m.M44:F3})";
-
-                // Bind-pose sanity: at bind/idle pose every palette entry should be ~Identity.
-                // Translation T should be ~(0,0,0) and diagonal ~(1,1,1,1).
-                var boneNames = new[] {
-                    "mixamorig:Hips", "Hips",
-                    "mixamorig:Spine", "Spine",
-                    "mixamorig:LeftArm", "LeftArm",
-                };
-                Console.WriteLine("[DIAG] Bind-pose palette check (all should be ~Identity):");
-                foreach (var name in boneNames)
-                {
-                    int i = allBones.FindIndex(b => b.Name == name);
-                    if (i < 0) continue;
-                    var p = BonePalette[i];
-                    Console.WriteLine($"  [{name}]  T={T(p)}  {D(p)}");
-                }
-
-                // Also dump the raw skeleton LocalTransform translation for Hips
-                // so we can verify the pivot chain absorbed correctly.
-                var hipsNode = FindSkeletonNode(skeleton, "mixamorig:Hips") ??
-                               FindSkeletonNode(skeleton, "Hips");
-                if (hipsNode != null)
-                {
-                    Console.WriteLine($"[DIAG] Hips skeleton LocalTransform T={T(hipsNode.LocalTransform)}  {D(hipsNode.LocalTransform)}");
-                    Console.WriteLine($"[DIAG] Hips OffsetMatrix            T={T(allBones[allBones.FindIndex(b => b.Name == hipsNode.Name)].OffsetMatrix)}");
-                }
-            }
         }
 
         private void WalkSkeleton(SkeletonNode node, Matrix4x4 parentTransform,

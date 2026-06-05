@@ -57,9 +57,19 @@ namespace OssianForge.Engine.Resources.Animations
 
         public void Update(double deltaTime)
         {
+            //Console.WriteLine($"[ANIM] delta={deltaTime:F4} time={CurrentTime:F2}");
+
             if (!IsPlaying || CurrentClip == null) return;
-            double tps = CurrentClip.TicksPerSecond > 0 ? CurrentClip.TicksPerSecond : 25.0;
+
+            // Clamp delta to a max of one frame at 30fps (0.0333s) so that
+            // frame-rate spikes or a mismatched update rate can't over-advance the clock.
+            // Also guards against the Silk.NET "catch-up" double-tick on high refresh monitors.
+            const double maxDelta = 1.0 / 30.0;
+            deltaTime = Math.Min(deltaTime, maxDelta);
+
+            double tps = CurrentClip.TicksPerSecond > 0 ? CurrentClip.TicksPerSecond : 30.0;
             CurrentTime += deltaTime * tps;
+
             if (CurrentTime >= CurrentClip.DurationTicks)
             {
                 if (IsLooping) CurrentTime %= CurrentClip.DurationTicks;
