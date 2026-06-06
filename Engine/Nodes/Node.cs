@@ -1,8 +1,4 @@
 ﻿using OssianForge.Engine.Nodes.Props;
-using Silk.NET.Assimp;
-using Silk.NET.OpenGL;
-using System.Numerics;
-using MaterialProperty = OssianForge.Engine.Nodes.Props.MaterialProperty;
 
 namespace OssianForge.Engine.Nodes
 {

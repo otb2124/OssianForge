@@ -43,7 +43,7 @@ namespace OssianForge.Engine.Graphics
 
         public void Initialize()
         {
-            var options = WindowOptions.Default with
+            WindowOptions options = WindowOptions.Default with
             {
                 Size = WindowSize,
                 Title = WindowTitle,

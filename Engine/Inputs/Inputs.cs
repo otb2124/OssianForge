@@ -5,6 +5,8 @@ namespace OssianForge.Engine.Inputs
 {
     public class Inputs
     {
+        public IInputContext InputContext;
+
         public FlatKeyboard keyboard;
         public FlatMouse mouse;
         public KeyHandler KeyHandler;
@@ -18,9 +20,9 @@ namespace OssianForge.Engine.Inputs
 
         public void OnLoad()
         {
-            var input = Engine.Graphics.Window.CreateInput();
-            keyboard.Initialize(input.Keyboards[0]);
-            mouse.Initialize(input.Mice[0]);
+            InputContext = Engine.Graphics.Window.CreateInput();
+            keyboard.Initialize(InputContext.Keyboards[0]);
+            mouse.Initialize(InputContext.Mice[0]);
             mouse.SetCursorMode(CursorMode.Disabled);
         }
 
