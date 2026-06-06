@@ -10,6 +10,32 @@ namespace OssianForge.Engine.Utils
     public static class Math
     {
 
+        public class Signal
+        {
+            private readonly List<Action> _listeners = new();
+
+            public void Connect(Action listener) => _listeners.Add(listener);
+            public void Disconnect(Action listener) => _listeners.Remove(listener);
+            public void Emit()
+            {
+                foreach (var listener in _listeners)
+                    listener?.Invoke();
+            }
+        }
+
+        public class Signal<T>
+        {
+            private readonly List<Action<T>> _listeners = new();
+
+            public void Connect(Action<T> listener) => _listeners.Add(listener);
+            public void Disconnect(Action<T> listener) => _listeners.Remove(listener);
+            public void Emit(T value)
+            {
+                foreach (var listener in _listeners)
+                    listener?.Invoke(value);
+            }
+        }
+
         public struct Transform
         {
             public Vector3 Position;

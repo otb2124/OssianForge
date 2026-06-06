@@ -8,5 +8,11 @@ namespace OssianForge.Engine.Nodes.Props
 {
     public class GroupProperty : NodeProperty
     {
+        public string GroupId { get; }
+
+        public GroupProperty(string groupId)
+        {
+            GroupId = groupId;
+        }
     }
 }

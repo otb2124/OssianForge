@@ -186,5 +186,14 @@ namespace OssianForge.Engine.Nodes
         }
 
         public static void Enqueue(Action action) => _pendingActions.Enqueue(action);
+
+
+        public List<Node> GetNodesInGroup(string groupId)
+        {
+            return Nodes
+                .Where(n => n.GetProperties<GroupProperty>()
+                .Any(g => g.GroupId == groupId))
+                .ToList();
+        }
     }
 }

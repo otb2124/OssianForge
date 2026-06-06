@@ -110,6 +110,26 @@ namespace OssianForge.Engine.Nodes
 
             remy.GetProperty<AnimationProperty>().Play("remy.waving", true, 1f);
 
+
+
+
+
+            //text
+            var text = new Node();
+            text.Name = "text";
+            text.AddProperty(new TransformProperty(new Transform(new Vector3(0f, 5f, 0f), Vector3.Zero, Vector3.One)));
+            text.AddProperty(new MeshProperty("mesh.quad", true));
+
+            /*
+            text.AddProperty(new TextMaterialProperty("font.roboto", "shader.sdf")
+            {
+                Content = "Hello World",
+                FontSize = 64f,
+                Color = new Vector4(1, 1, 1, 1),
+                TextureWidth = 512,
+                TextureHeight = 128
+            });*/
+
             scene.AddChild(camera);
             scene.AddChild(sky);
             scene.AddChild(plane);
@@ -120,6 +140,7 @@ namespace OssianForge.Engine.Nodes
             scene.AddChild(ball1);
             scene.AddChild(cube1);
             scene.AddChild(remy);
+            scene.AddChild(text);
 
 
             tree.AddChild(scene);

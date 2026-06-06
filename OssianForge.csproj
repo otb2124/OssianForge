@@ -20,6 +20,9 @@
     <None Remove="Content\ShaderFiles\debugline.vert" />
     <None Remove="Content\ShaderFiles\post.frag" />
     <None Remove="Content\ShaderFiles\post.vert" />
+    <None Remove="Content\ShaderFiles\sdf.frag" />
+    <None Remove="Content\ShaderFiles\sdf.screenspace.vert" />
+    <None Remove="Content\ShaderFiles\sdf.vert" />
     <None Remove="Content\ShaderFiles\skybox.frag" />
     <None Remove="Content\ShaderFiles\skybox.vert" />
     <None Remove="Content\ShaderFiles\sprite.frag" />
@@ -55,6 +58,15 @@
     <Content Include="Content\MeshFiles\remy.fbx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Content\ShaderFiles\sdf.screenspace.vert">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\ShaderFiles\sdf.frag">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\ShaderFiles\sdf.vert">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Content\ShaderFiles\Basic.frag">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -85,79 +97,79 @@
     <Content Include="Content\ShaderFiles\sprite.vert">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\TextureFiles\barrel.jpg">
+    <Content Include="Content\TextureFiles\3d\barrel.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\TextureFiles\brick.png">
+    <Content Include="Content\TextureFiles\3d\brick.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\TextureFiles\brick_d.jpg">
+    <Content Include="Content\TextureFiles\3d\brick_d.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\TextureFiles\brick_n.jpg">
+    <Content Include="Content\TextureFiles\3d\brick_n.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\TextureFiles\dices.png">
+    <Content Include="Content\TextureFiles\3d\dices.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\TextureFiles\DonutBaseColor.jpg">
+    <Content Include="Content\TextureFiles\3d\DonutBaseColor.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\TextureFiles\house_brick.jpg">
+    <Content Include="Content\TextureFiles\3d\house_brick.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\TextureFiles\house_windows.jpg">
+    <Content Include="Content\TextureFiles\3d\house_windows.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\TextureFiles\house_wood.jpg">
+    <Content Include="Content\TextureFiles\3d\house_wood.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\TextureFiles\IcingBaseColor.jpg">
+    <Content Include="Content\TextureFiles\3d\IcingBaseColor.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\TextureFiles\panoramic-sea-back.png">
+    <Content Include="Content\TextureFiles\3d\panoramic-sea-back.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\TextureFiles\panoramic-sea-bottom.png">
+    <Content Include="Content\TextureFiles\3d\panoramic-sea-bottom.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\TextureFiles\panoramic-sea-front.png">
+    <Content Include="Content\TextureFiles\3d\panoramic-sea-front.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\TextureFiles\panoramic-sea-left.png">
+    <Content Include="Content\TextureFiles\3d\panoramic-sea-left.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\TextureFiles\panoramic-sea-right.png">
+    <Content Include="Content\TextureFiles\3d\panoramic-sea-right.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\TextureFiles\panoramic-sea-top.png">
+    <Content Include="Content\TextureFiles\3d\panoramic-sea-top.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\TextureFiles\panoramic-sky-back.png">
+    <Content Include="Content\TextureFiles\3d\panoramic-sky-back.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\TextureFiles\panoramic-sky-bottom.png">
+    <Content Include="Content\TextureFiles\3d\panoramic-sky-bottom.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\TextureFiles\panoramic-sky-front.png">
+    <Content Include="Content\TextureFiles\3d\panoramic-sky-front.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\TextureFiles\panoramic-sky-left.png">
+    <Content Include="Content\TextureFiles\3d\panoramic-sky-left.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\TextureFiles\panoramic-sky-right.png">
+    <Content Include="Content\TextureFiles\3d\panoramic-sky-right.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\TextureFiles\panoramic-sky-top.png">
+    <Content Include="Content\TextureFiles\3d\panoramic-sky-top.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\TextureFiles\point_light.png">
+    <Content Include="Content\TextureFiles\3d\point_light.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\TextureFiles\point_light_sprite.png">
+    <Content Include="Content\TextureFiles\3d\point_light_sprite.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\TextureFiles\wood.jpg">
+    <Content Include="Content\TextureFiles\3d\wood.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
@@ -202,6 +214,12 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Content\AnimationFiles\remy.waving.fbx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Content\ConfigFiles\Fonts\roboto.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Content\TextureFiles\Fonts\roboto.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

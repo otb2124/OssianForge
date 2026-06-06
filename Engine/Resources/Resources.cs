@@ -1,5 +1,6 @@
 ﻿using OssianForge.Engine.Resources.Animations;
 using OssianForge.Engine.Resources.Colliders;
+using OssianForge.Engine.Resources.Fonts;
 using OssianForge.Engine.Resources.Meshes;
 using OssianForge.Engine.Resources.Scripts;
 using OssianForge.Engine.Resources.Shaders;
@@ -34,6 +35,9 @@ namespace OssianForge.Engine.Resources
                 { "shaderfile.sprite.frag", "ShaderFiles/sprite.frag"},
                 { "shaderfile.post.vert", "ShaderFiles/post.vert"},
                 { "shaderfile.post.frag", "ShaderFiles/post.frag"},
+                { "shaderfile.sdf.frag", "ShaderFiles/sdf.frag"},
+                { "shaderfile.sdf.vert", "ShaderFiles/sdf.vert"},
+                { "shaderfile.sdf.screenspace.vert", "ShaderFiles/sdf.screenspace.vert"},
 
                 { "meshfile.remy", "MeshFiles/remy.fbx"},
 
@@ -44,32 +48,34 @@ namespace OssianForge.Engine.Resources
                 { "animationfile.remy.backflip", "AnimationFiles/remy.backflip.fbx" },
                 { "animationfile.remy.waving", "AnimationFiles/remy.waving.fbx" },
 
-                { "texturefile.IcingBaseColor",  "TextureFiles/IcingBaseColor.jpg" },
-                { "texturefile.DonutBaseColor",  "TextureFiles/DonutBaseColor.jpg" },
-                { "texturefile.house.barrel",  "TextureFiles/barrel.jpg" },
-                { "texturefile.house.brick",  "TextureFiles/house_brick.jpg" },
-                { "texturefile.house.windows",  "TextureFiles/house_windows.jpg" },
-                { "texturefile.house.wood",  "TextureFiles/house_wood.jpg" },
-                { "texturefile.brick.d",  "TextureFiles/brick_d.jpg" },
-                { "texturefile.brick.n",  "TextureFiles/brick_n.jpg" },
-                { "texturefile.light",  "TextureFiles/point_light_sprite.png" },
-                { "texturefile.dices",  "TextureFiles/dices.png" },
+                { "texturefile.IcingBaseColor",  "TextureFiles/3d/IcingBaseColor.jpg" },
+                { "texturefile.DonutBaseColor",  "TextureFiles/3d/DonutBaseColor.jpg" },
+                { "texturefile.house.barrel",  "TextureFiles/3d/barrel.jpg" },
+                { "texturefile.house.brick",  "TextureFiles/3d/house_brick.jpg" },
+                { "texturefile.house.windows",  "TextureFiles/3d/house_windows.jpg" },
+                { "texturefile.house.wood",  "TextureFiles/3d/house_wood.jpg" },
+                { "texturefile.brick.d",  "TextureFiles/3d/brick_d.jpg" },
+                { "texturefile.brick.n",  "TextureFiles/3d/brick_n.jpg" },
+                { "texturefile.light",  "TextureFiles/3d/point_light_sprite.png" },
+                { "texturefile.dices",  "TextureFiles/3d/dices.png" },
+                { "texturefile.cubemap.skybox.sea.right", "TextureFiles/3d/panoramic-sea-right.png" },
+                { "texturefile.cubemap.skybox.sea.left", "TextureFiles/3d/panoramic-sea-left.png" },
+                { "texturefile.cubemap.skybox.sea.top", "TextureFiles/3d/panoramic-sea-top.png" },
+                { "texturefile.cubemap.skybox.sea.bottom", "TextureFiles/3d/panoramic-sea-bottom.png" },
+                { "texturefile.cubemap.skybox.sea.front", "TextureFiles/3d/panoramic-sea-front.png" },
+                { "texturefile.cubemap.skybox.sea.back", "TextureFiles/3d/panoramic-sea-back.png" },
+                { "texturefile.cubemap.skybox.sky.right", "TextureFiles/3d/panoramic-sky-right.png" },
+                { "texturefile.cubemap.skybox.sky.left", "TextureFiles/3d/panoramic-sky-left.png" },
+                { "texturefile.cubemap.skybox.sky.top", "TextureFiles/3d/panoramic-sky-top.png" },
+                { "texturefile.cubemap.skybox.sky.bottom", "TextureFiles/3d/panoramic-sky-bottom.png" },
+                { "texturefile.cubemap.skybox.sky.front", "TextureFiles/3d/panoramic-sky-front.png" },
+                { "texturefile.cubemap.skybox.sky.back", "TextureFiles/3d/panoramic-sky-back.png" },
 
-                { "texturefile.cubemap.skybox.sea.right", "TextureFiles/panoramic-sea-right.png" },
-                { "texturefile.cubemap.skybox.sea.left", "TextureFiles/panoramic-sea-left.png" },
-                { "texturefile.cubemap.skybox.sea.top", "TextureFiles/panoramic-sea-top.png" },
-                { "texturefile.cubemap.skybox.sea.bottom", "TextureFiles/panoramic-sea-bottom.png" },
-                { "texturefile.cubemap.skybox.sea.front", "TextureFiles/panoramic-sea-front.png" },
-                { "texturefile.cubemap.skybox.sea.back", "TextureFiles/panoramic-sea-back.png" },
-
-                { "texturefile.cubemap.skybox.sky.right", "TextureFiles/panoramic-sky-right.png" },
-                { "texturefile.cubemap.skybox.sky.left", "TextureFiles/panoramic-sky-left.png" },
-                { "texturefile.cubemap.skybox.sky.top", "TextureFiles/panoramic-sky-top.png" },
-                { "texturefile.cubemap.skybox.sky.bottom", "TextureFiles/panoramic-sky-bottom.png" },
-                { "texturefile.cubemap.skybox.sky.front", "TextureFiles/panoramic-sky-front.png" },
-                { "texturefile.cubemap.skybox.sky.back", "TextureFiles/panoramic-sky-back.png" },
+                { "texturefile.font.roboto", "TextureFiles/Fonts/roboto.png" },
 
                 //{ "scriptfile.StateProperty", "ScriptFiles/Nodes/Props/StateProperty.cs" }
+
+                { "configfile.font.roboto", "ConfigFiles/Fonts/roboto.json" }
             };
 
 
@@ -89,6 +95,8 @@ namespace OssianForge.Engine.Resources
                 new SkyboxShaderResource("shader.skybox", "shaderfile.skybox.vert", "shaderfile.skybox.frag"),
                 new SpriteShaderResource("shader.sprite", "shaderfile.sprite.vert", "shaderfile.sprite.frag"),
                 new ShaderResource("shader.post", "shaderfile.post.vert", "shaderfile.post.frag"),
+                new SdfShaderResource("shader.sdf", "shaderfile.sdf.vert", "shaderfile.sdf.frag"),
+                new SdfShaderResource("shader.sdf.screenspace", "shaderfile.sdf.screenspace.vert", "shaderfile.sdf.frag"),
 
                 new TextureResource("texture.donut.icing", "texturefile.IcingBaseColor"),
                 new TextureResource("texture.donut.base", "texturefile.DonutBaseColor"),
@@ -121,6 +129,8 @@ namespace OssianForge.Engine.Resources
                 new ColliderResource("collider.cube", "mesh.cube"),
 
                 //new ScriptResource("script.StateProperty", "scriptfile.StateProperty")
+
+                new FontResource("font.roboto", "texturefile.font.roboto", "configfile.font.roboto")
             };
 
 
@@ -136,6 +146,7 @@ namespace OssianForge.Engine.Resources
                     "texturefile" => new TextureFiles.TextureFile(id, path),
                     "scriptfile" => new Scripts.ScriptFile(id, path),
                     "animationfile" => new Animations.AnimationFile(id, path),
+                    "configfile" => new Config.ConfigFile(id, path),
                     _ => throw new Exception($"Unknown resource type for id: '{id}'")
                 };
 
