@@ -26,8 +26,8 @@ namespace OssianForge.Engine.Graphics
         public Vector2D<int> WindowSize;
         public string WindowTitle;
         public Vector2D<int> Resolution;
-        public const int TargetFramesPerSecond = 0;
-        public const int TargetUpdatesPerSecond = 0;
+        public int TargetFramesPerSecond = 120;
+        public int TargetUpdatesPerSecond = 120;
 
         public string CurrentCameraNode;
 

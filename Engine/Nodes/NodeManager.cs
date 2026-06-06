@@ -37,7 +37,9 @@ namespace OssianForge.Engine.Nodes
             FlushPendingActions();
 
             foreach (var node in Nodes)
+            {
                 node.OnUpdate(delta);
+            }
         }
 
         public void RenderNodes(double delta)

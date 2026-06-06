@@ -18,8 +18,13 @@ namespace OssianForge.Engine.Nodes.Props
                 ?? throw new Exception($"AnimationResource not found: '{animationResourceId}'");
         }
 
-        public void Play(string clipName, bool loop = true) => AnimationResource.Play(clipName, loop);
-        public void Play(int clipIndex, bool loop = true) => AnimationResource.Play(clipIndex, loop);
+        public void Play(string clipName, bool loop = true, float speed = 1f)
+            => AnimationResource.Play(clipName, loop, speed);
+
+        public void Play(int clipIndex, bool loop = true, float speed = 1f)
+            => AnimationResource.Play(clipIndex, loop, speed);
+
+        public void SetSpeed(float speed) => AnimationResource.SetSpeed(speed);
         public void Stop() => AnimationResource.Stop();
         public void Pause() => AnimationResource.Pause();
         public void Resume() => AnimationResource.Resume();

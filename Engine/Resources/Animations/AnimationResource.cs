@@ -15,6 +15,8 @@ namespace OssianForge.Engine.Resources.Animations
 
         private readonly string[] _animationFileIds;
 
+        public float PlaybackSpeed { get; private set; } = 1f;
+
         public AnimationResource(string id, params string[] animationFileIds)
         {
             Id = id;
@@ -35,7 +37,7 @@ namespace OssianForge.Engine.Resources.Animations
                 Console.WriteLine($"[ANIMRSOURCE] Loaded clip: '{clip.Name}'");
         }
 
-        public void Play(string clipName, bool loop = true)
+        public void Play(string clipName, bool loop = true, float speed = 1f)
         {
             var clip = Clips.Find(c => c.Name == clipName)
                 ?? throw new Exception($"AnimationResource clip not found: '{clipName}'");
@@ -43,9 +45,10 @@ namespace OssianForge.Engine.Resources.Animations
             CurrentTime = 0;
             IsPlaying = true;
             IsLooping = loop;
+            PlaybackSpeed = speed;
         }
 
-        public void Play(int clipIndex, bool loop = true)
+        public void Play(int clipIndex, bool loop = true, float speed = 1f)
         {
             if (clipIndex < 0 || clipIndex >= Clips.Count)
                 throw new IndexOutOfRangeException($"Clip index {clipIndex} out of range.");
@@ -53,26 +56,25 @@ namespace OssianForge.Engine.Resources.Animations
             CurrentTime = 0;
             IsPlaying = true;
             IsLooping = loop;
+            PlaybackSpeed = speed;
         }
 
         public void Stop() { IsPlaying = false; CurrentTime = 0; }
         public void Pause() { IsPlaying = false; }
         public void Resume() { if (CurrentClip != null) IsPlaying = true; }
 
+        public void SetSpeed(float speed) => PlaybackSpeed = speed;
+
         public void Update(double deltaTime)
         {
-            //Console.WriteLine($"[ANIM] delta={deltaTime:F4} time={CurrentTime:F2}");
-
             if (!IsPlaying || CurrentClip == null) return;
 
-            // Clamp delta to a max of one frame at 30fps (0.0333s) so that
-            // frame-rate spikes or a mismatched update rate can't over-advance the clock.
-            // Also guards against the Silk.NET "catch-up" double-tick on high refresh monitors.
             const double maxDelta = 1.0 / 30.0;
             deltaTime = Math.Min(deltaTime, maxDelta);
 
             double tps = CurrentClip.TicksPerSecond > 0 ? CurrentClip.TicksPerSecond : 30.0;
-            CurrentTime += deltaTime * tps;
+
+            CurrentTime += deltaTime * tps * PlaybackSpeed;  // <-- multiply here
 
             if (CurrentTime >= CurrentClip.DurationTicks)
             {

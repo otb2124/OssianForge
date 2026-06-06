@@ -73,9 +73,6 @@ namespace OssianForge.Engine.Nodes
 
         public virtual void OnUpdate(double delta)
         {
-            foreach (var child in Children)
-                child.OnUpdate(delta);
-
             ProcessPropUpdate(delta);
         }
 
@@ -91,14 +88,8 @@ namespace OssianForge.Engine.Nodes
 
 
 
-
-
-
         public virtual void OnRender(double delta)
         {
-            foreach (var child in Children)
-                child.OnRender(delta);
-
             ProcessPropRender(delta);
         }
 
