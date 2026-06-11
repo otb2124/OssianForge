@@ -43,7 +43,7 @@ namespace OssianForge.Engine.Nodes.Props
             _lastColor = new Vector4(-1f);
         }
 
-        public override void Apply(Matrix4x4 transform)
+        public override void Apply(Matrix4x4 transform, Matrix4x4[] palette)
         {
             if (string.IsNullOrEmpty(Content)) return;
 
@@ -67,7 +67,7 @@ namespace OssianForge.Engine.Nodes.Props
             gl.ActiveTexture(TextureUnit.Texture0);
             gl.BindTexture(TextureTarget.Texture2D, _rtTexture);
             ShaderResource.SetInt("uTexture", 0);
-            ShaderResource.SetVec4("uTextColor", Vector4.One);
+            ShaderResource.SetVec4("uTextColor", Color);
         }
 
         private unsafe void EnsureInitialized()

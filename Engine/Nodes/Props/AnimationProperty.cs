@@ -1,5 +1,7 @@
 ﻿using OssianForge.Engine.Resources.Animations;
+using OssianForge.Engine.Resources.Meshes;
 using OssianForge.Engine.Resources.MeshFiles;
+using Silk.NET.Assimp;
 using System.Numerics;
 
 namespace OssianForge.Engine.Nodes.Props
@@ -120,6 +122,28 @@ namespace OssianForge.Engine.Nodes.Props
                 if (found != null) return found;
             }
             return null;
+        }
+
+
+        public Matrix4x4[] GetPalette(MeshProperty mesh, SubMeshResource subMesh)
+        {
+            Matrix4x4[] palette = null;
+            if (BonePalette != null && BonePalette.Length > 0
+                && mesh.MeshResource.AllBones != null)
+            {
+                // Build a palette in THIS submesh's bone order
+                palette = new Matrix4x4[subMesh.Bones.Count];
+                for (int i = 0; i < subMesh.Bones.Count; i++)
+                {
+                    int unifiedIdx = mesh.MeshResource.AllBones
+                        .FindIndex(b => b.Name == subMesh.Bones[i].Name);
+                    palette[i] = unifiedIdx >= 0
+                        ? BonePalette[unifiedIdx]
+                        : Matrix4x4.Identity;
+                }
+            }
+
+            return palette;
         }
     }
 }

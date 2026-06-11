@@ -27,8 +27,8 @@ namespace OssianForge.Engine.Resources
         {
             ResourceFileMap = new Dictionary<string, string>
             {
-                { "shaderfile.basic.vert", "ShaderFiles/Basic.vert"},
-                { "shaderfile.basic.frag", "ShaderFiles/Basic.frag"},
+                { "shaderfile.basic.vert", "ShaderFiles/basic.vert"},
+                { "shaderfile.basic.frag", "ShaderFiles/basic.frag"},
                 { "shaderfile.skybox.vert", "ShaderFiles/skybox.vert"},
                 { "shaderfile.skybox.frag", "ShaderFiles/skybox.frag"},
                 { "shaderfile.sprite.vert", "ShaderFiles/sprite.vert"},

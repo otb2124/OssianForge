@@ -35,16 +35,18 @@ namespace OssianForge.Engine.Nodes
             var lightNode = new Node();
             lightNode.Name = "light";
             lightNode.AddProperty(new TransformProperty(new Transform(new Vector3(10f, 5f, 10f), Vector3.Zero, new Vector3(10, 10, 10))));
+            lightNode.GetProperty<TransformProperty>().Billboard = true;
             lightNode.AddProperty(EmissionProperty.White(intensity: 1f, radius: 30.0f));
-            lightNode.AddProperty(new MeshProperty("mesh.quad", true));
+            lightNode.AddProperty(new MeshProperty("mesh.quad"));
             lightNode.AddProperty(new TextureMaterialProperty("texture.light", "shader.sprite"));
             //lightNode.AddProperty(Engine.Resources.CreateScriptResourceInstance<NodeProperty>("script.StateProperty", "StateProperty"));
 
             var lightNode1 = new Node();
             lightNode1.Name = "light1";
             lightNode1.AddProperty(new TransformProperty(new Transform(new Vector3(-10f, 5f, -10f), Vector3.Zero, new Vector3(10, 10, 10))));
+            lightNode1.GetProperty<TransformProperty>().Billboard = true;
             lightNode1.AddProperty(EmissionProperty.White(intensity: 1f, radius: 30.0f));
-            lightNode1.AddProperty(new MeshProperty("mesh.quad", true));
+            lightNode1.AddProperty(new MeshProperty("mesh.quad"));
             lightNode1.AddProperty(new TextureMaterialProperty("texture.light", "shader.sprite"));
 
             //objects
@@ -114,12 +116,13 @@ namespace OssianForge.Engine.Nodes
             var text = new Node();
             text.Name = "text";
             text.AddProperty(new TransformProperty(new Transform(new Vector3(0f, 5f, 0f), Vector3.Zero, Vector3.One)));
-            text.AddProperty(new MeshProperty("mesh.quad", true));
+            text.GetProperty<TransformProperty>().Billboard = true;
+            text.AddProperty(new MeshProperty("mesh.quad"));
             text.AddProperty(new TextMaterialProperty("font.roboto", "shader.sdf")
             {
                 Content = "Hello World",
                 FontSize = 64f,
-                Color = new Vector4(1, 1, 1, 1),
+                Color = new Vector4(0.1f, 1, 1, 1),
                 TextureWidth = 512,
                 TextureHeight = 128
             });

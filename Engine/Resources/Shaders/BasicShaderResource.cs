@@ -35,6 +35,22 @@ namespace OssianForge.Engine.Resources.Shaders
                 SetFloatIndexed("uLights", i, "intensity", lights[i].Intensity);
                 SetFloatIndexed("uLights", i, "radius", lights[i].Radius);
             }
+
+            if(ctx.Palette != null && ctx.Palette.Length > 0)
+            {
+                SetInt("uSkinned", 1);
+                for (int i = 0; i < ctx.Palette.Length; i++)
+                {
+                    SetMatrix4($"uBones[{i}]", ctx.Palette[i]);
+                }
+            }
+            else
+            {
+                SetInt("uSkinned", 0);
+            }
+            
+             
+            
         }
     }
 }

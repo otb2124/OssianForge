@@ -15,14 +15,10 @@ namespace OssianForge.Engine.Nodes.Props
     public class MeshProperty : NodeProperty, IDisposable
     {
         public MeshResource MeshResource;
-        public bool IsBillboard;
-
-        public MeshProperty(string meshId, bool isBillboard = false)
+        public MeshProperty(string meshId)
         {
             MeshResource = Engine.Resources.GetResource(meshId) as MeshResource
                     ?? throw new Exception($"MeshResource not found: '{meshId}'");
-
-            IsBillboard = isBillboard;
         }
         public virtual void Draw()  
         {

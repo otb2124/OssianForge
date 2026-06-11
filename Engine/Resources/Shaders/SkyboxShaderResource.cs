@@ -14,8 +14,8 @@ namespace OssianForge.Engine.Resources.Shaders
 
         public override void Apply(ApplyContext ctx)
         {
-            if (ctx.SkyboxTextureSlot.HasValue)
-                SetInt("uSkybox", (int)ctx.SkyboxTextureSlot.Value);
+            if (ctx.CubemapTextureSlot.HasValue)
+                SetInt("uSkybox", (int)ctx.CubemapTextureSlot.Value);
 
             SetMatrix4("uView", ctx.ViewNoTranslation);
             SetMatrix4("uProjection", ctx.Projection);

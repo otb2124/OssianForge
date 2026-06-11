@@ -40,11 +40,11 @@ namespace OssianForge.Engine.Nodes.Props
         public Vector2? Offset = null;      // offset from anchor point in pixels
         public SizeMode SizeMode = SizeMode.Fixed;
 
-        public bool IsScreenSpace => Anchor != AnchorPreset.None;
-
         // --- clipping --- 
         public bool ClipsChildren = false;
         public Vector2? ClipSize = null;   // null means use node's own Size from TransformProperty
+
+        public bool Billboard = false;
 
         public TransformProperty(Transform transform)
         {
@@ -61,11 +61,22 @@ namespace OssianForge.Engine.Nodes.Props
             Transform.SetMatrix(matrix);
         }
 
+        public Matrix4x4 GetMatrix()
+        {
+            if(Billboard)
+            {
+                return Engine.Graphics.GetCurrentCamera().GetBillboardMatrix(Transform);
+            }
+            else
+            {
+                return Transform.ToMatrix();
+            }
+            
+        }
+
         // resolves final screen position from anchor + pivot + offset + screen size
         public Vector2 ResolveScreenPosition(Vector2 screenSize, Vector2 parentSize)
         {
-            if (!IsScreenSpace) return Vector2.Zero;
-
             Vector2 anchorPoint = Anchor switch
             {
                 AnchorPreset.TopLeft => new Vector2(0, 0),

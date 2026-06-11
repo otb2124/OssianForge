@@ -20,7 +20,7 @@ namespace OssianForge.Engine.Nodes.Props
                 ?? throw new Exception($"TextureResource not found: '{textureId}'");
         }
 
-        public override void Apply(Matrix4x4 transform)
+        public override void Apply(Matrix4x4 transform, Matrix4x4[] palette)
         {
             ShaderResource.Use();
 
@@ -50,6 +50,7 @@ namespace OssianForge.Engine.Nodes.Props
                 NormalTextureSlot = normalSlot,
                 HasNormalTexture = normalSlot.HasValue,
                 Lights = GetLights(),
+                Palette = palette
             });
         }
     }

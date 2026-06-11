@@ -67,10 +67,10 @@
     <Content Include="Content\ShaderFiles\sdf.vert">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\ShaderFiles\Basic.frag">
+    <Content Include="Content\ShaderFiles\basic.frag">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\ShaderFiles\Basic.vert">
+    <Content Include="Content\ShaderFiles\basic.vert">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\ShaderFiles\debugline.frag">
