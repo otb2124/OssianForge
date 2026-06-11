@@ -36,7 +36,7 @@ namespace OssianForge.Engine.Resources.Meshes
                 };
 
                 bool hasUV = ResourceId.Contains("fastmesh");
-                bool hasNormals = ResourceId is "fastmesh.plane";
+                bool hasNormals = ResourceId is "fastmesh.plane" or "fastmesh.quad";
                 SubMeshes.Add(new SubMeshResource(fast.Vertices, 0, hasUV, hasNormals));
             }
             else

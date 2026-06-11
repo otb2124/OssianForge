@@ -115,8 +115,6 @@ namespace OssianForge.Engine.Nodes
             text.Name = "text";
             text.AddProperty(new TransformProperty(new Transform(new Vector3(0f, 5f, 0f), Vector3.Zero, Vector3.One)));
             text.AddProperty(new MeshProperty("mesh.quad", true));
-
-            
             text.AddProperty(new TextMaterialProperty("font.roboto", "shader.sdf")
             {
                 Content = "Hello World",

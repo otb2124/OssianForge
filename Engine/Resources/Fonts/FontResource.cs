@@ -8,17 +8,15 @@ namespace OssianForge.Engine.Resources.Fonts
 
     public class GlyphData
     {
-        public float AtlasX, AtlasY;
-        public float AtlasW, AtlasH;
-        public float PlaneBoundsLeft;    // was BearingX
-        public float PlaneBoundsBottom;  // was BearingY
-        public float PlaneBoundsRight;   // NEW
-        public float PlaneBoundsTop;     // NEW
+        public float AtlasX;          // atlasBounds.left   (image pixels)
+        public float AtlasY;          // atlasBounds.bottom (image pixels, Y=0 at top)
+        public float AtlasW;
+        public float AtlasH;
+        public float PlaneBoundsLeft;
+        public float PlaneBoundsBottom;
+        public float PlaneBoundsRight;
+        public float PlaneBoundsTop;
         public float Advance;
-
-        // Keep shorthands so existing code compiles
-        public float BearingX => PlaneBoundsLeft;
-        public float BearingY => PlaneBoundsBottom;
     }
 
     public class FontAtlasData
@@ -26,6 +24,7 @@ namespace OssianForge.Engine.Resources.Fonts
         public int AtlasWidth;
         public int AtlasHeight;
         public float LineHeight;
+        public float DistanceRange;
         public Dictionary<char, GlyphData> Glyphs = new();
     }
 
@@ -67,7 +66,8 @@ namespace OssianForge.Engine.Resources.Fonts
             {
                 AtlasWidth = config.GetInt("atlas.width"),
                 AtlasHeight = config.GetInt("atlas.height"),
-                LineHeight = config.GetFloat("metrics.lineHeight")
+                LineHeight = config.GetFloat("metrics.lineHeight"),
+                DistanceRange = config.GetFloat("atlas.distanceRange"),
             };
 
             // glyphs are under keys like glyphs[0].unicode, glyphs[0].advance etc
@@ -81,7 +81,7 @@ namespace OssianForge.Engine.Resources.Fonts
                 data.Glyphs[c] = new GlyphData
                 {
                     AtlasX = config.GetFloat($"glyphs[{i}].atlasBounds.left"),
-                    AtlasY = config.GetFloat($"glyphs[{i}].atlasBounds.top"),    // was .bottom
+                    AtlasY = config.GetFloat($"glyphs[{i}].atlasBounds.bottom"),  // back to .bottom
                     AtlasW = config.GetFloat($"glyphs[{i}].atlasBounds.right")
                            - config.GetFloat($"glyphs[{i}].atlasBounds.left"),
                     AtlasH = config.GetFloat($"glyphs[{i}].atlasBounds.top")

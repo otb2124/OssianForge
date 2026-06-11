@@ -37,11 +37,7 @@ namespace OssianForge.Engine.Nodes.Props
         {
             FontResource = Engine.Resources.GetResource(fontResourceId) as FontResource
                 ?? throw new Exception($"FontResource not found: '{fontResourceId}'");
-            Invalidate();
-        }
 
-        public void Invalidate()
-        {
             _lastContent = null;
             _lastFontSize = -1f;
             _lastColor = new Vector4(-1f);
@@ -68,10 +64,10 @@ namespace OssianForge.Engine.Nodes.Props
                 DiffuseTextureSlot = 0,
             });
 
-            // Bind RT texture AFTER ShaderResource.Apply so nothing stomps it
             gl.ActiveTexture(TextureUnit.Texture0);
             gl.BindTexture(TextureTarget.Texture2D, _rtTexture);
             ShaderResource.SetInt("uTexture", 0);
+            ShaderResource.SetVec4("uTextColor", Vector4.One);
         }
 
         private unsafe void EnsureInitialized()
@@ -144,15 +140,15 @@ namespace OssianForge.Engine.Nodes.Props
 
                 float u0 = g.AtlasX / atlas.AtlasWidth;
                 float u1 = (g.AtlasX + g.AtlasW) / atlas.AtlasWidth;
-                float v0 = 1f - g.AtlasY / atlas.AtlasHeight;
-                float v1 = 1f - (g.AtlasY + g.AtlasH) / atlas.AtlasHeight;
+                float vBottom = g.AtlasY / atlas.AtlasHeight;               // atlasBounds.bottom → GL bottom
+                float vTop = (g.AtlasY + g.AtlasH) / atlas.AtlasHeight; // atlasBounds.top    → GL top
 
-                verts.AddRange(new[] { ndcX0, ndcY1, 0f, 0f, 0f, 1f, u0, v1 });
-                verts.AddRange(new[] { ndcX1, ndcY1, 0f, 0f, 0f, 1f, u1, v1 });
-                verts.AddRange(new[] { ndcX0, ndcY0, 0f, 0f, 0f, 1f, u0, v0 });
-                verts.AddRange(new[] { ndcX1, ndcY1, 0f, 0f, 0f, 1f, u1, v1 });
-                verts.AddRange(new[] { ndcX1, ndcY0, 0f, 0f, 0f, 1f, u1, v0 });
-                verts.AddRange(new[] { ndcX0, ndcY0, 0f, 0f, 0f, 1f, u0, v0 });
+                verts.AddRange(new[] { ndcX0, ndcY1, 0f, 0f, 0f, 1f, u0, vBottom }); // bottom-left
+                verts.AddRange(new[] { ndcX1, ndcY1, 0f, 0f, 0f, 1f, u1, vBottom }); // bottom-right
+                verts.AddRange(new[] { ndcX0, ndcY0, 0f, 0f, 0f, 1f, u0, vTop }); // top-left
+                verts.AddRange(new[] { ndcX1, ndcY1, 0f, 0f, 0f, 1f, u1, vBottom }); // bottom-right
+                verts.AddRange(new[] { ndcX1, ndcY0, 0f, 0f, 0f, 1f, u1, vTop }); // top-right
+                verts.AddRange(new[] { ndcX0, ndcY0, 0f, 0f, 0f, 1f, u0, vTop }); // top-left
 
                 cursor += g.Advance * emToPx;
             }
@@ -199,6 +195,7 @@ namespace OssianForge.Engine.Nodes.Props
             ShaderResource.Use();
             FontResource.Bind(0);
             ShaderResource.SetVec4("uTextColor", Color);
+            ShaderResource.SetFloat("uDistanceRange", atlas.DistanceRange);
             ShaderResource.Apply(new ApplyContext
             {
                 Model = Matrix4x4.Identity,

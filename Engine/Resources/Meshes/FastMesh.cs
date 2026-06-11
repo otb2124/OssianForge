@@ -118,13 +118,13 @@ namespace OssianForge.Resources.Meshes
 
         public static FastMesh Quad => new FastMesh("quad", new float[]
         {
-            // X      Y     Z     U     V
-            -0.5f,  0.5f, 0.0f, 0.0f, 1.0f,
-            -0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
-             0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
-            -0.5f,  0.5f, 0.0f, 0.0f, 1.0f,
-             0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
-             0.5f,  0.5f, 0.0f, 1.0f, 1.0f,
+            // X      Y      Z      NX    NY    NZ    U     V
+            -0.5f,  0.5f,  0.0f,  0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
+            -0.5f, -0.5f,  0.0f,  0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+             0.5f, -0.5f,  0.0f,  0.0f, 0.0f, 1.0f, 1.0f, 0.0f,
+            -0.5f,  0.5f,  0.0f,  0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
+             0.5f, -0.5f,  0.0f,  0.0f, 0.0f, 1.0f, 1.0f, 0.0f,
+             0.5f,  0.5f,  0.0f,  0.0f, 0.0f, 1.0f, 1.0f, 1.0f,
         });
 
         public static FastMesh Cylinder => new FastMesh("cylinder", GenerateCylinder(0.5f, 1.0f, 24));
