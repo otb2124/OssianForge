@@ -107,12 +107,8 @@ namespace OssianForge.Engine.Nodes
             remy.AddProperty(new ColliderProperty("collider.remy"));
             remy.AddProperty(new PhysicalProperty(false, true, 1f, 1f));
             remy.AddProperty(new AnimationProperty("animation.remy"));
-
-            remy.GetProperty<AnimationProperty>().Play("remy.waving", true, 1f);
-
-
-
-
+            
+            remy.GetProperty<AnimationProperty>().Play("remy.backflip", true, 2f);
 
             //text
             var text = new Node();
@@ -120,7 +116,7 @@ namespace OssianForge.Engine.Nodes
             text.AddProperty(new TransformProperty(new Transform(new Vector3(0f, 5f, 0f), Vector3.Zero, Vector3.One)));
             text.AddProperty(new MeshProperty("mesh.quad", true));
 
-            /*
+            
             text.AddProperty(new TextMaterialProperty("font.roboto", "shader.sdf")
             {
                 Content = "Hello World",
@@ -128,7 +124,7 @@ namespace OssianForge.Engine.Nodes
                 Color = new Vector4(1, 1, 1, 1),
                 TextureWidth = 512,
                 TextureHeight = 128
-            });*/
+            });
 
             scene.AddChild(camera);
             scene.AddChild(sky);

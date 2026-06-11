@@ -48,11 +48,13 @@ namespace OssianForge.Engine.Graphics.Batch
             OpenGL.Enable(EnableCap.DepthTest);
         }
 
+        // Batch.cs
         public void EndBillbord()
         {
             OpenGL.DepthMask(true);
             OpenGL.DepthFunc(DepthFunction.Less);
-            OpenGL.Disable(EnableCap.Blend);
+            OpenGL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+            // blend stays ENABLED
         }
 
 

@@ -27,6 +27,7 @@ namespace OssianForge.Engine.Nodes.Props
             _lastFontSize != FontSize ||
             _lastColor != Color;
 
+        private uint _rtTexture;
         private bool _initialized;
         private uint _bakeVao;
         private uint _bakeVbo;
@@ -67,7 +68,9 @@ namespace OssianForge.Engine.Nodes.Props
                 DiffuseTextureSlot = 0,
             });
 
+            // Bind RT texture AFTER ShaderResource.Apply so nothing stomps it
             gl.ActiveTexture(TextureUnit.Texture0);
+            gl.BindTexture(TextureTarget.Texture2D, _rtTexture);
             ShaderResource.SetInt("uTexture", 0);
         }
 
@@ -77,7 +80,9 @@ namespace OssianForge.Engine.Nodes.Props
 
             var gl = Engine.Graphics.Batch.OpenGL;
 
-            // --- RGBA8 texture for the baked text ---
+            // RGBA8 texture that receives the baked glyphs
+            _rtTexture = gl.GenTexture();
+            gl.BindTexture(TextureTarget.Texture2D, _rtTexture);
             gl.TexImage2D(TextureTarget.Texture2D, 0, InternalFormat.Rgba8,
                           (uint)TextureWidth, (uint)TextureHeight, 0,
                           PixelFormat.Rgba, PixelType.UnsignedByte, null);
@@ -87,14 +92,8 @@ namespace OssianForge.Engine.Nodes.Props
             gl.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)GLEnum.ClampToEdge);
             gl.BindTexture(TextureTarget.Texture2D, 0);
 
-            // --- FBO with the texture attached, no depth needed for 2D bake ---
-            var status = gl.CheckFramebufferStatus(FramebufferTarget.Framebuffer);
-            if (status != GLEnum.FramebufferComplete)
-                throw new Exception($"[TEXT] FBO incomplete: {status}");
-
-            gl.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
-
-            // --- Bake VAO/VBO ---
+            // Bake VAO/VBO — pos(3) + normal(3) + uv(2), UV at location 2
+            // to match the SDF vertex shader layout
             _bakeVao = gl.GenVertexArray();
             _bakeVbo = gl.GenBuffer();
             gl.BindVertexArray(_bakeVao);
@@ -110,6 +109,7 @@ namespace OssianForge.Engine.Nodes.Props
 
             gl.BindVertexArray(0);
 
+            Console.WriteLine($"[TEXT] Initialized: rtTexture={_rtTexture}");
             _initialized = true;
         }
 
@@ -117,9 +117,8 @@ namespace OssianForge.Engine.Nodes.Props
         {
             var gl = Engine.Graphics.Batch.OpenGL;
             var atlas = FontResource.AtlasData;
-            if (atlas == null) return;
+            if (atlas == null) { Console.WriteLine("[TEXT] atlas null"); return; }
 
-            // --- build verts (unchanged) ---
             float emToPx = FontSize;
             float baseline = TextureHeight * 0.75f;
             float cursor = 0f;
@@ -160,7 +159,7 @@ namespace OssianForge.Engine.Nodes.Props
 
             var vertsArray = verts.ToArray();
             _bakeVertexCount = (uint)(vertsArray.Length / 8);
-            if (_bakeVertexCount == 0) return;
+            if (_bakeVertexCount == 0) { Console.WriteLine("[TEXT] no verts"); return; }
 
             gl.BindBuffer(BufferTargetARB.ArrayBuffer, _bakeVbo);
             unsafe
@@ -171,9 +170,24 @@ namespace OssianForge.Engine.Nodes.Props
                         ptr, BufferUsageARB.DynamicDraw);
             }
 
-            // --- create a throw-away FBO, attach our texture, bake, delete ---
+            // Throw-away FBO — created here, deleted at the end of this method.
+            // Attaching _rtTexture to it lets us render into it; deleting the FBO
+            // afterwards leaves the texture intact.
             uint tempFbo = gl.GenFramebuffer();
             gl.BindFramebuffer(FramebufferTarget.Framebuffer, tempFbo);
+            gl.FramebufferTexture2D(FramebufferTarget.Framebuffer,
+                                    FramebufferAttachment.ColorAttachment0,
+                                    TextureTarget.Texture2D, _rtTexture, 0);
+
+            var status = gl.CheckFramebufferStatus(FramebufferTarget.Framebuffer);
+            Console.WriteLine($"[TEXT] tempFbo={tempFbo} rtTexture={_rtTexture} status={status}");
+            if (status != GLEnum.FramebufferComplete)
+            {
+                gl.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+                gl.DeleteFramebuffer(tempFbo);
+                Console.WriteLine("[TEXT] FBO incomplete, aborting bake");
+                return;
+            }
 
             gl.Viewport(0, 0, (uint)TextureWidth, (uint)TextureHeight);
             gl.ClearColor(0f, 0f, 0f, 0f);
@@ -207,14 +221,14 @@ namespace OssianForge.Engine.Nodes.Props
                 Console.WriteLine($"[TEXT] FBO center pixel: r={px[0]} g={px[1]} b={px[2]} a={px[3]}");
             }
 
-            // delete the temp FBO — the texture lives on independently
+            // TextMaterialProperty.cs — end of BakeToTexture
             gl.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
             gl.DeleteFramebuffer(tempFbo);
-
             gl.Viewport(0, 0,
                 (uint)Engine.Graphics.WindowSize.X,
                 (uint)Engine.Graphics.WindowSize.Y);
-            gl.Disable(EnableCap.Blend);
+            // restore normal blend, leave it enabled for the scene
+            gl.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
             gl.Enable(EnableCap.DepthTest);
 
             _lastContent = Content;
@@ -229,6 +243,7 @@ namespace OssianForge.Engine.Nodes.Props
             var gl = Engine.Graphics.Batch.OpenGL;
             if (_bakeVao != 0) gl.DeleteVertexArray(_bakeVao);
             if (_bakeVbo != 0) gl.DeleteBuffer(_bakeVbo);
+            if (_rtTexture != 0) gl.DeleteTexture(_rtTexture);
         }
     }
 }
