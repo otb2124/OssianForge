@@ -38,7 +38,6 @@ namespace OssianForge.Engine.Graphics.Batch
             //OpenGL.Enable(EnableCap.DepthTest);
         }
 
-        // Batch.cs
         public void EndBillbord()
         {
             //.DepthMask(true);
