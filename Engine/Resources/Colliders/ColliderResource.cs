@@ -29,8 +29,8 @@ namespace OssianForge.Engine.Resources.Colliders
             foreach (var sub in _source.SubMeshes)
             {
                 int stride = 3;
-                if (sub.HasNormals) stride += 3;
-                if (sub.HasUV) stride += 2;
+                stride += 3;
+                stride += 2;
 
                 var v = sub.RawVertices;
                 for (int i = 0; i + stride * 3 <= v.Length; i += stride * 3)

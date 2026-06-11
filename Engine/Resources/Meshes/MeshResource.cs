@@ -35,9 +35,7 @@ namespace OssianForge.Engine.Resources.Meshes
                     _ => throw new Exception($"Unknown fast mesh: '{ResourceId}'")
                 };
 
-                bool hasUV = ResourceId.Contains("fastmesh");
-                bool hasNormals = true;
-                SubMeshes.Add(new SubMeshResource(fast.Vertices, 0, hasUV, hasNormals));
+                SubMeshes.Add(new SubMeshResource(fast.Vertices, 0));
             }
             else
             {
@@ -48,7 +46,7 @@ namespace OssianForge.Engine.Resources.Meshes
 
                 foreach (var (verts, matIndex, bones) in meshFile.SubMeshes)
                 {
-                    SubMeshes.Add(new SubMeshResource(verts, matIndex, hasUV: true, hasNormals: true, bones: bones));
+                    SubMeshes.Add(new SubMeshResource(verts, matIndex, bones: bones));
 
                     // Collect unique bones across all submeshes
                     foreach (var bone in bones)
@@ -81,26 +79,20 @@ namespace OssianForge.Engine.Resources.Meshes
         public int MaterialIndex;
 
         public float[] RawVertices;
-        public bool HasNormals;
-        public bool HasUV;
         public List<BoneData> Bones;
 
-        public SubMeshResource(float[] vertices, int materialIndex = 0, bool hasUV = false, bool hasNormals = false, List<BoneData> bones = null)
+        public SubMeshResource(float[] vertices, int materialIndex = 0, List<BoneData> bones = null)
         {
             MaterialIndex = materialIndex;
             Bones = bones ?? new List<BoneData>();
-            Init(vertices, hasUV, hasNormals);
+            Init(vertices);
         }
 
-        protected void Init(float[] vertices, bool hasUV, bool hasNormals)
+        protected void Init(float[] vertices)
         {
             RawVertices = vertices;
-            HasUV = hasUV;
-            HasNormals = hasNormals;
 
-            int stride = 3;
-            if (hasNormals) stride += 3;
-            if (hasUV) stride += 2;
+            int stride = 8;
             _vertexCount = (uint)(vertices.Length / stride);
 
             var gl = Engine.Graphics.Batch.OpenGL;
@@ -123,19 +115,14 @@ namespace OssianForge.Engine.Resources.Meshes
             unsafe { gl.VertexAttribPointer(0, 3, GLEnum.Float, false, (uint)(stride * sizeof(float)), (void*)(offset * sizeof(float))); }
             offset += 3;
 
-            if (hasNormals)
-            {
-                gl.EnableVertexAttribArray(1);
-                unsafe { gl.VertexAttribPointer(1, 3, GLEnum.Float, false, (uint)(stride * sizeof(float)), (void*)(offset * sizeof(float))); }
-                offset += 3;
-            }
+            gl.EnableVertexAttribArray(1);
+            unsafe { gl.VertexAttribPointer(1, 3, GLEnum.Float, false, (uint)(stride * sizeof(float)), (void*)(offset * sizeof(float))); }
+            offset += 3;
 
-            if (hasUV)
-            {
-                uint uvLoc = hasNormals ? 2u : 1u;
-                gl.EnableVertexAttribArray(uvLoc);
-                unsafe { gl.VertexAttribPointer(uvLoc, 2, GLEnum.Float, false, (uint)(stride * sizeof(float)), (void*)(offset * sizeof(float))); }
-            }
+            uint uvLoc = 2u;
+            gl.EnableVertexAttribArray(uvLoc);
+            unsafe { gl.VertexAttribPointer(uvLoc, 2, GLEnum.Float, false, (uint)(stride * sizeof(float)), (void*)(offset * sizeof(float))); }
+
 
             // Upload bone influences (indices + weights) per vertex into a second VBO
             // Layout: each vertex gets 4 bone indices (int) + 4 bone weights (float)
