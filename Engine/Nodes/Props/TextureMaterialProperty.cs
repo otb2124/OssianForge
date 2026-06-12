@@ -49,7 +49,7 @@ namespace OssianForge.Engine.Nodes.Props
                 DiffuseTextureSlot = diffuseSlot,
                 NormalTextureSlot = normalSlot,
                 HasNormalTexture = normalSlot.HasValue,
-                Lights = GetLights(),
+                Lights = Engine.Nodes.NodeManager.GetLights(),
                 Palette = palette
             });
         }

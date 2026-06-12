@@ -29,25 +29,6 @@ namespace OssianForge.Engine.Graphics.Batch
             OpenGL.ClearColor(1.0f, 0.0f, 1.0f, 1.0f);
         }
 
-
-        public void BeginBillbord()
-        {
-            //OpenGL.Enable(EnableCap.Blend);
-            //OpenGL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.One);
-            //OpenGL.DepthMask(false);
-            //OpenGL.Enable(EnableCap.DepthTest);
-        }
-
-        public void EndBillbord()
-        {
-            //.DepthMask(true);
-            //OpenGL.DepthFunc(DepthFunction.Less);
-            //OpenGL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
-            // blend stays ENABLED
-        }
-
-
-
         public void DrawMesh(MeshProperty mesh, List<MaterialProperty> materials, TransformProperty transform, AnimationProperty animation)
         {
             if (mesh == null) return;
@@ -72,9 +53,11 @@ namespace OssianForge.Engine.Graphics.Batch
 
         public void DrawSubMesh(SubMeshResource subMesh, MaterialProperty material, Matrix4x4 matrix, Matrix4x4[] bonePalette)
         {
+            material.BeginAction?.Invoke();
             material.Apply(matrix, bonePalette);
             subMesh.Draw();
             material.PostApply();
+            material.EndAction?.Invoke();
         }
 
 

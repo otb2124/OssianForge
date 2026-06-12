@@ -29,10 +29,9 @@ namespace OssianForge.Engine.Resources
             {
                 { "shaderfile.basic.vert", "ShaderFiles/basic.vert"},
                 { "shaderfile.basic.frag", "ShaderFiles/basic.frag"},
+                { "shaderfile.unlit.frag", "ShaderFiles/unlit.frag"},
                 { "shaderfile.skybox.vert", "ShaderFiles/skybox.vert"},
                 { "shaderfile.skybox.frag", "ShaderFiles/skybox.frag"},
-                { "shaderfile.sprite.vert", "ShaderFiles/sprite.vert"},
-                { "shaderfile.sprite.frag", "ShaderFiles/sprite.frag"},
                 { "shaderfile.post.vert", "ShaderFiles/post.vert"},
                 { "shaderfile.post.frag", "ShaderFiles/post.frag"},
                 { "shaderfile.sdf.frag", "ShaderFiles/sdf.frag"},
@@ -91,8 +90,8 @@ namespace OssianForge.Engine.Resources
                 new AnimationResource("animation.remy", "animationfile.remy.idle", "animationfile.remy.walking", "animationfile.remy.jumping", "animationfile.remy.jumping_jacks", "animationfile.remy.waving", "animationfile.remy.backflip"),
 
                 new BasicShaderResource("shader.basic", "shaderfile.basic.vert", "shaderfile.basic.frag"),
+                new BasicShaderResource("shader.unlit", "shaderfile.basic.vert", "shaderfile.unlit.frag"),
                 new SkyboxShaderResource("shader.skybox", "shaderfile.skybox.vert", "shaderfile.skybox.frag"),
-                new SpriteShaderResource("shader.sprite", "shaderfile.sprite.vert", "shaderfile.sprite.frag"),
                 new ShaderResource("shader.post", "shaderfile.post.vert", "shaderfile.post.frag"),
                 new SdfShaderResource("shader.sdf", "shaderfile.sdf.vert", "shaderfile.sdf.frag"),
 

@@ -1,5 +1,6 @@
 ﻿using OssianForge.Engine.Nodes.Props;
 using OssianForge.Engine.Resources.Scripts;
+using Silk.NET.OpenGL;
 using System.Numerics;
 using static OssianForge.Engine.Utils.Math;
 
@@ -38,8 +39,21 @@ namespace OssianForge.Engine.Nodes
             lightNode.GetProperty<TransformProperty>().Billboard = true;
             lightNode.AddProperty(EmissionProperty.White(intensity: 1f, radius: 30.0f));
             lightNode.AddProperty(new MeshProperty("mesh.quad"));
-            lightNode.AddProperty(new TextureMaterialProperty("texture.light", "shader.sdf"));
+            lightNode.AddProperty(new TextureMaterialProperty("texture.light", "shader.unlit"));
             //lightNode.AddProperty(Engine.Resources.CreateScriptResourceInstance<NodeProperty>("script.StateProperty", "StateProperty"));
+            lightNode.GetProperty<MaterialProperty>().BeginAction = () =>
+            {
+                var gl = Engine.Graphics.Batch.OpenGL;
+                gl.Enable(EnableCap.Blend);
+                gl.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.One);
+                gl.DepthMask(false);
+            };
+            lightNode.GetProperty<MaterialProperty>().EndAction = () =>
+            {
+                var gl = Engine.Graphics.Batch.OpenGL;
+                gl.DepthMask(true);
+                gl.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+            };
 
             var lightNode1 = new Node();
             lightNode1.Name = "light1";
@@ -47,7 +61,20 @@ namespace OssianForge.Engine.Nodes
             lightNode1.GetProperty<TransformProperty>().Billboard = true;
             lightNode1.AddProperty(EmissionProperty.White(intensity: 1f, radius: 30.0f));
             lightNode1.AddProperty(new MeshProperty("mesh.quad"));
-            lightNode1.AddProperty(new TextureMaterialProperty("texture.light", "shader.sdf"));
+            lightNode1.AddProperty(new TextureMaterialProperty("texture.light", "shader.unlit"));
+            lightNode1.GetProperty<MaterialProperty>().BeginAction = () =>
+            {
+                var gl = Engine.Graphics.Batch.OpenGL;
+                gl.Enable(EnableCap.Blend);
+                gl.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.One);
+                gl.DepthMask(false);
+            };
+            lightNode1.GetProperty<MaterialProperty>().EndAction = () =>
+            {
+                var gl = Engine.Graphics.Batch.OpenGL;
+                gl.DepthMask(true);
+                gl.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+            };
 
             //objects
             var plane = new Node();
@@ -130,14 +157,15 @@ namespace OssianForge.Engine.Nodes
             scene.AddChild(camera);
             scene.AddChild(sky);
             scene.AddChild(plane);
-            scene.AddChild(lightNode);
-            scene.AddChild(lightNode1);
             scene.AddChild(ball);
             scene.AddChild(cube);
             scene.AddChild(ball1);
             scene.AddChild(cube1);
             scene.AddChild(remy);
             scene.AddChild(text);
+
+            scene.AddChild(lightNode);
+            scene.AddChild(lightNode1);
 
 
             tree.AddChild(scene);

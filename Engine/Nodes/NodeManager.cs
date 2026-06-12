@@ -1,4 +1,5 @@
 ﻿using OssianForge.Engine.Nodes.Props;
+using OssianForge.Engine.Resources.Shaders;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 
@@ -195,5 +196,20 @@ namespace OssianForge.Engine.Nodes
                 .Any(g => g.GroupId == groupId))
                 .ToList();
         }
+
+        public List<LightData> GetLights()
+            => Engine.Nodes.NodeManager
+                .GetNodesOfType(typeof(Node))
+                .Select(n => new { Node = n, Emission = n.GetProperty<EmissionProperty>() })
+                .Where(x => x.Emission != null)
+                .Select(x => new LightData
+                {
+                    Position = x.Node.GetProperty<TransformProperty>().Transform.Position,
+                    Color = x.Emission.Color,
+                    Intensity = x.Emission.Intensity,
+                    Radius = x.Emission.Radius,
+                })
+                .Take(16)
+                .ToList();
     }
 }

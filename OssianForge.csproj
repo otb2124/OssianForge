@@ -24,8 +24,7 @@
     <None Remove="Content\ShaderFiles\sdf.vert" />
     <None Remove="Content\ShaderFiles\skybox.frag" />
     <None Remove="Content\ShaderFiles\skybox.vert" />
-    <None Remove="Content\ShaderFiles\sprite.frag" />
-    <None Remove="Content\ShaderFiles\sprite.vert" />
+    <None Remove="Content\ShaderFiles\unlit.frag" />
     <None Remove="Content\TextureFiles\barrel.jpg" />
     <None Remove="Content\TextureFiles\brick.png" />
     <None Remove="Content\TextureFiles\brick_d.jpg" />
@@ -57,6 +56,9 @@
     <Content Include="Content\MeshFiles\remy.fbx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Content\ShaderFiles\unlit.frag">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Content\ShaderFiles\sdf.frag">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -85,12 +87,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\ShaderFiles\skybox.vert">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\ShaderFiles\sprite.frag">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\ShaderFiles\sprite.vert">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\TextureFiles\3d\barrel.jpg">

@@ -11,6 +11,9 @@ namespace OssianForge.Engine.Nodes.Props
     {
         public ShaderResource ShaderResource;
 
+        public Action BeginAction;
+        public Action EndAction;
+
         public MaterialProperty(string shaderId)
         {
             ShaderResource = Engine.Resources.GetResource(shaderId) as ShaderResource
@@ -23,19 +26,6 @@ namespace OssianForge.Engine.Nodes.Props
 
         
 
-        protected List<LightData> GetLights()
-            => Engine.Nodes.NodeManager
-                .GetNodesOfType(typeof(Node))
-                .Select(n => new { Node = n, Emission = n.GetProperty<EmissionProperty>() })
-                .Where(x => x.Emission != null)
-                .Select(x => new LightData
-                {
-                    Position = x.Node.GetProperty<TransformProperty>().Transform.Position,
-                    Color = x.Emission.Color,
-                    Intensity = x.Emission.Intensity,
-                    Radius = x.Emission.Radius,
-                })
-                .Take(16)
-                .ToList();
+        
     }
 }
