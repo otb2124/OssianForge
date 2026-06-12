@@ -35,8 +35,7 @@ namespace OssianForge.Engine.Nodes
             //light
             var lightNode = new Node();
             lightNode.Name = "light";
-            lightNode.AddProperty(new TransformProperty(new Transform(new Vector3(10f, 5f, 10f), Vector3.Zero, new Vector3(10, 10, 10))));
-            lightNode.GetProperty<TransformProperty>().Billboard = true;
+            lightNode.AddProperty(new TransformProperty(new Transform(new Vector3(10f, 5f, 10f), Vector3.Zero, new Vector3(10, 10, 10)), RenderSpace.Billboard));
             lightNode.AddProperty(EmissionProperty.White(intensity: 1f, radius: 30.0f));
             lightNode.AddProperty(new MeshProperty("mesh.quad"));
             lightNode.AddProperty(new TextureMaterialProperty("texture.light", "shader.unlit"));
@@ -57,8 +56,7 @@ namespace OssianForge.Engine.Nodes
 
             var lightNode1 = new Node();
             lightNode1.Name = "light1";
-            lightNode1.AddProperty(new TransformProperty(new Transform(new Vector3(-10f, 5f, -10f), Vector3.Zero, new Vector3(10, 10, 10))));
-            lightNode1.GetProperty<TransformProperty>().Billboard = true;
+            lightNode1.AddProperty(new TransformProperty(new Transform(new Vector3(-10f, 5f, -10f), Vector3.Zero, new Vector3(10, 10, 10)), RenderSpace.Billboard));
             lightNode1.AddProperty(EmissionProperty.White(intensity: 1f, radius: 30.0f));
             lightNode1.AddProperty(new MeshProperty("mesh.quad"));
             lightNode1.AddProperty(new TextureMaterialProperty("texture.light", "shader.unlit"));
@@ -142,8 +140,7 @@ namespace OssianForge.Engine.Nodes
             //text
             var text = new Node();
             text.Name = "text";
-            text.AddProperty(new TransformProperty(new Transform(new Vector3(0f, 5f, 0f), Vector3.Zero, Vector3.One)));
-            text.GetProperty<TransformProperty>().Billboard = true;
+            text.AddProperty(new TransformProperty(new Transform(new Vector3(0f, 5f, 0f), Vector3.Zero, Vector3.One), RenderSpace.Billboard));
             text.AddProperty(new MeshProperty("mesh.quad"));
             text.AddProperty(new TextMaterialProperty("font.roboto", "shader.sdf")
             {
@@ -154,6 +151,51 @@ namespace OssianForge.Engine.Nodes
                 TextureHeight = 128
             });
 
+            var text1 = new Node();
+            text1.Name = "text1";
+            text1.AddProperty(new TransformProperty(new Transform(new Vector3(0f, 0f, 0f), Vector3.Zero, Vector3.One), RenderSpace.ScreenSpace));
+            text1.AddProperty(new MeshProperty("mesh.quad"));
+            text1.AddProperty(new TextMaterialProperty("font.roboto", "shader.sdf")
+            {
+                Content = "testing screenspace",
+                FontSize = 64f,
+                Color = new Vector4(1, 1, 1, 1),
+                TextureWidth = 512,
+                TextureHeight = 128
+            });
+            text1.GetProperty<MaterialProperty>().BeginAction = () =>
+            {
+                var gl = Engine.Graphics.Batch.OpenGL;
+                gl.Disable(EnableCap.DepthTest);  // ← screen space ignores depth entirely
+            };
+            text1.GetProperty<MaterialProperty>().EndAction = () =>
+            {
+                var gl = Engine.Graphics.Batch.OpenGL;
+                gl.Enable(EnableCap.DepthTest);
+            };
+
+            var img = new Node();
+            img.Name = "image";
+            img.AddProperty(new TransformProperty(new Transform(new Vector3(5f, 5f, 0f), Vector3.Zero, Vector3.One)));
+            img.AddProperty(new MeshProperty("mesh.quad"));
+            img.AddProperty(new TextureMaterialProperty("texture.dices", "shader.unlit"));
+
+            var img1 = new Node();
+            img1.Name = "image1";
+            img1.AddProperty(new TransformProperty(new Transform(new Vector3(0f, 0f, 0f), Vector3.Zero, Vector3.One), RenderSpace.ScreenSpace));
+            img1.AddProperty(new MeshProperty("mesh.quad"));
+            img1.AddProperty(new TextureMaterialProperty("texture.dices", "shader.unlit"));
+            img1.GetProperty<MaterialProperty>().BeginAction = () =>
+            {
+                var gl = Engine.Graphics.Batch.OpenGL;
+                gl.Disable(EnableCap.DepthTest);  // ← screen space ignores depth entirely
+            };
+            img1.GetProperty<MaterialProperty>().EndAction = () =>
+            {
+                var gl = Engine.Graphics.Batch.OpenGL;
+                gl.Enable(EnableCap.DepthTest);
+            };
+
             scene.AddChild(camera);
             scene.AddChild(sky);
             scene.AddChild(plane);
@@ -162,11 +204,15 @@ namespace OssianForge.Engine.Nodes
             scene.AddChild(ball1);
             scene.AddChild(cube1);
             scene.AddChild(remy);
-            scene.AddChild(text);
 
             scene.AddChild(lightNode);
             scene.AddChild(lightNode1);
 
+            scene.AddChild(text);
+            scene.AddChild(img);
+
+            scene.AddChild(img1);
+            scene.AddChild(text1);
 
             tree.AddChild(scene);
 

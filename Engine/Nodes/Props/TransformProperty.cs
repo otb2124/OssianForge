@@ -29,6 +29,14 @@ namespace OssianForge.Engine.Nodes.Props
         BottomRight
     }
 
+    public enum RenderSpace
+    {
+        World,           // normal 3D transform, no special handling
+        Billboard,       // faces camera, Y-axis locked (trees, sprites, lights)
+        BillboardFree,   // faces camera on all axes (particles, sparks)
+        ScreenSpace,     // pinned to screen in NDC coords, scales with FOV
+    }
+
     public class TransformProperty : NodeProperty
     {
         public Transform Transform;
@@ -40,20 +48,73 @@ namespace OssianForge.Engine.Nodes.Props
         public Vector2? Offset = null;      // offset from anchor point in pixels
         public SizeMode SizeMode = SizeMode.Fixed;
 
-        // --- clipping --- 
+        // --- clipping ---
         public bool ClipsChildren = false;
-        public Vector2? ClipSize = null;   // null means use node's own Size from TransformProperty
+        public Vector2? ClipSize = null;    // null means use node's own Size
 
-        public bool Billboard = false;
+        // --- render space ---
+        // Replaces the old bool Billboard + bool ScreenSpace pair.
+        // ScreenSpace and ScreenSpaceFixed imply billboard behaviour; the camera handles it internally.
+        public RenderSpace RenderSpace = RenderSpace.World;
 
-        public TransformProperty(Transform transform)
+        // --- render flags ---
+        // Previously set via material BeginAction/EndAction lambdas; moved here so the renderer
+        // can apply them automatically based on RenderSpace or per-node overrides.
+        public bool DepthWrite = true;
+        public bool DepthTest = true;
+
+        // When true the node's matrix is not multiplied by its parent's transform.
+        // Essential for HUD nodes that must not inherit world-space translations or rotations.
+        public bool IgnoreParentTransform = false;
+
+        public TransformProperty(Transform transform, RenderSpace renderSpace = RenderSpace.World)
         {
             Transform = transform;
+            RenderSpace = renderSpace;
+            ApplyRenderSpaceDefaults();
         }
 
         public TransformProperty()
         {
             Transform = Transform.Default;
+        }
+
+        // Convenience: set RenderSpace and automatically apply the correct depth flag defaults.
+        // Call this instead of setting RenderSpace directly when you want the "sensible defaults"
+        // behaviour (e.g. HUD nodes almost always want DepthTest = false).
+        public void SetRenderSpace(RenderSpace space)
+        {
+            RenderSpace = space;
+            ApplyRenderSpaceDefaults();
+        }
+
+        // Applies opinionated defaults for each render space.
+        // You can still override DepthWrite/DepthTest individually afterwards.
+        private void ApplyRenderSpaceDefaults()
+        {
+            switch (RenderSpace)
+            {
+                case RenderSpace.ScreenSpace:
+                    DepthWrite = false;
+                    DepthTest = false;
+                    IgnoreParentTransform = true;
+                    break;
+
+                case RenderSpace.Billboard:
+                case RenderSpace.BillboardFree:
+                    // Lights and particles typically need additive blending over depth,
+                    // but the caller controls BlendFunc — just disable depth write here
+                    // since billboards are usually transparent quads.
+                    DepthWrite = false;
+                    DepthTest = true;
+                    break;
+
+                default:
+                    DepthWrite = true;
+                    DepthTest = true;
+                    IgnoreParentTransform = false;
+                    break;
+            }
         }
 
         public void SetMatrix(Matrix4x4 matrix)
@@ -63,18 +124,17 @@ namespace OssianForge.Engine.Nodes.Props
 
         public Matrix4x4 GetMatrix()
         {
-            if(Billboard)
+            var cam = Engine.Graphics.GetCurrentCamera();
+            return RenderSpace switch
             {
-                return Engine.Graphics.GetCurrentCamera().GetBillboardMatrix(Transform);
-            }
-            else
-            {
-                return Transform.ToMatrix();
-            }
-            
+                RenderSpace.Billboard => cam.GetBillboardMatrix(Transform),
+                RenderSpace.BillboardFree => cam.GetBillboardFreeMatrix(Transform),
+                RenderSpace.ScreenSpace => cam.GetScreenSpaceMatrix(Transform),
+                _ => Transform.ToMatrix()
+            };
         }
 
-        // resolves final screen position from anchor + pivot + offset + screen size
+        // Resolves final screen position from anchor + pivot + offset + screen size.
         public Vector2 ResolveScreenPosition(Vector2 screenSize, Vector2 parentSize)
         {
             Vector2 anchorPoint = Anchor switch
@@ -96,7 +156,6 @@ namespace OssianForge.Engine.Nodes.Props
                 pivotOffset = Pivot.Value * Size.Value;
 
             Vector2 off = Offset ?? Vector2.Zero;
-
             return anchorPoint + off - pivotOffset;
         }
     }
