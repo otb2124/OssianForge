@@ -3,7 +3,7 @@ using OssianForge.Engine.Resources.Textures;
 using Silk.NET.Assimp;
 using Silk.NET.OpenGL;
 using System.Numerics;
-using static OssianForge.Engine.Utils.Math;
+using static OssianForge.Engine.Utils.MathUtils;
 
 namespace OssianForge.Engine.Nodes.Props
 {

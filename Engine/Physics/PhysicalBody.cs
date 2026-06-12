@@ -5,7 +5,7 @@ using Jitter2.LinearMath;
 using OssianForge.Engine.Nodes;
 using OssianForge.Engine.Nodes.Props;
 using System.Numerics;
-using static OssianForge.Engine.Utils.Math;
+using static OssianForge.Engine.Utils.MathUtils;
 
 namespace OssianForge.Engine.Physics
 {

@@ -7,8 +7,15 @@ using System.Threading.Tasks;
 
 namespace OssianForge.Engine.Utils
 {
-    public static class Math
+    public static class MathUtils
     {
+        public static uint NextPowerOfTwo(uint v)
+        {
+            v--;
+            v |= v >> 1; v |= v >> 2; v |= v >> 4;
+            v |= v >> 8; v |= v >> 16;
+            return v + 1;
+        }
 
         public class Signal
         {

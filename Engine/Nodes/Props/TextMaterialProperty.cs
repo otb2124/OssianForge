@@ -4,6 +4,7 @@ using System.Numerics;
 using System.Collections.Generic;
 using OssianForge.Engine.Resources.Shaders;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+using OssianForge.Engine.Utils;
 
 namespace OssianForge.Engine.Nodes.Props
 {
@@ -51,6 +52,26 @@ namespace OssianForge.Engine.Nodes.Props
             InitGpuResources();
         }
 
+        public TextMaterialProperty(string content, float fontSize, Vector4 color, string fontResourceId, string shaderId)
+            : base(shaderId)
+        {
+            FontResource = Engine.Resources.GetResource(fontResourceId) as FontResource
+                ?? throw new Exception($"FontResource not found: '{fontResourceId}'");
+
+            Content = content;
+            FontSize = fontSize;
+            Color = color;
+            AutoSize();
+
+            _lastContent = null;
+            _lastFontSize = -1f;
+            _lastColor = new Vector4(-1f);
+
+            // Init GPU resources once at construction, same as TextureMaterialProperty
+            // which receives ready-made resources from TextureResource.
+            InitGpuResources();
+        }
+
         // ── Apply (scene render pass) ────────────────────────────────────
         public override void Apply(Matrix4x4 transform, Matrix4x4[] palette)
         {
@@ -80,6 +101,15 @@ namespace OssianForge.Engine.Nodes.Props
         }
 
         public override void PostApply() { }
+
+
+        public void AutoSize()
+        {
+            var (width, height) = FontUtils.MeasureText(Content, FontSize, FontResource);
+            TextureWidth = width;
+            TextureHeight = height;
+        }
+
 
         // ── GPU resource init ────────────────────────────────────────────
         private unsafe void InitGpuResources()
@@ -137,12 +167,22 @@ namespace OssianForge.Engine.Nodes.Props
         {
             var atlas = FontResource.AtlasData;
             float emToPx = FontSize;
-            float baseline = TextureHeight * 0.75f;
+            float lineHeight = atlas.LineHeight * emToPx;
             float cursor = 0f;
+            int currentLine = 0;
             var verts = new List<float>();
 
             foreach (char c in Content)
             {
+                if (c == '\n')
+                {
+                    cursor = 0f;
+                    currentLine++;
+                    continue;
+                }
+
+                float baseline = lineHeight * (currentLine + 0.75f);
+
                 if (!atlas.Glyphs.TryGetValue(c, out var g))
                 {
                     cursor += emToPx * 0.3f;
@@ -164,7 +204,6 @@ namespace OssianForge.Engine.Nodes.Props
                 float vBottom = g.AtlasY / atlas.AtlasHeight;
                 float vTop = (g.AtlasY + g.AtlasH) / atlas.AtlasHeight;
 
-                // Two triangles, 8 floats each: pos(3) + normal(3) + uv(2)
                 verts.AddRange(new[] { ndcX0, ndcY1, 0f, 0f, 0f, 1f, u0, vBottom });
                 verts.AddRange(new[] { ndcX1, ndcY1, 0f, 0f, 0f, 1f, u1, vBottom });
                 verts.AddRange(new[] { ndcX0, ndcY0, 0f, 0f, 0f, 1f, u0, vTop });
@@ -177,7 +216,7 @@ namespace OssianForge.Engine.Nodes.Props
 
             return verts.ToArray();
         }
-        
+
 
         private void DrawGlyphs(GL gl)
         {
@@ -201,6 +240,11 @@ namespace OssianForge.Engine.Nodes.Props
             gl.BindVertexArray(0);
         }
 
+
+        public float GetTextureSizeAspect()
+        {
+            return (float)TextureWidth / TextureHeight;
+        }
         
 
         // ── Cleanup ──────────────────────────────────────────────────────

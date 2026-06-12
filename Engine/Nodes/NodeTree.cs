@@ -1,8 +1,9 @@
 ﻿using OssianForge.Engine.Nodes.Props;
 using OssianForge.Engine.Resources.Scripts;
+using OssianForge.Engine.Utils;
 using Silk.NET.OpenGL;
 using System.Numerics;
-using static OssianForge.Engine.Utils.Math;
+using static OssianForge.Engine.Utils.MathUtils;
 
 namespace OssianForge.Engine.Nodes
 {
@@ -140,29 +141,17 @@ namespace OssianForge.Engine.Nodes
             //text
             var text = new Node();
             text.Name = "text";
-            text.AddProperty(new TransformProperty(new Transform(new Vector3(0f, 5f, 0f), Vector3.Zero, Vector3.One), RenderSpace.Billboard));
+            text.AddProperty(new TransformProperty(new Transform(new Vector3(0f, 5f, 0f), Vector3.Zero, new Vector3(FontUtils.GetAspect("im just a billboard!\nXd\nабвабфа\ntest123", 32, "font.roboto") * 1f, 1f, 1f)), RenderSpace.Billboard));
             text.AddProperty(new MeshProperty("mesh.quad"));
-            text.AddProperty(new TextMaterialProperty("font.roboto", "shader.sdf")
-            {
-                Content = "Hello World",
-                FontSize = 64f,
-                Color = new Vector4(0.1f, 1, 1, 1),
-                TextureWidth = 512,
-                TextureHeight = 128
-            });
+            text.AddProperty(new TextMaterialProperty("im just a billboard!\nXd\nабвабфа\ntest123", 32, new Vector4(1, 1, 1, 1), "font.roboto", "shader.sdf"));
 
             var text1 = new Node();
             text1.Name = "text1";
             text1.AddProperty(new TransformProperty(new Transform(new Vector3(0f, 0f, 0f), Vector3.Zero, Vector3.One), RenderSpace.ScreenSpace));
+            text1.GetProperty<TransformProperty>().SetAnchorPreset(AnchorPreset.TopLeft);
+            text1.GetProperty<TransformProperty>().SetOffset(0f, 0f, FontUtils.MeasureText("testing screenspace\ntakes time", 32, "font.roboto").width, FontUtils.MeasureText("testing screenspace\ntakes time", 32, "font.roboto").height);
             text1.AddProperty(new MeshProperty("mesh.quad"));
-            text1.AddProperty(new TextMaterialProperty("font.roboto", "shader.sdf")
-            {
-                Content = "testing screenspace",
-                FontSize = 64f,
-                Color = new Vector4(1, 1, 1, 1),
-                TextureWidth = 512,
-                TextureHeight = 128
-            });
+            text1.AddProperty(new TextMaterialProperty("testing screenspace\ntakes time", 32, new Vector4(1, 1, 1, 1), "font.roboto", "shader.sdf"));
             text1.GetProperty<MaterialProperty>().BeginAction = () =>
             {
                 var gl = Engine.Graphics.Batch.OpenGL;
@@ -183,8 +172,10 @@ namespace OssianForge.Engine.Nodes
             var img1 = new Node();
             img1.Name = "image1";
             img1.AddProperty(new TransformProperty(new Transform(new Vector3(0f, 0f, 0f), Vector3.Zero, Vector3.One), RenderSpace.ScreenSpace));
+            img1.GetProperty<TransformProperty>().SetAnchorPreset(AnchorPreset.TopLeft);
+            img1.GetProperty<TransformProperty>().SetOffset(0f, 0f, FontUtils.MeasureText("testing screenspace\ntakes time", 32, "font.roboto").width, FontUtils.MeasureText("testing screenspace\ntakes time", 32, "font.roboto").height);
             img1.AddProperty(new MeshProperty("mesh.quad"));
-            img1.AddProperty(new TextureMaterialProperty("texture.dices", "shader.unlit"));
+            img1.AddProperty(new TextureMaterialProperty("texture.brick", "shader.unlit"));
             img1.GetProperty<MaterialProperty>().BeginAction = () =>
             {
                 var gl = Engine.Graphics.Batch.OpenGL;

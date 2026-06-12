@@ -1,6 +1,6 @@
 ﻿using OssianForge.Engine.Inputs;
 using System.Numerics;
-using static OssianForge.Engine.Utils.Math;
+using static OssianForge.Engine.Utils.MathUtils;
 
 namespace OssianForge.Engine.Graphics.Camera
 {
