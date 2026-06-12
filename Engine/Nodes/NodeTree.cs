@@ -138,15 +138,37 @@ namespace OssianForge.Engine.Nodes
             
             remy.GetProperty<AnimationProperty>().Play("remy.backflip", true, 2f);
 
-            //text
-            var text = new Node();
-            text.Name = "text";
-            text.AddProperty(new TransformProperty(new Transform(new Vector3(0f, 5f, 0f), Vector3.Zero, new Vector3(FontUtils.GetAspect("im just a billboard!\nXd\nабвабфа\ntest123", 32, "font.roboto") * 1f, 1f, 1f)), RenderSpace.Billboard));
-            text.AddProperty(new MeshProperty("mesh.quad"));
-            text.AddProperty(new TextMaterialProperty("im just a billboard!\nXd\nабвабфа\ntest123", 32, new Vector4(1, 1, 1, 1), "font.roboto", "shader.sdf"));
+            //textBrick
+            var textBrick = new Node();
+            textBrick.Name = "textBrick";
+            textBrick.Id = "textBrick0";
+            textBrick.AddProperty(new TransformProperty(new Transform(new Vector3(0f, 5f, 0f), Vector3.Zero, new Vector3(FontUtils.GetAspect("im a text brick\ntest123", 32, "font.roboto") * 1f, 1f, 1f)), RenderSpace.World));
+            textBrick.AddProperty(new MeshProperty("mesh.quad"));
+            textBrick.AddProperty(new TextMaterialProperty("im a text brick\ntest123", 32, new Vector4(1, 1, 1, 1), "font.roboto", "shader.sdf"));
+            textBrick.AddProperty(new ColliderProperty("collider.thickquad"));
+            textBrick.AddProperty(new PhysicalProperty(false, true, 1f, 1f));
+
+            var textBrick1 = new Node();
+            textBrick1.Name = "textBrick1";
+            textBrick1.Id = "textBrick1";
+            textBrick1.AddProperty(new TransformProperty(new Transform(new Vector3(0f, 10f, 0f), Vector3.Zero, new Vector3(FontUtils.GetAspect("im a text brick1\ntest123", 32, "font.roboto") * 1f, 1f, 1f)), RenderSpace.World));
+            textBrick1.AddProperty(new MeshProperty("mesh.quad"));
+            textBrick1.AddProperty(new TextMaterialProperty("im a text brick\ntest123", 32, new Vector4(1, 1, 1, 1), "font.roboto", "shader.sdf"));
+            textBrick1.AddProperty(new ColliderProperty("collider.thickquad"));
+            textBrick1.AddProperty(new PhysicalProperty(false, true, 1f, 1f));
+
+            var textBrick2 = new Node();
+            textBrick2.Name = "textBrick2";
+            textBrick2.Id = "textBrick2";
+            textBrick2.AddProperty(new TransformProperty(new Transform(new Vector3(0.5f, 8f, 0f), Vector3.Zero, new Vector3(FontUtils.GetAspect("im a text brick2\ntest123", 32, "font.roboto") * 1f, 1f, 1f)), RenderSpace.World));
+            textBrick2.AddProperty(new MeshProperty("mesh.quad"));
+            textBrick2.AddProperty(new TextMaterialProperty("im a text brick2\ntest123", 32, new Vector4(1, 1, 1, 1), "font.roboto", "shader.sdf"));
+            textBrick2.AddProperty(new ColliderProperty("collider.thickquad"));
+            textBrick2.AddProperty(new PhysicalProperty(false, true, 1f, 1f));
 
             var text1 = new Node();
             text1.Name = "text1";
+            text1.Id = "text1";
             text1.AddProperty(new TransformProperty(new Transform(new Vector3(0f, 0f, 0f), Vector3.Zero, Vector3.One), RenderSpace.ScreenSpace));
             text1.GetProperty<TransformProperty>().SetAnchorPreset(AnchorPreset.TopLeft);
             text1.GetProperty<TransformProperty>().SetOffset(0f, 0f, FontUtils.MeasureText("testing screenspace\ntakes time", 32, "font.roboto").width, FontUtils.MeasureText("testing screenspace\ntakes time", 32, "font.roboto").height);
@@ -162,6 +184,9 @@ namespace OssianForge.Engine.Nodes
                 var gl = Engine.Graphics.Batch.OpenGL;
                 gl.Enable(EnableCap.DepthTest);
             };
+            text1.AddProperty(new ColliderProperty("collider.thickquad"));
+            text1.AddProperty(new PhysicalProperty(false, true, 1f, 1f));
+            text1.GetProperty<PhysicalProperty>().SetWorld(1);
 
             var img = new Node();
             img.Name = "image";
@@ -187,6 +212,50 @@ namespace OssianForge.Engine.Nodes
                 gl.Enable(EnableCap.DepthTest);
             };
 
+            var img2 = new Node();
+            img2.Name = "image2";
+            img2.AddProperty(new TransformProperty(new Transform(new Vector3(0f, 0f, 0f), Vector3.Zero, Vector3.One), RenderSpace.ScreenSpace));
+            img2.GetProperty<TransformProperty>().SetAnchorPreset(AnchorPreset.TopLeft);
+            img2.GetProperty<TransformProperty>().SetOffset(50f, 400f, 200, 200);
+            img2.AddProperty(new MeshProperty("mesh.quad"));
+            img2.AddProperty(new TextureMaterialProperty("texture.house.wood", "shader.unlit"));
+            img2.GetProperty<MaterialProperty>().BeginAction = () =>
+            {
+                var gl = Engine.Graphics.Batch.OpenGL;
+                gl.Disable(EnableCap.DepthTest);  // ← screen space ignores depth entirely
+            };
+            img2.GetProperty<MaterialProperty>().EndAction = () =>
+            {
+                var gl = Engine.Graphics.Batch.OpenGL;
+                gl.Enable(EnableCap.DepthTest);
+            };
+            img2.AddProperty(new ColliderProperty("collider.thickquad"));
+            img2.AddProperty(new PhysicalProperty(false, true, 1f, 1f));
+            img2.GetProperty<PhysicalProperty>().SetWorld(1);
+
+
+            var screenBottom = new Node();
+            screenBottom.Name = "screenBottom";
+            screenBottom.Id = "screenBottom";
+            screenBottom.AddProperty(new TransformProperty(new Transform(new Vector3(0f, 0f, 0f), Vector3.Zero, Vector3.One), RenderSpace.ScreenSpace));
+            screenBottom.GetProperty<TransformProperty>().SetAnchorPreset(AnchorPreset.TopLeft);
+            screenBottom.GetProperty<TransformProperty>().SetOffset(0f, 700f, 1000, 10);
+            screenBottom.AddProperty(new MeshProperty("mesh.quad"));
+            screenBottom.AddProperty(new TextureMaterialProperty("texture.house.wood", "shader.unlit"));
+            screenBottom.GetProperty<MaterialProperty>().BeginAction = () =>
+            {
+                var gl = Engine.Graphics.Batch.OpenGL;
+                gl.Disable(EnableCap.DepthTest);  // ← screen space ignores depth entirely
+            };
+            screenBottom.GetProperty<MaterialProperty>().EndAction = () =>
+            {
+                var gl = Engine.Graphics.Batch.OpenGL;
+                gl.Enable(EnableCap.DepthTest);
+            };
+            screenBottom.AddProperty(new ColliderProperty("collider.thickquad"));
+            screenBottom.AddProperty(new PhysicalProperty(true, false));
+            screenBottom.GetProperty<PhysicalProperty>().SetWorld(1);
+
             scene.AddChild(camera);
             scene.AddChild(sky);
             scene.AddChild(plane);
@@ -199,11 +268,15 @@ namespace OssianForge.Engine.Nodes
             scene.AddChild(lightNode);
             scene.AddChild(lightNode1);
 
-            scene.AddChild(text);
+            scene.AddChild(textBrick);
+            scene.AddChild(textBrick1);
+            scene.AddChild(textBrick2);
             scene.AddChild(img);
 
             scene.AddChild(img1);
             scene.AddChild(text1);
+            scene.AddChild(img2);
+            scene.AddChild(screenBottom);
 
             tree.AddChild(scene);
 

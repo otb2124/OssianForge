@@ -10,10 +10,12 @@ namespace OssianForge.Engine.Physics
     public class PhysicsWorld
     {
         public readonly World JitterWorld;
+        public int WorldIndex;
         private readonly List<PhysicsBody> _bodies = new();
 
-        public PhysicsWorld()
+        public PhysicsWorld(int worldIndex = 0)
         {
+            WorldIndex = worldIndex;
             JitterWorld = new World();
             JitterWorld.Gravity = new JVector(0, -9.81f, 0);
         }
@@ -23,7 +25,11 @@ namespace OssianForge.Engine.Physics
             _bodies.Clear();
             var nodes = Engine.Nodes.NodeManager.GetNodesWithProperty<PhysicalProperty>();
             foreach (var node in nodes)
-                Register(node);
+            {
+                // only register nodes that belong to this world
+                if (node.GetProperty<PhysicalProperty>().WorldIndex == WorldIndex)
+                    Register(node);
+            }
         }
 
         public PhysicsBody Register(Node node)
@@ -43,15 +49,10 @@ namespace OssianForge.Engine.Physics
             if (body == null) return;
 
             if (body.JitterBody != null)
-            {
                 JitterWorld.Remove(body.JitterBody);
-            }
             else
-            {
-                // Static: remove triangle shapes from NullBody
                 foreach (var shape in body.OwnedShapes)
                     JitterWorld.NullBody.RemoveShape(shape);
-            }
 
             _bodies.RemoveAll(b => b.NodeId == node.Id);
         }
@@ -60,15 +61,11 @@ namespace OssianForge.Engine.Physics
         {
             float dt = Math.Clamp((float)delta, 0.001f, 0.033f);
             JitterWorld.Step(dt, multiThread: false);
-
             foreach (var body in _bodies)
                 body.SyncFromJitter();
         }
 
-
         public PhysicsBody? GetBody(string nodeId) =>
             _bodies.FirstOrDefault(b => b.NodeId == nodeId);
-
-
     }
 }

@@ -13,6 +13,8 @@ namespace OssianForge.Engine.Nodes.Props
         public bool IsStatic = false;
         public bool UseGravity = true;
 
+        public int WorldIndex = 0;
+
         public PhysicalProperty(bool isStatic, bool useGravity,
                                 float mass = 1f, float bounciness = 0f,
                                 float friction = 0.6f,
@@ -26,6 +28,11 @@ namespace OssianForge.Engine.Nodes.Props
             Friction = friction;
             LinearDamping = linearDamping;
             AngularDamping = angularDamping;
+        }
+
+        public void SetWorld(int worldIndex)
+        {
+            WorldIndex = worldIndex;
         }
 
         public void AddForce(Vector3 force)

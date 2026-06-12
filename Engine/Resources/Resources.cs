@@ -83,6 +83,7 @@ namespace OssianForge.Engine.Resources
                 new MeshResource("mesh.cube", "fastmesh.cube"),
                 new MeshResource("mesh.plane", "fastmesh.plane"),
                 new MeshResource("mesh.quad", "fastmesh.quad"),
+                new MeshResource("mesh.thickquad", "fastmesh.thickquad"),
                 new MeshResource("mesh.ball", "fastmesh.ball"),
 
                 new MeshResource("mesh.remy", "meshfile.remy"),
@@ -124,6 +125,7 @@ namespace OssianForge.Engine.Resources
                 new ColliderResource("collider.ball", "mesh.ball"),
                 new ColliderResource("collider.plane", "mesh.plane"),
                 new ColliderResource("collider.cube", "mesh.cube"),
+                new ColliderResource("collider.thickquad", "mesh.thickquad"),
 
                 //new ScriptResource("script.StateProperty", "scriptfile.StateProperty")
 

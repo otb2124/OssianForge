@@ -32,6 +32,7 @@ namespace OssianForge.Engine.Resources.Meshes
                     "fastmesh.cylinder" => FastMesh.Cylinder,
                     "fastmesh.ball" => FastMesh.Ball,
                     "fastmesh.quad" => FastMesh.Quad,
+                    "fastmesh.thickquad" => FastMesh.ThickQuad,
                     _ => throw new Exception($"Unknown fast mesh: '{ResourceId}'")
                 };
 
