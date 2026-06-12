@@ -128,5 +128,16 @@ namespace OssianForge.Engine.Graphics.Camera
                 MathF.Cos(pitchRad) * MathF.Sin(yawRad)
             ));
         }
+
+        public (Matrix4x4 view, Matrix4x4 viewNoTranslation) GetViewMatrices()
+        {
+            var view = GetView();
+            var viewNoTranslation = new Matrix4x4(
+                view.M11, view.M12, view.M13, 0,
+                view.M21, view.M22, view.M23, 0,
+                view.M31, view.M32, view.M33, 0,
+                0, 0, 0, 1);
+            return (view, viewNoTranslation);
+        }
     }
 }

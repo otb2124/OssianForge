@@ -3,6 +3,7 @@ using Silk.NET.OpenGL;
 using System.Numerics;
 using System.Collections.Generic;
 using OssianForge.Engine.Resources.Shaders;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace OssianForge.Engine.Nodes.Props
 {
@@ -10,8 +11,8 @@ namespace OssianForge.Engine.Nodes.Props
 
     public class TextMaterialProperty : MaterialProperty
     {
+        // ── Public properties ────────────────────────────────────────────
         public FontResource FontResource;
-
         public string Content = "Hello World";
         public float FontSize = 64f;
         public Vector4 Color = Vector4.One;
@@ -19,6 +20,7 @@ namespace OssianForge.Engine.Nodes.Props
         public int TextureWidth = 512;
         public int TextureHeight = 128;
 
+        // ── Dirty tracking ───────────────────────────────────────────────
         private string _lastContent;
         private float _lastFontSize;
         private Vector4 _lastColor;
@@ -27,13 +29,15 @@ namespace OssianForge.Engine.Nodes.Props
             _lastFontSize != FontSize ||
             _lastColor != Color;
 
+        // ── GPU resources ────────────────────────────────────────────────
         private uint _rtTexture;
-        private bool _initialized;
         private uint _bakeVao;
         private uint _bakeVbo;
         private uint _bakeVertexCount;
 
-        public TextMaterialProperty(string fontResourceId, string shaderId) : base(shaderId)
+        // ────────────────────────────────────────────────────────────────
+        public TextMaterialProperty(string fontResourceId, string shaderId)
+            : base(shaderId)
         {
             FontResource = Engine.Resources.GetResource(fontResourceId) as FontResource
                 ?? throw new Exception($"FontResource not found: '{fontResourceId}'");
@@ -41,59 +45,60 @@ namespace OssianForge.Engine.Nodes.Props
             _lastContent = null;
             _lastFontSize = -1f;
             _lastColor = new Vector4(-1f);
+
+            // Init GPU resources once at construction, same as TextureMaterialProperty
+            // which receives ready-made resources from TextureResource.
+            InitGpuResources();
         }
 
+        // ── Apply (scene render pass) ────────────────────────────────────
         public override void Apply(Matrix4x4 transform, Matrix4x4[] palette)
         {
             if (string.IsNullOrEmpty(Content)) return;
 
-            EnsureInitialized();
-
             if (NeedsRedraw)
                 BakeToTexture();
 
-            var gl = Engine.Graphics.Batch.OpenGL;
             ShaderResource.Use();
 
-            var (view, _) = GetViewMatrices();
+            var (view, viewNoTranslation) = Engine.Graphics.GetCurrentCamera().GetViewMatrices();
             ShaderResource.Apply(new ApplyContext
             {
                 Model = transform,
                 View = view,
                 Projection = Engine.Graphics.GetCurrentCamera().GetProjection(),
+                ViewNoTranslation = viewNoTranslation,
                 DiffuseTextureSlot = 0,
+                Palette = palette
             });
 
+            var gl = Engine.Graphics.Batch.OpenGL;
             gl.ActiveTexture(TextureUnit.Texture0);
             gl.BindTexture(TextureTarget.Texture2D, _rtTexture);
             ShaderResource.SetInt("uTexture", 0);
             ShaderResource.SetVec4("uTextColor", Color);
         }
 
-        private unsafe void EnsureInitialized()
-        {
-            if (_initialized) return;
+        public override void PostApply() { }
 
+        // ── GPU resource init ────────────────────────────────────────────
+        private unsafe void InitGpuResources()
+        {
             var gl = Engine.Graphics.Batch.OpenGL;
 
-            // RGBA8 texture that receives the baked glyphs
-            _rtTexture = gl.GenTexture();
-            gl.BindTexture(TextureTarget.Texture2D, _rtTexture);
-            gl.TexImage2D(TextureTarget.Texture2D, 0, InternalFormat.Rgba8,
-                          (uint)TextureWidth, (uint)TextureHeight, 0,
-                          PixelFormat.Rgba, PixelType.UnsignedByte, null);
-            gl.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)GLEnum.Linear);
-            gl.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)GLEnum.Linear);
-            gl.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)GLEnum.ClampToEdge);
-            gl.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)GLEnum.ClampToEdge);
-            gl.BindTexture(TextureTarget.Texture2D, 0);
+            _rtTexture = Engine.Graphics.Batch.CreateRenderTexture(TextureWidth, TextureHeight);
+            (_bakeVao, _bakeVbo) = CreateBakeVao(gl);
+        }
 
-            // Bake VAO/VBO — pos(3) + normal(3) + uv(2), UV at location 2
-            // to match the SDF vertex shader layout
-            _bakeVao = gl.GenVertexArray();
-            _bakeVbo = gl.GenBuffer();
-            gl.BindVertexArray(_bakeVao);
-            gl.BindBuffer(BufferTargetARB.ArrayBuffer, _bakeVbo);
+        
+
+        private unsafe (uint vao, uint vbo) CreateBakeVao(GL gl)
+        {
+            uint vao = gl.GenVertexArray();
+            uint vbo = gl.GenBuffer();
+
+            gl.BindVertexArray(vao);
+            gl.BindBuffer(BufferTargetARB.ArrayBuffer, vbo);
 
             const uint stride = 8 * sizeof(float);
             gl.EnableVertexAttribArray(0);
@@ -104,17 +109,33 @@ namespace OssianForge.Engine.Nodes.Props
             gl.VertexAttribPointer(2, 2, GLEnum.Float, false, stride, (void*)(6 * sizeof(float)));
 
             gl.BindVertexArray(0);
-
-            Console.WriteLine($"[TEXT] Initialized: rtTexture={_rtTexture}");
-            _initialized = true;
+            return (vao, vbo);
         }
 
+        // ── Bake pass ────────────────────────────────────────────────────
         private void BakeToTexture()
         {
-            var gl = Engine.Graphics.Batch.OpenGL;
-            var atlas = FontResource.AtlasData;
-            if (atlas == null) { Console.WriteLine("[TEXT] atlas null"); return; }
+            var batch = Engine.Graphics.Batch;
+            var verts = BuildGlyphVertices();
+            if (verts.Length == 0) return;
 
+            batch.UploadDynamicBuffer(_bakeVbo, verts);
+            _bakeVertexCount = (uint)(verts.Length / 8);
+
+            uint fbo = batch.BeginOffscreenPass(_rtTexture, TextureWidth, TextureHeight);
+            if (fbo == 0) return;
+
+            DrawGlyphs(batch.OpenGL);
+            batch.EndOffscreenPass(fbo);
+
+            _lastContent = Content;
+            _lastFontSize = FontSize;
+            _lastColor = Color;
+        }
+
+        private float[] BuildGlyphVertices()
+        {
+            var atlas = FontResource.AtlasData;
             float emToPx = FontSize;
             float baseline = TextureHeight * 0.75f;
             float cursor = 0f;
@@ -140,62 +161,29 @@ namespace OssianForge.Engine.Nodes.Props
 
                 float u0 = g.AtlasX / atlas.AtlasWidth;
                 float u1 = (g.AtlasX + g.AtlasW) / atlas.AtlasWidth;
-                float vBottom = g.AtlasY / atlas.AtlasHeight;               // atlasBounds.bottom → GL bottom
-                float vTop = (g.AtlasY + g.AtlasH) / atlas.AtlasHeight; // atlasBounds.top    → GL top
+                float vBottom = g.AtlasY / atlas.AtlasHeight;
+                float vTop = (g.AtlasY + g.AtlasH) / atlas.AtlasHeight;
 
-                verts.AddRange(new[] { ndcX0, ndcY1, 0f, 0f, 0f, 1f, u0, vBottom }); // bottom-left
-                verts.AddRange(new[] { ndcX1, ndcY1, 0f, 0f, 0f, 1f, u1, vBottom }); // bottom-right
-                verts.AddRange(new[] { ndcX0, ndcY0, 0f, 0f, 0f, 1f, u0, vTop }); // top-left
-                verts.AddRange(new[] { ndcX1, ndcY1, 0f, 0f, 0f, 1f, u1, vBottom }); // bottom-right
-                verts.AddRange(new[] { ndcX1, ndcY0, 0f, 0f, 0f, 1f, u1, vTop }); // top-right
-                verts.AddRange(new[] { ndcX0, ndcY0, 0f, 0f, 0f, 1f, u0, vTop }); // top-left
+                // Two triangles, 8 floats each: pos(3) + normal(3) + uv(2)
+                verts.AddRange(new[] { ndcX0, ndcY1, 0f, 0f, 0f, 1f, u0, vBottom });
+                verts.AddRange(new[] { ndcX1, ndcY1, 0f, 0f, 0f, 1f, u1, vBottom });
+                verts.AddRange(new[] { ndcX0, ndcY0, 0f, 0f, 0f, 1f, u0, vTop });
+                verts.AddRange(new[] { ndcX1, ndcY1, 0f, 0f, 0f, 1f, u1, vBottom });
+                verts.AddRange(new[] { ndcX1, ndcY0, 0f, 0f, 0f, 1f, u1, vTop });
+                verts.AddRange(new[] { ndcX0, ndcY0, 0f, 0f, 0f, 1f, u0, vTop });
 
                 cursor += g.Advance * emToPx;
             }
 
-            var vertsArray = verts.ToArray();
-            _bakeVertexCount = (uint)(vertsArray.Length / 8);
-            if (_bakeVertexCount == 0) { Console.WriteLine("[TEXT] no verts"); return; }
+            return verts.ToArray();
+        }
+        
 
-            gl.BindBuffer(BufferTargetARB.ArrayBuffer, _bakeVbo);
-            unsafe
-            {
-                fixed (float* ptr = vertsArray)
-                    gl.BufferData(BufferTargetARB.ArrayBuffer,
-                        (nuint)(vertsArray.Length * sizeof(float)),
-                        ptr, BufferUsageARB.DynamicDraw);
-            }
-
-            // Throw-away FBO — created here, deleted at the end of this method.
-            // Attaching _rtTexture to it lets us render into it; deleting the FBO
-            // afterwards leaves the texture intact.
-            uint tempFbo = gl.GenFramebuffer();
-            gl.BindFramebuffer(FramebufferTarget.Framebuffer, tempFbo);
-            gl.FramebufferTexture2D(FramebufferTarget.Framebuffer,
-                                    FramebufferAttachment.ColorAttachment0,
-                                    TextureTarget.Texture2D, _rtTexture, 0);
-
-            var status = gl.CheckFramebufferStatus(FramebufferTarget.Framebuffer);
-            Console.WriteLine($"[TEXT] tempFbo={tempFbo} rtTexture={_rtTexture} status={status}");
-            if (status != GLEnum.FramebufferComplete)
-            {
-                gl.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
-                gl.DeleteFramebuffer(tempFbo);
-                Console.WriteLine("[TEXT] FBO incomplete, aborting bake");
-                return;
-            }
-
-            gl.Viewport(0, 0, (uint)TextureWidth, (uint)TextureHeight);
-            gl.ClearColor(0f, 0f, 0f, 0f);
-            gl.Clear(ClearBufferMask.ColorBufferBit);
-            gl.Disable(EnableCap.DepthTest);
-            gl.Enable(EnableCap.Blend);
-            gl.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+        private void DrawGlyphs(GL gl)
+        {
+            var atlas = FontResource.AtlasData;
 
             ShaderResource.Use();
-            FontResource.Bind(0);
-            ShaderResource.SetVec4("uTextColor", Color);
-            ShaderResource.SetFloat("uDistanceRange", atlas.DistanceRange);
             ShaderResource.Apply(new ApplyContext
             {
                 Model = Matrix4x4.Identity,
@@ -203,38 +191,19 @@ namespace OssianForge.Engine.Nodes.Props
                 Projection = Matrix4x4.Identity,
                 DiffuseTextureSlot = 0,
             });
-            FontResource.Bind(0); // rebind after Apply in case it stomped slot 0
+
+            FontResource.Bind(0);
+            ShaderResource.SetVec4("uTextColor", Color);
+            ShaderResource.SetFloat("uDistanceRange", atlas.DistanceRange);
 
             gl.BindVertexArray(_bakeVao);
             gl.DrawArrays(PrimitiveType.Triangles, 0, _bakeVertexCount);
             gl.BindVertexArray(0);
-
-            unsafe
-            {
-                byte[] px = new byte[4];
-                fixed (byte* ptr = px)
-                    gl.ReadPixels(TextureWidth / 2, TextureHeight / 2, 1, 1,
-                                  PixelFormat.Rgba, PixelType.UnsignedByte, ptr);
-                Console.WriteLine($"[TEXT] FBO center pixel: r={px[0]} g={px[1]} b={px[2]} a={px[3]}");
-            }
-
-            // TextMaterialProperty.cs — end of BakeToTexture
-            gl.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
-            gl.DeleteFramebuffer(tempFbo);
-            gl.Viewport(0, 0,
-                (uint)Engine.Graphics.WindowSize.X,
-                (uint)Engine.Graphics.WindowSize.Y);
-            // restore normal blend, leave it enabled for the scene
-            gl.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
-            gl.Enable(EnableCap.DepthTest);
-
-            _lastContent = Content;
-            _lastFontSize = FontSize;
-            _lastColor = Color;
         }
 
-        public override void PostApply() { }
+        
 
+        // ── Cleanup ──────────────────────────────────────────────────────
         public void Dispose()
         {
             var gl = Engine.Graphics.Batch.OpenGL;

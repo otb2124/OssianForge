@@ -38,7 +38,7 @@ namespace OssianForge.Engine.Nodes.Props
                 normalSlot = 1;
             }
 
-            var (view, viewNoTranslation) = GetViewMatrices();
+            var (view, viewNoTranslation) = Engine.Graphics.GetCurrentCamera().GetViewMatrices();
 
             ShaderResource.Apply(new ApplyContext
             {

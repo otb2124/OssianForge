@@ -77,6 +77,69 @@ namespace OssianForge.Engine.Graphics.Batch
             material.PostApply();
         }
 
+
+        public unsafe uint CreateRenderTexture(float TextureWidth, float TextureHeight)
+        {
+            uint tex = OpenGL.GenTexture();
+            OpenGL.BindTexture(TextureTarget.Texture2D, tex);
+            OpenGL.TexImage2D(TextureTarget.Texture2D, 0, InternalFormat.Rgba8,
+                          (uint)TextureWidth, (uint)TextureHeight, 0,
+                          PixelFormat.Rgba, PixelType.UnsignedByte, null);
+            OpenGL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)GLEnum.Linear);
+            OpenGL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)GLEnum.Linear);
+            OpenGL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)GLEnum.ClampToEdge);
+            OpenGL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)GLEnum.ClampToEdge);
+            OpenGL.BindTexture(TextureTarget.Texture2D, 0);
+            return tex;
+        }
+
+        public uint BeginOffscreenPass(uint _rtTexture, int TextureWidth, int TextureHeight)
+        {
+            uint fbo = OpenGL.GenFramebuffer();
+            OpenGL.BindFramebuffer(FramebufferTarget.Framebuffer, fbo);
+            OpenGL.FramebufferTexture2D(FramebufferTarget.Framebuffer,
+                                    FramebufferAttachment.ColorAttachment0,
+                                    TextureTarget.Texture2D, _rtTexture, 0);
+
+            if (OpenGL.CheckFramebufferStatus(FramebufferTarget.Framebuffer) != GLEnum.FramebufferComplete)
+            {
+                OpenGL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+                OpenGL.DeleteFramebuffer(fbo);
+                return 0;
+            }
+
+            OpenGL.Viewport(0, 0, (uint)TextureWidth, (uint)TextureHeight);
+            OpenGL.ClearColor(0f, 0f, 0f, 0f);
+            OpenGL.Clear(ClearBufferMask.ColorBufferBit);
+            OpenGL.Disable(EnableCap.DepthTest);
+            OpenGL.Enable(EnableCap.Blend);
+            OpenGL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+
+            return fbo;
+        }
+
+        public void EndOffscreenPass(uint fbo)
+        {
+            OpenGL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+            OpenGL.DeleteFramebuffer(fbo);
+
+            OpenGL.Viewport(0, 0,
+                (uint)Engine.Graphics.WindowSize.X,
+                (uint)Engine.Graphics.WindowSize.Y);
+            OpenGL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+            OpenGL.Enable(EnableCap.DepthTest);
+        }
+
+        public unsafe void UploadDynamicBuffer(uint vbo, float[] data)
+        {
+            OpenGL.BindBuffer(BufferTargetARB.ArrayBuffer, vbo);
+            fixed (float* ptr = data)
+                OpenGL.BufferData(BufferTargetARB.ArrayBuffer,
+                    (nuint)(data.Length * sizeof(float)),
+                    ptr, BufferUsageARB.DynamicDraw);
+            OpenGL.BindBuffer(BufferTargetARB.ArrayBuffer, 0);
+        }
+
         public void Clear()
         {
             OpenGL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);

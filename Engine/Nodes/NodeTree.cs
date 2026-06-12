@@ -38,7 +38,7 @@ namespace OssianForge.Engine.Nodes
             lightNode.GetProperty<TransformProperty>().Billboard = true;
             lightNode.AddProperty(EmissionProperty.White(intensity: 1f, radius: 30.0f));
             lightNode.AddProperty(new MeshProperty("mesh.quad"));
-            lightNode.AddProperty(new TextureMaterialProperty("texture.light", "shader.sprite"));
+            lightNode.AddProperty(new TextureMaterialProperty("texture.light", "shader.sdf"));
             //lightNode.AddProperty(Engine.Resources.CreateScriptResourceInstance<NodeProperty>("script.StateProperty", "StateProperty"));
 
             var lightNode1 = new Node();
@@ -47,7 +47,7 @@ namespace OssianForge.Engine.Nodes
             lightNode1.GetProperty<TransformProperty>().Billboard = true;
             lightNode1.AddProperty(EmissionProperty.White(intensity: 1f, radius: 30.0f));
             lightNode1.AddProperty(new MeshProperty("mesh.quad"));
-            lightNode1.AddProperty(new TextureMaterialProperty("texture.light", "shader.sprite"));
+            lightNode1.AddProperty(new TextureMaterialProperty("texture.light", "shader.sdf"));
 
             //objects
             var plane = new Node();

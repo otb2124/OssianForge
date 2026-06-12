@@ -37,7 +37,6 @@ namespace OssianForge.Engine.Resources
                 { "shaderfile.post.frag", "ShaderFiles/post.frag"},
                 { "shaderfile.sdf.frag", "ShaderFiles/sdf.frag"},
                 { "shaderfile.sdf.vert", "ShaderFiles/sdf.vert"},
-                { "shaderfile.sdf.screenspace.vert", "ShaderFiles/sdf.screenspace.vert"},
 
                 { "meshfile.remy", "MeshFiles/remy.fbx"},
 
@@ -96,7 +95,6 @@ namespace OssianForge.Engine.Resources
                 new SpriteShaderResource("shader.sprite", "shaderfile.sprite.vert", "shaderfile.sprite.frag"),
                 new ShaderResource("shader.post", "shaderfile.post.vert", "shaderfile.post.frag"),
                 new SdfShaderResource("shader.sdf", "shaderfile.sdf.vert", "shaderfile.sdf.frag"),
-                new SdfShaderResource("shader.sdf.screenspace", "shaderfile.sdf.screenspace.vert", "shaderfile.sdf.frag"),
 
                 new TextureResource("texture.donut.icing", "texturefile.IcingBaseColor"),
                 new TextureResource("texture.donut.base", "texturefile.DonutBaseColor"),

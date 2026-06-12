@@ -21,7 +21,6 @@
     <None Remove="Content\ShaderFiles\post.frag" />
     <None Remove="Content\ShaderFiles\post.vert" />
     <None Remove="Content\ShaderFiles\sdf.frag" />
-    <None Remove="Content\ShaderFiles\sdf.screenspace.vert" />
     <None Remove="Content\ShaderFiles\sdf.vert" />
     <None Remove="Content\ShaderFiles\skybox.frag" />
     <None Remove="Content\ShaderFiles\skybox.vert" />
@@ -56,9 +55,6 @@
 
   <ItemGroup>
     <Content Include="Content\MeshFiles\remy.fbx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\ShaderFiles\sdf.screenspace.vert">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\ShaderFiles\sdf.frag">

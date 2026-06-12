@@ -29,7 +29,7 @@ namespace OssianForge.Engine.Nodes.Props
             ShaderResource.Use();
             CubemapResource.Bind(0);
 
-            var (_, viewNoTranslation) = GetViewMatrices();
+            var (_, viewNoTranslation) = Engine.Graphics.GetCurrentCamera().GetViewMatrices();
 
             ShaderResource.Apply(new ApplyContext
             {

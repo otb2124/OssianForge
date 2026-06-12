@@ -21,16 +21,7 @@ namespace OssianForge.Engine.Nodes.Props
 
         public virtual void PostApply() { }
 
-        protected (Matrix4x4 view, Matrix4x4 viewNoTranslation) GetViewMatrices()
-        {
-            var view = Engine.Graphics.GetCurrentCamera().GetView();
-            var viewNoTranslation = new Matrix4x4(
-                view.M11, view.M12, view.M13, 0,
-                view.M21, view.M22, view.M23, 0,
-                view.M31, view.M32, view.M33, 0,
-                0, 0, 0, 1);
-            return (view, viewNoTranslation);
-        }
+        
 
         protected List<LightData> GetLights()
             => Engine.Nodes.NodeManager
