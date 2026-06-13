@@ -172,18 +172,14 @@ namespace OssianForge.Engine.Graphics.Camera
 
             const float depth = 2.0f;
 
-            // Half-extents of the frustum at this depth — this is the correct geometric formula.
-            // At depth d: half-height = tan(fov/2) * d, half-width = half-height * aspect
             float halfH = MathF.Tan(float.DegreesToRadians(Fov) * 0.5f) * depth;
             float halfW = halfH * AspectRatio;
 
-            // transform.Position.XY in NDC [-1,1] maps to actual world offsets
             Vector3 worldPos = Position
                 + forward * depth
                 + right * (transform.Position.X * halfW)
                 + up * (transform.Position.Y * halfH);
 
-            // Scale so that Scale(1,1) = one full half-screen unit
             float scaleX = transform.Scale.X * halfW;
             float scaleY = transform.Scale.Y * halfH;
 
@@ -194,7 +190,11 @@ namespace OssianForge.Engine.Graphics.Camera
                 0, 0, 0, 1
             );
 
+            // Z rotation from Transform (Roll), applied in the billboard's local XY plane
+            float rollRad = float.DegreesToRadians(transform.Rotation.Z);
+
             return Matrix4x4.CreateScale(scaleX, scaleY, 1f)
+                 * Matrix4x4.CreateRotationZ(rollRad)   // <-- honours Transform.Rotation.Z
                  * billboard
                  * Matrix4x4.CreateTranslation(worldPos);
         }

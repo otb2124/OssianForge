@@ -1,5 +1,6 @@
 ﻿using Jitter2;
 using Jitter2.LinearMath;
+using System.Numerics;
 
 
 namespace OssianForge.Engine.Physics
@@ -15,15 +16,10 @@ namespace OssianForge.Engine.Physics
 
         public Physics()
         {
-            // World 0: 3D world — normal gravity
-            var world3D = new PhysicsWorld(0);
-            world3D.JitterWorld.Gravity = new JVector(0, -9.81f, 0);
-            PhysicsWorlds.Add(world3D);
-
-            // World 1: screen space — gravity pulls down in 2D (Y only, no Z)
-            var worldScreen = new PhysicsWorld(1);
-            worldScreen.JitterWorld.Gravity = new JVector(0, 500, 0);
-            PhysicsWorlds.Add(worldScreen);
+            PhysicsWorlds.Add(new PhysicsWorld(0, new Vector3(0, -9.81f, 0)));
+            PhysicsWorlds.Add(new PhysicsWorld(1, new Vector3(0, -9.81f * 100, 0)));
+            PhysicsWorlds[1].LockPosition = AxisLock.Z;
+            PhysicsWorlds[1].LockRotation = AxisLock.X | AxisLock.Y;
 
             CollisionSystem = new CollisionSystem();
         }

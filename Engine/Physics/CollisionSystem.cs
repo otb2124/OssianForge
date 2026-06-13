@@ -1,4 +1,5 @@
-﻿using OssianForge.Engine.Nodes;
+﻿using Jitter2.LinearMath;
+using OssianForge.Engine.Nodes;
 using OssianForge.Engine.Nodes.Props;
 
 
@@ -17,26 +18,44 @@ namespace OssianForge.Engine.Physics
             for (int i = 0; i < nodes.Count; i++)
                 for (int j = i + 1; j < nodes.Count; j++)
                 {
-                    var colA = nodes[i].GetProperty<ColliderProperty>();
-                    var colB = nodes[j].GetProperty<ColliderProperty>();
+                    var nodeA = nodes[i];
+                    var nodeB = nodes[j];
+
+                    var colA = nodeA.GetProperty<ColliderProperty>();
+                    var colB = nodeB.GetProperty<ColliderProperty>();
                     if (colA == null || colB == null) continue;
                     if (!colA.IsTrigger && !colB.IsTrigger) continue;
-                    // must be in the same world to interact
-                    var physA = nodes[i].GetProperty<PhysicalProperty>();
-                    var physB = nodes[j].GetProperty<PhysicalProperty>();
+
+                    var physA = nodeA.GetProperty<PhysicalProperty>();
+                    var physB = nodeB.GetProperty<PhysicalProperty>();
                     if (physA == null || physB == null) continue;
                     if (physA.WorldIndex != physB.WorldIndex) continue;
+
                     var world = Engine.Physics.GetWorld(physA.WorldIndex);
-                    var bodyA = world.GetBody(nodes[i].Id);
-                    var bodyB = world.GetBody(nodes[j].Id);
+                    var bodyA = world.GetBody(nodeA.Id);
+                    var bodyB = world.GetBody(nodeB.Id);
                     if (bodyA == null || bodyB == null) continue;
-                    if (bodyA.JitterBody == null && bodyB.JitterBody == null) continue;
-                    var posA = bodyA.JitterBody?.Position ?? default;
-                    var posB = bodyB.JitterBody?.Position ?? default;
-                    if ((posA - posB).Length() < 2f)
+
+                    var transA = nodeA.GetProperty<TransformProperty>();
+                    var transB = nodeB.GetProperty<TransformProperty>();
+
+                    var posA = bodyA.JitterBody?.Position
+                        ?? new JVector(transA.Transform.Position.X, transA.Transform.Position.Y, transA.Transform.Position.Z);
+                    var posB = bodyB.JitterBody?.Position
+                        ?? new JVector(transB.Transform.Position.X, transB.Transform.Position.Y, transB.Transform.Position.Z);
+
+                    // Use the actual half-extents from each collider's scale
+                    var scaleA = transA.Transform.Scale;
+                    var scaleB = transB.Transform.Scale;
+                    float radiusA = Math.Max(scaleA.X, scaleA.Y) * 0.5f;
+                    float radiusB = Math.Max(scaleB.X, scaleB.Y) * 0.5f;
+
+                    float combinedRadius = radiusA + radiusB;
+
+                    if ((posA - posB).Length() < combinedRadius)
                     {
-                        colA.OnCollision?.Invoke(nodes[j]);
-                        colB.OnCollision?.Invoke(nodes[i]);
+                        colA.OnCollision?.Invoke(nodeB);
+                        colB.OnCollision?.Invoke(nodeA);
                     }
                 }
         }

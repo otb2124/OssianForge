@@ -7,17 +7,31 @@ using System.Numerics;
 
 namespace OssianForge.Engine.Physics
 {
+    public enum AxisLock
+    {
+        None = 0,
+        X = 1 << 0,
+        Y = 1 << 1,
+        Z = 1 << 2,
+        All = X | Y | Z,
+    }
+
     public class PhysicsWorld
     {
+
+
         public readonly World JitterWorld;
         public int WorldIndex;
         private readonly List<PhysicsBody> _bodies = new();
 
-        public PhysicsWorld(int worldIndex = 0)
+        public AxisLock LockPosition = AxisLock.None;
+        public AxisLock LockRotation = AxisLock.None;
+
+        public PhysicsWorld(int worldIndex, Vector3 gravity)
         {
             WorldIndex = worldIndex;
             JitterWorld = new World();
-            JitterWorld.Gravity = new JVector(0, -9.81f, 0);
+            JitterWorld.Gravity = new JVector(gravity.X, gravity.Y, gravity.Z);
         }
 
         public void RegisterAll()
@@ -62,7 +76,7 @@ namespace OssianForge.Engine.Physics
             float dt = Math.Clamp((float)delta, 0.001f, 0.033f);
             JitterWorld.Step(dt, multiThread: false);
             foreach (var body in _bodies)
-                body.SyncFromJitter();
+                body.SyncFromJitter(LockPosition, LockRotation);
         }
 
         public PhysicsBody? GetBody(string nodeId) =>

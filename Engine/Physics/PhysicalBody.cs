@@ -67,20 +67,22 @@ namespace OssianForge.Engine.Physics
             }
             else
             {
-                // Dynamic: PointCloudShape builds a convex hull from the vertex cloud
-                var shape = new PointCloudShape(ColliderProperty.ColliderResource.Points);
+                var t = TransformProperty.Transform;
+                var scale = t.Scale;
+
+                // Apply scale to the point cloud so the convex hull matches the rendered size
+                var scaledPoints = ColliderProperty.ColliderResource.Points
+                    .Select(p => new JVector(p.X * scale.X, p.Y * scale.Y, p.Z * scale.Z))
+                    .ToList();
+
+                var shape = new PointCloudShape(scaledPoints);
 
                 JitterBody = jitterWorld.CreateRigidBody();
                 JitterBody.AddShape(shape);
-                JitterBody.Position = jPos;
+                JitterBody.Position = new JVector(t.Position.X, t.Position.Y, t.Position.Z);
                 JitterBody.AffectedByGravity = PhysicalProperty.UseGravity;
-
-                // Friction — set on the shape, not the body
                 JitterBody.Friction = PhysicalProperty.Friction;
                 JitterBody.Restitution = PhysicalProperty.Bounciness;
-
-                // Angular damping — how fast rotation bleeds off
-                // 0 = no damping, 1 = immediate stop
                 JitterBody.Damping = (PhysicalProperty.LinearDamping, PhysicalProperty.AngularDamping);
                 JitterBody.Tag = NodeId;
 
@@ -88,14 +90,31 @@ namespace OssianForge.Engine.Physics
             }
         }
 
-        public void SyncFromJitter()
+        public void SyncFromJitter(AxisLock lockPosition = AxisLock.None, AxisLock lockRotation = AxisLock.None)
         {
             if (JitterBody == null) return;
+
+            if (lockPosition != AxisLock.None)
+            {
+                var vel = JitterBody.Velocity;
+                if (lockPosition.HasFlag(AxisLock.X)) vel.X = 0f;
+                if (lockPosition.HasFlag(AxisLock.Y)) vel.Y = 0f;
+                if (lockPosition.HasFlag(AxisLock.Z)) vel.Z = 0f;
+                JitterBody.Velocity = vel;
+            }
+
+            if (lockRotation != AxisLock.None)
+            {
+                var angVel = JitterBody.AngularVelocity;
+                if (lockRotation.HasFlag(AxisLock.X)) angVel.X = 0f;
+                if (lockRotation.HasFlag(AxisLock.Y)) angVel.Y = 0f;
+                if (lockRotation.HasFlag(AxisLock.Z)) angVel.Z = 0f;
+                JitterBody.AngularVelocity = angVel;
+            }
 
             var p = JitterBody.Position;
             TransformProperty.Transform.Position = new Vector3(p.X, p.Y, p.Z);
 
-            // Sync rotation too — otherwise objects spin in Jitter but your mesh stays still
             var o = JitterBody.Orientation;
             TransformProperty.Transform.Rotation = ToEuler(o);
 

@@ -166,12 +166,37 @@ namespace OssianForge.Engine.Nodes
             textBrick2.AddProperty(new ColliderProperty("collider.thickquad"));
             textBrick2.AddProperty(new PhysicalProperty(false, true, 1f, 1f));
 
+            var img = new Node();
+            img.Name = "image";
+            img.AddProperty(new TransformProperty(new Transform(new Vector3(5f, 5f, 0f), Vector3.Zero, Vector3.One)));
+            img.AddProperty(new MeshProperty("mesh.quad"));
+            img.AddProperty(new TextureMaterialProperty("texture.dices", "shader.unlit"));
+
+
+
+
+
+            //screenspace
+            var img1 = new Node();
+            img1.Name = "image1";
+            img1.AddProperty(new TransformProperty(new Transform(new Vector3(960f, 540f, 0f), Vector3.Zero, new Vector3(200, 200, 1)), RenderSpace.ScreenSpace));
+            img1.AddProperty(new MeshProperty("mesh.quad"));
+            img1.AddProperty(new TextureMaterialProperty("texture.brick", "shader.unlit"));
+            img1.GetProperty<MaterialProperty>().BeginAction = () =>
+            {
+                var gl = Engine.Graphics.Batch.OpenGL;
+                gl.Disable(EnableCap.DepthTest);  // ← screen space ignores depth entirely
+            };
+            img1.GetProperty<MaterialProperty>().EndAction = () =>
+            {
+                var gl = Engine.Graphics.Batch.OpenGL;
+                gl.Enable(EnableCap.DepthTest);
+            };
+
             var text1 = new Node();
             text1.Name = "text1";
             text1.Id = "text1";
-            text1.AddProperty(new TransformProperty(new Transform(new Vector3(0f, 0f, 0f), Vector3.Zero, Vector3.One), RenderSpace.ScreenSpace));
-            text1.GetProperty<TransformProperty>().SetAnchorPreset(AnchorPreset.TopLeft);
-            text1.GetProperty<TransformProperty>().SetOffset(0f, 0f, FontUtils.MeasureText("testing screenspace\ntakes time", 32, "font.roboto").width, FontUtils.MeasureText("testing screenspace\ntakes time", 32, "font.roboto").height);
+            text1.AddProperty(new TransformProperty(new Transform(new Vector3(50f, 800f, 0f), Vector3.Zero, new Vector3(100, 50, 1)), RenderSpace.ScreenSpace));
             text1.AddProperty(new MeshProperty("mesh.quad"));
             text1.AddProperty(new TextMaterialProperty("testing screenspace\ntakes time", 32, new Vector4(1, 1, 1, 1), "font.roboto", "shader.sdf"));
             text1.GetProperty<MaterialProperty>().BeginAction = () =>
@@ -188,35 +213,9 @@ namespace OssianForge.Engine.Nodes
             text1.AddProperty(new PhysicalProperty(false, true, 1f, 1f));
             text1.GetProperty<PhysicalProperty>().SetWorld(1);
 
-            var img = new Node();
-            img.Name = "image";
-            img.AddProperty(new TransformProperty(new Transform(new Vector3(5f, 5f, 0f), Vector3.Zero, Vector3.One)));
-            img.AddProperty(new MeshProperty("mesh.quad"));
-            img.AddProperty(new TextureMaterialProperty("texture.dices", "shader.unlit"));
-
-            var img1 = new Node();
-            img1.Name = "image1";
-            img1.AddProperty(new TransformProperty(new Transform(new Vector3(0f, 0f, 0f), Vector3.Zero, Vector3.One), RenderSpace.ScreenSpace));
-            img1.GetProperty<TransformProperty>().SetAnchorPreset(AnchorPreset.TopLeft);
-            img1.GetProperty<TransformProperty>().SetOffset(0f, 0f, FontUtils.MeasureText("testing screenspace\ntakes time", 32, "font.roboto").width, FontUtils.MeasureText("testing screenspace\ntakes time", 32, "font.roboto").height);
-            img1.AddProperty(new MeshProperty("mesh.quad"));
-            img1.AddProperty(new TextureMaterialProperty("texture.brick", "shader.unlit"));
-            img1.GetProperty<MaterialProperty>().BeginAction = () =>
-            {
-                var gl = Engine.Graphics.Batch.OpenGL;
-                gl.Disable(EnableCap.DepthTest);  // ← screen space ignores depth entirely
-            };
-            img1.GetProperty<MaterialProperty>().EndAction = () =>
-            {
-                var gl = Engine.Graphics.Batch.OpenGL;
-                gl.Enable(EnableCap.DepthTest);
-            };
-
             var img2 = new Node();
             img2.Name = "image2";
-            img2.AddProperty(new TransformProperty(new Transform(new Vector3(0f, 0f, 0f), Vector3.Zero, Vector3.One), RenderSpace.ScreenSpace));
-            img2.GetProperty<TransformProperty>().SetAnchorPreset(AnchorPreset.TopLeft);
-            img2.GetProperty<TransformProperty>().SetOffset(50f, 400f, 200, 200);
+            img2.AddProperty(new TransformProperty(new Transform(new Vector3(0f, 500f, 0f), new Vector3(0, 0, 0), new Vector3(200, 200, 1)), RenderSpace.ScreenSpace));
             img2.AddProperty(new MeshProperty("mesh.quad"));
             img2.AddProperty(new TextureMaterialProperty("texture.house.wood", "shader.unlit"));
             img2.GetProperty<MaterialProperty>().BeginAction = () =>
@@ -237,9 +236,7 @@ namespace OssianForge.Engine.Nodes
             var screenBottom = new Node();
             screenBottom.Name = "screenBottom";
             screenBottom.Id = "screenBottom";
-            screenBottom.AddProperty(new TransformProperty(new Transform(new Vector3(0f, 0f, 0f), Vector3.Zero, Vector3.One), RenderSpace.ScreenSpace));
-            screenBottom.GetProperty<TransformProperty>().SetAnchorPreset(AnchorPreset.TopLeft);
-            screenBottom.GetProperty<TransformProperty>().SetOffset(0f, 700f, 1000, 10);
+            screenBottom.AddProperty(new TransformProperty(new Transform(new Vector3(0f, 0f, 0f), Vector3.Zero, new Vector3(700, 50, 1)), RenderSpace.ScreenSpace));
             screenBottom.AddProperty(new MeshProperty("mesh.quad"));
             screenBottom.AddProperty(new TextureMaterialProperty("texture.house.wood", "shader.unlit"));
             screenBottom.GetProperty<MaterialProperty>().BeginAction = () =>
