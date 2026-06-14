@@ -1,0 +1,202 @@
+[
+  {
+    "id": "shaderfile.basic.vert",
+    "path": "ShaderFiles/basic.vert",
+    "type": "shaderfile"
+  },
+  {
+    "id": "shaderfile.basic.frag",
+    "path": "ShaderFiles/basic.frag",
+    "type": "shaderfile"
+  },
+  {
+    "id": "shaderfile.unlit.frag",
+    "path": "ShaderFiles/unlit.frag",
+    "type": "shaderfile"
+  },
+  {
+    "id": "shaderfile.skybox.vert",
+    "path": "ShaderFiles/skybox.vert",
+    "type": "shaderfile"
+  },
+  {
+    "id": "shaderfile.skybox.frag",
+    "path": "ShaderFiles/skybox.frag",
+    "type": "shaderfile"
+  },
+  {
+    "id": "shaderfile.post.vert",
+    "path": "ShaderFiles/post.vert",
+    "type": "shaderfile"
+  },
+  {
+    "id": "shaderfile.post.frag",
+    "path": "ShaderFiles/post.frag",
+    "type": "shaderfile"
+  },
+  {
+    "id": "shaderfile.sdf.frag",
+    "path": "ShaderFiles/sdf.frag",
+    "type": "shaderfile"
+  },
+  {
+    "id": "shaderfile.sdf.vert",
+    "path": "ShaderFiles/sdf.vert",
+    "type": "shaderfile"
+  },
+  {
+    "id": "meshfile.remy",
+    "path": "MeshFiles/remy.fbx",
+    "type": "meshfile"
+  },
+  {
+    "id": "animationfile.remy.idle",
+    "path": "AnimationFiles/remy.idle.fbx",
+    "type": "animationfile"
+  },
+  {
+    "id": "animationfile.remy.walking",
+    "path": "AnimationFiles/remy.walking.fbx",
+    "type": "animationfile"
+  },
+  {
+    "id": "animationfile.remy.jumping",
+    "path": "AnimationFiles/remy.jumping.fbx",
+    "type": "animationfile"
+  },
+  {
+    "id": "animationfile.remy.jumping_jacks",
+    "path": "AnimationFiles/remy.jumping_jacks.fbx",
+    "type": "animationfile"
+  },
+  {
+    "id": "animationfile.remy.backflip",
+    "path": "AnimationFiles/remy.backflip.fbx",
+    "type": "animationfile"
+  },
+  {
+    "id": "animationfile.remy.waving",
+    "path": "AnimationFiles/remy.waving.fbx",
+    "type": "animationfile"
+  },
+  {
+    "id": "texturefile.IcingBaseColor",
+    "path": "TextureFiles/3d/IcingBaseColor.jpg",
+    "type": "texturefile"
+  },
+  {
+    "id": "texturefile.DonutBaseColor",
+    "path": "TextureFiles/3d/DonutBaseColor.jpg",
+    "type": "texturefile"
+  },
+  {
+    "id": "texturefile.house.barrel",
+    "path": "TextureFiles/3d/barrel.jpg",
+    "type": "texturefile"
+  },
+  {
+    "id": "texturefile.house.brick",
+    "path": "TextureFiles/3d/house_brick.jpg",
+    "type": "texturefile"
+  },
+  {
+    "id": "texturefile.house.windows",
+    "path": "TextureFiles/3d/house_windows.jpg",
+    "type": "texturefile"
+  },
+  {
+    "id": "texturefile.house.wood",
+    "path": "TextureFiles/3d/house_wood.jpg",
+    "type": "texturefile"
+  },
+  {
+    "id": "texturefile.brick.d",
+    "path": "TextureFiles/3d/brick_d.jpg",
+    "type": "texturefile"
+  },
+  {
+    "id": "texturefile.brick.n",
+    "path": "TextureFiles/3d/brick_n.jpg",
+    "type": "texturefile"
+  },
+  {
+    "id": "texturefile.light",
+    "path": "TextureFiles/3d/point_light_sprite.png",
+    "type": "texturefile"
+  },
+  {
+    "id": "texturefile.dices",
+    "path": "TextureFiles/3d/dices.png",
+    "type": "texturefile"
+  },
+  {
+    "id": "texturefile.cubemap.skybox.sea.right",
+    "path": "TextureFiles/3d/panoramic-sea-right.png",
+    "type": "texturefile"
+  },
+  {
+    "id": "texturefile.cubemap.skybox.sea.left",
+    "path": "TextureFiles/3d/panoramic-sea-left.png",
+    "type": "texturefile"
+  },
+  {
+    "id": "texturefile.cubemap.skybox.sea.top",
+    "path": "TextureFiles/3d/panoramic-sea-top.png",
+    "type": "texturefile"
+  },
+  {
+    "id": "texturefile.cubemap.skybox.sea.bottom",
+    "path": "TextureFiles/3d/panoramic-sea-bottom.png",
+    "type": "texturefile"
+  },
+  {
+    "id": "texturefile.cubemap.skybox.sea.front",
+    "path": "TextureFiles/3d/panoramic-sea-front.png",
+    "type": "texturefile"
+  },
+  {
+    "id": "texturefile.cubemap.skybox.sea.back",
+    "path": "TextureFiles/3d/panoramic-sea-back.png",
+    "type": "texturefile"
+  },
+  {
+    "id": "texturefile.cubemap.skybox.sky.right",
+    "path": "TextureFiles/3d/panoramic-sky-right.png",
+    "type": "texturefile"
+  },
+  {
+    "id": "texturefile.cubemap.skybox.sky.left",
+    "path": "TextureFiles/3d/panoramic-sky-left.png",
+    "type": "texturefile"
+  },
+  {
+    "id": "texturefile.cubemap.skybox.sky.top",
+    "path": "TextureFiles/3d/panoramic-sky-top.png",
+    "type": "texturefile"
+  },
+  {
+    "id": "texturefile.cubemap.skybox.sky.bottom",
+    "path": "TextureFiles/3d/panoramic-sky-bottom.png",
+    "type": "texturefile"
+  },
+  {
+    "id": "texturefile.cubemap.skybox.sky.front",
+    "path": "TextureFiles/3d/panoramic-sky-front.png",
+    "type": "texturefile"
+  },
+  {
+    "id": "texturefile.cubemap.skybox.sky.back",
+    "path": "TextureFiles/3d/panoramic-sky-back.png",
+    "type": "texturefile"
+  },
+  {
+    "id": "texturefile.font.roboto",
+    "path": "TextureFiles/Fonts/roboto.png",
+    "type": "texturefile"
+  },
+  {
+    "id": "configfile.font.roboto",
+    "path": "ConfigFiles/Fonts/roboto.json",
+    "type": "configfile"
+  }
+]

@@ -1,0 +1,20 @@
+[
+  {
+    "id": "state_machine",
+    "name": "State Machine",
+    "path": "ScriptFiles/StateMachine",
+    "description": "State machine pack description."
+  },
+  {
+    "id": "motion",
+    "name": "Motion",
+    "path": "ScriptFiles/Motion",
+    "description": "Motion pack description."
+  },
+  {
+    "id": "vehicle",
+    "name": "Vehicle",
+    "path": "ScriptFiles/Vehicle",
+    "description": "Vehicle pack description."
+  }
+]

@@ -1,0 +1,202 @@
+[
+  {
+    "id": "mesh.cube",
+    "data": [ "fastmesh.cube" ],
+    "type": "mesh"
+  },
+  {
+    "id": "mesh.plane",
+    "data": [ "fastmesh.plane" ],
+    "type": "mesh"
+  },
+  {
+    "id": "mesh.quad",
+    "data": [ "fastmesh.quad" ],
+    "type": "mesh"
+  },
+  {
+    "id": "mesh.thickquad",
+    "data": [ "fastmesh.thickquad" ],
+    "type": "mesh"
+  },
+  {
+    "id": "mesh.ball",
+    "data": [ "fastmesh.ball" ],
+    "type": "mesh"
+  },
+  {
+    "id": "mesh.remy",
+    "data": [ "meshfile.remy" ],
+    "type": "mesh"
+  },
+  {
+    "id": "animation.remy",
+    "data": [ "animationfile.remy.idle", "animationfile.remy.walking", "animationfile.remy.jumping", "animationfile.remy.jumping_jacks", "animationfile.remy.waving", "animationfile.remy.backflip" ],
+    "type": "animation"
+  },
+  {
+    "id": "shader.basic",
+    "data": [ "shaderfile.basic.vert", "shaderfile.basic.frag" ],
+    "type": "basicshader"
+  },
+  {
+    "id": "shader.unlit",
+    "data": [ "shaderfile.basic.vert", "shaderfile.unlit.frag" ],
+    "type": "basicshader"
+  },
+  {
+    "id": "shader.skybox",
+    "data": [ "shaderfile.skybox.vert", "shaderfile.skybox.frag" ],
+    "type": "skyboxshader"
+  },
+  {
+    "id": "shader.post",
+    "data": [ "shaderfile.post.vert", "shaderfile.post.frag" ],
+    "type": "shader"
+  },
+  {
+    "id": "shader.sdf",
+    "data": [ "shaderfile.sdf.vert", "shaderfile.sdf.frag" ],
+    "type": "sdfshader"
+  },
+  {
+    "id": "texture.donut.icing",
+    "data": [ "texturefile.IcingBaseColor" ],
+    "type": "texture"
+  },
+  {
+    "id": "texture.donut.base",
+    "data": [ "texturefile.DonutBaseColor" ],
+    "type": "texture"
+  },
+  {
+    "id": "texture.house.barrel",
+    "data": [ "texturefile.house.barrel" ],
+    "type": "texture"
+  },
+  {
+    "id": "texture.brick",
+    "data": [ "texturefile.brick.d", "texturefile.brick.n" ],
+    "type": "texture"
+  },
+  {
+    "id": "texture.house.windows",
+    "data": [ "texturefile.house.windows" ],
+    "type": "texture"
+  },
+  {
+    "id": "texture.house.wood",
+    "data": [ "texturefile.house.wood" ],
+    "type": "texture"
+  },
+  {
+    "id": "texture.light",
+    "data": [ "texturefile.light" ],
+    "type": "texture"
+  },
+  {
+    "id": "texture.dices",
+    "data": [ "texturefile.dices" ],
+    "type": "texture"
+  },
+  {
+    "id": "texture.cubemap.skybox.sea.right",
+    "data": [ "texturefile.cubemap.skybox.sea.right" ],
+    "type": "texture"
+  },
+  {
+    "id": "texture.cubemap.skybox.sea.left",
+    "data": [ "texturefile.cubemap.skybox.sea.left" ],
+    "type": "texture"
+  },
+  {
+    "id": "texture.cubemap.skybox.sea.top",
+    "data": [ "texturefile.cubemap.skybox.sea.top" ],
+    "type": "texture"
+  },
+  {
+    "id": "texture.cubemap.skybox.sea.bottom",
+    "data": [ "texturefile.cubemap.skybox.sea.bottom" ],
+    "type": "texture"
+  },
+  {
+    "id": "texture.cubemap.skybox.sea.front",
+    "data": [ "texturefile.cubemap.skybox.sea.front" ],
+    "type": "texture"
+  },
+  {
+    "id": "texture.cubemap.skybox.sea.back",
+    "data": [ "texturefile.cubemap.skybox.sea.back" ],
+    "type": "texture"
+  },
+  {
+    "id": "texture.cubemap.skybox.sky.right",
+    "data": [ "texturefile.cubemap.skybox.sky.right" ],
+    "type": "texture"
+  },
+  {
+    "id": "texture.cubemap.skybox.sky.left",
+    "data": [ "texturefile.cubemap.skybox.sky.left" ],
+    "type": "texture"
+  },
+  {
+    "id": "texture.cubemap.skybox.sky.top",
+    "data": [ "texturefile.cubemap.skybox.sky.top" ],
+    "type": "texture"
+  },
+  {
+    "id": "texture.cubemap.skybox.sky.bottom",
+    "data": [ "texturefile.cubemap.skybox.sky.bottom" ],
+    "type": "texture"
+  },
+  {
+    "id": "texture.cubemap.skybox.sky.front",
+    "data": [ "texturefile.cubemap.skybox.sky.front" ],
+    "type": "texture"
+  },
+  {
+    "id": "texture.cubemap.skybox.sky.back",
+    "data": [ "texturefile.cubemap.skybox.sky.back" ],
+    "type": "texture"
+  },
+  {
+    "id": "cubemap.skybox.sea",
+    "data": [ "texture.cubemap.skybox.sea.right", "texture.cubemap.skybox.sea.left", "texture.cubemap.skybox.sea.top", "texture.cubemap.skybox.sea.bottom", "texture.cubemap.skybox.sea.front", "texture.cubemap.skybox.sea.back" ],
+    "type": "cubemaptexture"
+  },
+  {
+    "id": "cubemap.skybox.sky",
+    "data": [ "texture.cubemap.skybox.sky.right", "texture.cubemap.skybox.sky.left", "texture.cubemap.skybox.sky.top", "texture.cubemap.skybox.sky.bottom", "texture.cubemap.skybox.sky.front", "texture.cubemap.skybox.sky.back" ],
+    "type": "cubemaptexture"
+  },
+  {
+    "id": "collider.ball",
+    "data": [ "mesh.ball" ],
+    "type": "collider"
+  },
+  {
+    "id": "collider.plane",
+    "data": [ "mesh.plane" ],
+    "type": "collider"
+  },
+  {
+    "id": "collider.cube",
+    "data": [ "mesh.cube" ],
+    "type": "collider"
+  },
+  {
+    "id": "collider.thickquad",
+    "data": [ "mesh.thickquad" ],
+    "type": "collider"
+  },
+  {
+    "id": "collider.remy",
+    "data": [ "mesh.remy" ],
+    "type": "collider"
+  },
+  {
+    "id": "font.roboto",
+    "data": [ "texturefile.font.roboto", "configfile.font.roboto" ],
+    "type": "font"
+  }
+]

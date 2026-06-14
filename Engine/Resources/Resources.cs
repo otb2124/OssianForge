@@ -16,11 +16,19 @@ namespace OssianForge.Engine.Resources
 
         public List<Resource> ResourceList;
 
+
+
+
+        public ResourceLoader ResourceLoader;
+
         public Resources()
         {
             ResourceFiles = new List<ResourceFile>();
             ResourceFileMap = new Dictionary<string, string>();
             ResourceList = new List<Resource>();
+
+
+            ResourceLoader = new ResourceLoader();
         }
 
         public void Initialize()
@@ -120,12 +128,12 @@ namespace OssianForge.Engine.Resources
                 new CubemapTextureResource("cubemap.skybox.sea", "texture.cubemap.skybox.sea.right", "texture.cubemap.skybox.sea.left", "texture.cubemap.skybox.sea.top", "texture.cubemap.skybox.sea.bottom", "texture.cubemap.skybox.sea.front", "texture.cubemap.skybox.sea.back"),
                 new CubemapTextureResource("cubemap.skybox.sky", "texture.cubemap.skybox.sky.right", "texture.cubemap.skybox.sky.left", "texture.cubemap.skybox.sky.top", "texture.cubemap.skybox.sky.bottom", "texture.cubemap.skybox.sky.front", "texture.cubemap.skybox.sky.back"),
 
-                new ColliderResource("collider.remy", "mesh.remy"),
-
                 new ColliderResource("collider.ball", "mesh.ball"),
                 new ColliderResource("collider.plane", "mesh.plane"),
                 new ColliderResource("collider.cube", "mesh.cube"),
                 new ColliderResource("collider.thickquad", "mesh.thickquad"),
+
+                new ColliderResource("collider.remy", "mesh.remy"),
 
                 //new ScriptResource("script.StateProperty", "scriptfile.StateProperty")
 
@@ -155,6 +163,9 @@ namespace OssianForge.Engine.Resources
 
         public void OnLoad()
         {
+            ResourceLoader.Load();
+
+
             foreach (var resourceFile in ResourceFiles)
             {
                 resourceFile.Load();
