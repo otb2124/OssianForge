@@ -16,7 +16,7 @@ namespace OssianForge.Engine.Nodes.Props
         public TextureMaterialProperty(string textureId, string shaderId)
             : base(shaderId)
         {
-            TextureResource = Engine.Resources.GetResource(textureId) as TextureResource
+            TextureResource = Engine.Resources.GetResource<TextureResource>(textureId)
                 ?? throw new Exception($"TextureResource not found: '{textureId}'");
         }
 
@@ -27,14 +27,14 @@ namespace OssianForge.Engine.Nodes.Props
             uint? diffuseSlot = null;
             uint? normalSlot = null;
 
-            if (TextureResource.Texture != null)
+            if (TextureResource.TextureFiles[0] != null)
             {
-                TextureResource.Texture.Bind(0);
+                TextureResource.TextureFiles[0].Bind(0);
                 diffuseSlot = 0;
             }
-            if (TextureResource.NormalTexture != null)
+            if (TextureResource.TextureFiles.Count > 1 && TextureResource.TextureFiles[1] != null)
             {
-                TextureResource.NormalTexture.Bind(1);
+                TextureResource.TextureFiles[1].Bind(1);
                 normalSlot = 1;
             }
 

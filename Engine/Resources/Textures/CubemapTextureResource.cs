@@ -29,7 +29,7 @@ namespace OssianForge.Engine.Resources.Textures
 
             for (int i = 0; i < FaceIds.Length; i++)
             {
-                Faces[i] = Engine.Resources.GetResource(FaceIds[i]) as TextureResource;
+                Faces[i] = Engine.Resources.GetResource<TextureResource>(FaceIds[i]);
             }
 
             var gl = Engine.Graphics.Batch.OpenGL;
@@ -50,7 +50,7 @@ namespace OssianForge.Engine.Resources.Textures
 
             for (int i = 0; i < 6; i++)
             {
-                var faceFile = Faces[i].Texture;
+                var faceFile = Faces[i].TextureFiles[0];
                 string globalPath = ResourceFile.CONTENT_FOLDER_PATH + "/" + faceFile.Path;
                 using var stream = File.OpenRead(globalPath);
                 var image = ImageResult.FromStream(stream, ColorComponents.RedGreenBlueAlpha);

@@ -40,7 +40,7 @@ namespace OssianForge.Engine.Resources.Meshes
             }
             else
             {
-                var meshFile = Engine.Resources.GetResourceFile(ResourceId) as MeshFile
+                var meshFile = Engine.Resources.GetResourceFile<MeshFile>(ResourceId)
                 ?? throw new Exception($"MeshFile not found: '{ResourceId}'");
 
                 Skeleton = meshFile.RootNode;

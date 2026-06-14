@@ -22,7 +22,7 @@ namespace OssianForge.Engine.Resources.Colliders
         {
             Points.Clear();
 
-            _source = Engine.Resources.GetResource(MeshResourceId) as MeshResource;
+            _source = Engine.Resources.GetResource<MeshResource>(MeshResourceId);
 
             var triangles = new List<JTriangle>();
 

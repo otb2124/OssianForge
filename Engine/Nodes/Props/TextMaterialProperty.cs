@@ -40,7 +40,7 @@ namespace OssianForge.Engine.Nodes.Props
         public TextMaterialProperty(string fontResourceId, string shaderId)
             : base(shaderId)
         {
-            FontResource = Engine.Resources.GetResource(fontResourceId) as FontResource
+            FontResource = Engine.Resources.GetResource<FontResource>(fontResourceId)
                 ?? throw new Exception($"FontResource not found: '{fontResourceId}'");
 
             _lastContent = null;
@@ -55,7 +55,7 @@ namespace OssianForge.Engine.Nodes.Props
         public TextMaterialProperty(string content, float fontSize, Vector4 color, string fontResourceId, string shaderId)
             : base(shaderId)
         {
-            FontResource = Engine.Resources.GetResource(fontResourceId) as FontResource
+            FontResource = Engine.Resources.GetResource<FontResource>(fontResourceId)
                 ?? throw new Exception($"FontResource not found: '{fontResourceId}'");
 
             Content = content;

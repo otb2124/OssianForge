@@ -13,7 +13,7 @@ namespace OssianForge.Engine.Utils
     {
         public static (int width, int height) MeasureText(string content, float fontSize, string fontResourceId)
         {
-            var fontResource = Engine.Resources.GetResource(fontResourceId) as FontResource
+            var fontResource = Engine.Resources.GetResource<FontResource>(fontResourceId)
                 ?? throw new Exception($"FontResource not found: '{fontResourceId}'");
 
             return MeasureText(content, fontSize, fontResource);

@@ -16,7 +16,7 @@ namespace OssianForge.Engine.Resources.Scripts
 
         public override void Load()
         {
-            var scriptFile = Engine.Resources.GetResourceFile(_scriptFileId) as ScriptFile
+            var scriptFile = Engine.Resources.GetResourceFile<ScriptFile>(_scriptFileId)
                 ?? throw new Exception($"ScriptFile not found: '{_scriptFileId}'");
 
             var types = scriptFile.CompiledAssembly.GetExportedTypes();
@@ -36,7 +36,7 @@ namespace OssianForge.Engine.Resources.Scripts
 
         public T CreateInstance<T>(string typeName, params object[] args) where T : class
         {
-            var scriptFile = Engine.Resources.GetResourceFile(_scriptFileId) as ScriptFile
+            var scriptFile = Engine.Resources.GetResourceFile<ScriptFile>(_scriptFileId)
                 ?? throw new Exception($"ScriptFile not found: '{_scriptFileId}'");
 
             var type = scriptFile.CompiledAssembly.GetExportedTypes()

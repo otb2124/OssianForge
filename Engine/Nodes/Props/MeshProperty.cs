@@ -17,7 +17,7 @@ namespace OssianForge.Engine.Nodes.Props
         public MeshResource MeshResource;
         public MeshProperty(string meshId)
         {
-            MeshResource = Engine.Resources.GetResource(meshId) as MeshResource
+            MeshResource = Engine.Resources.GetResource<MeshResource>(meshId)
                     ?? throw new Exception($"MeshResource not found: '{meshId}'");
         }
         public virtual void Draw()  

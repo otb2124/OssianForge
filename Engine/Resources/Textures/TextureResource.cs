@@ -1,40 +1,26 @@
-﻿using OssianForge.Engine.Resources.Shaders;
-using OssianForge.Engine.Resources.TextureFiles;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
+﻿using OssianForge.Engine.Resources.TextureFiles;
+using OssianForge.Engine.Resources;
+using OssianForge.Engine;
 
-namespace OssianForge.Engine.Resources.Textures
+public class TextureResource : Resource
 {
-    public class TextureResource : Resource
+    public List<TextureFile> TextureFiles = new();
+    public List<string> TextureIds;
+
+    public TextureResource(string id, params string[] textureIds)
     {
+        Id = id;
+        TextureIds = textureIds.ToList();
+    }
 
-        public TextureFile Texture;
-        public TextureFile NormalTexture;
-
-        public string TextureId;
-        public string TextureNormalId;
-
-
-        public TextureResource(string id, string textureId, string normalTextureId = null)
+    public override void Load()
+    {
+        TextureFiles.Clear();
+        foreach (var textureId in TextureIds)
         {
-            Id = id;
-            TextureId = textureId;
-            TextureNormalId = normalTextureId;
+            var file = Engine.Resources.GetResourceFile<TextureFile>(textureId)
+                ?? throw new Exception($"Texture not found: '{textureId}'");
+            TextureFiles.Add(file);
         }
-
-        public override void Load()
-        {
-            if (TextureId != null)
-                Texture = Engine.Resources.GetResourceFile(TextureId) as TextureFile
-                    ?? throw new Exception($"Texture not found: '{TextureId}'");
-
-            if (TextureNormalId != null)
-                NormalTexture = Engine.Resources.GetResourceFile(TextureNormalId) as TextureFile
-                    ?? throw new Exception($"Normal texture not found: '{TextureNormalId}'");
-        }
-
-
     }
 }

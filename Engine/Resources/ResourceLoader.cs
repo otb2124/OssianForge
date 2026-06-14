@@ -20,17 +20,26 @@ namespace OssianForge.Engine.Resources
             ResourcesConfig = new ResourcesConfig("config.resources", "ConfigFiles/Core/resources.json");
         }
 
-        public void Load()
+        public void Initialize()
         {
             ResourceFilesConfig.Load();
             ResourceFilesConfig.BuildInstances();
-            var instance = ResourceFilesConfig.GetInstanceById<ShaderFile>("shaderfile.basic.vert");
-            Console.WriteLine(instance.Path);
-
 
             ResourcesConfig.Load();
+            ResourcesConfig.BuildInstances();
+        }
 
+        public void OnLoad()
+        {
+            foreach (var resourceFile in ResourceFilesConfig.ResourceFiles)
+            {
+                resourceFile.Load();
+            }
 
+            foreach (var resource in ResourcesConfig.Resources)
+            {
+                resource.Load();
+            }
         }
     }
 }

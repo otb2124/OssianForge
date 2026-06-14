@@ -11,7 +11,7 @@ namespace OssianForge.Engine.Nodes.Props
 
         public ColliderProperty(string colliderId, bool isTrigger = false)
         {
-            ColliderResource = Engine.Resources.GetResource(colliderId) as ColliderResource;
+            ColliderResource = Engine.Resources.GetResource<ColliderResource>(colliderId);
             IsTrigger = isTrigger;
         }
     }

@@ -24,7 +24,7 @@ namespace OssianForge.Engine.Graphics.RenderTarget
 
         public PostProcessPass(string shaderId)
         {
-            ShaderResource = Engine.Resources.GetResource(shaderId) as ShaderResource;
+            ShaderResource = Engine.Resources.GetResource<ShaderResource>(shaderId);
         }
 
         /// <summary>

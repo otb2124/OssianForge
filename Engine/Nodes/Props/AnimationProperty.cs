@@ -13,7 +13,7 @@ namespace OssianForge.Engine.Nodes.Props
 
         public AnimationProperty(string animationResourceId)
         {
-            AnimationResource = Engine.Resources.GetResource(animationResourceId) as AnimationResource
+            AnimationResource = Engine.Resources.GetResource<AnimationResource>(animationResourceId)
                 ?? throw new Exception($"AnimationResource not found: '{animationResourceId}'");
         }
 

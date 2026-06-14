@@ -390,7 +390,7 @@ namespace OssianForge.Engine.Nodes
 
 
 
-            tree.AddChild(scene1);
+            tree.AddChild(scene);
 
             return tree;
         }

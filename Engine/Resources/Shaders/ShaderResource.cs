@@ -95,7 +95,7 @@ namespace OssianForge.Engine.Resources.Shaders
 
         public void Load()
         {
-            ShaderFile = Engine.Resources.GetResourceFile(FileId) as ShaderFile
+            ShaderFile = Engine.Resources.GetResourceFile<ShaderFile>(FileId)
                 ?? throw new Exception($"ShaderFile not found: '{FileId}'");
             Handle = ShaderFile.Compiled;
         }

@@ -16,7 +16,7 @@ namespace OssianForge.Engine.Nodes.Props
 
         public MaterialProperty(string shaderId)
         {
-            ShaderResource = Engine.Resources.GetResource(shaderId) as ShaderResource
+            ShaderResource = Engine.Resources.GetResource<ShaderResource>(shaderId)
                 ?? throw new Exception($"ShaderResource not found: '{shaderId}'");
         }
 
