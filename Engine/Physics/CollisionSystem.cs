@@ -53,12 +53,8 @@ namespace OssianForge.Engine.Physics
                     var dist = (posA - posB).Length();
                     float combinedRadius = radiusA + radiusB;
 
-                    if (physA.WorldIndex == 1)  // log world 1 pairs only
-                        Console.WriteLine($"[W1 TRIGGER] {nodeA.Name} <-> {nodeB.Name} | dist={dist:F1} combined={combinedRadius:F1} overlap={dist < combinedRadius}");
-
                     if (dist < combinedRadius)
                     {
-                        Console.WriteLine($"[W1 COLLISION] {nodeA.Name} HIT {nodeB.Name}");
                         colA.OnCollision?.Invoke(nodeB);
                         colB.OnCollision?.Invoke(nodeA);
                     }

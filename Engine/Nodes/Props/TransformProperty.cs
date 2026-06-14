@@ -14,7 +14,7 @@ namespace OssianForge.Engine.Nodes.Props
         World,           // normal 3D transform, no special handling
         Billboard,       // faces camera, Y-axis locked (trees, sprites, lights)
         BillboardFree,   // faces camera on all axes (particles, sparks)
-        ScreenSpace,     // pinned to screen in NDC coords, scales with FOV
+        ScreenSpace,        // flat quad, NDC direct, identity view/proj
     }
 
 
@@ -60,7 +60,7 @@ namespace OssianForge.Engine.Nodes.Props
                     DepthWrite = false;
                     DepthTest = false;
                     IgnoreParentTransform = true;
-                    ToScreenSpace();
+                    Transform.ToScreenSpace(new Vector2(Engine.Graphics.WindowSize.X, Engine.Graphics.WindowSize.Y));
                     break;
                 case RenderSpace.Billboard:
                 case RenderSpace.BillboardFree:
@@ -77,29 +77,15 @@ namespace OssianForge.Engine.Nodes.Props
 
         public void SetMatrix(Matrix4x4 matrix) => Transform.SetMatrix(matrix);
 
-        public void ToScreenSpace()
-        {
-            var screen = Engine.Graphics.WindowSize;
-
-            float scaleX = Transform.Scale.X / screen.X;
-            float scaleY = Transform.Scale.Y / screen.Y;
-
-            float ndcX = (Transform.Position.X / screen.X) + scaleX * 0.5f - 1f;
-            float ndcY = (Transform.Position.Y / screen.Y) + scaleY * 0.5f - 1f;
-
-            Transform.Position = new Vector3(ndcX, ndcY, Transform.Position.Z);
-            Transform.Scale = new Vector3(scaleX, scaleY, Transform.Scale.Z);
-        }
-
         public Matrix4x4 GetCameraModel()
         {
             var cam = Engine.Graphics.GetCurrentCamera();
 
             return RenderSpace switch
             {
-                RenderSpace.Billboard => cam.GetBillboardMatrix(Transform),
-                RenderSpace.BillboardFree => cam.GetBillboardFreeMatrix(Transform),
-                RenderSpace.ScreenSpace => cam.GetScreenSpaceMatrixFixed(Transform),
+                RenderSpace.Billboard => cam.GetBillboardModel(Transform),
+                RenderSpace.BillboardFree => cam.GetBillboardFreeModel(Transform),
+                RenderSpace.ScreenSpace => cam.GetScreenSpaceModel(Transform),
                 _ => Transform.ToMatrix()
             };
         }

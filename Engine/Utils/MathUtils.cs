@@ -113,6 +113,31 @@ namespace OssianForge.Engine.Utils
                     float.RadiansToDegrees(angles.Z)
                 );
             }
+
+
+            public void ToScreenSpace(Vector2 screen)
+            {
+                float scaleX = Scale.X / screen.X;
+                float scaleY = Scale.Y / screen.Y;
+
+                float ndcX = (Position.X / screen.X) + scaleX * 0.5f - 1f;
+                float ndcY = (Position.Y / screen.Y) + scaleY * 0.5f - 1f;
+
+                Position = new Vector3(ndcX, ndcY, Position.Z);
+                Scale = new Vector3(scaleX, scaleY, Scale.Z);
+            }
+
+            public void FromScreenSpace(Vector2 screen)
+            {
+                float pixelX = (Position.X + 1f - Scale.X * 0.5f) * screen.X;
+                float pixelY = (Position.Y + 1f - Scale.Y * 0.5f) * screen.Y;
+
+                float pixelScaleX = Scale.X * screen.X;
+                float pixelScaleY = Scale.Y * screen.Y;
+
+                Position = new Vector3(pixelX, pixelY, Position.Z);
+                Scale = new Vector3(pixelScaleX, pixelScaleY, Scale.Z);
+            }
         }
     }
 }

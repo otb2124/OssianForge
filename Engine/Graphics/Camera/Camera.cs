@@ -99,7 +99,7 @@ namespace OssianForge.Engine.Graphics.Camera
         // Billboard — Y-axis locked (trees, sprites, light icons)
         // The quad always faces the camera but cannot tilt; "up" is always world Y.
         // ──────────────────────────────────────────────────────────────────────────
-        public Matrix4x4 GetBillboardMatrix(Transform transform)
+        public Matrix4x4 GetBillboardModel(Transform transform)
         {
             Matrix4x4.Invert(GetView(), out var invView);
             var right = new Vector3(invView.M11, invView.M12, invView.M13);
@@ -124,7 +124,7 @@ namespace OssianForge.Engine.Graphics.Camera
         // Identical math to Billboard; the difference is intent — use this when
         // you want the sprite to roll with the camera (e.g. a spark viewed from below).
         // ──────────────────────────────────────────────────────────────────────────
-        public Matrix4x4 GetBillboardFreeMatrix(Transform transform)
+        public Matrix4x4 GetBillboardFreeModel(Transform transform)
         {
             // Face the camera from the object's position using the camera's full orientation.
             // Unlike the Y-locked version we do not force the up axis to Vector3.UnitY, so
@@ -150,71 +150,45 @@ namespace OssianForge.Engine.Graphics.Camera
                  * Matrix4x4.CreateTranslation(transform.Position);
         }
 
-        // ──────────────────────────────────────────────────────────────────────────
-        // ScreenSpace — NDC-mapped, scales with FOV (diegetic UI, world-attached HUD)
-        //
-        // Transform.Position.XY are NDC coords:  (-1,-1) = bottom-left of screen
-        //                                          ( 0, 0) = center
-        //                                          ( 1, 1) = top-right
-        // Transform.Position.Z  is ignored        (depth is fixed internally)
-        // Transform.Scale.XY    are fractions of the half-screen size at depth
-        //
-        // This is placed in world space at a fixed depth in front of the camera, so
-        // it still interacts with the depth buffer (useful for in-world overlays).
-        // If you want a true HUD that ignores depth and FOV, use ScreenSpaceFixed.
-        // ──────────────────────────────────────────────────────────────────────────
-        public Matrix4x4 GetScreenSpaceMatrix(Transform transform)
-        {
-            Vector3 forward = GetForward();
-            Matrix4x4.Invert(GetView(), out var invView);
-            var right = new Vector3(invView.M11, invView.M12, invView.M13);
-            var up = new Vector3(invView.M21, invView.M22, invView.M23);
-
-            // Allow Z position to push/pull the element along the view axis
-            float depth = 2.0f + transform.Position.Z;
-
-            float halfH = MathF.Tan(float.DegreesToRadians(Fov) * 0.5f) * depth;
-            float halfW = halfH * AspectRatio;
-
-            Vector3 worldPos = Position
-                + forward * depth
-                + right * (transform.Position.X * halfW)
-                + up * (transform.Position.Y * halfH);
-
-            float scaleX = transform.Scale.X * halfW;
-            float scaleY = transform.Scale.Y * halfH;
-
-            var billboard = new Matrix4x4(
-                right.X, right.Y, right.Z, 0,
-                up.X, up.Y, up.Z, 0,
-                forward.X, forward.Y, forward.Z, 0,
-                0, 0, 0, 1
-            );
-
-            float rollRad = float.DegreesToRadians(transform.Rotation.Z);
-            float pitchRad = float.DegreesToRadians(transform.Rotation.X); // tilt up/down in screen plane
-            float yawRad = float.DegreesToRadians(transform.Rotation.Y); // tilt left/right in screen plane
-
-            return Matrix4x4.CreateScale(scaleX, scaleY, 1f)
-                 * Matrix4x4.CreateRotationX(pitchRad)  // applied in billboard-local space
-                 * Matrix4x4.CreateRotationY(yawRad)
-                 * Matrix4x4.CreateRotationZ(rollRad)
-                 * billboard
-                 * Matrix4x4.CreateTranslation(worldPos);
-        }
-
-
-        public Matrix4x4 GetScreenSpaceMatrixFixed(Transform transform)
+        public Matrix4x4 GetScreenSpaceModel(Transform transform)
         {
             float rollRad = float.DegreesToRadians(transform.Rotation.Z);
             float pitchRad = float.DegreesToRadians(transform.Rotation.X);
             float yawRad = float.DegreesToRadians(transform.Rotation.Y);
 
-            return Matrix4x4.CreateScale(transform.Scale.X, transform.Scale.Y, 1f)
+            // Z scale matches XY so the cube stays cubic when rotated
+            float scaleZ = (transform.Scale.X + transform.Scale.Y) * 0.5f;
+
+            return Matrix4x4.CreateScale(transform.Scale.X, transform.Scale.Y, scaleZ)
                  * Matrix4x4.CreateRotationX(pitchRad)
                  * Matrix4x4.CreateRotationY(yawRad)
                  * Matrix4x4.CreateRotationZ(rollRad)
                  * Matrix4x4.CreateTranslation(transform.Position.X, transform.Position.Y, 0f);
+        }
+
+
+        public Matrix4x4 GetScreenSpaceView()
+        {
+            return Matrix4x4.CreateLookAt(
+                cameraPosition: new Vector3(0f, 0f, 10f),
+                cameraTarget: new Vector3(0f, 0f, 0f),
+                cameraUpVector: Vector3.UnitY
+            );
+        }
+
+
+        public Matrix4x4 GetScreenSpaceProjection()
+        {
+            var screen = Engine.Graphics.WindowSize;
+            // left=0, right=screenW, bottom=0, top=screenH — pixel coords, origin bottom-left
+            return Matrix4x4.CreateOrthographicOffCenter(
+                left: 0f,
+                right: screen.X,
+                bottom: 0f,
+                top: screen.Y,
+                zNearPlane: 0.1f,
+                zFarPlane: 100f
+            );
         }
 
         // ──────────────────────────────────────────────────────────────────────────

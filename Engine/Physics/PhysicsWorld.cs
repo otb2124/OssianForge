@@ -18,8 +18,6 @@ namespace OssianForge.Engine.Physics
 
     public class PhysicsWorld
     {
-
-
         public readonly World JitterWorld;
         public int WorldIndex;
         private readonly List<PhysicsBody> _bodies = new();
@@ -85,7 +83,6 @@ namespace OssianForge.Engine.Physics
                 {
                     var pos = body.JitterBody?.Position ?? default;
                     var vel = body.JitterBody?.Velocity ?? default;
-                    Console.WriteLine($"[W1] {body.NodeId} | pos=({pos.X:F1}, {pos.Y:F1}, {pos.Z:F1}) vel=({vel.X:F1}, {vel.Y:F1}, {vel.Z:F1})");
                 }
                 body.SyncFromJitter(LockPosition, LockRotation);
             }
