@@ -150,6 +150,7 @@ namespace OssianForge.Engine.Graphics.Camera
                  * Matrix4x4.CreateTranslation(transform.Position);
         }
 
+        //TODO? mb smth w Z axis...
         public Matrix4x4 GetScreenSpaceModel(Transform transform)
         {
             float rollRad = float.DegreesToRadians(transform.Rotation.Z);
@@ -162,6 +163,8 @@ namespace OssianForge.Engine.Graphics.Camera
                  * Matrix4x4.CreateRotationZ(rollRad)
                  * Matrix4x4.CreateTranslation(transform.Position.X, transform.Position.Y, transform.Position.Z);
         }
+
+
 
 
         public Matrix4x4 GetScreenSpaceView()

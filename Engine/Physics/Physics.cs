@@ -18,8 +18,8 @@ namespace OssianForge.Engine.Physics
         {
             PhysicsWorlds.Add(new PhysicsWorld(0, new Vector3(0, -9.81f, 0)));
             PhysicsWorlds.Add(new PhysicsWorld(1, new Vector3(0, -9.81f / 3f, 0)));
-            PhysicsWorlds[1].LockPosition = AxisLock.Z;
-            PhysicsWorlds[1].LockRotation = AxisLock.X | AxisLock.Y;
+            //PhysicsWorlds[1].LockPosition = AxisLock.Z;
+            //PhysicsWorlds[1].LockRotation = AxisLock.X | AxisLock.Y;
 
             CollisionSystem = new CollisionSystem();
         }
