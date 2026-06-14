@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OssianForge.Engine.Resources.Scripts;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -31,6 +32,13 @@ namespace OssianForge.Engine.Resources.Config
         }
     }
 
+
+    public interface IResourceFilePack
+    {
+        ResourceFile GetByIdBase(string id);
+        IEnumerable<ResourceFile> GetAllFiles();
+    }
+
     // ── config ───────────────────────────────────────────────────────────────────
 
     public class ResourceFilesConfig : JsonConfigFile<ResourceFileRecord>
@@ -55,16 +63,26 @@ namespace OssianForge.Engine.Resources.Config
             return (ResourceFile)Activator.CreateInstance(type, record.Id, record.Path)!;
         }
 
-        private static Type GetResourceFileType(string type) => type switch
+        private static Type GetResourceFileType(string type)
         {
-            "shaderfile" => typeof(ShaderFiles.ShaderFile),
-            "meshfile" => typeof(MeshFiles.MeshFile),
-            "texturefile" => typeof(TextureFiles.TextureFile),
-            "animationfile" => typeof(Animations.AnimationFile),
-            "configfile" => typeof(Config.ConfigFile),
-            "scriptfile" => typeof(Scripts.ScriptFile),
-            _ => throw new Exception($"[RESOURCE FILES CONFIG] Unknown type '{type}'")
-        };
+            if (type.StartsWith("filepack."))
+            {
+                string innerType = type["filepack.".Length..];
+                Type innerFileType = GetResourceFileType(innerType);
+                return typeof(ResourceFilePack<>).MakeGenericType(innerFileType);
+            }
+
+            return type switch
+            {
+                "shaderfile" => typeof(ShaderFiles.ShaderFile),
+                "meshfile" => typeof(MeshFiles.MeshFile),
+                "texturefile" => typeof(TextureFiles.TextureFile),
+                "animationfile" => typeof(Animations.AnimationFile),
+                "configfile" => typeof(Config.ConfigFile),
+                "script" => typeof(Scripts.ScriptFile),
+                _ => throw new Exception($"[RESOURCE FILES CONFIG] Unknown type '{type}'")
+            };
+        }
 
 
         // ── build ────────────────────────────────────────────────────────────────
@@ -84,17 +102,46 @@ namespace OssianForge.Engine.Resources.Config
 
         // ── instance lookups ─────────────────────────────────────────────────────
 
-        /// <summary>Returns the live instance with the given id, or null.</summary>
+        /// <summary>Returns the live instance with the given id, or null. Also searches inside packs.</summary>
         public ResourceFile? GetInstanceById(string id)
-            => _resourceFiles.FirstOrDefault(f => f.Id == id);
+        {
+            var direct = _resourceFiles.FirstOrDefault(f => f.Id == id);
+            if (direct != null) return direct;
 
-        /// <summary>Returns the live instance with the given id cast to <typeparamref name="T"/>, or null.</summary>
+            foreach (var pack in _resourceFiles.OfType<IResourceFilePack>())
+            {
+                var found = pack.GetByIdBase(id);
+                if (found != null) return found;
+            }
+
+            return null;
+        }
+
+        /// <summary>Returns the live instance with the given id cast to <typeparamref name="T"/>, or null. Also searches inside packs.</summary>
         public T? GetInstanceById<T>(string id) where T : ResourceFile
-            => _resourceFiles.FirstOrDefault(f => f.Id == id) as T;
+        {
+            var direct = _resourceFiles.FirstOrDefault(f => f.Id == id) as T;
+            if (direct != null) return direct;
 
-        /// <summary>Returns all live instances of type <typeparamref name="T"/>.</summary>
+            foreach (var pack in _resourceFiles.OfType<IResourceFilePack>())
+            {
+                var found = pack.GetByIdBase(id) as T;
+                if (found != null) return found;
+            }
+
+            return null;
+        }
+
+        /// <summary>Returns all live instances of type <typeparamref name="T"/>. Also searches inside packs.</summary>
         public List<T> GetInstances<T>() where T : ResourceFile
-            => _resourceFiles.OfType<T>().ToList();
+        {
+            var results = _resourceFiles.OfType<T>().ToList();
+
+            foreach (var pack in _resourceFiles.OfType<IResourceFilePack>())
+                results.AddRange(pack.GetAllFiles().OfType<T>());
+
+            return results;
+        }
 
         // ── sync hooks ───────────────────────────────────────────────────────────
 
@@ -113,6 +160,26 @@ namespace OssianForge.Engine.Resources.Config
         {
             int liveIdx = _resourceFiles.FindIndex(f => f.Id == id);
             if (liveIdx >= 0) _resourceFiles.RemoveAt(liveIdx);
+        }
+
+
+
+        public ScriptFile FindScriptFile(string packOrFileId, string typeName)
+        {
+            // direct script file
+            var direct = GetInstanceById<ScriptFile>(packOrFileId);
+            if (direct != null) return direct;
+
+            // search inside pack by filename stem
+            var pack = GetInstanceById<ResourceFilePack<ScriptFile>>(packOrFileId);
+            if (pack != null)
+            {
+                var script = pack.Files.FirstOrDefault(f =>
+                    System.IO.Path.GetFileNameWithoutExtension(f.Path) == typeName);
+                if (script != null) return script;
+            }
+
+            throw new Exception($"Could not find script '{typeName}' in '{packOrFileId}'");
         }
     }
 }

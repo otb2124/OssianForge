@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OssianForge.Content.ScriptFiles.Nodes.Models.States
+namespace OssianForge.Content.ScriptFiles.User
 {
-    public class IdleState
+    public class MyCustomScript
     {
     }
 }

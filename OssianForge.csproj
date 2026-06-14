@@ -10,6 +10,12 @@
 
   <ItemGroup>
     <Compile Remove="Content\ScriptFiles\MyCustomProperty.cs" />
+    <Compile Remove="Content\ScriptFiles\Packs\Ossian\Motion\MotionProperty.cs" />
+    <Compile Remove="Content\ScriptFiles\Packs\Ossian\StateMachine\State.cs" />
+    <Compile Remove="Content\ScriptFiles\Packs\Ossian\StateMachine\StateMachineProperty.cs" />
+    <Compile Remove="Content\ScriptFiles\Packs\User\MyCustomScript.cs" />
+    <Compile Remove="Content\ScriptFiles\Packs\Ossian\Vehicle\VehicleProperty.cs" />
+    <Compile Remove="Content\ScriptFiles\Packs\Ossian\Vehicle\VehicleWheelProperty.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -56,6 +62,9 @@
     <Content Include="Content\MeshFiles\remy.fbx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <None Include="Content\ScriptFiles\Packs\User\MyCustomScript.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <Content Include="Content\ShaderFiles\unlit.frag">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -167,6 +176,24 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="Content\ScriptFiles\Packs\Ossian\Motion\MotionProperty.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\ScriptFiles\Packs\Ossian\StateMachine\Model\State.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\ScriptFiles\Packs\Ossian\StateMachine\StateMachineProperty.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\ScriptFiles\Packs\Ossian\Vehicle\VehicleProperty.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\ScriptFiles\Packs\Ossian\Vehicle\VehicleWheelProperty.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Jitter2" Version="2.8.5" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="5.3.0" />
     <PackageReference Include="Silk.NET.Assimp" Version="2.23.0" />
@@ -175,18 +202,6 @@
     <PackageReference Include="Silk.NET.OpenGL" Version="2.23.0" />
     <PackageReference Include="Silk.NET.Windowing" Version="2.23.0" />
     <PackageReference Include="StbImageSharp" Version="2.30.15" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Update="Content\ScriptFiles\Nodes\Models\States\State.cs">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Compile>
-    <Compile Update="Content\ScriptFiles\Nodes\Props\InputControlProperty.cs">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Compile>
-    <Compile Update="Content\ScriptFiles\Nodes\Props\StateProperty.cs">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Compile>
   </ItemGroup>
 
   <ItemGroup>
@@ -217,7 +232,7 @@
     <None Update="Content\ConfigFiles\Core\resources.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Content\ConfigFiles\ScriptPacks\scriptPacks.json">
+    <None Update="Content\ConfigFiles\Core\scriptPacks.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Content\TextureFiles\Fonts\roboto.png">

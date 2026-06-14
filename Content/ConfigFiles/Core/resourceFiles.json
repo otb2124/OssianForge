@@ -198,5 +198,25 @@
     "id": "configfile.font.roboto",
     "path": "ConfigFiles/Fonts/roboto.json",
     "type": "configfile"
+  },
+  {
+    "id": "filepack.script.user",
+    "path": "ScriptFiles/Packs/User",
+    "type": "filepack.script"
+  },
+  {
+    "id": "filepack.script.ossian.stateMachine",
+    "path": "ScriptFiles/Packs/Ossian/StateMachine",
+    "type": "filepack.script"
+  },
+  {
+    "id": "filepack.script.ossian.motion",
+    "path": "ScriptFiles/Packs/Ossian/Motion",
+    "type": "filepack.script"
+  },
+  {
+    "id": "filepack.script.ossian.vehicle",
+    "path": "ScriptFiles/Packs/Ossian/Vehicle",
+    "type": "filepack.script"
   }
 ]

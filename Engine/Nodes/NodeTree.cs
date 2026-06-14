@@ -31,8 +31,6 @@ namespace OssianForge.Engine.Nodes
             sky.AddProperty(new MeshProperty("mesh.cube"));
             sky.AddProperty(new CubemapMaterialProperty("cubemap.skybox.sky", "shader.skybox"));
 
-            //var inst = Engine.Resources.CreateScriptResourceInstance<NodeProperty>("script.StateProperty", "StateProperty");
-
             //light
             var lightNode = new Node();
             lightNode.Name = "light";
@@ -389,6 +387,21 @@ namespace OssianForge.Engine.Nodes
 
 
 
+
+
+            //script packs test
+            /*
+            var stateType = Engine.Resources.GetScriptType("filepack.script.ossian.stateMachine", "State");
+            var GetDefaultName = stateType.GetMethod("GetDefaultName").Invoke(null, null);
+            var StaticString = stateType.GetField("StaticString").GetValue(null);
+
+            Console.WriteLine($"{stateType.Name}, GetDefaultName={GetDefaultName}, StaticString={StaticString}");
+
+            var stateInstance = Engine.Resources.CreateScriptResourceInstance("filepack.script.ossian.stateMachine", "State");
+            var StateName = stateInstance.GetType().GetField("Name").GetValue(stateInstance);
+
+            Console.WriteLine($"{stateInstance.ToString()}, StateName={StateName}");
+            */
 
             tree.AddChild(scene);
 

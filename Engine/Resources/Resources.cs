@@ -1,10 +1,5 @@
-﻿using OssianForge.Engine.Resources.Animations;
-using OssianForge.Engine.Resources.Colliders;
-using OssianForge.Engine.Resources.Fonts;
-using OssianForge.Engine.Resources.Meshes;
-using OssianForge.Engine.Resources.Scripts;
-using OssianForge.Engine.Resources.Shaders;
-using OssianForge.Engine.Resources.Textures;
+﻿using OssianForge.Engine.Resources.Scripts;
+
 
 namespace OssianForge.Engine.Resources
 {
@@ -39,9 +34,18 @@ namespace OssianForge.Engine.Resources
             return ResourceLoader.ResourcesConfig.GetInstanceById<T>(id);
         }
 
-        public T CreateScriptResourceInstance<T>(string resourceId, string typeName, params object[] args) where T : class
+        public object CreateScriptResourceInstance(string packOrFileId, string typeName, params object[] args)
+            => ResourceLoader.ResourceFilesConfig.FindScriptFile(packOrFileId, typeName).CreateInstance(typeName, args);
+
+        public T CreateScriptResourceInstance<T>(string packOrFileId, string typeName, params object[] args) where T : class
+            => ResourceLoader.ResourceFilesConfig.FindScriptFile(packOrFileId, typeName).CreateInstance<T>(typeName, args);
+
+        public Type GetScriptType(string packOrFileId, string typeName)
         {
-            return GetResource<ScriptResource>(resourceId).CreateInstance<T>(typeName, args);
+            var scriptFile = ResourceLoader.ResourceFilesConfig.FindScriptFile(packOrFileId, typeName);
+            return scriptFile.CompiledAssembly.GetExportedTypes()
+                .FirstOrDefault(t => t.Name == typeName)
+                ?? throw new Exception($"Type '{typeName}' not found in '{packOrFileId}'");
         }
     }
 }
