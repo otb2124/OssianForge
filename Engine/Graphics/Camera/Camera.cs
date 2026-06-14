@@ -156,14 +156,12 @@ namespace OssianForge.Engine.Graphics.Camera
             float pitchRad = float.DegreesToRadians(transform.Rotation.X);
             float yawRad = float.DegreesToRadians(transform.Rotation.Y);
 
-            // Scale.X and Scale.Y are already in NDC units (e.g. 0.104, 0.185)
-            // Z should match so the object stays cubic — just average XY directly
             float scaleZ = (transform.Scale.X + transform.Scale.Y) * 0.5f;
 
-            return Matrix4x4.CreateScale(transform.Scale.X, transform.Scale.Y, scaleZ)
-                 * Matrix4x4.CreateRotationX(pitchRad)
+            return Matrix4x4.CreateRotationX(pitchRad)
                  * Matrix4x4.CreateRotationY(yawRad)
                  * Matrix4x4.CreateRotationZ(rollRad)
+                 * Matrix4x4.CreateScale(transform.Scale.X, transform.Scale.Y, scaleZ)
                  * Matrix4x4.CreateTranslation(transform.Position.X, transform.Position.Y, 0f);
         }
 
@@ -171,24 +169,22 @@ namespace OssianForge.Engine.Graphics.Camera
         public Matrix4x4 GetScreenSpaceView()
         {
             return Matrix4x4.CreateLookAt(
-                cameraPosition: new Vector3(0f, 0f, 10f),
-                cameraTarget: new Vector3(0f, 0f, 0f),
-                cameraUpVector: Vector3.UnitY
+                new Vector3(0f, 0f, 1000f),
+                new Vector3(0f, 0f, 0f),
+                Vector3.UnitY
             );
         }
-
 
         public Matrix4x4 GetScreenSpaceProjection()
         {
             var screen = Engine.Graphics.WindowSize;
-            // left=0, right=screenW, bottom=0, top=screenH — pixel coords, origin bottom-left
             return Matrix4x4.CreateOrthographicOffCenter(
                 left: 0f,
                 right: screen.X,
                 bottom: 0f,
                 top: screen.Y,
                 zNearPlane: 0.1f,
-                zFarPlane: 100f
+                zFarPlane: 2000f
             );
         }
 

@@ -193,6 +193,17 @@ namespace OssianForge.Engine.Nodes
 
 
 
+
+
+
+
+
+
+
+
+
+
+
             var scene1 = new Node();
             scene1.Name = "scene1";
             scene1.Id = "scene1";
@@ -212,7 +223,7 @@ namespace OssianForge.Engine.Nodes
             //screenspace
             var img1 = new Node();
             img1.Name = "image1";
-            img1.AddProperty(new TransformProperty(new Transform(new Vector3(960f, 540f, 0f), Vector3.Zero, new Vector3(200, 200, 1)), RenderSpace.ScreenSpace));
+            img1.AddProperty(new TransformProperty(new Transform(new Vector3(960f, 540f, 0f), new Vector3(0, 0, 120), new Vector3(200, 200, 1)), RenderSpace.ScreenSpace));
             img1.AddProperty(new MeshProperty("mesh.quad"));
             img1.AddProperty(new TextureMaterialProperty("texture.brick", "shader.unlit"));
             img1.GetProperty<MaterialProperty>().BeginAction = () =>
@@ -249,6 +260,7 @@ namespace OssianForge.Engine.Nodes
 
             var img2 = new Node();
             img2.Name = "image2";
+            img2.Id = "img2";
             img2.AddProperty(new TransformProperty(new Transform(new Vector3(250f, 500f, 0f), Vector3.Zero, new Vector3(200, 200, 20)), RenderSpace.ScreenSpace));
             img2.AddProperty(new MeshProperty("mesh.quad"));
             img2.AddProperty(new TextureMaterialProperty("texture.house.wood", "shader.unlit"));
@@ -265,6 +277,27 @@ namespace OssianForge.Engine.Nodes
             img2.AddProperty(new ColliderProperty("collider.thickquad"));
             img2.AddProperty(new PhysicalProperty(false, true, 1f, 1f));
             img2.GetProperty<PhysicalProperty>().SetWorld(1);
+
+            var img3 = new Node();
+            img3.Name = "img3";
+            img3.Id = "img3";
+            img3.AddProperty(new TransformProperty(new Transform(new Vector3(200f, 900f, 0f), Vector3.Zero, new Vector3(200, 200, 20)), RenderSpace.ScreenSpace));
+            img3.AddProperty(new MeshProperty("mesh.quad"));
+            img3.AddProperty(new TextureMaterialProperty("texture.house.wood", "shader.unlit"));
+            img3.GetProperty<MaterialProperty>().BeginAction = () =>
+            {
+                var gl = Engine.Graphics.Batch.OpenGL;
+                gl.Disable(EnableCap.DepthTest);
+            };
+            img3.GetProperty<MaterialProperty>().EndAction = () =>
+            {
+                var gl = Engine.Graphics.Batch.OpenGL;
+                gl.Enable(EnableCap.DepthTest);
+            };
+            img3.AddProperty(new ColliderProperty("collider.thickquad"));
+            img3.AddProperty(new PhysicalProperty(false, true, 1f, 1f));
+            img3.GetProperty<PhysicalProperty>().SetWorld(1);
+
 
             var screenBottom = new Node();
             screenBottom.Name = "screenBottom";
@@ -311,6 +344,7 @@ namespace OssianForge.Engine.Nodes
             scene1.AddChild(camera1);
             scene1.AddChild(sky1);
             scene1.AddChild(img1);
+            scene1.AddChild(img3);
             scene1.AddChild(text1);
             scene1.AddChild(img2);
             scene1.AddChild(screenBottom);
