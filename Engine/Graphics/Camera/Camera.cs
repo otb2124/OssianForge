@@ -156,13 +156,11 @@ namespace OssianForge.Engine.Graphics.Camera
             float pitchRad = float.DegreesToRadians(transform.Rotation.X);
             float yawRad = float.DegreesToRadians(transform.Rotation.Y);
 
-            float scaleZ = (transform.Scale.X + transform.Scale.Y) * 0.5f;
-
-            return Matrix4x4.CreateRotationX(pitchRad)
+            return Matrix4x4.CreateScale(transform.Scale.X, transform.Scale.Y, transform.Scale.Z)
+                 * Matrix4x4.CreateRotationX(pitchRad)
                  * Matrix4x4.CreateRotationY(yawRad)
                  * Matrix4x4.CreateRotationZ(rollRad)
-                 * Matrix4x4.CreateScale(transform.Scale.X, transform.Scale.Y, scaleZ)
-                 * Matrix4x4.CreateTranslation(transform.Position.X, transform.Position.Y, 0f);
+                 * Matrix4x4.CreateTranslation(transform.Position.X, transform.Position.Y, transform.Position.Z);
         }
 
 

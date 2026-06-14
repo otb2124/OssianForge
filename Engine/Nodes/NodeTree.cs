@@ -223,36 +223,36 @@ namespace OssianForge.Engine.Nodes
             //screenspace
             var img1 = new Node();
             img1.Name = "image1";
-            img1.AddProperty(new TransformProperty(new Transform(new Vector3(960f, 540f, 0f), new Vector3(0, 0, 120), new Vector3(200, 200, 1)), RenderSpace.ScreenSpace));
+            img1.AddProperty(new TransformProperty(new Transform(new Vector3(960f, 540f, 0f), new Vector3(0, 0, 120), new Vector3(200, 200, 200)), RenderSpace.ScreenSpace));
             img1.AddProperty(new MeshProperty("mesh.quad"));
             img1.AddProperty(new TextureMaterialProperty("texture.brick", "shader.unlit"));
             img1.GetProperty<MaterialProperty>().BeginAction = () =>
             {
                 var gl = Engine.Graphics.Batch.OpenGL;
-                gl.Disable(EnableCap.DepthTest);
+                //gl.Disable(EnableCap.DepthTest);
             };
             img1.GetProperty<MaterialProperty>().EndAction = () =>
             {
                 var gl = Engine.Graphics.Batch.OpenGL;
-                gl.Enable(EnableCap.DepthTest);
+                //gl.Enable(EnableCap.DepthTest);
             };
 
             var text1 = new Node();
             text1.Name = "text1";
             text1.Id = "text1";
-            text1.AddProperty(new TransformProperty(new Transform(new Vector3(0f, 200f, 0f), Vector3.Zero, new Vector3(400, 200, 20)), RenderSpace.ScreenSpace));
-            text1.AddProperty(new MeshProperty("mesh.quad"));
-            //text1.AddProperty(new TextureMaterialProperty("texture.brick", "shader.unlit"));
-            text1.AddProperty(new TextMaterialProperty("testing screenspace\ntakes time", 32, new Vector4(1, 1, 1, 1), "font.roboto", "shader.sdf"));
+            text1.AddProperty(new TransformProperty(new Transform(new Vector3(0f, 200f, 0f), new Vector3(0, 30, 0), new Vector3(400, 200, 200)), RenderSpace.ScreenSpace));
+            text1.AddProperty(new MeshProperty("mesh.thickquad"));
+            text1.AddProperty(new TextureMaterialProperty("texture.brick", "shader.unlit"));
+            //text1.AddProperty(new TextMaterialProperty("testing screenspace\ntakes time", 32, new Vector4(1, 1, 1, 1), "font.roboto", "shader.sdf"));
             text1.GetProperty<MaterialProperty>().BeginAction = () =>
             {
                 var gl = Engine.Graphics.Batch.OpenGL;
-                gl.Disable(EnableCap.DepthTest);
+                //gl.Disable(EnableCap.DepthTest);
             };
             text1.GetProperty<MaterialProperty>().EndAction = () =>
             {
                 var gl = Engine.Graphics.Batch.OpenGL;
-                gl.Enable(EnableCap.DepthTest);
+                //gl.Enable(EnableCap.DepthTest);
             };
             text1.AddProperty(new ColliderProperty("collider.thickquad"));
             text1.AddProperty(new PhysicalProperty(false, true, 1f, 1f));
@@ -261,18 +261,18 @@ namespace OssianForge.Engine.Nodes
             var img2 = new Node();
             img2.Name = "image2";
             img2.Id = "img2";
-            img2.AddProperty(new TransformProperty(new Transform(new Vector3(250f, 500f, 0f), Vector3.Zero, new Vector3(200, 200, 20)), RenderSpace.ScreenSpace));
-            img2.AddProperty(new MeshProperty("mesh.quad"));
+            img2.AddProperty(new TransformProperty(new Transform(new Vector3(250f, 500f, 0f), Vector3.Zero, new Vector3(200, 200, 200)), RenderSpace.ScreenSpace));
+            img2.AddProperty(new MeshProperty("mesh.thickquad"));
             img2.AddProperty(new TextureMaterialProperty("texture.house.wood", "shader.unlit"));
             img2.GetProperty<MaterialProperty>().BeginAction = () =>
             {
                 var gl = Engine.Graphics.Batch.OpenGL;
-                gl.Disable(EnableCap.DepthTest);
+                //gl.Disable(EnableCap.DepthTest);
             };
             img2.GetProperty<MaterialProperty>().EndAction = () =>
             {
                 var gl = Engine.Graphics.Batch.OpenGL;
-                gl.Enable(EnableCap.DepthTest);
+                //gl.Enable(EnableCap.DepthTest);
             };
             img2.AddProperty(new ColliderProperty("collider.thickquad"));
             img2.AddProperty(new PhysicalProperty(false, true, 1f, 1f));
@@ -281,18 +281,18 @@ namespace OssianForge.Engine.Nodes
             var img3 = new Node();
             img3.Name = "img3";
             img3.Id = "img3";
-            img3.AddProperty(new TransformProperty(new Transform(new Vector3(200f, 900f, 0f), Vector3.Zero, new Vector3(200, 200, 20)), RenderSpace.ScreenSpace));
-            img3.AddProperty(new MeshProperty("mesh.quad"));
+            img3.AddProperty(new TransformProperty(new Transform(new Vector3(200f, 900f, 0f), Vector3.Zero, new Vector3(200, 200, 200)), RenderSpace.ScreenSpace));
+            img3.AddProperty(new MeshProperty("mesh.thickquad"));
             img3.AddProperty(new TextureMaterialProperty("texture.house.wood", "shader.unlit"));
             img3.GetProperty<MaterialProperty>().BeginAction = () =>
             {
                 var gl = Engine.Graphics.Batch.OpenGL;
-                gl.Disable(EnableCap.DepthTest);
+                //gl.Disable(EnableCap.DepthTest);
             };
             img3.GetProperty<MaterialProperty>().EndAction = () =>
             {
                 var gl = Engine.Graphics.Batch.OpenGL;
-                gl.Enable(EnableCap.DepthTest);
+                //gl.Enable(EnableCap.DepthTest);
             };
             img3.AddProperty(new ColliderProperty("collider.thickquad"));
             img3.AddProperty(new PhysicalProperty(false, true, 1f, 1f));
@@ -303,17 +303,17 @@ namespace OssianForge.Engine.Nodes
             screenBottom.Name = "screenBottom";
             screenBottom.Id = "screenBottom";
             screenBottom.AddProperty(new TransformProperty(new Transform(new Vector3(0f, 0f, 0f), Vector3.Zero, new Vector3(700, 50, 50)), RenderSpace.ScreenSpace));
-            screenBottom.AddProperty(new MeshProperty("mesh.quad"));
+            screenBottom.AddProperty(new MeshProperty("mesh.thickquad"));
             screenBottom.AddProperty(new TextureMaterialProperty("texture.house.wood", "shader.unlit"));
             screenBottom.GetProperty<MaterialProperty>().BeginAction = () =>
             {
                 var gl = Engine.Graphics.Batch.OpenGL;
-                gl.Disable(EnableCap.DepthTest);
+                //gl.Disable(EnableCap.DepthTest);
             };
             screenBottom.GetProperty<MaterialProperty>().EndAction = () =>
             {
                 var gl = Engine.Graphics.Batch.OpenGL;
-                gl.Enable(EnableCap.DepthTest);
+                //gl.Enable(EnableCap.DepthTest);
             };
             screenBottom.AddProperty(new ColliderProperty("collider.thickquad"));
             screenBottom.AddProperty(new PhysicalProperty(true, false));

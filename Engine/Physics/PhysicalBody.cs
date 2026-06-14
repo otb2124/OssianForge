@@ -1,7 +1,6 @@
 ﻿using Jitter2;
 using Jitter2.Collision.Shapes;
 using Jitter2.Dynamics;
-using Jitter2.Dynamics.Constraints;
 using Jitter2.LinearMath;
 using OssianForge.Engine.Nodes;
 using OssianForge.Engine.Nodes.Props;
@@ -46,7 +45,6 @@ namespace OssianForge.Engine.Physics
                 var t = TransformProperty.Transform;
                 pos = t.Position;
                 var scale = t.Scale;
-                var rot = t.Rotation; // assuming this is Euler degrees or a quaternion
 
                 var sourceMesh = ColliderProperty.ColliderResource.TriangleMesh!;
                 var transformed = new List<JTriangle>();
@@ -94,6 +92,13 @@ namespace OssianForge.Engine.Physics
                 JitterBody.Restitution = PhysicalProperty.Bounciness;
                 JitterBody.Damping = (PhysicalProperty.LinearDamping, PhysicalProperty.AngularDamping);
                 JitterBody.Tag = NodeId;
+
+                var rot = t.Rotation; // Euler degrees
+                var initRot = System.Numerics.Quaternion.CreateFromYawPitchRoll(
+                    float.DegreesToRadians(rot.Y),
+                    float.DegreesToRadians(rot.X),
+                    float.DegreesToRadians(rot.Z));
+                JitterBody.Orientation = new JQuaternion(initRot.X, initRot.Y, initRot.Z, initRot.W);
 
                 _initialPosition = JitterBody.Position;
                 _initialOrientation = JitterBody?.Orientation ?? JQuaternion.Identity;
