@@ -229,7 +229,7 @@ namespace OssianForge.Engine.Nodes
             var text1 = new Node();
             text1.Name = "text1";
             text1.Id = "text1";
-            text1.AddProperty(new TransformProperty(new Transform(new Vector3(100f, 500f, 0f), Vector3.Zero, new Vector3(200, 200, 20)), RenderSpace.ScreenSpace));
+            text1.AddProperty(new TransformProperty(new Transform(new Vector3(0f, 200f, 0f), Vector3.Zero, new Vector3(400, 200, 20)), RenderSpace.ScreenSpace));
             text1.AddProperty(new MeshProperty("mesh.quad"));
             //text1.AddProperty(new TextureMaterialProperty("texture.brick", "shader.unlit"));
             text1.AddProperty(new TextMaterialProperty("testing screenspace\ntakes time", 32, new Vector4(1, 1, 1, 1), "font.roboto", "shader.sdf"));
@@ -249,7 +249,7 @@ namespace OssianForge.Engine.Nodes
 
             var img2 = new Node();
             img2.Name = "image2";
-            img2.AddProperty(new TransformProperty(new Transform(new Vector3(0f, 200f, 0f), Vector3.Zero, new Vector3(200, 200, 20)), RenderSpace.ScreenSpace));
+            img2.AddProperty(new TransformProperty(new Transform(new Vector3(250f, 500f, 0f), Vector3.Zero, new Vector3(200, 200, 20)), RenderSpace.ScreenSpace));
             img2.AddProperty(new MeshProperty("mesh.quad"));
             img2.AddProperty(new TextureMaterialProperty("texture.house.wood", "shader.unlit"));
             img2.GetProperty<MaterialProperty>().BeginAction = () =>
@@ -286,19 +286,41 @@ namespace OssianForge.Engine.Nodes
             screenBottom.AddProperty(new PhysicalProperty(true, false));
             screenBottom.GetProperty<PhysicalProperty>().SetWorld(1);
 
+
+            var remy1 = new Node();
+            remy1.Id = "remy1";
+            remy1.Name = "remy1";
+            remy1.AddProperty(new TransformProperty(new Transform(new Vector3(900, 100f, 0), new Vector3(0, 180, 0), new Vector3(100, 100, 1)), RenderSpace.ScreenSpace));
+            remy1.AddProperty(new MeshProperty("mesh.remy"));
+            remy1.AddProperty(new TextureMaterialProperty("texture.house.barrel", "shader.unlit"));
+            remy1.AddProperty(new TextureMaterialProperty("texture.brick", "shader.unlit"));
+            remy1.AddProperty(new TextureMaterialProperty("texture.house.windows", "shader.unlit"));
+            remy1.AddProperty(new TextureMaterialProperty("texture.house.wood", "shader.unlit"));
+            remy1.AddProperty(new TextureMaterialProperty("texture.house.wood", "shader.unlit"));
+            remy1.AddProperty(new TextureMaterialProperty("texture.house.wood", "shader.unlit"));
+            //remy1.AddProperty(new ColliderProperty("collider.remy"));
+            //remy1.AddProperty(new PhysicalProperty(false, true, 1f, 1f));
+            remy1.AddProperty(new AnimationProperty("animation.remy"));
+
+            remy1.GetProperty<AnimationProperty>().Play("remy.backflip", true, 2f);
+
+
+
+
+
             scene1.AddChild(camera1);
             scene1.AddChild(sky1);
             scene1.AddChild(img1);
             scene1.AddChild(text1);
             scene1.AddChild(img2);
             scene1.AddChild(screenBottom);
+            scene1.AddChild(remy1);
 
 
 
 
 
-
-            tree.AddChild(scene);
+            tree.AddChild(scene1);
 
             return tree;
         }

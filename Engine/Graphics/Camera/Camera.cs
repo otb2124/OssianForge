@@ -156,7 +156,8 @@ namespace OssianForge.Engine.Graphics.Camera
             float pitchRad = float.DegreesToRadians(transform.Rotation.X);
             float yawRad = float.DegreesToRadians(transform.Rotation.Y);
 
-            // Z scale matches XY so the cube stays cubic when rotated
+            // Scale.X and Scale.Y are already in NDC units (e.g. 0.104, 0.185)
+            // Z should match so the object stays cubic — just average XY directly
             float scaleZ = (transform.Scale.X + transform.Scale.Y) * 0.5f;
 
             return Matrix4x4.CreateScale(transform.Scale.X, transform.Scale.Y, scaleZ)
