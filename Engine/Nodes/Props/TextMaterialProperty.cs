@@ -73,7 +73,7 @@ namespace OssianForge.Engine.Nodes.Props
         }
 
         // ── Apply (scene render pass) ────────────────────────────────────
-        public override void Apply(Matrix4x4 transform, Matrix4x4[] palette)
+        public override void Apply(Matrix4x4 model, Matrix4x4 view, Matrix4x4 projection, Matrix4x4[] palette)
         {
             if (string.IsNullOrEmpty(Content)) return;
 
@@ -82,13 +82,12 @@ namespace OssianForge.Engine.Nodes.Props
 
             ShaderResource.Use();
 
-            var (view, viewNoTranslation) = Engine.Graphics.GetCurrentCamera().GetViewMatrices();
             ShaderResource.Apply(new ApplyContext
             {
-                Model = transform,
+                Model = model,
                 View = view,
-                Projection = Engine.Graphics.GetCurrentCamera().GetProjection(),
-                ViewNoTranslation = viewNoTranslation,
+                Projection = projection,
+                ViewNoTranslation = Engine.Graphics.GetCurrentCamera().GetViewNoTranslation(),
                 DiffuseTextureSlot = 0,
                 Palette = palette
             });

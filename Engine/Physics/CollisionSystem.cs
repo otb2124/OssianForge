@@ -50,10 +50,15 @@ namespace OssianForge.Engine.Physics
                     float radiusA = Math.Max(scaleA.X, scaleA.Y) * 0.5f;
                     float radiusB = Math.Max(scaleB.X, scaleB.Y) * 0.5f;
 
+                    var dist = (posA - posB).Length();
                     float combinedRadius = radiusA + radiusB;
 
-                    if ((posA - posB).Length() < combinedRadius)
+                    if (physA.WorldIndex == 1)  // log world 1 pairs only
+                        Console.WriteLine($"[W1 TRIGGER] {nodeA.Name} <-> {nodeB.Name} | dist={dist:F1} combined={combinedRadius:F1} overlap={dist < combinedRadius}");
+
+                    if (dist < combinedRadius)
                     {
+                        Console.WriteLine($"[W1 COLLISION] {nodeA.Name} HIT {nodeB.Name}");
                         colA.OnCollision?.Invoke(nodeB);
                         colB.OnCollision?.Invoke(nodeA);
                     }

@@ -196,8 +196,8 @@ namespace OssianForge.Engine.Nodes
             var text1 = new Node();
             text1.Name = "text1";
             text1.Id = "text1";
-            text1.AddProperty(new TransformProperty(new Transform(new Vector3(50f, 800f, 0f), Vector3.Zero, new Vector3(100, 50, 1)), RenderSpace.ScreenSpace));
-            text1.AddProperty(new MeshProperty("mesh.quad"));
+            text1.AddProperty(new TransformProperty(new Transform(new Vector3(0f, 500f, 0f), Vector3.Zero, new Vector3(100, 100, 20)), RenderSpace.ScreenSpace));
+            text1.AddProperty(new MeshProperty("mesh.cube"));
             text1.AddProperty(new TextMaterialProperty("testing screenspace\ntakes time", 32, new Vector4(1, 1, 1, 1), "font.roboto", "shader.sdf"));
             text1.GetProperty<MaterialProperty>().BeginAction = () =>
             {
@@ -209,14 +209,14 @@ namespace OssianForge.Engine.Nodes
                 var gl = Engine.Graphics.Batch.OpenGL;
                 gl.Enable(EnableCap.DepthTest);
             };
-            text1.AddProperty(new ColliderProperty("collider.thickquad"));
+            text1.AddProperty(new ColliderProperty("collider.cube"));
             text1.AddProperty(new PhysicalProperty(false, true, 1f, 1f));
             text1.GetProperty<PhysicalProperty>().SetWorld(1);
 
             var img2 = new Node();
             img2.Name = "image2";
-            img2.AddProperty(new TransformProperty(new Transform(new Vector3(0f, 500f, 0f), new Vector3(0, 0, 0), new Vector3(200, 200, 1)), RenderSpace.ScreenSpace));
-            img2.AddProperty(new MeshProperty("mesh.quad"));
+            img2.AddProperty(new TransformProperty(new Transform(new Vector3(0f, 200f, 0f), new Vector3(0, 0, 0), new Vector3(200, 200, 20)), RenderSpace.ScreenSpace));
+            img2.AddProperty(new MeshProperty("mesh.cube"));
             img2.AddProperty(new TextureMaterialProperty("texture.house.wood", "shader.unlit"));
             img2.GetProperty<MaterialProperty>().BeginAction = () =>
             {
@@ -228,16 +228,15 @@ namespace OssianForge.Engine.Nodes
                 var gl = Engine.Graphics.Batch.OpenGL;
                 gl.Enable(EnableCap.DepthTest);
             };
-            img2.AddProperty(new ColliderProperty("collider.thickquad"));
+            img2.AddProperty(new ColliderProperty("collider.cube"));
             img2.AddProperty(new PhysicalProperty(false, true, 1f, 1f));
             img2.GetProperty<PhysicalProperty>().SetWorld(1);
-
 
             var screenBottom = new Node();
             screenBottom.Name = "screenBottom";
             screenBottom.Id = "screenBottom";
-            screenBottom.AddProperty(new TransformProperty(new Transform(new Vector3(0f, 0f, 0f), Vector3.Zero, new Vector3(700, 50, 1)), RenderSpace.ScreenSpace));
-            screenBottom.AddProperty(new MeshProperty("mesh.quad"));
+            screenBottom.AddProperty(new TransformProperty(new Transform(new Vector3(0f, 0f, 0f), new Vector3(0, 0, 0), new Vector3(700, 50, 50)), RenderSpace.ScreenSpace));
+            screenBottom.AddProperty(new MeshProperty("mesh.cube"));
             screenBottom.AddProperty(new TextureMaterialProperty("texture.house.wood", "shader.unlit"));
             screenBottom.GetProperty<MaterialProperty>().BeginAction = () =>
             {
@@ -249,26 +248,26 @@ namespace OssianForge.Engine.Nodes
                 var gl = Engine.Graphics.Batch.OpenGL;
                 gl.Enable(EnableCap.DepthTest);
             };
-            screenBottom.AddProperty(new ColliderProperty("collider.thickquad"));
+            screenBottom.AddProperty(new ColliderProperty("collider.cube"));
             screenBottom.AddProperty(new PhysicalProperty(true, false));
             screenBottom.GetProperty<PhysicalProperty>().SetWorld(1);
 
             scene.AddChild(camera);
             scene.AddChild(sky);
-            scene.AddChild(plane);
-            scene.AddChild(ball);
-            scene.AddChild(cube);
-            scene.AddChild(ball1);
-            scene.AddChild(cube1);
-            scene.AddChild(remy);
+            //scene.AddChild(plane);
+            //scene.AddChild(ball);
+            //scene.AddChild(cube);
+            //scene.AddChild(ball1);
+            //scene.AddChild(cube1);
+            //scene.AddChild(remy);
 
-            scene.AddChild(lightNode);
-            scene.AddChild(lightNode1);
+            //scene.AddChild(lightNode);
+            //scene.AddChild(lightNode1);
 
-            scene.AddChild(textBrick);
-            scene.AddChild(textBrick1);
-            scene.AddChild(textBrick2);
-            scene.AddChild(img);
+            //scene.AddChild(textBrick);
+            //scene.AddChild(textBrick1);
+            //scene.AddChild(textBrick2);
+            //scene.AddChild(img);
 
             scene.AddChild(img1);
             scene.AddChild(text1);

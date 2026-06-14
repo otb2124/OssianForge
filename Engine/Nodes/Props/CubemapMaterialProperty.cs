@@ -21,7 +21,7 @@ namespace OssianForge.Engine.Nodes.Props
                 ?? throw new Exception($"CubemapTextureResource not found: '{cubemapId}'");
         }
 
-        public override void Apply(Matrix4x4 transform, Matrix4x4[] palette)
+        public override void Apply(Matrix4x4 model, Matrix4x4 view, Matrix4x4 projection, Matrix4x4[] palette)
         {
             Engine.Graphics.Batch.OpenGL.DepthFunc(DepthFunction.Lequal);
             Engine.Graphics.Batch.OpenGL.DepthMask(false);
@@ -29,12 +29,10 @@ namespace OssianForge.Engine.Nodes.Props
             ShaderResource.Use();
             CubemapResource.Bind(0);
 
-            var (_, viewNoTranslation) = Engine.Graphics.GetCurrentCamera().GetViewMatrices();
-
             ShaderResource.Apply(new ApplyContext
             {
-                ViewNoTranslation = viewNoTranslation,
-                Projection = Engine.Graphics.GetCurrentCamera().GetProjection(),
+                ViewNoTranslation = Engine.Graphics.GetCurrentCamera().GetViewNoTranslation(),
+                Projection = projection,
                 CubemapTextureSlot = 0,
             });
         }

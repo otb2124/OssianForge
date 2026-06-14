@@ -47,14 +47,14 @@ namespace OssianForge.Engine.Graphics.Batch
                     palette = animation.GetPalette(mesh, subMesh);
                 }
 
-                DrawSubMesh(subMesh, materials[matIndex], transform.GetMatrix(), palette);
+                DrawSubMesh(subMesh, materials[matIndex], transform.GetCameraModel(), transform.GetCameraView(), transform.GetCameraProjection(), palette);
             }
         }
 
-        public void DrawSubMesh(SubMeshResource subMesh, MaterialProperty material, Matrix4x4 matrix, Matrix4x4[] bonePalette)
+        public void DrawSubMesh(SubMeshResource subMesh, MaterialProperty material, Matrix4x4 model, Matrix4x4 view, Matrix4x4 projection, Matrix4x4[] bonePalette)
         {
             material.BeginAction?.Invoke();
-            material.Apply(matrix, bonePalette);
+            material.Apply(model, view, projection, bonePalette);
             subMesh.Draw();
             material.PostApply();
             material.EndAction?.Invoke();

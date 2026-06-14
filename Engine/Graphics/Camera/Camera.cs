@@ -170,7 +170,8 @@ namespace OssianForge.Engine.Graphics.Camera
             var right = new Vector3(invView.M11, invView.M12, invView.M13);
             var up = new Vector3(invView.M21, invView.M22, invView.M23);
 
-            const float depth = 2.0f;
+            // Allow Z position to push/pull the element along the view axis
+            float depth = 2.0f + transform.Position.Z;
 
             float halfH = MathF.Tan(float.DegreesToRadians(Fov) * 0.5f) * depth;
             float halfW = halfH * AspectRatio;
@@ -190,28 +191,44 @@ namespace OssianForge.Engine.Graphics.Camera
                 0, 0, 0, 1
             );
 
-            // Z rotation from Transform (Roll), applied in the billboard's local XY plane
             float rollRad = float.DegreesToRadians(transform.Rotation.Z);
+            float pitchRad = float.DegreesToRadians(transform.Rotation.X); // tilt up/down in screen plane
+            float yawRad = float.DegreesToRadians(transform.Rotation.Y); // tilt left/right in screen plane
 
             return Matrix4x4.CreateScale(scaleX, scaleY, 1f)
-                 * Matrix4x4.CreateRotationZ(rollRad)   // <-- honours Transform.Rotation.Z
+                 * Matrix4x4.CreateRotationX(pitchRad)  // applied in billboard-local space
+                 * Matrix4x4.CreateRotationY(yawRad)
+                 * Matrix4x4.CreateRotationZ(rollRad)
                  * billboard
                  * Matrix4x4.CreateTranslation(worldPos);
+        }
+
+
+        public Matrix4x4 GetScreenSpaceMatrixFixed(Transform transform)
+        {
+            float rollRad = float.DegreesToRadians(transform.Rotation.Z);
+            float pitchRad = float.DegreesToRadians(transform.Rotation.X);
+            float yawRad = float.DegreesToRadians(transform.Rotation.Y);
+
+            return Matrix4x4.CreateScale(transform.Scale.X, transform.Scale.Y, 1f)
+                 * Matrix4x4.CreateRotationX(pitchRad)
+                 * Matrix4x4.CreateRotationY(yawRad)
+                 * Matrix4x4.CreateRotationZ(rollRad)
+                 * Matrix4x4.CreateTranslation(transform.Position.X, transform.Position.Y, 0f);
         }
 
         // ──────────────────────────────────────────────────────────────────────────
         // Shared helpers
         // ──────────────────────────────────────────────────────────────────────────
 
-        public (Matrix4x4 view, Matrix4x4 viewNoTranslation) GetViewMatrices()
+        public Matrix4x4 GetViewNoTranslation()
         {
             var view = GetView();
-            var viewNoTranslation = new Matrix4x4(
+            return new Matrix4x4(
                 view.M11, view.M12, view.M13, 0,
                 view.M21, view.M22, view.M23, 0,
                 view.M31, view.M32, view.M33, 0,
                 0, 0, 0, 1);
-            return (view, viewNoTranslation);
         }
 
         // Forward direction derived from yaw/pitch

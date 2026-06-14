@@ -62,6 +62,10 @@ namespace OssianForge.Engine.Physics
             var body = _bodies.FirstOrDefault(b => b.NodeId == node.Id);
             if (body == null) return;
 
+            // Remove constraints first, before removing the body
+            foreach (var c in body.Constraints)
+                JitterWorld.Remove(c);
+
             if (body.JitterBody != null)
                 JitterWorld.Remove(body.JitterBody);
             else
@@ -76,7 +80,15 @@ namespace OssianForge.Engine.Physics
             float dt = Math.Clamp((float)delta, 0.001f, 0.033f);
             JitterWorld.Step(dt, multiThread: false);
             foreach (var body in _bodies)
+            {
+                if (WorldIndex == 1)
+                {
+                    var pos = body.JitterBody?.Position ?? default;
+                    var vel = body.JitterBody?.Velocity ?? default;
+                    Console.WriteLine($"[W1] {body.NodeId} | pos=({pos.X:F1}, {pos.Y:F1}, {pos.Z:F1}) vel=({vel.X:F1}, {vel.Y:F1}, {vel.Z:F1})");
+                }
                 body.SyncFromJitter(LockPosition, LockRotation);
+            }
         }
 
         public PhysicsBody? GetBody(string nodeId) =>

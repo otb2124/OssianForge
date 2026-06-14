@@ -20,7 +20,7 @@ namespace OssianForge.Engine.Nodes.Props
                 ?? throw new Exception($"ShaderResource not found: '{shaderId}'");
         }
 
-        public virtual void Apply(Matrix4x4 transform, Matrix4x4[] palette) { }
+        public virtual void Apply(Matrix4x4 model, Matrix4x4 view, Matrix4x4 projection, Matrix4x4[] palette) { }
 
         public virtual void PostApply() { }
 

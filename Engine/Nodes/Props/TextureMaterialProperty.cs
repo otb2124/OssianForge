@@ -20,7 +20,7 @@ namespace OssianForge.Engine.Nodes.Props
                 ?? throw new Exception($"TextureResource not found: '{textureId}'");
         }
 
-        public override void Apply(Matrix4x4 transform, Matrix4x4[] palette)
+        public override void Apply(Matrix4x4 model, Matrix4x4 view, Matrix4x4 projection, Matrix4x4[] palette)
         {
             ShaderResource.Use();
 
@@ -38,14 +38,12 @@ namespace OssianForge.Engine.Nodes.Props
                 normalSlot = 1;
             }
 
-            var (view, viewNoTranslation) = Engine.Graphics.GetCurrentCamera().GetViewMatrices();
-
             ShaderResource.Apply(new ApplyContext
             {
-                Model = transform,
+                Model = model,
                 View = view,
-                Projection = Engine.Graphics.GetCurrentCamera().GetProjection(),
-                ViewNoTranslation = viewNoTranslation,
+                Projection = projection,
+                ViewNoTranslation = Engine.Graphics.GetCurrentCamera().GetViewNoTranslation(),
                 DiffuseTextureSlot = diffuseSlot,
                 NormalTextureSlot = normalSlot,
                 HasNormalTexture = normalSlot.HasValue,
