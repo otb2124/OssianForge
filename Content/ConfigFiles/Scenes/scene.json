@@ -1,0 +1,414 @@
+{
+  "id": "scene",
+  "name": "scene",
+  "children": [
+    {
+      "id": "camera",
+      "name": "Camera",
+      "properties": [
+        {
+          "type": "CameraProperty"
+        }
+      ]
+    },
+    {
+      "id": "sky",
+      "name": "Skybox",
+      "properties": [
+        {
+          "type": "TransformProperty"
+        },
+        {
+          "type": "MeshProperty",
+          "data": [ "mesh.cube" ]
+        },
+        {
+          "type": "CubemapMaterialProperty",
+          "data": [ "cubemap.skybox.sky", "shader.skybox" ]
+        }
+      ]
+    },
+    {
+      "id": "plane",
+      "name": "plane",
+      "properties": [
+        {
+          "type": "TransformProperty",
+          "data": [
+            [ "0,0,0", "0,0,0", "20,0.5,20" ]
+          ]
+        },
+        {
+          "type": "MeshProperty",
+          "data": [ "mesh.cube" ]
+        },
+        {
+          "type": "TextureMaterialProperty",
+          "data": [ "texture.house.wood", "shader.basic" ]
+        },
+        {
+          "type": "ColliderProperty",
+          "data": [ "collider.cube" ]
+        },
+        {
+          "type": "PhysicalProperty",
+          "data": [ true, false ]
+        }
+      ]
+    },
+    {
+      "id": "ball",
+      "name": "ball",
+      "properties": [
+        {
+          "type": "TransformProperty",
+          "data": [
+            [ "0,32,-2", "0,0,0", "0.5,0.5,0.5" ]
+          ]
+        },
+        {
+          "type": "MeshProperty",
+          "data": [ "mesh.ball" ]
+        },
+        {
+          "type": "TextureMaterialProperty",
+          "data": [ "texture.house.wood", "shader.basic" ]
+        },
+        {
+          "type": "ColliderProperty",
+          "data": [ "collider.ball" ]
+        },
+        {
+          "type": "PhysicalProperty",
+          "data": [ false, true, 1, 1 ]
+        }
+      ]
+    },
+    {
+      "id": "cube",
+      "name": "cube",
+      "properties": [
+        {
+          "type": "TransformProperty",
+          "data": [
+            [ "0.5,30,-2", "0,0,0", "1,0.5,0.5" ]
+          ]
+        },
+        {
+          "type": "MeshProperty",
+          "data": [ "mesh.cube" ]
+        },
+        {
+          "type": "TextureMaterialProperty",
+          "data": [ "texture.house.wood", "shader.basic" ]
+        },
+        {
+          "type": "ColliderProperty",
+          "data": [ "collider.cube" ]
+        },
+        {
+          "type": "PhysicalProperty",
+          "data": [ false, true, 1, 1 ]
+        }
+      ]
+    },
+    {
+      "id": "ball1",
+      "name": "ball1",
+      "properties": [
+        {
+          "type": "TransformProperty",
+          "data": [
+            [ "0.25,40,-2", "0,0,0", "0.5,0.5,0.5" ]
+          ]
+        },
+        {
+          "type": "MeshProperty",
+          "data": [ "mesh.ball" ]
+        },
+        {
+          "type": "TextureMaterialProperty",
+          "data": [ "texture.house.wood", "shader.basic" ]
+        },
+        {
+          "type": "ColliderProperty",
+          "data": [ "collider.ball" ]
+        },
+        {
+          "type": "PhysicalProperty",
+          "data": [ false, true, 1, 1 ]
+        }
+      ]
+    },
+    {
+      "id": "cube1",
+      "name": "cube1",
+      "properties": [
+        {
+          "type": "TransformProperty",
+          "data": [
+            [ "0,41,-2", "10,0,0", "0.5,2,0.5" ]
+          ]
+        },
+        {
+          "type": "MeshProperty",
+          "data": [ "mesh.cube" ]
+        },
+        {
+          "type": "TextureMaterialProperty",
+          "data": [ "texture.house.wood", "shader.basic" ]
+        },
+        {
+          "type": "ColliderProperty",
+          "data": [ "collider.cube" ]
+        },
+        {
+          "type": "PhysicalProperty",
+          "data": [ false, true, 1, 1 ]
+        }
+      ]
+    },
+    {
+      "id": "pyramid",
+      "name": "pyramid",
+      "properties": [
+        {
+          "type": "TransformProperty",
+          "data": [
+            [ "0,41,-2", "10,0,0", "0.5,2,0.5" ]
+          ]
+        },
+        {
+          "type": "MeshProperty",
+          "data": [ "mesh.pyramid" ]
+        },
+        {
+          "type": "TextureMaterialProperty",
+          "data": [ "texture.house.wood", "shader.basic" ]
+        },
+        {
+          "type": "ColliderProperty",
+          "data": [ "collider.pyramid" ]
+        },
+        {
+          "type": "PhysicalProperty",
+          "data": [ false, true, 1, 1 ]
+        }
+      ]
+    },
+    {
+      "id": "remy",
+      "name": "remy",
+      "properties": [
+        {
+          "type": "TransformProperty",
+          "data": [
+            [ "0,1,-5", "0,0,0", "1,1,1" ]
+          ]
+        },
+        {
+          "type": "MeshProperty",
+          "data": [ "mesh.remy" ]
+        },
+        {
+          "type": "TextureMaterialProperty",
+          "data": [ "texture.house.barrel", "shader.basic" ]
+        },
+        {
+          "type": "TextureMaterialProperty",
+          "data": [ "texture.brick", "shader.basic" ]
+        },
+        {
+          "type": "TextureMaterialProperty",
+          "data": [ "texture.house.windows", "shader.basic" ]
+        },
+        {
+          "type": "TextureMaterialProperty",
+          "data": [ "texture.house.wood", "shader.basic" ]
+        },
+        {
+          "type": "TextureMaterialProperty",
+          "data": [ "texture.house.wood", "shader.basic" ]
+        },
+        {
+          "type": "TextureMaterialProperty",
+          "data": [ "texture.house.wood", "shader.basic" ]
+        },
+        {
+          "type": "ColliderProperty",
+          "data": [ "collider.remy" ]
+        },
+        {
+          "type": "PhysicalProperty",
+          "data": [ false, true, 1, 1 ]
+        },
+        {
+          "type": "AnimationProperty",
+          "data": [ "animation.remy" ],
+          "play": {
+            "clip": "remy.backflip",
+            "loop": true,
+            "speed": 2.0
+          }
+        }
+      ]
+    },
+    {
+      "id": "lightNode",
+      "name": "light",
+      "properties": [
+        {
+          "type": "TransformProperty",
+          "data": [
+            [ "10,5,10", "0,0,0", "10,10,10" ],
+            "Billboard"
+          ]
+        },
+        {
+          "type": "EmissionProperty",
+          "data": [ "1,1,1", 1, 30 ]
+        },
+        {
+          "type": "MeshProperty",
+          "data": [ "mesh.quad" ]
+        },
+        {
+          "type": "TextureMaterialProperty",
+          "data": [ "texture.light", "shader.unlit" ]
+        }
+      ]
+    },
+    {
+      "id": "lightNode1",
+      "name": "light1",
+      "properties": [
+        {
+          "type": "TransformProperty",
+          "data": [
+            [ "-10,5,-10", "0,0,0", "10,10,10" ],
+            "Billboard"
+          ]
+        },
+        {
+          "type": "EmissionProperty",
+          "data": [ "1,1,1", 1, 30 ]
+        },
+        {
+          "type": "MeshProperty",
+          "data": [ "mesh.quad" ]
+        },
+        {
+          "type": "TextureMaterialProperty",
+          "data": [ "texture.light", "shader.unlit" ]
+        }
+      ]
+    },
+    {
+      "id": "textBrick0",
+      "name": "textBrick",
+      "properties": [
+        {
+          "type": "TransformProperty",
+          "data": [
+            [ "0,5,0", "0,0,0", "$math($textAspect(\"im a text brick2\ntest123\", 32, \"font.roboto\")*1),1,1" ],
+            "World"
+          ]
+        },
+        {
+          "type": "MeshProperty",
+          "data": [ "mesh.quad" ]
+        },
+        {
+          "type": "TextMaterialProperty",
+          "data": [ "im a text brick\ntest123", 32, "1,1,1,1", "font.roboto", "shader.sdf" ]
+        },
+        {
+          "type": "ColliderProperty",
+          "data": [ "collider.thickquad" ]
+        },
+        {
+          "type": "PhysicalProperty",
+          "data": [ false, true, 1, 1 ]
+        }
+      ]
+    },
+    {
+      "id": "textBrick1",
+      "name": "textBrick1",
+      "properties": [
+        {
+          "type": "TransformProperty",
+          "data": [
+            [ "0,10,0", "0,0,0", "$math($textAspect(\"im a text brick2\ntest123\", 32, \"font.roboto\")*1),1,1" ],
+            "World"
+          ]
+        },
+        {
+          "type": "MeshProperty",
+          "data": [ "mesh.quad" ]
+        },
+        {
+          "type": "TextMaterialProperty",
+          "data": [ "im a text brick\ntest123", 32, "1,1,1,1", "font.roboto", "shader.sdf" ]
+        },
+        {
+          "type": "ColliderProperty",
+          "data": [ "collider.thickquad" ]
+        },
+        {
+          "type": "PhysicalProperty",
+          "data": [ false, true, 1, 1 ]
+        }
+      ]
+    },
+    {
+      "id": "textBrick2",
+      "name": "textBrick2",
+      "properties": [
+        {
+          "type": "TransformProperty",
+          "data": [
+            [ "0.5,8,0", "0,0,0", "$math($textAspect(\"im a text brick2\ntest123\", 32, \"font.roboto\")*1),1,1" ],
+            "World"
+          ]
+        },
+        {
+          "type": "MeshProperty",
+          "data": [ "mesh.quad" ]
+        },
+        {
+          "type": "TextMaterialProperty",
+          "data": [ "im a text brick2\ntest123", 32, "1,1,1,1", "font.roboto", "shader.sdf" ]
+        },
+        {
+          "type": "ColliderProperty",
+          "data": [ "collider.thickquad" ]
+        },
+        {
+          "type": "PhysicalProperty",
+          "data": [ false, true, 1, 1 ]
+        }
+      ]
+    },
+    {
+      "id": "image",
+      "name": "image",
+      "properties": [
+        {
+          "type": "TransformProperty",
+          "data": [
+            [ "5,5,0", "0,0,0", "1,1,1" ]
+          ]
+        },
+        {
+          "type": "MeshProperty",
+          "data": [ "mesh.quad" ]
+        },
+        {
+          "type": "TextureMaterialProperty",
+          "data": [ "texture.dices", "shader.unlit" ]
+        }
+      ]
+    }
+  ]
+}

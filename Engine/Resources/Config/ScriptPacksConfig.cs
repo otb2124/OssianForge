@@ -35,7 +35,7 @@ public class ScriptPackRecord : ConfigRecord
 
 // ── config ───────────────────────────────────────────────────────────────────
 
-public class ScriptPacksConfig : JsonConfigFile<ScriptPackRecord>
+public class ScriptPacksConfig : JsonSerialConfig<ScriptPackRecord>
 {
     // ── live instance list ───────────────────────────────────────────────────
 

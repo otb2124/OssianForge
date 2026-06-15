@@ -218,5 +218,15 @@
     "id": "filepack.script.ossian.vehicle",
     "path": "ScriptFiles/Packs/Ossian/Vehicle",
     "type": "filepack.script"
+  },
+  {
+    "id": "configfile.scene.scene",
+    "path": "ConfigFiles/Scenes/scene.json",
+    "type": "configfile"
+  },
+  {
+    "id": "configfile.scene.scene1",
+    "path": "ConfigFiles/Scenes/scene1.json",
+    "type": "configfile"
   }
 ]

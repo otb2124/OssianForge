@@ -1,4 +1,5 @@
-﻿using OssianForge.Engine.Resources.Scripts;
+﻿using OssianForge.Engine.Resources.Config;
+using OssianForge.Engine.Resources.Scripts;
 
 
 namespace OssianForge.Engine.Resources
@@ -8,10 +9,13 @@ namespace OssianForge.Engine.Resources
 
 
         public ResourceLoader ResourceLoader;
+        public TreeConfig TreeConfig;
+
 
         public Resources()
         {
             ResourceLoader = new ResourceLoader();
+            TreeConfig = new TreeConfig("configfile.tree", "ConfigFiles/Core/Tree/tree.json");
         }
 
         public void Initialize()
@@ -22,6 +26,7 @@ namespace OssianForge.Engine.Resources
         public void OnLoad()
         {
             ResourceLoader.OnLoad();
+            TreeConfig.Load();
         }
 
         public T GetResourceFile<T>(string id) where T : ResourceFile

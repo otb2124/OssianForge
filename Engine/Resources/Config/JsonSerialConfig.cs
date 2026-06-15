@@ -6,7 +6,7 @@ namespace OssianForge.Engine.Resources.Config
 {
 
     /// <summary>
-    /// Base class for all records stored in a <see cref="JsonConfigFile{TRecord}"/>.
+    /// Base class for all records stored in a <see cref="JsonSerialConfig{TRecord}"/>.
     /// The <see cref="Id"/> property acts as the primary key.
     /// </summary>
     public abstract class ConfigRecord
@@ -40,9 +40,9 @@ namespace OssianForge.Engine.Resources.Config
     /// Subclasses supply the concrete <typeparamref name="TRecord"/> type and
     /// override <see cref="CreateRecord"/> to hydrate one from the flat store.
     /// </summary>
-    public abstract class JsonConfigFile<TRecord> : ConfigFile where TRecord : ConfigRecord, new()
+    public abstract class JsonSerialConfig<TRecord> : ConfigFile where TRecord : ConfigRecord, new()
     {
-        protected JsonConfigFile(string id, string path)
+        protected JsonSerialConfig(string id, string path)
             : base(id, path, ConfigFormat.Json) { }
 
         // ── abstract hook ────────────────────────────────────────────────────────

@@ -37,7 +37,7 @@ namespace OssianForge.Engine.Resources.Config
 
     // ── config ───────────────────────────────────────────────────────────────────
 
-    public class ResourcesConfig : JsonConfigFile<ResourceRecord>
+    public class ResourcesConfig : JsonSerialConfig<ResourceRecord>
     {
         // ── live instance list ───────────────────────────────────────────────────
 
