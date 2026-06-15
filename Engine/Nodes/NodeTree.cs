@@ -119,6 +119,16 @@ namespace OssianForge.Engine.Nodes
             cube1.AddProperty(new ColliderProperty("collider.cube"));
             cube1.AddProperty(new PhysicalProperty(false, true, 1f, 1f));
 
+
+            var pyramid = new Node();
+            pyramid.Id = "pyramid";
+            pyramid.Name = "pyramid";
+            pyramid.AddProperty(new TransformProperty(new Transform(new Vector3(0, 41f, -2f), new Vector3(10, 0, 0), new Vector3(0.5f, 2f, 0.5f))));
+            pyramid.AddProperty(new MeshProperty("mesh.pyramid"));
+            pyramid.AddProperty(new TextureMaterialProperty("texture.house.wood", "shader.basic"));
+            pyramid.AddProperty(new ColliderProperty("collider.pyramid"));
+            pyramid.AddProperty(new PhysicalProperty(false, true, 1f, 1f));
+
             var remy = new Node();
             remy.Id = "remy";
             remy.Name = "remy";
@@ -178,6 +188,7 @@ namespace OssianForge.Engine.Nodes
             scene.AddChild(cube);
             scene.AddChild(ball1);
             scene.AddChild(cube1);
+            scene.AddChild(pyramid);
             scene.AddChild(remy);
 
             scene.AddChild(lightNode);

@@ -25,6 +25,11 @@
     "type": "mesh"
   },
   {
+    "id": "mesh.pyramid",
+    "data": [ "fastmesh.pyramid" ],
+    "type": "mesh"
+  },
+  {
     "id": "mesh.remy",
     "data": [ "meshfile.remy" ],
     "type": "mesh"
@@ -192,6 +197,11 @@
   {
     "id": "collider.remy",
     "data": [ "mesh.remy" ],
+    "type": "collider"
+  },
+  {
+    "id": "collider.pyramid",
+    "data": [ "mesh.pyramid" ],
     "type": "collider"
   },
   {
