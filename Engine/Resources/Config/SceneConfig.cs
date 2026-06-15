@@ -6,6 +6,7 @@ using static OssianForge.Engine.Utils.MathUtils;
 
 
 //TODO: some addional parsing like $math($textAspect(\"im a text brick2\ntest123\", 32, \"font.roboto\")*1)
+//data [ "var gl = Engine.Graphics.Batch.OpenGL; gl.Disable(EnableCap.DepthTest); " ]
 
 namespace OssianForge.Engine.Resources.Config
 {
