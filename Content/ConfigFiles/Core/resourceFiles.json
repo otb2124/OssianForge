@@ -222,11 +222,11 @@
   {
     "id": "configfile.scene.scene",
     "path": "ConfigFiles/Scenes/scene.json",
-    "type": "configfile"
+    "type": "scene"
   },
   {
     "id": "configfile.scene.scene1",
     "path": "ConfigFiles/Scenes/scene1.json",
-    "type": "configfile"
+    "type": "scene"
   }
 ]

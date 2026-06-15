@@ -244,12 +244,7 @@
         },
         {
           "type": "AnimationProperty",
-          "data": [ "animation.remy" ],
-          "play": {
-            "clip": "remy.backflip",
-            "loop": true,
-            "speed": 2.0
-          }
+          "data": [ "animation.remy" ]
         }
       ]
     },
@@ -310,7 +305,7 @@
         {
           "type": "TransformProperty",
           "data": [
-            [ "0,5,0", "0,0,0", "$math($textAspect(\"im a text brick2\ntest123\", 32, \"font.roboto\")*1),1,1" ],
+            [ "0,5,0", "0,0,0", "1,1,1" ],
             "World"
           ]
         },
@@ -339,7 +334,7 @@
         {
           "type": "TransformProperty",
           "data": [
-            [ "0,10,0", "0,0,0", "$math($textAspect(\"im a text brick2\ntest123\", 32, \"font.roboto\")*1),1,1" ],
+            [ "0,10,0", "0,0,0", "1,1,1" ],
             "World"
           ]
         },
@@ -368,7 +363,7 @@
         {
           "type": "TransformProperty",
           "data": [
-            [ "0.5,8,0", "0,0,0", "$math($textAspect(\"im a text brick2\ntest123\", 32, \"font.roboto\")*1),1,1" ],
+            [ "0.5,8,0", "0,0,0", "1,1,1" ],
             "World"
           ]
         },

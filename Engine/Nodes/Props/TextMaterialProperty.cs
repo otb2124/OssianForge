@@ -61,7 +61,8 @@ namespace OssianForge.Engine.Nodes.Props
             Content = content;
             FontSize = fontSize;
             Color = color;
-            AutoSize();
+            //TODO: do autosize after adding to scene
+            //AutoSize();
 
             _lastContent = null;
             _lastFontSize = -1f;

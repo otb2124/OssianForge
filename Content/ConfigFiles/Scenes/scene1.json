@@ -240,12 +240,7 @@
         },
         {
           "type": "AnimationProperty",
-          "data": [ "animation.remy" ],
-          "play": {
-            "clip": "remy.backflip",
-            "loop": true,
-            "speed": 2.0
-          }
+          "data": [ "animation.remy" ]
         }
       ]
     },

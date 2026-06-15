@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OssianForge.Engine.Resources.Config;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -21,7 +22,26 @@ namespace OssianForge.Engine.Nodes
 
         public void OnLoad()
         {
-            NodeManager.RegisterTree(NodeTree.GetTree());
+            var tree = new Node();
+            tree.Name = "tree";
+
+            //script packs test
+            /*
+            var stateType = Engine.Resources.GetScriptType("filepack.script.ossian.stateMachine", "State");
+            var GetDefaultName = stateType.GetMethod("GetDefaultName").Invoke(null, null);
+            var StaticString = stateType.GetField("StaticString").GetValue(null);
+
+            Console.WriteLine($"{stateType.Name}, GetDefaultName={GetDefaultName}, StaticString={StaticString}");
+
+            var stateInstance = Engine.Resources.CreateScriptResourceInstance("filepack.script.ossian.stateMachine", "State");
+            var StateName = stateInstance.GetType().GetField("Name").GetValue(stateInstance);
+
+            Console.WriteLine($"{stateInstance.ToString()}, StateName={StateName}");
+            */
+
+            tree.AddChild(Engine.Resources.GetResourceFile<SceneConfig>("configfile.scene." + Engine.Resources.TreeConfig.CurrentScene).Scene);
+
+            NodeManager.RegisterTree(tree);
         }
         public void OnUpdate(double delta)
         { 

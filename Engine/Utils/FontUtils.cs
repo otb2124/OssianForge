@@ -1,11 +1,7 @@
 ﻿using OssianForge.Engine.Resources.Fonts;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
 using static OssianForge.Engine.Utils.MathUtils;
+
 
 namespace OssianForge.Engine.Utils
 {
@@ -22,6 +18,7 @@ namespace OssianForge.Engine.Utils
         public static (int width, int height) MeasureText(string content, float fontSize, FontResource font)
         {
             var atlas = font.AtlasData;
+
             float emToPx = fontSize;
 
             string[] lines = content.Split('\n');
