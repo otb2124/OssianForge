@@ -71,7 +71,10 @@ namespace OssianForge.Engine.Resources.Config
                 "CubemapMaterialProperty" => new CubemapMaterialProperty(Str(data, 0), Str(data, 1)),
                 "TextureMaterialProperty" => new TextureMaterialProperty(Str(data, 0), Str(data, 1)),
                 "TextMaterialProperty" => ParseTextMaterialProperty(data),
-                "EmissionProperty" => ParseEmissionProperty(data),
+                "PointEmissionProperty" => ParsePointEmissionProperty(data),
+                "SunEmissionProperty" => ParseSunEmissionProperty(data),
+                "SpotEmissionProperty" => ParseSpotEmissionProperty(data),
+                "EmissionProperty" => ParsePointEmissionProperty(data),
                 "ColliderProperty" => new ColliderProperty(Str(data, 0)),
                 "PhysicalProperty" => ParsePhysicalProperty(el, data),
                 "AnimationProperty" => ParseAnimationProperty(el, data),
@@ -118,13 +121,34 @@ namespace OssianForge.Engine.Resources.Config
             return new TextMaterialProperty(text, size, color, font, shader);
         }
 
-        private static EmissionProperty ParseEmissionProperty(JsonElement? data)
+        private static PointEmissionProperty ParsePointEmissionProperty(JsonElement? data)
         {
             var arr = data!.Value;
             var color = ParseVector3(arr[0].GetString());
-            float intensity = arr[1].GetSingle();
-            float radius = arr[2].GetSingle();
-            return new EmissionProperty(new System.Numerics.Vector3(color.X, color.Y, color.Z), intensity, radius);
+            float intensity = arr.GetArrayLength() > 1 ? arr[1].GetSingle() : 1f;
+            float radius = arr.GetArrayLength() > 2 ? arr[2].GetSingle() : 10f;
+            return new PointEmissionProperty(color, intensity, radius);
+        }
+
+        private static SunEmissionProperty ParseSunEmissionProperty(JsonElement? data)
+        {
+            var arr = data!.Value;
+            var direction = ParseVector3(arr[0].GetString());
+            var color = ParseVector3(arr[1].GetString());
+            float intensity = arr.GetArrayLength() > 2 ? arr[2].GetSingle() : 1f;
+            return new SunEmissionProperty(direction, color, intensity);
+        }
+
+        private static SpotEmissionProperty ParseSpotEmissionProperty(JsonElement? data)
+        {
+            var arr = data!.Value;
+            var direction = ParseVector3(arr[0].GetString());
+            var color = ParseVector3(arr[1].GetString());
+            float intensity = arr.GetArrayLength() > 2 ? arr[2].GetSingle() : 1f;
+            float radius = arr.GetArrayLength() > 3 ? arr[3].GetSingle() : 15f;
+            float inner = arr.GetArrayLength() > 4 ? arr[4].GetSingle() : 12.5f;
+            float outer = arr.GetArrayLength() > 5 ? arr[5].GetSingle() : 17.5f;
+            return new SpotEmissionProperty(direction, color, intensity, radius, inner, outer);
         }
 
         private static PhysicalProperty ParsePhysicalProperty(JsonElement el, JsonElement? data)

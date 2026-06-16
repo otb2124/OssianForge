@@ -210,13 +210,7 @@ namespace OssianForge.Engine.Nodes
                 .GetNodesOfType(typeof(Node))
                 .Select(n => new { Node = n, Emission = n.GetProperty<EmissionProperty>() })
                 .Where(x => x.Emission != null)
-                .Select(x => new LightData
-                {
-                    Position = x.Node.GetProperty<TransformProperty>().Transform.Position,
-                    Color = x.Emission.Color,
-                    Intensity = x.Emission.Intensity,
-                    Radius = x.Emission.Radius,
-                })
+                .Select(x => x.Emission.ToLightData(x.Node))
                 .Take(16)
                 .ToList();
     }

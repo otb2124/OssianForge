@@ -27,16 +27,19 @@ namespace OssianForge.Engine.Resources.Shaders
 
             var lights = ctx.Lights ?? new List<LightData>();
             SetInt("uLightCount", lights.Count);
-
             for (int i = 0; i < lights.Count; i++)
             {
+                SetIntIndexed("uLights", i, "type", (int)lights[i].Type);
                 SetVector3Indexed("uLights", i, "position", lights[i].Position);
+                SetVector3Indexed("uLights", i, "direction", lights[i].Direction);
                 SetVector3Indexed("uLights", i, "color", lights[i].Color);
                 SetFloatIndexed("uLights", i, "intensity", lights[i].Intensity);
                 SetFloatIndexed("uLights", i, "radius", lights[i].Radius);
+                SetFloatIndexed("uLights", i, "innerCutoff", lights[i].InnerCutoff);
+                SetFloatIndexed("uLights", i, "outerCutoff", lights[i].OuterCutoff);
             }
 
-            if(ctx.Palette != null && ctx.Palette.Length > 0)
+            if (ctx.Palette != null && ctx.Palette.Length > 0)
             {
                 SetInt("uSkinned", 1);
                 for (int i = 0; i < ctx.Palette.Length; i++)

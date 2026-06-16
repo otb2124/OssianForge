@@ -61,6 +61,9 @@ namespace OssianForge.Engine.Resources.Shaders
         public void SetInt(string name, int value)
             => Engine.Graphics.Batch.OpenGL.Uniform1(Engine.Graphics.Batch.OpenGL.GetUniformLocation(Handle, name), value);
 
+        public void SetIntIndexed(string array, int index, string field, int value)
+            => SetInt($"{array}[{index}].{field}", value);
+
         public void SetFloat(string name, float value)
             => Engine.Graphics.Batch.OpenGL.Uniform1(Engine.Graphics.Batch.OpenGL.GetUniformLocation(Handle, name), value);
 
@@ -116,11 +119,17 @@ namespace OssianForge.Engine.Resources.Shaders
         public Matrix4x4[] Palette;
     }
 
+    public enum LightType { Point = 0, Sun = 1, Spot = 2 }
+
     public struct LightData
     {
-        public Vector3 Position;
+        public LightType Type;
+        public Vector3 Position;   // Point + Spot
+        public Vector3 Direction;  // Sun + Spot
         public Vector3 Color;
         public float Intensity;
-        public float Radius;
+        public float Radius;     // Point + Spot falloff
+        public float InnerCutoff; // Spot, cosine
+        public float OuterCutoff; // Spot, cosine
     }
 }

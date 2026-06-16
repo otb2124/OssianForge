@@ -265,6 +265,16 @@
       "name": "light",
       "properties": [
         {
+          "type": "SunEmissionProperty",
+          "data": [ "0.3,-1.0,0.4", "1,0.95,0.8", 0.5 ]
+        }
+      ]
+    },
+    {
+      "id": "lightNode",
+      "name": "light",
+      "properties": [
+        {
           "type": "TransformProperty",
           "data": [
             [ "10,5,10", "0,0,0", "10,10,10" ],
@@ -272,8 +282,8 @@
           ]
         },
         {
-          "type": "EmissionProperty",
-          "data": [ "1,1,1", 1, 30 ]
+          "type": "PointEmissionProperty",
+          "data": [ "1,0.6,0.2", 2.0, 8.0 ]
         },
         {
           "type": "MeshProperty",
@@ -295,10 +305,6 @@
             [ "-10,5,-10", "0,0,0", "10,10,10" ],
             "Billboard"
           ]
-        },
-        {
-          "type": "EmissionProperty",
-          "data": [ "1,1,1", 1, 30 ]
         },
         {
           "type": "MeshProperty",
