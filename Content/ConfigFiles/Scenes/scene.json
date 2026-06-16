@@ -252,7 +252,11 @@
         },
         {
           "type": "SoundProperty",
-          "data":  ["sound.est-drink"]
+          "data": [ "sound.est-drink" ]
+        },
+        {
+          "type": "ScriptProperty",
+          "data": [ "script.scripts.PlayerControllerScript" ]
         }
       ]
     },

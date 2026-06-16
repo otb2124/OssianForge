@@ -8,7 +8,7 @@ namespace OssianForge.Engine.Nodes.Props
     {
         public SoundResource SoundResource { get; private set; }
 
-        public bool AutoPlay = true;
+        public bool AutoPlay = false;
 
         private bool _started = false;
 
@@ -20,9 +20,9 @@ namespace OssianForge.Engine.Nodes.Props
 
         public override void OnStart(Node node)
         {
-            SoundResource.Spatial = true;
-            SoundResource.Loop = true;
-            SoundResource.Play();
+            //SoundResource.Spatial = true;
+            //SoundResource.Loop = true;
+            if(AutoPlay) SoundResource.Play();
             _started = true;
         }
 

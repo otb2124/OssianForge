@@ -233,5 +233,10 @@
     "id": "soundfile.est-drink",
     "path": "SoundFiles/est-drink.ogg",
     "type": "soundfile"
+  },
+  {
+    "id": "script.scripts.PlayerControllerScript",
+    "path": "ScriptFiles/Scripts/PlayerControllerScript.cs",
+    "type": "script"
   }
 ]

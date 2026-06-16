@@ -16,6 +16,7 @@
     <Compile Remove="Content\ScriptFiles\Packs\User\MyCustomScript.cs" />
     <Compile Remove="Content\ScriptFiles\Packs\Ossian\Vehicle\VehicleProperty.cs" />
     <Compile Remove="Content\ScriptFiles\Packs\Ossian\Vehicle\VehicleWheelProperty.cs" />
+    <Compile Remove="Content\ScriptFiles\Scripts\PlayerControllerScript.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -189,6 +190,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Content\ScriptFiles\Packs\Ossian\Vehicle\VehicleWheelProperty.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\ScriptFiles\Scripts\PlayerControllerScript.cs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

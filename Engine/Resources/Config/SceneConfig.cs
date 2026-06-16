@@ -4,7 +4,6 @@ using System.Numerics;
 using System.Text.Json;
 using static OssianForge.Engine.Utils.MathUtils;
 
-
 //TODO: some addional parsing like $math($textAspect(\"im a text brick2\ntest123\", 32, \"font.roboto\")*1)
 //data [ "var gl = Engine.Graphics.Batch.OpenGL; gl.Disable(EnableCap.DepthTest); " ]
 
@@ -78,6 +77,7 @@ namespace OssianForge.Engine.Resources.Config
                 "AnimationProperty" => ParseAnimationProperty(el, data),
                 "ControlProperty" => ParseControlProperty(data),
                 "SoundProperty" => ParseSoundProperty(data),
+                "ScriptProperty" => new ScriptProperty(Str(data, 0)),
                 _ => throw new Exception($"[SCENE CONFIG] Unknown property type '{type}'")
             };
         }
