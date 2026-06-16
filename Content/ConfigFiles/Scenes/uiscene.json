@@ -1,0 +1,141 @@
+{
+  "id": "uiscene",
+  "name": "uiscene",
+  "children": [
+    {
+      "id": "camera1",
+      "name": "Camera1",
+      "properties": [
+        {
+          "type": "CameraProperty"
+        }
+      ]
+    },
+    {
+      "id": "image1",
+      "name": "image1",
+      "properties": [
+        {
+          "type": "TransformProperty",
+          "data": [
+            [ "960,540,0", "0,0,0", "200,200,1" ],
+            "ScreenSpace"
+          ]
+        },
+        {
+          "type": "MeshProperty",
+          "data": [ "mesh.quad" ]
+        },
+        {
+          "type": "TextureMaterialProperty",
+          "data": [ "texture.brick", "shader.unlit" ]
+        }
+      ]
+    },
+    {
+      "id": "img3",
+      "name": "img3",
+      "properties": [
+        {
+          "type": "TransformProperty",
+          "data": [
+            [ "200,900,0", "0,0,0", "200,200,1" ],
+            "ScreenSpace"
+          ]
+        },
+        {
+          "type": "MeshProperty",
+          "data": [ "mesh.cube" ]
+        },
+        {
+          "type": "TextureMaterialProperty",
+          "data": [ "texture.brick", "shader.unlit" ]
+        }
+      ]
+    },
+    {
+      "id": "text1",
+      "name": "text1",
+      "properties": [
+        {
+          "type": "TransformProperty",
+          "data": [
+            [ "0,200,0", "0,0,0", "400,200,1" ],
+            "ScreenSpace"
+          ]
+        },
+        {
+          "type": "MeshProperty",
+          "data": [ "mesh.quad" ]
+        },
+        {
+          "type": "TextMaterialProperty",
+          "data": [ "testing screenspace\ntakes time", 32, "1,1,1,1", "font.roboto", "shader.sdf" ]
+        }
+      ]
+    },
+    {
+      "id": "text2",
+      "name": "text2",
+      "properties": [
+        {
+          "type": "TransformProperty",
+          "data": [
+            [ "400,800,0", "0,0,0", "400,200,1" ],
+            "ScreenSpace"
+          ]
+        },
+        {
+          "type": "MeshProperty",
+          "data": [ "mesh.quad" ]
+        },
+        {
+          "type": "TextMaterialProperty",
+          "data": [ "testing screenspace\ntakes time", 32, "1,1,1,1", "font.roboto", "shader.sdf" ]
+        }
+      ]
+    },
+    {
+      "id": "img2",
+      "name": "image2",
+      "properties": [
+        {
+          "type": "TransformProperty",
+          "data": [
+            [ "250,500,0", "0,0,0", "200,200,1" ],
+            "ScreenSpace"
+          ]
+        },
+        {
+          "type": "MeshProperty",
+          "data": [ "mesh.cube" ]
+        },
+        {
+          "type": "TextureMaterialProperty",
+          "data": [ "texture.brick", "shader.unlit" ]
+        }
+      ]
+    },
+    {
+      "id": "screenBottom",
+      "name": "screenBottom",
+      "properties": [
+        {
+          "type": "TransformProperty",
+          "data": [
+            [ "0,0,0", "0,0,0", "1800,50,1" ],
+            "ScreenSpace"
+          ]
+        },
+        {
+          "type": "MeshProperty",
+          "data": [ "mesh.cube" ]
+        },
+        {
+          "type": "TextureMaterialProperty",
+          "data": [ "texture.house.wood", "shader.unlit" ]
+        }
+      ]
+    }
+  ]
+}

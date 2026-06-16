@@ -1,6 +1,6 @@
 {
-  "id": "scene",
-  "name": "scene",
+  "id": "terrainTest",
+  "name": "terrainTest",
   "children": [
     {
       "id": "camera",

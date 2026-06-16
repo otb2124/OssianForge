@@ -1,6 +1,6 @@
 {
-  "id": "scene",
-  "name": "scene",
+  "id": "lightTest",
+  "name": "lightTest",
   "children": [
     {
       "id": "camera",

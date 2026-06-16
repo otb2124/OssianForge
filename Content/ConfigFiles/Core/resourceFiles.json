@@ -230,8 +230,8 @@
     "type": "scene"
   },
   {
-    "id": "configfile.scene.scene1",
-    "path": "ConfigFiles/Scenes/scene1.json",
+    "id": "configfile.scene.uiscene",
+    "path": "ConfigFiles/Scenes/uiscene.json",
     "type": "scene"
   },
   {

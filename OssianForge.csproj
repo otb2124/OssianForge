@@ -254,7 +254,7 @@
     <None Update="Content\ConfigFiles\Scenes\scene.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Content\ConfigFiles\Scenes\scene1.json">
+    <None Update="Content\ConfigFiles\Scenes\uiscene.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Content\SoundFiles\est-drink.ogg">
