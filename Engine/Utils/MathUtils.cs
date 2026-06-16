@@ -114,14 +114,16 @@ namespace OssianForge.Engine.Utils
                 );
             }
 
-            //TODO? mb smth w Z axis...
+
             public void ToScreenSpace(Vector2 screen)
             {
-                float scaleX = Scale.X / screen.X;
-                float scaleY = Scale.Y / screen.Y;
+                float scaleX = Scale.X / screen.X * 2f;
+                float scaleY = Scale.Y / screen.Y * 2f;
 
-                float ndcX = (Position.X / screen.X) + scaleX * 0.5f - 1f;
-                float ndcY = (Position.Y / screen.Y) + scaleY * 0.5f - 1f;
+                // Position is element center in pixel space (Y-up, origin bottom-left).
+                // Remap [0, screenW] → [-1, 1]
+                float ndcX = (Position.X / screen.X) * 2f - 1f;
+                float ndcY = (Position.Y / screen.Y) * 2f - 1f;
 
                 Position = new Vector3(ndcX, ndcY, Position.Z);
                 Scale = new Vector3(scaleX, scaleY, Scale.Z);
@@ -129,11 +131,12 @@ namespace OssianForge.Engine.Utils
 
             public void FromScreenSpace(Vector2 screen)
             {
-                float pixelX = (Position.X + 1f - Scale.X * 0.5f) * screen.X;
-                float pixelY = (Position.Y + 1f - Scale.Y * 0.5f) * screen.Y;
+                float pixelScaleX = Scale.X / 2f * screen.X;
+                float pixelScaleY = Scale.Y / 2f * screen.Y;
 
-                float pixelScaleX = Scale.X * screen.X;
-                float pixelScaleY = Scale.Y * screen.Y;
+                // Inverse of ndcX = (cx / W) * 2 - 1  →  cx = (ndcX + 1) / 2 * W
+                float pixelX = (Position.X + 1f) / 2f * screen.X;
+                float pixelY = (Position.Y + 1f) / 2f * screen.Y;
 
                 Position = new Vector3(pixelX, pixelY, Position.Z);
                 Scale = new Vector3(pixelScaleX, pixelScaleY, Scale.Z);

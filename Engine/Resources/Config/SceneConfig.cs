@@ -93,21 +93,23 @@ namespace OssianForge.Engine.Resources.Config
 
             var arr = data.Value;
 
-            // first element is always the nested [ pos, rot, scale ] array
             var vec3arr = arr[0];
             var position = ParseVector3(vec3arr[0].GetString());
             var rotation = ParseVector3(vec3arr[1].GetString());
             var scale = ParseVector3(vec3arr[2].GetString());
             var transform = new Transform(position, rotation, scale);
 
-            // optional second element is RenderSpace
-            if (arr.GetArrayLength() > 1)
-            {
-                var space = Enum.Parse<RenderSpace>(arr[1].GetString()!, true);
-                return new TransformProperty(transform, space);
-            }
+            int len = arr.GetArrayLength();
 
-            return new TransformProperty(transform);
+            RenderSpace space = RenderSpace.World;
+            Anchor anchor = Anchor.None;
+            Pivot pivot = Pivot.MiddleCenter;
+
+            if (len > 1) space = Enum.Parse<RenderSpace>(arr[1].GetString()!, true);
+            if (len > 2) anchor = Enum.Parse<Anchor>(arr[2].GetString()!, true);
+            if (len > 3) pivot = Enum.Parse<Pivot>(arr[3].GetString()!, true);
+
+            return new TransformProperty(transform, space, anchor, pivot);
         }
 
         private static TextMaterialProperty ParseTextMaterialProperty(JsonElement? data)
