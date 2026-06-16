@@ -104,6 +104,7 @@ namespace OssianForge.Engine.Resources.Config
             record.Type switch
             {
                 "mesh" => new MeshResource(record.Id, record.Data[0]),
+                "terrainmesh" => new TerrainMeshResource(record.Id, record.Data[0]),
                 "animation" => new AnimationResource(record.Id, record.Data.ToArray()),
                 "basicshader" => new BasicShaderResource(record.Id, record.Data[0], record.Data[1]),
                 "skyboxshader" => new SkyboxShaderResource(record.Id, record.Data[0], record.Data[1]),

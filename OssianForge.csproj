@@ -230,7 +230,7 @@
     <None Update="Content\AnimationFiles\remy.waving.fbx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Content\ConfigFiles\Core\Tree\tree.json">
+    <None Update="Content\ConfigFiles\Core\tree.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Content\ConfigFiles\Fonts\roboto.json">
@@ -245,6 +245,12 @@
     <None Update="Content\ConfigFiles\Core\scriptPacks.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="Content\ConfigFiles\Scenes\terrainTest.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Content\ConfigFiles\Scenes\lightTest.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Content\ConfigFiles\Scenes\scene.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -257,6 +263,13 @@
     <None Update="Content\TextureFiles\Fonts\roboto.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="Content\TextureFiles\HeightMaps\highLands.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Content\TextureFiles\HeightMaps\" />
   </ItemGroup>
 
 </Project>

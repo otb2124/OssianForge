@@ -261,12 +261,73 @@
       ]
     },
     {
-      "id": "sunNode",
-      "name": "sun",
+      "id": "spotlightnode",
+      "name": "spotlightnode",
       "properties": [
         {
-          "type": "SunEmissionProperty",
-          "data": [ "0.3,-1.0,0.4", "1,0.95,0.8", 0.5 ]
+          "type": "TransformProperty",
+          "data": [
+            [ "10,10,0", "0,0,0", "10,10,10" ],
+            "Billboard"
+          ]
+        },
+        {
+          "type": "SpotEmissionProperty",
+          "data": [ "-0.2,-1,0", "1,1,0.9", 1.5, 20, 10, 15 ]
+        },
+        {
+          "type": "MeshProperty",
+          "data": [ "mesh.quad" ]
+        },
+        {
+          "type": "TextureMaterialProperty",
+          "data": [ "texture.light", "shader.unlit" ]
+        }
+      ]
+    },
+    {
+      "id": "lightNode",
+      "name": "light",
+      "properties": [
+        {
+          "type": "TransformProperty",
+          "data": [
+            [ "10,5,10", "0,0,0", "10,10,10" ],
+            "Billboard"
+          ]
+        },
+        {
+          "type": "PointEmissionProperty",
+          "data": [ "1,0.6,0.2", 2.0, 8.0 ]
+        },
+        {
+          "type": "MeshProperty",
+          "data": [ "mesh.quad" ]
+        },
+        {
+          "type": "TextureMaterialProperty",
+          "data": [ "texture.light", "shader.unlit" ]
+        }
+      ]
+    },
+    {
+      "id": "lightNode1",
+      "name": "light1",
+      "properties": [
+        {
+          "type": "TransformProperty",
+          "data": [
+            [ "-10,5,-10", "0,0,0", "10,10,10" ],
+            "Billboard"
+          ]
+        },
+        {
+          "type": "MeshProperty",
+          "data": [ "mesh.quad" ]
+        },
+        {
+          "type": "TextureMaterialProperty",
+          "data": [ "texture.light", "shader.unlit" ]
         }
       ]
     },

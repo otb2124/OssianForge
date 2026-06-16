@@ -35,6 +35,11 @@
     "type": "mesh"
   },
   {
+    "id": "mesh.newTerrain",
+    "data": [ "texturefile.heightMap.highLands" ],
+    "type": "terrainmesh"
+  },
+  {
     "id": "animation.remy",
     "data": [ "animationfile.remy.idle", "animationfile.remy.walking", "animationfile.remy.jumping", "animationfile.remy.jumping_jacks", "animationfile.remy.waving", "animationfile.remy.backflip" ],
     "type": "animation"
@@ -102,6 +107,11 @@
   {
     "id": "texture.dices",
     "data": [ "texturefile.dices" ],
+    "type": "texture"
+  },
+  {
+    "id": "texture.heightMap.highLands",
+    "data": [ "texturefile.heightMap.highLands" ],
     "type": "texture"
   },
   {

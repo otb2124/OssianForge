@@ -195,6 +195,11 @@
     "type": "texturefile"
   },
   {
+    "id": "texturefile.heightMap.highLands",
+    "path": "TextureFiles/HeightMaps/highLands.png",
+    "type": "texturefile"
+  },
+  {
     "id": "configfile.font.roboto",
     "path": "ConfigFiles/Fonts/roboto.json",
     "type": "configfile"
@@ -227,6 +232,16 @@
   {
     "id": "configfile.scene.scene1",
     "path": "ConfigFiles/Scenes/scene1.json",
+    "type": "scene"
+  },
+  {
+    "id": "configfile.scene.lightTest",
+    "path": "ConfigFiles/Scenes/lightTest.json",
+    "type": "scene"
+  },
+  {
+    "id": "configfile.scene.terrainTest",
+    "path": "ConfigFiles/Scenes/terrainTest.json",
     "type": "scene"
   },
   {

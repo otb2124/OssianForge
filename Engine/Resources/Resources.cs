@@ -15,7 +15,7 @@ namespace OssianForge.Engine.Resources
         public Resources()
         {
             ResourceLoader = new ResourceLoader();
-            TreeConfig = new TreeConfig("configfile.tree", "ConfigFiles/Core/Tree/tree.json");
+            TreeConfig = new TreeConfig("configfile.tree", "ConfigFiles/Core/tree.json");
         }
 
         public void Initialize()
