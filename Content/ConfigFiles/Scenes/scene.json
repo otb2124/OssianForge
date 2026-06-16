@@ -249,6 +249,10 @@
         {
           "type": "ControlProperty",
           "data": [ true ]
+        },
+        {
+          "type": "SoundProperty",
+          "data":  ["sound.est-drink"]
         }
       ]
     },

@@ -42,6 +42,8 @@ namespace OssianForge.Engine.Nodes
             tree.AddChild(Engine.Resources.GetResourceFile<SceneConfig>("configfile.scene." + Engine.Resources.TreeConfig.MainScene).Scene);
 
             NodeManager.RegisterTree(tree);
+
+            NodeManager.OnStart();
         }
         public void OnUpdate(double delta)
         { 

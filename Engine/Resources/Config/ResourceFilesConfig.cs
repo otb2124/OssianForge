@@ -81,6 +81,7 @@ namespace OssianForge.Engine.Resources.Config
                 "configfile" => typeof(Config.ConfigFile),
                 "scene" => typeof(Config.SceneConfig),
                 "script" => typeof(Scripts.ScriptFile),
+                "soundfile" => typeof(Sounds.SoundFile),
                 _ => throw new Exception($"[RESOURCE FILES CONFIG] Unknown type '{type}'")
             };
         }

@@ -20,6 +20,14 @@ namespace OssianForge.Engine.Nodes
         }
 
 
+        public void OnStart()
+        {
+            foreach (var node in Nodes)
+            {
+                node.OnStart();
+            }
+        }
+
         public void RegisterTree(Node root)
         {
             foreach (var node in Flatten(root))

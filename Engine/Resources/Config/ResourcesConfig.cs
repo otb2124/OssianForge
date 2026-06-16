@@ -3,6 +3,7 @@ using OssianForge.Engine.Resources.Colliders;
 using OssianForge.Engine.Resources.Fonts;
 using OssianForge.Engine.Resources.Meshes;
 using OssianForge.Engine.Resources.Shaders;
+using OssianForge.Engine.Resources.Sounds;
 using OssianForge.Engine.Resources.Textures;
 using System;
 using System.Collections.Generic;
@@ -112,6 +113,7 @@ namespace OssianForge.Engine.Resources.Config
                 "cubemaptexture" => new CubemapTextureResource(record.Id, record.Data[0], record.Data[1], record.Data[2], record.Data[3], record.Data[4], record.Data[5]),
                 "collider" => new ColliderResource(record.Id, record.Data[0]),
                 "font" => new FontResource(record.Id, record.Data[0], record.Data[1]),
+                "sound" => new SoundResource(record.Id, record.Data[0]),
                 _ => throw new Exception($"[RESOURCES CONFIG] Unknown type '{record.Type}' (id: '{record.Id}')")
             };
 

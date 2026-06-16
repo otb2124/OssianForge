@@ -77,6 +77,7 @@ namespace OssianForge.Engine.Resources.Config
                 "PhysicalProperty" => ParsePhysicalProperty(el, data),
                 "AnimationProperty" => ParseAnimationProperty(el, data),
                 "ControlProperty" => ParseControlProperty(data),
+                "SoundProperty" => ParseSoundProperty(data),
                 _ => throw new Exception($"[SCENE CONFIG] Unknown property type '{type}'")
             };
         }
@@ -170,6 +171,15 @@ namespace OssianForge.Engine.Resources.Config
             string dragGroupId = len > 3 ? arr[3].GetString() : null;
 
             return new ControlProperty(isInteractable, isDraggable, isDropTarget, dragGroupId);
+        }
+
+        private static SoundProperty ParseSoundProperty(JsonElement? data)
+        {
+            var arr = data!.Value;
+            string resId = arr[0].GetString();
+            bool autoPlay = arr.GetArrayLength() > 1 && arr[1].GetBoolean();
+
+            return new SoundProperty(resId) { AutoPlay = autoPlay };
         }
 
         // ── helpers ───────────────────────────────────────────────────────────────

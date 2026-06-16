@@ -11,7 +11,7 @@ namespace OssianForge.Engine.Nodes.Props
     {
 
 
-        public virtual void OnStart() { }
+        public virtual void OnStart(Node node) { }
 
         public virtual void OnUpdate(Node node, double delta) { }
 

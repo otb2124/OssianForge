@@ -20,6 +20,7 @@ namespace OssianForge.Engine
         public static Inputs.Inputs Inputs;
         public static Physics.Physics Physics;
         public static UI.UI UI;
+        public static Audio.Audio Audio;
 
         public static Utils.Console.DebugConsole DebugConsole;
 
@@ -31,6 +32,7 @@ namespace OssianForge.Engine
             Inputs = new Inputs.Inputs();
             Physics = new Physics.Physics();
             UI = new UI.UI();
+            Audio = new Audio.Audio();
 
             DebugConsole = new Utils.Console.DebugConsole();
         }
@@ -42,6 +44,7 @@ namespace OssianForge.Engine
             Nodes.Initialize();
             Inputs.Initialize();
             UI.Initialize();
+            Audio.Initialize();
         }
 
         public static void OnRun()

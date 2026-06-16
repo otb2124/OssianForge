@@ -228,5 +228,10 @@
     "id": "configfile.scene.scene1",
     "path": "ConfigFiles/Scenes/scene1.json",
     "type": "scene"
+  },
+  {
+    "id": "soundfile.est-drink",
+    "path": "SoundFiles/est-drink.ogg",
+    "type": "soundfile"
   }
 ]

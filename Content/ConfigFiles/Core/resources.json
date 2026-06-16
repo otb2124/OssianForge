@@ -208,5 +208,10 @@
     "id": "font.roboto",
     "data": [ "texturefile.font.roboto", "configfile.font.roboto" ],
     "type": "font"
+  },
+  {
+    "id": "sound.est-drink",
+    "data": [ "soundfile.est-drink" ],
+    "type": "sound"
   }
 ]

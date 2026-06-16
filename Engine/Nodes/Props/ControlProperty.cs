@@ -1,5 +1,4 @@
-﻿// ControlProperty.cs  — full file, replaces your existing one
-using System.Numerics;
+﻿using System.Numerics;
 using static OssianForge.Engine.Utils.MathUtils;
 using OssianForge.Engine.UI;
 using OssianForge.Engine.Utils;

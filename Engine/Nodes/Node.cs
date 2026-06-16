@@ -63,7 +63,13 @@ namespace OssianForge.Engine.Nodes
 
 
 
-
+        public virtual void OnStart() 
+        {
+            foreach (var property in Properties)
+            {
+                property.OnStart(this);
+            }
+        }
 
 
 
