@@ -1,6 +1,7 @@
 ﻿using OssianForge.Engine.Resources.MeshFiles;
 using OssianForge.Resources.Meshes;
 using Silk.NET.OpenGL;
+using System.Numerics;
 
 namespace OssianForge.Engine.Resources.Meshes
 {
@@ -10,6 +11,9 @@ namespace OssianForge.Engine.Resources.Meshes
         public List<SubMeshResource> SubMeshes = new();
         public SkeletonNode Skeleton;
         public List<BoneData> AllBones = new();
+
+        public Vector3 LocalAabbMin { get; private set; } = new Vector3(float.MaxValue);
+        public Vector3 LocalAabbMax { get; private set; } = new Vector3(float.MinValue);
 
         public string ResourceId;
 
@@ -57,6 +61,30 @@ namespace OssianForge.Engine.Resources.Meshes
 
                 //Console.WriteLine($"[MESH] Loaded '{ResourceId}': {SubMeshes.Count} submeshes, {AllBones.Count} unique bones");
             }
+
+
+            ComputeLocalAabb();
+        }
+
+        private void ComputeLocalAabb()
+        {
+            var min = new Vector3(float.MaxValue);
+            var max = new Vector3(float.MinValue);
+
+            foreach (var sub in SubMeshes)
+            {
+                var v = sub.RawVertices;
+                const int stride = 8; // pos(3) + normal(3) + uv(2)
+                for (int i = 0; i + stride <= v.Length; i += stride)
+                {
+                    var p = new Vector3(v[i], v[i + 1], v[i + 2]);
+                    min = Vector3.Min(min, p);
+                    max = Vector3.Max(max, p);
+                }
+            }
+
+            LocalAabbMin = min;
+            LocalAabbMax = max;
         }
 
         public void Draw()

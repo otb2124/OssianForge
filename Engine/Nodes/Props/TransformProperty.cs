@@ -28,10 +28,6 @@ namespace OssianForge.Engine.Nodes.Props
         // --- render space ---
         public RenderSpace RenderSpace = RenderSpace.World;
 
-        // --- render flags ---
-        public bool DepthWrite = true;
-        public bool DepthTest = true;
-        public bool IgnoreParentTransform = false;
 
         public TransformProperty(Transform transform, RenderSpace renderSpace = RenderSpace.World)
         {
@@ -57,20 +53,12 @@ namespace OssianForge.Engine.Nodes.Props
             switch (RenderSpace)
             {
                 case RenderSpace.ScreenSpace:
-                    DepthWrite = false;
-                    DepthTest = false;
-                    IgnoreParentTransform = true;
                     Transform.ToScreenSpace(new Vector2(Engine.Graphics.WindowSize.X, Engine.Graphics.WindowSize.Y));
                     break;
                 case RenderSpace.Billboard:
                 case RenderSpace.BillboardFree:
-                    DepthWrite = false;
-                    DepthTest = true;
                     break;
                 default:
-                    DepthWrite = true;
-                    DepthTest = true;
-                    IgnoreParentTransform = false;
                     break;
             }
         }

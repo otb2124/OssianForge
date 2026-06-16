@@ -76,6 +76,7 @@ namespace OssianForge.Engine.Resources.Config
                 "ColliderProperty" => new ColliderProperty(Str(data, 0)),
                 "PhysicalProperty" => ParsePhysicalProperty(el, data),
                 "AnimationProperty" => ParseAnimationProperty(el, data),
+                "ControlProperty" => ParseControlProperty(data),
                 _ => throw new Exception($"[SCENE CONFIG] Unknown property type '{type}'")
             };
         }
@@ -154,6 +155,21 @@ namespace OssianForge.Engine.Resources.Config
             }
 
             return prop;
+        }
+
+        private static ControlProperty ParseControlProperty(JsonElement? data)
+        {
+            if (data == null) return new ControlProperty();
+
+            var arr = data.Value;
+            int len = arr.GetArrayLength();
+
+            bool isInteractable = len > 0 ? arr[0].GetBoolean() : true;
+            bool isDraggable = len > 1 ? arr[1].GetBoolean() : false;
+            bool isDropTarget = len > 2 ? arr[2].GetBoolean() : false;
+            string dragGroupId = len > 3 ? arr[3].GetString() : null;
+
+            return new ControlProperty(isInteractable, isDraggable, isDropTarget, dragGroupId);
         }
 
         // ── helpers ───────────────────────────────────────────────────────────────

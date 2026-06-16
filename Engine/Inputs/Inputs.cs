@@ -23,7 +23,7 @@ namespace OssianForge.Engine.Inputs
             InputContext = Engine.Graphics.Window.CreateInput();
             keyboard.Initialize(InputContext.Keyboards[0]);
             mouse.Initialize(InputContext.Mice[0]);
-            mouse.SetCursorMode(CursorMode.Disabled);
+            //mouse.SetCursorMode(CursorMode.Disabled);
         }
 
         public void OnUpdate(double delta)

@@ -10,6 +10,7 @@ namespace OssianForge.Engine.Nodes
         public List<Node> Children = new();
         public List<NodeProperty> Properties = new();
 
+
         public void AddChild(Node child)
         {
             child.Parent = this;
