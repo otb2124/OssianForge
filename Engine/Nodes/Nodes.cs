@@ -39,7 +39,7 @@ namespace OssianForge.Engine.Nodes
             Console.WriteLine($"{stateInstance.ToString()}, StateName={StateName}");
             */
 
-            tree.AddChild(Engine.Resources.GetResourceFile<SceneConfig>("configfile.scene." + Engine.Resources.TreeConfig.MainScene).Scene);
+            tree.AddChild(Engine.Resources.GetResourceFile<SceneConfig>("configfile.scene." + Engine.Resources.TreeConfig.MainScene).GetScene());
 
             NodeManager.RegisterTree(tree);
 
