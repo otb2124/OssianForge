@@ -33,12 +33,11 @@ namespace OssianForge.Engine.Nodes.Props
         public override void OnRender(Node node, double delta)
         {
             var transform = node.GetProperty<TransformProperty>();
-            var mesh = node.GetProperty<MeshProperty>();
             var materials = node.GetProperties<MaterialProperty>();
-            var animation = node.GetProperty<AnimationProperty>(); // grab it
+            var animation = node.GetProperty<AnimationProperty>();
 
-            if (transform != null && mesh != null && materials.Count > 0)
-                Engine.Graphics.Batch.DrawMesh(mesh, materials, transform, animation);
+            if (transform != null && materials.Count > 0)
+                Engine.Graphics.Batch.DrawMesh(this, materials, transform, animation);
         }
     }
 

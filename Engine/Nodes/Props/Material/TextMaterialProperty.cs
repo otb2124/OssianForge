@@ -37,8 +37,7 @@ namespace OssianForge.Engine.Nodes.Props
         private uint _bakeVertexCount;
 
         // ────────────────────────────────────────────────────────────────
-        public TextMaterialProperty(string fontResourceId, string shaderId)
-            : base(shaderId)
+        public TextMaterialProperty(string fontResourceId, string shaderId, params RenderAction[] actions) : base(shaderId, actions)
         {
             FontResource = Engine.Resources.GetResource<FontResource>(fontResourceId)
                 ?? throw new Exception($"FontResource not found: '{fontResourceId}'");
@@ -52,8 +51,7 @@ namespace OssianForge.Engine.Nodes.Props
             InitGpuResources();
         }
 
-        public TextMaterialProperty(string content, float fontSize, Vector4 color, string fontResourceId, string shaderId)
-            : base(shaderId)
+        public TextMaterialProperty(string content, float fontSize, Vector4 color, string fontResourceId, string shaderId, params RenderAction[] actions) : base(shaderId, actions)
         {
             FontResource = Engine.Resources.GetResource<FontResource>(fontResourceId)
                 ?? throw new Exception($"FontResource not found: '{fontResourceId}'");

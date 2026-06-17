@@ -74,7 +74,6 @@ namespace OssianForge.Engine.Utils
                 return scale * rotX * rotY * rotZ * translation;
             }
 
-
             public void SetMatrix(Matrix4x4 matrix)
             {
                 Matrix4x4.Decompose(matrix, out Vector3 scale, out Quaternion rotation, out Vector3 translation);
@@ -82,7 +81,6 @@ namespace OssianForge.Engine.Utils
                 Position = translation;
                 Scale = scale;
 
-                // Convert quaternion back to euler degrees
                 Rotation = QuaternionToEulerDegrees(rotation);
             }
 
@@ -90,23 +88,19 @@ namespace OssianForge.Engine.Utils
             {
                 Vector3 angles;
 
-                // X (pitch)
                 float sinrCosp = 2f * (q.W * q.X + q.Y * q.Z);
                 float cosrCosp = 1f - 2f * (q.X * q.X + q.Y * q.Y);
                 angles.X = MathF.Atan2(sinrCosp, cosrCosp);
 
-                // Y (yaw)
                 float sinp = 2f * (q.W * q.Y - q.Z * q.X);
                 angles.Y = MathF.Abs(sinp) >= 1f
                     ? MathF.CopySign(MathF.PI / 2f, sinp)
                     : MathF.Asin(sinp);
 
-                // Z (roll)
                 float sinyCosp = 2f * (q.W * q.Z + q.X * q.Y);
                 float cosyCosp = 1f - 2f * (q.Y * q.Y + q.Z * q.Z);
                 angles.Z = MathF.Atan2(sinyCosp, cosyCosp);
 
-                // Radians to degrees
                 return new Vector3(
                     float.RadiansToDegrees(angles.X),
                     float.RadiansToDegrees(angles.Y),
@@ -114,29 +108,44 @@ namespace OssianForge.Engine.Utils
                 );
             }
 
-
+            /// <summary>
+            /// Converts this transform from screen-space pixel coordinates to NDC.
+            ///
+            /// Coordinate convention (pixel space, input):
+            ///   - Origin (0, 0) is the CENTER of the screen.
+            ///   - X grows right, Y grows up (matches NDC / math convention).
+            ///   - Position is the CENTER of the element (half-extent is implicit in Scale).
+            ///   - Scale.X / Scale.Y are the element's width / height in pixels.
+            ///
+            /// After the call (NDC space, output):
+            ///   - Position maps [-screenW/2 .. screenW/2] → [-1 .. 1]  (same for Y)
+            ///   - Scale    maps pixel size              → NDC size  (size / screen * 2)
+            /// </summary>
             public void ToScreenSpace(Vector2 screen)
             {
-                float scaleX = Scale.X / screen.X * 2f;
-                float scaleY = Scale.Y / screen.Y * 2f;
+                // NDC size: element width/height expressed as a fraction of the half-screen.
+                float ndcScaleX = Scale.X / screen.X * 2f;
+                float ndcScaleY = Scale.Y / screen.Y * 2f;
 
-                // Position is element center in pixel space (Y-up, origin bottom-left).
-                // Remap [0, screenW] → [-1, 1]
-                float ndcX = (Position.X / screen.X) * 2f - 1f;
-                float ndcY = (Position.Y / screen.Y) * 2f - 1f;
+                // Center-origin pixel → NDC.
+                // Input range: [-screen/2 .. screen/2]  → output: [-1 .. 1]
+                float ndcX = Position.X / (screen.X * 0.5f);
+                float ndcY = Position.Y / (screen.Y * 0.5f);
 
                 Position = new Vector3(ndcX, ndcY, Position.Z);
-                Scale = new Vector3(scaleX, scaleY, Scale.Z);
+                Scale = new Vector3(ndcScaleX, ndcScaleY, Scale.Z);
             }
 
+            /// <summary>
+            /// Inverse of ToScreenSpace. Converts NDC back to center-origin pixel space.
+            /// </summary>
             public void FromScreenSpace(Vector2 screen)
             {
-                float pixelScaleX = Scale.X / 2f * screen.X;
-                float pixelScaleY = Scale.Y / 2f * screen.Y;
+                float pixelScaleX = Scale.X * screen.X * 0.5f;
+                float pixelScaleY = Scale.Y * screen.Y * 0.5f;
 
-                // Inverse of ndcX = (cx / W) * 2 - 1  →  cx = (ndcX + 1) / 2 * W
-                float pixelX = (Position.X + 1f) / 2f * screen.X;
-                float pixelY = (Position.Y + 1f) / 2f * screen.Y;
+                float pixelX = Position.X * screen.X * 0.5f;
+                float pixelY = Position.Y * screen.Y * 0.5f;
 
                 Position = new Vector3(pixelX, pixelY, Position.Z);
                 Scale = new Vector3(pixelScaleX, pixelScaleY, Scale.Z);

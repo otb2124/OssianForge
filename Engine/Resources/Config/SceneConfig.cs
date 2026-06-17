@@ -4,18 +4,13 @@ using System.Numerics;
 using System.Text.Json;
 using static OssianForge.Engine.Utils.MathUtils;
 
-//TODO: some addional parsing like $math($textAspect(\"im a text brick2\ntest123\", 32, \"font.roboto\")*1)
-//data [ "var gl = Engine.Graphics.Batch.OpenGL; gl.Disable(EnableCap.DepthTest); " ]
-
 namespace OssianForge.Engine.Resources.Config
 {
     public class SceneConfig : ConfigFile
     {
-
         public Node Scene;
 
         public SceneConfig(string id, string path) : base(id, path) { }
-
 
         public override void Load()
         {
@@ -68,8 +63,8 @@ namespace OssianForge.Engine.Resources.Config
                 "CameraProperty" => new CameraProperty(),
                 "TransformProperty" => ParseTransformProperty(data),
                 "MeshProperty" => new MeshProperty(Str(data, 0)),
-                "CubemapMaterialProperty" => new CubemapMaterialProperty(Str(data, 0), Str(data, 1)),
-                "TextureMaterialProperty" => new TextureMaterialProperty(Str(data, 0), Str(data, 1)),
+                "CubemapMaterialProperty" => ParseCubemapMaterialProperty(data),
+                "TextureMaterialProperty" => ParseTextureMaterialProperty(data),
                 "TextMaterialProperty" => ParseTextMaterialProperty(data),
                 "PointEmissionProperty" => ParsePointEmissionProperty(data),
                 "SunEmissionProperty" => ParseSunEmissionProperty(data),
@@ -103,15 +98,37 @@ namespace OssianForge.Engine.Resources.Config
 
             RenderSpace space = RenderSpace.World;
             Anchor anchor = Anchor.None;
-            Pivot pivot = Pivot.MiddleCenter;
 
             if (len > 1) space = Enum.Parse<RenderSpace>(arr[1].GetString()!, true);
             if (len > 2) anchor = Enum.Parse<Anchor>(arr[2].GetString()!, true);
-            if (len > 3) pivot = Enum.Parse<Pivot>(arr[3].GetString()!, true);
 
-            return new TransformProperty(transform, space, anchor, pivot);
+            return new TransformProperty(transform, space, anchor);
         }
 
+        // "data": [ "texture.id", "shader.id" ]
+        // "data": [ "texture.id", "shader.id", ["DisableDepthTest", "AdditiveBlend"] ]
+        private static TextureMaterialProperty ParseTextureMaterialProperty(JsonElement? data)
+        {
+            var arr = data!.Value;
+            string tex = arr[0].GetString();
+            string shad = arr[1].GetString();
+            var actions = ParseRenderActions(arr, 2);
+            return new TextureMaterialProperty(tex, shad, actions);
+        }
+
+        // "data": [ "cubemap.id", "shader.id" ]
+        // "data": [ "cubemap.id", "shader.id", ["DisableDepthTest"] ]
+        private static CubemapMaterialProperty ParseCubemapMaterialProperty(JsonElement? data)
+        {
+            var arr = data!.Value;
+            string cube = arr[0].GetString();
+            string shad = arr[1].GetString();
+            var actions = ParseRenderActions(arr, 2);
+            return new CubemapMaterialProperty(cube, shad, actions);
+        }
+
+        // "data": [ "text content", 32, "1,1,1,1", "font.id", "shader.id" ]
+        // "data": [ "text content", 32, "1,1,1,1", "font.id", "shader.id", ["DisableDepthTest"] ]
         private static TextMaterialProperty ParseTextMaterialProperty(JsonElement? data)
         {
             var arr = data!.Value;
@@ -119,8 +136,9 @@ namespace OssianForge.Engine.Resources.Config
             int size = arr[1].GetInt32();
             var color = ParseVector4(arr[2].GetString());
             string font = arr[3].GetString();
-            string shader = arr[4].GetString();
-            return new TextMaterialProperty(text, size, color, font, shader);
+            string shad = arr[4].GetString();
+            var actions = ParseRenderActions(arr, 5);
+            return new TextMaterialProperty(text, size, color, font, shad, actions);
         }
 
         private static PointEmissionProperty ParsePointEmissionProperty(JsonElement? data)
@@ -186,17 +204,37 @@ namespace OssianForge.Engine.Resources.Config
 
         private static ControlProperty ParseControlProperty(JsonElement? data)
         {
-            if (data == null) return new ControlProperty();
+            bool isInteractable = true;
+            bool isDraggable = false;
+            bool isDropTarget = false;
+            string dragGroupId = null;
+            Dictionary<string, List<string>> actionMap = null;
 
-            var arr = data.Value;
-            int len = arr.GetArrayLength();
+            if (data != null)
+            {
+                var arr = data.Value;
+                int len = arr.GetArrayLength();
 
-            bool isInteractable = len > 0 ? arr[0].GetBoolean() : true;
-            bool isDraggable = len > 1 ? arr[1].GetBoolean() : false;
-            bool isDropTarget = len > 2 ? arr[2].GetBoolean() : false;
-            string dragGroupId = len > 3 ? arr[3].GetString() : null;
+                if (len > 0) isInteractable = arr[0].GetBoolean();
+                if (len > 1) isDraggable = arr[1].GetBoolean();
+                if (len > 2) isDropTarget = arr[2].GetBoolean();
+                if (len > 3 && arr[3].ValueKind == JsonValueKind.String)
+                    dragGroupId = arr[3].GetString();
 
-            return new ControlProperty(isInteractable, isDraggable, isDropTarget, dragGroupId);
+                if (len > 4 && arr[4].ValueKind == JsonValueKind.Object)
+                {
+                    actionMap = new();
+                    foreach (var entry in arr[4].EnumerateObject())
+                    {
+                        var ids = new List<string>();
+                        foreach (var id in entry.Value.EnumerateArray())
+                            ids.Add(id.GetString()!);
+                        actionMap[entry.Name] = ids;
+                    }
+                }
+            }
+
+            return new ControlProperty(isInteractable, isDraggable, isDropTarget, dragGroupId, actionMap);
         }
 
         private static SoundProperty ParseSoundProperty(JsonElement? data)
@@ -204,11 +242,44 @@ namespace OssianForge.Engine.Resources.Config
             var arr = data!.Value;
             string resId = arr[0].GetString();
             bool autoPlay = arr.GetArrayLength() > 1 && arr[1].GetBoolean();
-
             return new SoundProperty(resId) { AutoPlay = autoPlay };
         }
 
-        // ── helpers ───────────────────────────────────────────────────────────────
+        // ── RenderAction helper ───────────────────────────────────────────────────
+
+        /// <summary>
+        /// Reads an optional trailing JSON array of RenderAction name strings at
+        /// position <paramref name="index"/> in <paramref name="arr"/>.
+        ///
+        /// JSON examples:
+        ///   (absent)                    → RenderAction[0]  (no actions)
+        ///   ["DisableDepthTest"]        → RenderAction[1]
+        ///   ["DisableDepthTest","AdditiveBlend"] → RenderAction[2]
+        /// </summary>
+        private static RenderAction[] ParseRenderActions(JsonElement arr, int index)
+        {
+            if (arr.GetArrayLength() <= index)
+                return Array.Empty<RenderAction>();
+
+            var el = arr[index];
+            if (el.ValueKind != JsonValueKind.Array)
+                return Array.Empty<RenderAction>();
+
+            var actions = new List<RenderAction>();
+            foreach (var item in el.EnumerateArray())
+            {
+                string name = item.GetString()
+                    ?? throw new Exception("[SCENE CONFIG] RenderAction entry must be a string");
+
+                if (!Enum.TryParse<RenderAction>(name, ignoreCase: true, out var action))
+                    throw new Exception($"[SCENE CONFIG] Unknown RenderAction '{name}'");
+
+                actions.Add(action);
+            }
+            return actions.ToArray();
+        }
+
+        // ── vector helpers ────────────────────────────────────────────────────────
 
         private static string Str(JsonElement? data, int index)
             => data!.Value[index].GetString()

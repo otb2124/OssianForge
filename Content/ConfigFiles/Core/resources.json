@@ -110,6 +110,16 @@
     "type": "texture"
   },
   {
+    "id": "texture.empty",
+    "data": [ "texturefile.empty" ],
+    "type": "texture"
+  },
+  {
+    "id": "texture.frame",
+    "data": [ "texturefile.frame" ],
+    "type": "texture"
+  },
+  {
     "id": "texture.heightMap.highLands",
     "data": [ "texturefile.heightMap.highLands" ],
     "type": "texture"

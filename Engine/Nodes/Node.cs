@@ -76,11 +76,6 @@ namespace OssianForge.Engine.Nodes
 
         public virtual void OnUpdate(double delta)
         {
-            ProcessPropUpdate(delta);
-        }
-
-        public virtual void ProcessPropUpdate(double delta)
-        {
             foreach (var property in Properties)
             {
                 property.OnUpdate(this, delta);
@@ -92,11 +87,6 @@ namespace OssianForge.Engine.Nodes
 
 
         public virtual void OnRender(double delta)
-        {
-            ProcessPropRender(delta);
-        }
-
-        public virtual void ProcessPropRender(double delta)
         {
             foreach (var property in Properties)
             {

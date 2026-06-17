@@ -1,0 +1,22 @@
+[
+  {
+    "id": "action0",
+    "call": "Engine.Nodes.LoadScene",
+    "args": [ "scene.gameplay" ]
+  },
+  {
+    "id": "action1",
+    "call": "Engine.Nodes.SetNodePropertyValue",
+    "args": [ "main", "panel_settings", "Visible", false ]
+  },
+  {
+    "id": "printHello",
+    "call": "System.Console.WriteLine",
+    "args": [ "Hello" ]
+  },
+  {
+    "id": "printHi",
+    "call": "System.Console.WriteLine",
+    "args": [ "Hi" ]
+  }
+]

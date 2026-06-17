@@ -58,7 +58,7 @@ namespace OssianForge.Engine.Utils.Console
                 var node = new Node { Name = name, Id = name };
                 node.AddProperty(new TransformProperty());
                 parent.AddChild(node);
-                Engine.Nodes.NodeManager.Nodes.Add(node);
+                Engine.Nodes.NodeManager.Roots.Add(node);
                 DebugConsole.Write($"Added node '{name}'", ConsoleColor.Green);
             });
         }
@@ -162,7 +162,7 @@ namespace OssianForge.Engine.Utils.Console
             var parentId = ctx.Get("parent");
             var nodes = parentId != null
                 ? Engine.Nodes.NodeManager.GetNode(parentId)?.Children ?? new()
-                : Engine.Nodes.NodeManager.Nodes;
+                : Engine.Nodes.NodeManager.Roots;
 
             foreach (var node in nodes)
                 DebugConsole.Write($"  [{node.Id}] {node.Name}", ConsoleColor.White);

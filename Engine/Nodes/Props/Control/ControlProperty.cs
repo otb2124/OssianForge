@@ -33,6 +33,19 @@ namespace OssianForge.Engine.Nodes.Props
         public readonly Signal<Node> OnDrop = new();
         public readonly Signal<Node> OnDropReceived = new();
 
+        public List<string> OnClickActions { get; } = new();
+        public List<string> OnHoverActions { get; } = new();
+        public List<string> OnExitActions { get; } = new();
+        public List<string> OnFocusActions { get; } = new();
+        public List<string> OnUnfocusActions { get; } = new();
+        public List<string> OnPressActions { get; } = new();
+        public List<string> OnReleaseActions { get; } = new();
+        public List<string> OnScrollActions { get; } = new();
+        public List<string> OnDragStartActions { get; } = new();
+        public List<string> OnDragEndActions { get; } = new();
+        public List<string> OnDropActions { get; } = new();
+        public List<string> OnDropReceivedActions { get; } = new();
+
         // ── drag internals ───────────────────────────────────────────────────
         private const float DragThreshold = 4f;   // pixels before drag begins
         private Vector2 _pressMousePos;
@@ -46,12 +59,28 @@ namespace OssianForge.Engine.Nodes.Props
             bool isInteractable = true,
             bool isDraggable = false,
             bool isDropTarget = false,
-            string dragGroupId = null)
+            string dragGroupId = null,
+            Dictionary<string, List<string>> actionMap = null)
         {
             IsInteractable = isInteractable;
             IsDraggable = isDraggable;
             IsDropTarget = isDropTarget;
             DragGroupId = dragGroupId;
+
+            if (actionMap == null) return;
+
+            if (actionMap.TryGetValue("OnClick", out var v)) OnClickActions = v;
+            if (actionMap.TryGetValue("OnHover", out v)) OnHoverActions = v;
+            if (actionMap.TryGetValue("OnExit", out v)) OnExitActions = v;
+            if (actionMap.TryGetValue("OnFocus", out v)) OnFocusActions = v;
+            if (actionMap.TryGetValue("OnUnfocus", out v)) OnUnfocusActions = v;
+            if (actionMap.TryGetValue("OnPress", out v)) OnPressActions = v;
+            if (actionMap.TryGetValue("OnRelease", out v)) OnReleaseActions = v;
+            if (actionMap.TryGetValue("OnScroll", out v)) OnScrollActions = v;
+            if (actionMap.TryGetValue("OnDragStart", out v)) OnDragStartActions = v;
+            if (actionMap.TryGetValue("OnDragEnd", out v)) OnDragEndActions = v;
+            if (actionMap.TryGetValue("OnDrop", out v)) OnDropActions = v;
+            if (actionMap.TryGetValue("OnDropReceived", out v)) OnDropReceivedActions = v;
         }
 
         public void SetHovered(bool value)
@@ -104,6 +133,23 @@ namespace OssianForge.Engine.Nodes.Props
             OnDropReceived.Emit(target);
         }
 
+
+        public override void OnStart(Node node)
+        {
+            OnClick.Connect(() => OnClickActions.ForEach(Engine.Resources.InvokeAction));
+            OnHover.Connect(() => OnHoverActions.ForEach(Engine.Resources.InvokeAction));
+            OnExit.Connect(() => OnExitActions.ForEach(Engine.Resources.InvokeAction));
+            OnFocus.Connect(() => OnFocusActions.ForEach(Engine.Resources.InvokeAction));
+            OnUnfocus.Connect(() => OnUnfocusActions.ForEach(Engine.Resources.InvokeAction));
+            OnPress.Connect(() => OnPressActions.ForEach(Engine.Resources.InvokeAction));
+            OnRelease.Connect(() => OnReleaseActions.ForEach(Engine.Resources.InvokeAction));
+            OnScroll.Connect(_ => OnScrollActions.ForEach(Engine.Resources.InvokeAction));
+            OnDragStart.Connect(() => OnDragStartActions.ForEach(Engine.Resources.InvokeAction));
+            OnDragEnd.Connect(() => OnDragEndActions.ForEach(Engine.Resources.InvokeAction));
+            OnDrop.Connect(_ => OnDropActions.ForEach(Engine.Resources.InvokeAction));
+            OnDropReceived.Connect(_ => OnDropReceivedActions.ForEach(Engine.Resources.InvokeAction));
+        }
+
         // ────────────────────────────────────────────────────────────────────
         // Per-frame update
         // ────────────────────────────────────────────────────────────────────
@@ -145,8 +191,6 @@ namespace OssianForge.Engine.Nodes.Props
 
                 _pressMousePos = mouse;
                 _watchingForDrag = IsDraggable;
-
-                Console.WriteLine($"[CLICK] {node.Name}");
             }
 
             // ── drag start ──────────────────────────────────────────────────
@@ -204,14 +248,24 @@ namespace OssianForge.Engine.Nodes.Props
         {
             Vector2 screen = new Vector2(Engine.Graphics.WindowSize.X,
                                          Engine.Graphics.WindowSize.Y);
-            MathUtils.Transform t = tp.Transform;
-            t.FromScreenSpace(screen);
 
-            float x = t.Position.X, y = t.Position.Y;
-            float w = t.Scale.X, h = t.Scale.Y;
+            // Mouse arrives in window space: origin top-left, Y-down.
+            // Convert to center-origin, Y-up — the same space ToScreenSpace
+            // produces for NDC before the final divide.
+            //   ndcX = mouseX / (screen.X * 0.5) - 1
+            //   ndcY = 1 - mouseY / (screen.Y * 0.5)   ← flip Y
+            float ndcMouseX = mousePixels.X / (screen.X * 0.5f) - 1f;
+            float ndcMouseY = -(mousePixels.Y / (screen.Y * 0.5f) - 1f);
 
-            return mousePixels.X >= x && mousePixels.X <= x + w &&
-                   mousePixels.Y >= y && mousePixels.Y <= y + h;
+            // Transform.Position is the element CENTER in NDC.
+            // Transform.Scale    is the element SIZE   in NDC (full width/height).
+            float cx = tp.Transform.Position.X;
+            float cy = tp.Transform.Position.Y;
+            float hw = tp.Transform.Scale.X * 0.5f;   // half-width  in NDC
+            float hh = tp.Transform.Scale.Y * 0.5f;   // half-height in NDC
+
+            return ndcMouseX >= cx - hw && ndcMouseX <= cx + hw &&
+                   ndcMouseY >= cy - hh && ndcMouseY <= cy + hh;
         }
 
         private static bool HitTestWorld(TransformProperty tp, MeshProperty mp, Vector2 mousePixels)

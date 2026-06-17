@@ -1,6 +1,6 @@
 {
-  "id": "uiscene",
-  "name": "uiscene",
+  "id": "mainmenu",
+  "name": "MainMenu",
   "children": [
     {
       "id": "camera1",
@@ -28,16 +28,17 @@
         }
       ]
     },
+
     {
-      "id": "screenBottom",
-      "name": "screenBottom",
+      "id": "logo",
+      "name": "Logo",
       "properties": [
         {
           "type": "TransformProperty",
           "data": [
-            [ "0,0,0", "0,0,0", "200,100,1" ],
+            [ "0,-60,0", "0,0,0", "400,120,1" ],
             "ScreenSpace",
-            "TopRight","TopRight"
+            "TopCenter"
           ]
         },
         {
@@ -46,20 +47,281 @@
         },
         {
           "type": "TextureMaterialProperty",
-          "data": [ "texture.house.wood", "shader.unlit" ]
+          "data": [
+            "texture.frame",
+            "shader.unlit",
+            [ "DisableDepthTest" ]
+          ]
         }
       ]
     },
+
     {
-      "id": "text",
-      "name": "text",
+      "id": "btn_singleplayer",
+      "name": "SingleplayerButton",
       "properties": [
         {
           "type": "TransformProperty",
           "data": [
-            [ "0,0,0", "0,0,0", "200,100,1" ],
+            [ "0,40,0", "0,0,0", "400,40,1" ],
             "ScreenSpace",
-            "BottomLeft",
+            "MiddleCenter"
+          ]
+        },
+        {
+          "type": "MeshProperty",
+          "data": [ "mesh.quad" ]
+        },
+        {
+          "type": "TextureMaterialProperty",
+          "data": [
+            "texture.frame",
+            "shader.unlit",
+            [ "DisableDepthTest" ]
+          ]
+        },
+        {
+          "type": "ControlProperty",
+          "data": [
+            true,
+            false,
+            false,
+            null,
+            {
+              "OnClick": [ "printHello" ],
+              "OnHover": [ "printHi" ]
+            }
+          ]
+        }
+      ],
+      "children": [
+        {
+          "id": "btn_singleplayer_label",
+          "name": "SingleplayerLabel",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [ "0,0,0", "0,0,0", "400,40,1" ],
+                "ScreenSpace",
+                "MiddleCenter"
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [ "mesh.quad" ]
+            },
+            {
+              "type": "TextMaterialProperty",
+              "data": [
+                "Singleplayer",
+                20,
+                "1,1,1,1",
+                "font.roboto",
+                "shader.sdf",
+                [ "DisableDepthTest" ]
+              ]
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "id": "btn_multiplayer",
+      "name": "MultiplayerButton",
+      "properties": [
+        {
+          "type": "TransformProperty",
+          "data": [
+            [ "0,-10,0", "0,0,0", "400,40,1" ],
+            "ScreenSpace",
+            "MiddleCenter"
+          ]
+        },
+        {
+          "type": "MeshProperty",
+          "data": [ "mesh.quad" ]
+        },
+        {
+          "type": "TextureMaterialProperty",
+          "data": [
+            "texture.frame",
+            "shader.unlit",
+            [ "DisableDepthTest" ]
+          ]
+        },
+        {
+          "type": "ControlProperty",
+          "data": [ true, false, false ]
+        }
+      ],
+      "children": [
+        {
+          "id": "btn_multiplayer_label",
+          "name": "MultiplayerLabel",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [ "0,0,0", "0,0,0", "400,40,1" ],
+                "ScreenSpace",
+                "MiddleCenter"
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [ "mesh.quad" ]
+            },
+            {
+              "type": "TextMaterialProperty",
+              "data": [
+                "Multiplayer",
+                20,
+                "1,1,1,1",
+                "font.roboto",
+                "shader.sdf",
+                [ "DisableDepthTest" ]
+              ]
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "id": "btn_row_bottom",
+      "name": "BottomRow",
+      "properties": [
+        {
+          "type": "TransformProperty",
+          "data": [
+            [ "0,-60,0", "0,0,0", "400,40,1" ],
+            "ScreenSpace",
+            "MiddleCenter"
+          ]
+        },
+        {
+          "type": "MeshProperty",
+          "data": [ "mesh.quad" ]
+        },
+        {
+          "type": "TextureMaterialProperty",
+          "data": [
+            "texture.frame",
+            "shader.unlit",
+            [ "DisableDepthTest" ]
+          ]
+        },
+        {
+          "type": "ControlProperty",
+          "data": [ true, false, false ]
+        }
+      ],
+      "children": [
+        {
+          "id": "btn_row_bottom_label",
+          "name": "OptionsLabel",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [ "0,0,0", "0,0,0", "400,40,1" ],
+                "ScreenSpace",
+                "MiddleCenter"
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [ "mesh.quad" ]
+            },
+            {
+              "type": "TextMaterialProperty",
+              "data": [
+                "Options...",
+                20,
+                "1,1,1,1",
+                "font.roboto",
+                "shader.sdf",
+                [ "DisableDepthTest" ]
+              ]
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "id": "btn_quit",
+      "name": "QuitButton",
+      "properties": [
+        {
+          "type": "TransformProperty",
+          "data": [
+            [ "0,-110,0", "0,0,0", "190,40,1" ],
+            "ScreenSpace",
+            "MiddleCenter"
+          ]
+        },
+        {
+          "type": "MeshProperty",
+          "data": [ "mesh.quad" ]
+        },
+        {
+          "type": "TextureMaterialProperty",
+          "data": [
+            "texture.frame",
+            "shader.unlit",
+            [ "DisableDepthTest" ]
+          ]
+        },
+        {
+          "type": "ControlProperty",
+          "data": [ true, false, false ]
+        }
+      ],
+      "children": [
+        {
+          "id": "btn_quit_label",
+          "name": "QuitLabel",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [ "0,0,0", "0,0,0", "190,40,1" ],
+                "ScreenSpace",
+                "MiddleCenter"
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [ "mesh.quad" ]
+            },
+            {
+              "type": "TextMaterialProperty",
+              "data": [
+                "Quit Game",
+                20,
+                "1,1,1,1",
+                "font.roboto",
+                "shader.sdf",
+                [ "DisableDepthTest" ]
+              ]
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "id": "version_label",
+      "name": "VersionLabel",
+      "properties": [
+        {
+          "type": "TransformProperty",
+          "data": [
+            [ "5,-5,0", "0,0,0", "160,24,1" ],
+            "ScreenSpace",
             "BottomLeft"
           ]
         },
@@ -69,7 +331,44 @@
         },
         {
           "type": "TextMaterialProperty",
-          "data": [ "testing screenspace\ntakes time", 32, "1,1,1,1", "font.roboto", "shader.sdf" ]
+          "data": [
+            "OssianForge 0.1.0",
+            14,
+            "1,1,1,1",
+            "font.roboto",
+            "shader.sdf",
+            [ "DisableDepthTest" ]
+          ]
+        }
+      ]
+    },
+
+    {
+      "id": "copyright_label",
+      "name": "CopyrightLabel",
+      "properties": [
+        {
+          "type": "TransformProperty",
+          "data": [
+            [ "-5,-5,0", "0,0,0", "220,24,1" ],
+            "ScreenSpace",
+            "BottomRight"
+          ]
+        },
+        {
+          "type": "MeshProperty",
+          "data": [ "mesh.quad" ]
+        },
+        {
+          "type": "TextMaterialProperty",
+          "data": [
+            "Copyright OssianForge 2025",
+            14,
+            "1,1,1,1",
+            "font.roboto",
+            "shader.sdf",
+            [ "DisableDepthTest" ]
+          ]
         }
       ]
     }

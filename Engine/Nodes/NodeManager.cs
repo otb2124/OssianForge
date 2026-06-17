@@ -1,192 +1,147 @@
 ﻿using OssianForge.Engine.Nodes.Props;
 using OssianForge.Engine.Resources.Shaders;
 using System.Collections.Concurrent;
-using System.Diagnostics;
 
 namespace OssianForge.Engine.Nodes
 {
     public class NodeManager
     {
+        // Root nodes only. Everything else is reached by walking the tree.
+        public List<Node> Roots = new();
 
-        public List<Node> Nodes = new List<Node>();
         private static readonly ConcurrentQueue<Action> _pendingActions = new();
 
         public NodeManager() { }
 
+        public void Initialize() => Roots = new();
 
-        public void Initialize()
-        {
-            Nodes = new List<Node>();
-        }
+        // -----------------------------------------------------------------------
+        // Tree registration
+        // -----------------------------------------------------------------------
 
+        public void RegisterTree(Node root) => Roots.Add(root);
+
+        public void AddNode(Node node) => Roots.Add(node);
+
+        public void RemoveNode(Node node) => Roots.Remove(node);
+
+        // -----------------------------------------------------------------------
+        // Lifecycle — recursive tree walks, zero per-frame allocations
+        // -----------------------------------------------------------------------
 
         public void OnStart()
         {
-            foreach (var node in Nodes)
-            {
-                node.OnStart();
-            }
+            foreach (var root in Roots)
+                StartNode(root);
         }
 
-        public void RegisterTree(Node root)
+        public void OnUpdate(double delta)
         {
-            foreach (var node in Flatten(root))
-                Nodes.Add(node);
+            FlushPendingActions();
+            foreach (var root in Roots)
+                UpdateNode(root, delta);
         }
 
-        private IEnumerable<Node> Flatten(Node node)
+        public void OnRender(double delta)
+        {
+            foreach (var root in Roots)
+                RenderNode(root, delta);
+        }
+
+        private static void StartNode(Node node)
+        {
+            node.OnStart();
+            foreach (var child in node.Children)
+                StartNode(child);
+        }
+
+        private static void UpdateNode(Node node, double delta)
+        {
+            node.OnUpdate(delta);
+            foreach (var child in node.Children)
+                UpdateNode(child, delta);
+        }
+
+        // Pre-order: parent renders first, children render on top.
+        private static void RenderNode(Node node, double delta)
+        {
+            node.OnRender(delta);
+            foreach (var child in node.Children)
+                RenderNode(child, delta);
+        }
+
+        // -----------------------------------------------------------------------
+        // Flat enumeration — on demand, only when queries need it
+        // -----------------------------------------------------------------------
+
+        public IEnumerable<Node> Flatten()
+        {
+            foreach (var root in Roots)
+                foreach (var node in Flatten(root))
+                    yield return node;
+        }
+
+        private static IEnumerable<Node> Flatten(Node node)
         {
             yield return node;
             foreach (var child in node.Children.SelectMany(Flatten))
                 yield return child;
         }
 
-        public void UpdateNodes(double delta)
-        {
-            FlushPendingActions();
-
-            foreach (var node in Nodes)
-            {
-                node.OnUpdate(delta);
-            }
-        }
-
-        public void RenderNodes(double delta)
-        {
-            foreach (var node in Nodes)
-            {
-                node.OnRender(delta);
-            }
-        }
-
-        public void AddNode(Node node)
-        {
-            Nodes.Add(node);
-        }
-
-        public void RemoveNode(Node node)
-        {
-            Nodes.Remove(node);
-        }
-
+        // -----------------------------------------------------------------------
+        // Query helpers — enumerate on demand, no stored flat list
+        // -----------------------------------------------------------------------
 
         public Node GetNode(string id)
-        {
-            foreach (var node in Nodes)
-            {
-                var found = FindById(node, id);
-                if (found != null) return found;
-            }
-            return null;
-        }
-
-        private Node FindById(Node node, string id)
-        {
-            if (node.Id == id) return node;
-            foreach (var child in node.Children)
-            {
-                var found = FindById(child, id);
-                if (found != null) return found;
-            }
-            return null;
-        }
+            => Flatten().FirstOrDefault(n => n.Id == id);
 
         public List<Node> GetNodesOfType(Type type)
-        {
-            var result = new List<Node>();
-            foreach (var node in Nodes)
-                CollectOfType(node, type, result);
-            return result;
-        }
+            => Flatten().Where(n => type.IsInstanceOfType(n)).ToList();
 
         public Node GetNodeOfType(Type type)
-        {
-            return Nodes.FirstOrDefault(n => n.GetType() == type || n.GetType().IsSubclassOf(type));
-        }
-
-        private void CollectOfType(Node node, Type type, List<Node> result)
-        {
-            if (type.IsInstanceOfType(node)) result.Add(node);
-            foreach (var child in node.Children)
-                CollectOfType(child, type, result);
-        }
+            => Flatten().FirstOrDefault(n => n.GetType() == type || n.GetType().IsSubclassOf(type));
 
         public Node GetNodeWithProperty<T>() where T : NodeProperty
-        {
-            foreach (var node in Nodes)
-            {
-                var found = FindNodeWithProperty<T>(node);
-                if (found != null) return found;
-            }
-            return null;
-        }
+            => Flatten().FirstOrDefault(n => n.GetProperty<T>() != null);
 
         public List<Node> GetNodesWithProperty<T>() where T : NodeProperty
-        {
-            var result = new List<Node>();
-            foreach (var node in Nodes)
-                CollectNodesWithProperty<T>(node, result);
-            return result;
-        }
+            => Flatten().Where(n => n.GetProperty<T>() != null).ToList();
 
         public Node GetNodeWithProperties<T1, T2>()
             where T1 : NodeProperty
             where T2 : NodeProperty
-        {
-            return GetNodesWithProperties(typeof(T1), typeof(T2)).FirstOrDefault();
-        }
+            => Flatten().FirstOrDefault(n =>
+                n.GetProperty<T1>() != null &&
+                n.GetProperty<T2>() != null);
 
         public Node GetNodeWithProperties<T1, T2, T3>()
             where T1 : NodeProperty
             where T2 : NodeProperty
             where T3 : NodeProperty
-        {
-            return GetNodesWithProperties(typeof(T1), typeof(T2), typeof(T3)).FirstOrDefault();
-        }
+            => Flatten().FirstOrDefault(n =>
+                n.GetProperty<T1>() != null &&
+                n.GetProperty<T2>() != null &&
+                n.GetProperty<T3>() != null);
 
         public List<Node> GetNodesWithProperties(params Type[] propertyTypes)
-        {
-            var result = new List<Node>();
-            foreach (var node in Nodes)
-            {
-                if (HasAllProperties(node, propertyTypes))
-                    result.Add(node);
-            }
-            return result;
-        }
+            => Flatten().Where(n => propertyTypes.All(t => n.GetProperty(t) != null)).ToList();
 
-        private Node FindNodeWithProperty<T>(Node node) where T : NodeProperty
-        {
-            if (node.GetProperty<T>() != null)
-                return node;
+        public List<Node> GetNodesInGroup(string groupId)
+            => Flatten()
+                .Where(n => n.GetProperties<GroupProperty>().Any(g => g.GroupId == groupId))
+                .ToList();
 
-            foreach (var child in node.Children)
-            {
-                var found = FindNodeWithProperty<T>(child);
-                if (found != null) return found;
-            }
-            return null;
-        }
+        public List<LightData> GetLights()
+            => Flatten()
+                .Select(n => new { Node = n, Emission = n.GetProperty<EmissionProperty>() })
+                .Where(x => x.Emission != null)
+                .Select(x => x.Emission.ToLightData(x.Node))
+                .Take(16)
+                .ToList();
 
-        private void CollectNodesWithProperty<T>(Node node, List<Node> result) where T : NodeProperty
-        {
-            if (node.GetProperty<T>() != null)
-                result.Add(node);
-
-            foreach (var child in node.Children)
-                CollectNodesWithProperty<T>(child, result);
-        }
-
-        private bool HasAllProperties(Node node, Type[] propertyTypes)
-        {
-            foreach (var type in propertyTypes)
-            {
-                if (node.GetProperty(type) == null)
-                    return false;
-            }
-            return true;
-        }
-
+        // -----------------------------------------------------------------------
+        // Pending actions
+        // -----------------------------------------------------------------------
 
         public void FlushPendingActions()
         {
@@ -195,23 +150,5 @@ namespace OssianForge.Engine.Nodes
         }
 
         public static void Enqueue(Action action) => _pendingActions.Enqueue(action);
-
-
-        public List<Node> GetNodesInGroup(string groupId)
-        {
-            return Nodes
-                .Where(n => n.GetProperties<GroupProperty>()
-                .Any(g => g.GroupId == groupId))
-                .ToList();
-        }
-
-        public List<LightData> GetLights()
-            => Engine.Nodes.NodeManager
-                .GetNodesOfType(typeof(Node))
-                .Select(n => new { Node = n, Emission = n.GetProperty<EmissionProperty>() })
-                .Where(x => x.Emission != null)
-                .Select(x => x.Emission.ToLightData(x.Node))
-                .Take(16)
-                .ToList();
     }
 }

@@ -13,8 +13,7 @@ namespace OssianForge.Engine.Nodes.Props
     {
         public TextureResource TextureResource;
 
-        public TextureMaterialProperty(string textureId, string shaderId)
-            : base(shaderId)
+        public TextureMaterialProperty(string textureId, string shaderId, params RenderAction[] actions) : base(shaderId, actions)
         {
             TextureResource = Engine.Resources.GetResource<TextureResource>(textureId)
                 ?? throw new Exception($"TextureResource not found: '{textureId}'");

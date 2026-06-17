@@ -14,8 +14,7 @@ namespace OssianForge.Engine.Nodes.Props
     {
         public CubemapTextureResource CubemapResource;
 
-        public CubemapMaterialProperty(string cubemapId, string shaderId)
-            : base(shaderId)
+        public CubemapMaterialProperty(string cubemapId, string shaderId, params RenderAction[] actions) : base(shaderId, actions)
         {
             CubemapResource = Engine.Resources.GetResource<CubemapTextureResource>(cubemapId)
                 ?? throw new Exception($"CubemapTextureResource not found: '{cubemapId}'");

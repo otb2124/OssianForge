@@ -39,6 +39,12 @@ namespace OssianForge.Engine.Resources
             return ResourceLoader.ResourcesConfig.GetInstanceById<T>(id);
         }
 
+        public List<T> GetResources<T>() where T : Resource
+            => ResourceLoader.ResourcesConfig.GetInstances<T>();
+
+        public List<T> GetResourceFiles<T>() where T : ResourceFile
+            => ResourceLoader.ResourceFilesConfig.GetInstances<T>();
+
         public object CreateScriptResourceInstance(string packOrFileId, string typeName, params object[] args)
             => ResourceLoader.ResourceFilesConfig.FindScriptFile(packOrFileId, typeName).CreateInstance(typeName, args);
 
@@ -51,6 +57,19 @@ namespace OssianForge.Engine.Resources
             return scriptFile.CompiledAssembly.GetExportedTypes()
                 .FirstOrDefault(t => t.Name == typeName)
                 ?? throw new Exception($"Type '{typeName}' not found in '{packOrFileId}'");
+        }
+
+        public void InvokeAction(string actionId)
+        {
+            foreach (var config in GetResourceFiles<ActionsConfig>())
+            {
+                if (config.GetById(actionId) != null)
+                {
+                    config.Execute(actionId);
+                    return;
+                }
+            }
+            throw new Exception($"[RESOURCES] Action '{actionId}' not found in any ActionsConfig.");
         }
     }
 }

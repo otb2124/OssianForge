@@ -130,6 +130,16 @@
     "type": "texturefile"
   },
   {
+    "id": "texturefile.empty",
+    "path": "TextureFiles/3d/empty.png",
+    "type": "texturefile"
+  },
+  {
+    "id": "texturefile.frame",
+    "path": "TextureFiles/3d/frame.png",
+    "type": "texturefile"
+  },
+  {
     "id": "texturefile.cubemap.skybox.sea.right",
     "path": "TextureFiles/3d/panoramic-sea-right.png",
     "type": "texturefile"
@@ -225,8 +235,8 @@
     "type": "filepack.script"
   },
   {
-    "id": "configfile.scene.scene",
-    "path": "ConfigFiles/Scenes/scene.json",
+    "id": "configfile.scene.main",
+    "path": "ConfigFiles/Scenes/main.json",
     "type": "scene"
   },
   {
@@ -243,6 +253,11 @@
     "id": "configfile.scene.terrainTest",
     "path": "ConfigFiles/Scenes/terrainTest.json",
     "type": "scene"
+  },
+  {
+    "id": "configfile.actions.myActions",
+    "path": "ConfigFiles/Actions/myActions.json",
+    "type": "actions"
   },
   {
     "id": "soundfile.est-drink",
