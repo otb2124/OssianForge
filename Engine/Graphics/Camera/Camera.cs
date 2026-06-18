@@ -6,7 +6,7 @@ namespace OssianForge.Engine.Graphics.Camera
 {
     public class Camera
     {
-        public Vector3 Position = new Vector3(0, 1.5f, 3f);
+        public Vector3 Position = new Vector3(0, 0, 0);
         public float Fov = 45f;
         public float AspectRatio;
 
@@ -29,9 +29,10 @@ namespace OssianForge.Engine.Graphics.Camera
 
         public void OnUpdate(double delta)
         {
-            ControlCamera((float)delta);
+            //ControlCamera((float)delta);
         }
 
+        /*
         private void ControlCamera(float delta)
         {
             ControlMouseRotation();
@@ -80,7 +81,7 @@ namespace OssianForge.Engine.Graphics.Camera
                 Fov = Math.Clamp(Fov - ZoomSpeed, MinFov, MaxFov);
             if (keys.IsStateActive(KeyHandler.KeyStates.CAMERAZOOMDOWNPRESSED))
                 Fov = Math.Clamp(Fov + ZoomSpeed, MinFov, MaxFov);
-        }
+        }*/
 
         public Matrix4x4 GetView()
         {

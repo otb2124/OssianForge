@@ -1,21 +1,21 @@
 [
   {
     "id": "action0",
-    "call": "Engine.Nodes.LoadScene",
+    "call": "OssianForge.Engine.Nodes.LoadScene",
     "args": [ "scene.gameplay" ]
   },
   {
     "id": "action1",
-    "call": "Engine.Nodes.SetNodePropertyValue",
+    "call": "OssianForge.Engine.Nodes.SetNodePropertyValue",
     "args": [ "main", "panel_settings", "Visible", false ]
   },
   {
-    "id": "printHello",
+    "id": "action.myActions.printHello",
     "call": "System.Console.WriteLine",
     "args": [ "Hello" ]
   },
   {
-    "id": "printHi",
+    "id": "action.myActions.printHi",
     "call": "System.Console.WriteLine",
     "args": [ "Hi" ]
   }

@@ -11,36 +11,37 @@ namespace OssianForge.Engine.Resources
     public class ResourceLoader
     {
 
-        public ResourceLoadScheduler ResourceLoadScheduler;
-
         public ResourceFilesConfig ResourceFilesConfig;
         public ResourcesConfig ResourcesConfig;
 
-        public ResourceLoader() 
+        public ResourceLoader()
         {
-            ResourceLoadScheduler = new ResourceLoadScheduler();
             ResourceFilesConfig = new ResourceFilesConfig("configfile.resourceFiles", "ConfigFiles/Core/resourceFiles.json");
             ResourcesConfig = new ResourcesConfig("configfile.resources", "ConfigFiles/Core/resources.json");
         }
 
-        public void Initialize()
+        public void InitializeCore()
         {
             ResourceFilesConfig.Load();
-            ResourceFilesConfig.BuildInstances<SceneConfig>();
-            ResourceFilesConfig.LoadResourceFiles<SceneConfig>();
-
-            ResourceLoadScheduler.Initialize();
-
-            ResourceFilesConfig.BuildInstances();
-
             ResourcesConfig.Load();
-            ResourcesConfig.BuildInstances();
+
+            ResourceFilesConfig.BuildInstances<SceneConfig>();
+            ResourceFilesConfig.LoadResourceFiles<SceneConfig>(); 
+
+            ResourceFilesConfig.BuildInstances<TreeConfig>();
+            ResourceFilesConfig.LoadResourceFiles<TreeConfig>();
+        }
+
+        public void InitializeResources()
+        {
+            ResourceFilesConfig.BuildInstances(Engine.Resources.ResourceScheduler.NodeDependency.ResourceFileIds.ToArray<string>());
+            ResourcesConfig.BuildInstances(Engine.Resources.ResourceScheduler.NodeDependency.GetSortedResourceIds().ToArray());
         }
 
         public void OnLoad()
         {
-            ResourceFilesConfig.LoadResourceFiles();
-            ResourcesConfig.LoadResources();
+            ResourceFilesConfig.LoadResourceFiles(Engine.Resources.ResourceScheduler.NodeDependency.ResourceFileIds.ToArray<string>());
+            ResourcesConfig.LoadResources(Engine.Resources.ResourceScheduler.NodeDependency.GetSortedResourceIds().ToArray());
         }
     }
 }

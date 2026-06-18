@@ -76,86 +76,94 @@ namespace OssianForge.Engine.Nodes.Props
             ApplyRenderSpaceDefaults(node);
         }
 
-        public void SetRenderSpace(RenderSpace space, Node node = null)
-        {
-            RenderSpace = space;
-            ApplyRenderSpaceDefaults(node);
-        }
-
         // -----------------------------------------------------------------------
         // Core layout resolution
         // -----------------------------------------------------------------------
 
         private void ApplyRenderSpaceDefaults(Node node)
         {
-            if (RenderSpace != RenderSpace.ScreenSpace)
-                return;
-
-            Vector2 screen = new Vector2(
+            if (RenderSpace == RenderSpace.ScreenSpace)
+            {
+                Vector2 screen = new Vector2(
                 Engine.Graphics.WindowSize.X,
                 Engine.Graphics.WindowSize.Y);
 
-            // --- Determine container ---
-            // If the parent node also has a ScreenSpace TransformProperty its
-            // Transform is already in NDC (OnStart ran top-down, parent first).
-            // We convert that NDC rect back to pixels so everything stays in one
-            // unit during layout, then ToScreenSpace at the end.
-            TransformProperty parentTransform = node?.Parent?.GetProperty<TransformProperty>();
-            bool hasScreenSpaceParent = parentTransform != null
-                                     && parentTransform.RenderSpace == RenderSpace.ScreenSpace;
+                // --- Determine container ---
+                // If the parent node also has a ScreenSpace TransformProperty its
+                // Transform is already in NDC (OnStart ran top-down, parent first).
+                // We convert that NDC rect back to pixels so everything stays in one
+                // unit during layout, then ToScreenSpace at the end.
+                TransformProperty parentTransform = node?.Parent?.GetProperty<TransformProperty>();
+                bool hasScreenSpaceParent = parentTransform != null
+                                         && parentTransform.RenderSpace == RenderSpace.ScreenSpace;
 
-            Vector2 containerSizePx;   // full width/height of the container in pixels
-            Vector2 containerCenterPx; // container center in SCREEN center-origin pixels
+                Vector2 containerSizePx;   // full width/height of the container in pixels
+                Vector2 containerCenterPx; // container center in SCREEN center-origin pixels
 
-            if (hasScreenSpaceParent)
-            {
-                // Parent NDC → pixels.
-                // NDC size  [-1..1] range covers the full screen dimension.
-                // parentNdcScale.X == 1.0 means "full screen width", so pixel size = ndcScale * screen/2 * ... 
-                // ToScreenSpace stores: ndcScale = pixelSize / screen * 2  →  pixelSize = ndcScale * screen / 2
-                containerSizePx = new Vector2(
-                    parentTransform.Transform.Scale.X * screen.X * 0.5f,
-                    parentTransform.Transform.Scale.Y * screen.Y * 0.5f);
+                if (hasScreenSpaceParent)
+                {
+                    // Parent NDC → pixels.
+                    // NDC size  [-1..1] range covers the full screen dimension.
+                    // parentNdcScale.X == 1.0 means "full screen width", so pixel size = ndcScale * screen/2 * ... 
+                    // ToScreenSpace stores: ndcScale = pixelSize / screen * 2  →  pixelSize = ndcScale * screen / 2
+                    containerSizePx = new Vector2(
+                        parentTransform.Transform.Scale.X * screen.X * 0.5f,
+                        parentTransform.Transform.Scale.Y * screen.Y * 0.5f);
 
-                // Parent NDC position → center-origin pixels.
-                // ndcPos = pixelCenter / (screen/2)  →  pixelCenter = ndcPos * screen/2
-                containerCenterPx = new Vector2(
-                    parentTransform.Transform.Position.X * screen.X * 0.5f,
-                    parentTransform.Transform.Position.Y * screen.Y * 0.5f);
+                    // Parent NDC position → center-origin pixels.
+                    // ndcPos = pixelCenter / (screen/2)  →  pixelCenter = ndcPos * screen/2
+                    containerCenterPx = new Vector2(
+                        parentTransform.Transform.Position.X * screen.X * 0.5f,
+                        parentTransform.Transform.Position.Y * screen.Y * 0.5f);
+                }
+                else
+                {
+                    // Root screen-space element: container IS the screen.
+                    containerSizePx = screen;
+                    containerCenterPx = Vector2.Zero; // screen center-origin = (0,0)
+                }
+
+                // --- Resolve anchor within the container ---
+                Vector2 halfContainer = containerSizePx * 0.5f;
+                Vector2 halfSelf = new Vector2(Transform.Scale.X * 0.5f, Transform.Scale.Y * 0.5f);
+
+                Vector2 localOffset = new Vector2(Transform.Position.X, Transform.Position.Y);
+
+                Vector2 centerInContainer; // element center relative to container center, in pixels
+                if (Anchor != Anchor.None)
+                {
+                    // AnchorOrigin gives the flush position relative to the container center.
+                    Vector2 anchorFlush = AnchorOrigin(Anchor, halfContainer, halfSelf);
+                    centerInContainer = anchorFlush + localOffset;
+                }
+                else
+                {
+                    // No anchor: Position is a direct offset from the container center.
+                    centerInContainer = localOffset;
+                }
+
+                // --- Convert to screen center-origin pixel space, then to NDC ---
+                Vector2 centerInScreen = containerCenterPx + centerInContainer;
+
+                Transform.Position = new Vector3(centerInScreen.X, centerInScreen.Y, Transform.Position.Z);
+                Transform.ToScreenSpace(screen);
+
             }
-            else
+            else if(RenderSpace == RenderSpace.World || RenderSpace == RenderSpace.Billboard || RenderSpace == RenderSpace.BillboardFree)
             {
-                // Root screen-space element: container IS the screen.
-                containerSizePx = screen;
-                containerCenterPx = Vector2.Zero; // screen center-origin = (0,0)
+                TransformProperty parentTransform = node?.Parent?.GetProperty<TransformProperty>();
+                if (parentTransform == null)
+                    return;
+
+                ApplyParentWorldTransforProperty(parentTransform);
             }
-
-            // --- Resolve anchor within the container ---
-            Vector2 halfContainer = containerSizePx * 0.5f;
-            Vector2 halfSelf = new Vector2(Transform.Scale.X * 0.5f, Transform.Scale.Y * 0.5f);
-
-            Vector2 localOffset = new Vector2(Transform.Position.X, Transform.Position.Y);
-
-            Vector2 centerInContainer; // element center relative to container center, in pixels
-            if (Anchor != Anchor.None)
-            {
-                // AnchorOrigin gives the flush position relative to the container center.
-                Vector2 anchorFlush = AnchorOrigin(Anchor, halfContainer, halfSelf);
-                centerInContainer = anchorFlush + localOffset;
-            }
-            else
-            {
-                // No anchor: Position is a direct offset from the container center.
-                centerInContainer = localOffset;
-            }
-
-            // --- Convert to screen center-origin pixel space, then to NDC ---
-            Vector2 centerInScreen = containerCenterPx + centerInContainer;
-
-            Transform.Position = new Vector3(centerInScreen.X, centerInScreen.Y, Transform.Position.Z);
-            Transform.ToScreenSpace(screen);
         }
 
+        public void ApplyParentWorldTransforProperty(TransformProperty parentTransform)
+        {
+            Matrix4x4 world = parentTransform.Transform.ToMatrix() * Transform.ToMatrix();
+            Transform.SetMatrix(world);
+        }
         // -----------------------------------------------------------------------
         // Matrix helpers (unchanged)
         // -----------------------------------------------------------------------

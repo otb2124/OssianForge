@@ -255,6 +255,11 @@
     "type": "scene"
   },
   {
+    "id": "configfile.tree",
+    "path": "ConfigFiles/Core/tree.json",
+    "type": "tree"
+  },
+  {
     "id": "configfile.actions.myActions",
     "path": "ConfigFiles/Actions/myActions.json",
     "type": "actions"

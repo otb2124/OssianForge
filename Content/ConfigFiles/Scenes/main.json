@@ -3,11 +3,43 @@
   "name": "scene",
   "children": [
     {
-      "id": "camera",
-      "name": "Camera",
+      "id": "player",
+      "name": "Player",
       "properties": [
         {
-          "type": "CameraProperty"
+          "type": "GroupProperty",
+          "data": [ "player" ]
+        },
+        {
+          "type": "TransformProperty",
+          "data": [
+            [ "0,3,10", "0,-90,0", "1,1,1" ]
+          ]
+        },
+        {
+          "type": "MeshProperty",
+          "data": [ "mesh.cube" ]
+        },
+        {
+          "type": "TextureMaterialProperty",
+          "data": [ "texture.house.wood", "shader.basic" ]
+        }
+      ],
+      "children": [
+        {
+          "id": "camera",
+          "name": "Camera",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [ "0,1,1", "0,0,0", "1,1,1" ]
+              ]
+            },
+            {
+              "type": "CameraProperty"
+            }
+          ]
         }
       ]
     },
@@ -35,7 +67,7 @@
         {
           "type": "TransformProperty",
           "data": [
-            [ "0,0,0", "0,0,0", "20,0.5,20" ]
+            [ "0,0,0", "0,0,0", "20,1,20" ]
           ]
         },
         {
@@ -248,7 +280,16 @@
         },
         {
           "type": "ControlProperty",
-          "data": [ true ]
+          "data": [
+            true,
+            false,
+            false,
+            null,
+            {
+              "OnClick": [ "action.myActions.printHello" ],
+              "OnHover": [ "action.myActions.printHi" ]
+            }
+          ]
         },
         {
           "type": "SoundProperty",

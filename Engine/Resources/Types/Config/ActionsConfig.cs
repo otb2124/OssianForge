@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OssianForge.Engine.Core;
+using System;
 using System.Collections.Generic;
 using System.Text.Json;
 
@@ -8,13 +9,10 @@ namespace OssianForge.Engine.Resources.Config
 
     public class ActionRecord : ConfigRecord
     {
-        public override IEnumerable<string> FieldNames { get; } = ["call", "args"];
+        public override IEnumerable<string> FieldNames { get; } = ["call", "args", "storeValue"];
         public string Call { get; set; } = "";
-
-        // Stored as a JSON array string in the flat store: e.g. '["scene.gameplay"]'
         public string ArgsJson { get; set; } = "[]";
-
-        // ── stable flat-store encoding ────────────────────────────────────────────────
+        public string? StoreValue { get; set; } = null;   // key to store return value under, null = discard
 
         private static string EncodeArgs(string json)
             => Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(json));
@@ -29,11 +27,11 @@ namespace OssianForge.Engine.Resources.Config
         public List<JsonElement> Args
             => JsonSerializer.Deserialize<List<JsonElement>>(ArgsJson) ?? new();
 
-        // Override GetField/SetField to encode on write, decode on read
         public override string GetField(string name) => name switch
         {
             "call" => Call,
             "args" => EncodeArgs(ArgsJson),
+            "storeValue" => StoreValue ?? "",
             _ => throw new ArgumentException($"Unknown field '{name}' on ActionRecord")
         };
 
@@ -42,21 +40,14 @@ namespace OssianForge.Engine.Resources.Config
             switch (name)
             {
                 case "call": Call = value; break;
-                case "args":
-                    ArgsJson = DecodeArgs(value);
-                    Console.WriteLine($"[ACTION RECORD] SetField args raw='{value}' decoded='{ArgsJson}'");
-                    break;
+                case "args": ArgsJson = DecodeArgs(value); break;
+                case "storeValue": StoreValue = string.IsNullOrEmpty(value) ? null : value; break;
                 default: throw new ArgumentException($"Unknown field '{name}' on ActionRecord");
             }
         }
 
-        // ── factory helpers ──────────────────────────────────────────────────────
-
-        /// <summary>
-        /// Constructs an ActionRecord from a typed args list, serializing it to JSON.
-        /// </summary>
-        public static ActionRecord Create(string id, string call, IEnumerable<object?> args)
-            => new ActionRecord { Id = id, Call = call, ArgsJson = JsonSerializer.Serialize(args) };
+        public static ActionRecord Create(string id, string call, IEnumerable<object?> args, string? storeValue = null)
+            => new ActionRecord { Id = id, Call = call, ArgsJson = JsonSerializer.Serialize(args), StoreValue = storeValue };
     }
 
 
@@ -64,10 +55,9 @@ namespace OssianForge.Engine.Resources.Config
 
     public class ActionsConfig : JsonSerialConfig<ActionRecord>
     {
-        public ActionsConfig(string id, string path)
-            : base(id, path) { }
+        public ActionsConfig(string id, string path) : base(id, path) { }
 
-        // ── custom flat-store I/O ────────────────────────────────────────────────────
+        // ── flat-store I/O ────────────────────────────────────────────────────────
 
         private ActionRecord? ReadActionRecord(int index)
         {
@@ -78,7 +68,8 @@ namespace OssianForge.Engine.Resources.Config
             var record = new ActionRecord
             {
                 Id = id,
-                Call = GetString($"{prefix}.call")
+                Call = GetString($"{prefix}.call"),
+                StoreValue = NullIfEmpty(GetString($"{prefix}.storeValue"))
             };
 
             var args = new List<string>();
@@ -90,8 +81,7 @@ namespace OssianForge.Engine.Resources.Config
                 args.Add(val);
                 i++;
             }
-            // Re-serialize the flat strings back into a JSON array ArgsJson can deserialize
-            record.ArgsJson = System.Text.Json.JsonSerializer.Serialize(args);
+            record.ArgsJson = JsonSerializer.Serialize(args);
 
             return record;
         }
@@ -101,13 +91,14 @@ namespace OssianForge.Engine.Resources.Config
             string prefix = $"[{index}]";
             Set($"{prefix}.id", record.Id);
             Set($"{prefix}.call", record.Call);
+            Set($"{prefix}.storeValue", record.StoreValue ?? "");
 
             var args = record.Args;
             for (int i = 0; i < args.Count; i++)
                 Set($"{prefix}.args[{i}]", UnboxToString(args[i]));
         }
 
-        // ── override GetAllRecords ───────────────────────────────────────────────────
+        // ── records ───────────────────────────────────────────────────────────────
 
         public new List<ActionRecord> GetAllRecords()
         {
@@ -124,19 +115,23 @@ namespace OssianForge.Engine.Resources.Config
         public new ActionRecord? GetById(string id)
             => GetAllRecords().FirstOrDefault(r => r.Id == id);
 
-        // ── convenience lookups ──────────────────────────────────────────────────────
-
         public List<ActionRecord> GetByCall(string call)
             => GetAllRecords().Where(r => r.Call == call).ToList();
 
-        // ── execution ────────────────────────────────────────────────────────────────
+        // ── execution ─────────────────────────────────────────────────────────────
 
         public void Execute(string id)
         {
             var record = GetById(id)
                 ?? throw new Exception($"[ACTIONS CONFIG] Action '{id}' not found.");
+            ExecuteRecord(record);
+        }
 
-            Invoke(record.Call, record.Args);
+        public object? ExecuteWithResult(string id)
+        {
+            var record = GetById(id)
+                ?? throw new Exception($"[ACTIONS CONFIG] Action '{id}' not found.");
+            return ExecuteRecord(record);
         }
 
         public void ExecuteAll(IEnumerable<string> ids)
@@ -145,51 +140,50 @@ namespace OssianForge.Engine.Resources.Config
                 Execute(id);
         }
 
-        // ── reflection dispatch ──────────────────────────────────────────────────────
+        // ── internal dispatch ─────────────────────────────────────────────────────
 
-        private static void Invoke(string call, List<JsonElement> args)
+        private object? ExecuteRecord(ActionRecord record)
         {
-            int lastDot = call.LastIndexOf('.');
-            if (lastDot < 0)
-                throw new Exception($"[ACTIONS CONFIG] Invalid call format '{call}'.");
+            // Resolve any args that reference stored values via "$value.key" syntax
+            var args = ResolveArgs(record.Args);
 
-            string typeName = call[..lastDot];
-            string methodName = call[(lastDot + 1)..];
+            object? result = ReflectionDispatcher.InvokeWithResult(record.Call, args);
 
-            var targetType = Type.GetType(typeName)
-                ?? AppDomain.CurrentDomain.GetAssemblies()
-                       .Select(a => a.GetType(typeName))
-                       .FirstOrDefault(t => t != null)
-                ?? throw new Exception($"[ACTIONS CONFIG] Type '{typeName}' not found.");
+            if (record.StoreValue != null)
+                ActionValueStore.Set(record.StoreValue, result);
 
-            object?[] unboxed = args.Select(UnboxJsonElement).ToArray();
-            Type[] argTypes = unboxed.Select(a => a?.GetType() ?? typeof(object)).ToArray();
-
-            var method = targetType.GetMethod(methodName,
-                System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static,
-                null, argTypes, null)
-                ?? throw new Exception($"[ACTIONS CONFIG] Method '{methodName}' not found on '{typeName}' "
-                    + $"with args ({string.Join(", ", argTypes.Select(t => t.Name))}).");
-
-            method.Invoke(null, unboxed);
+            return result;
         }
 
-        private static object? UnboxJsonElement(JsonElement el) => el.ValueKind switch
-        {
-            JsonValueKind.String => el.GetString(),
-            JsonValueKind.Number => el.TryGetInt32(out int i) ? i
-                                 : el.TryGetSingle(out float f) ? f
-                                 : el.GetDouble(),
-            JsonValueKind.True => true,
-            JsonValueKind.False => false,
-            JsonValueKind.Null => null,
-            _ => el.GetRawText()
-        };
+        /// <summary>
+        /// Args starting with "$" are treated as value store lookups.
+        /// e.g. "$value.myActionOne.result" → ActionValueStore.Get("value.myActionOne.result")
+        /// </summary>
+        private static object?[] ResolveArgs(List<JsonElement> args)
+            => args.Select(el =>
+            {
+                var unboxed = ReflectionDispatcher.UnboxJsonElement(el);
+                if (unboxed is string s && s.StartsWith('$'))
+                    return ActionValueStore.Get(s[1..]);
+                return unboxed;
+            }).ToArray();
 
-        private static string UnboxToString(JsonElement el) => el.ValueKind switch
-        {
-            JsonValueKind.String => el.GetString()!,
-            _ => el.GetRawText()
-        };
+        private static string UnboxToString(JsonElement el)
+            => ReflectionDispatcher.UnboxJsonElementToString(el);
+
+        private static string? NullIfEmpty(string s)
+            => string.IsNullOrEmpty(s) ? null : s;
+    }
+
+    // ── value store ───────────────────────────────────────────────────────────────
+
+    public static class ActionValueStore
+    {
+        private static readonly Dictionary<string, object?> _values = new();
+
+        public static void Set(string key, object? value) => _values[key] = value;
+        public static object? Get(string key) => _values.TryGetValue(key, out var v) ? v : null;
+        public static bool Has(string key) => _values.ContainsKey(key);
+        public static void Clear() => _values.Clear();
     }
 }

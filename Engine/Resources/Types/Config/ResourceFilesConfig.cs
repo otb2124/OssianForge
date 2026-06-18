@@ -83,6 +83,7 @@ namespace OssianForge.Engine.Resources.Config
                 "script" => typeof(Scripts.ScriptFile),
                 "soundfile" => typeof(Sounds.SoundFile),
                 "actions" => typeof(Config.ActionsConfig),
+                "tree" => typeof(Config.TreeConfig),
                 _ => throw new Exception($"[RESOURCE FILES CONFIG] Unknown type '{type}'")
             };
         }
@@ -113,6 +114,21 @@ namespace OssianForge.Engine.Resources.Config
                 count++;
             }
             Console.WriteLine($"[RESOURCE FILES CONFIG] Built {count} {typeof(T).Name} instance(s).");
+        }
+
+        public void BuildInstances(params string[] ids)
+        {
+            foreach (var id in ids)
+            {
+                var record = GetById(id);
+                if (record == null)
+                {
+                    Console.WriteLine($"[RESOURCE FILES CONFIG] Record '{id}' not found, skipping.");
+                    continue;
+                }
+                AddOrReplace(InstantiateResourceFile(record));
+            }
+            Console.WriteLine($"[RESOURCE FILES CONFIG] Built {ids.Length} ResourceFile instance(s) by id.");
         }
 
         private void AddOrReplace(ResourceFile instance)
@@ -216,6 +232,21 @@ namespace OssianForge.Engine.Resources.Config
                 resourceFile.Load();
 
             Console.WriteLine($"[RESOURCE FILES CONFIG] Loaded {targets.Count} {typeof(T).Name} instance(s).");
+        }
+
+        public void LoadResourceFiles(params string[] ids)
+        {
+            foreach (var id in ids)
+            {
+                var instance = GetInstanceById(id);
+                if (instance == null)
+                {
+                    Console.WriteLine($"[RESOURCE FILES CONFIG] Instance '{id}' not found, skipping.");
+                    continue;
+                }
+                instance.Load();
+            }
+            Console.WriteLine($"[RESOURCE FILES CONFIG] Loaded {ids.Length} ResourceFile instance(s) by id.");
         }
     }
 }

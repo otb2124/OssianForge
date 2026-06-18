@@ -7,26 +7,26 @@ namespace OssianForge.Engine.Resources
     public class Resources
     {
 
-
+        public ResourceScheduler ResourceScheduler;
         public ResourceLoader ResourceLoader;
-        public TreeConfig TreeConfig;
 
 
         public Resources()
         {
+            ResourceScheduler = new ResourceScheduler();
             ResourceLoader = new ResourceLoader();
-            TreeConfig = new TreeConfig("configfile.tree", "ConfigFiles/Core/tree.json");
         }
 
         public void Initialize()
         {
-            ResourceLoader.Initialize();
+            ResourceLoader.InitializeCore();
+            ResourceScheduler.Initialize();
+            ResourceLoader.InitializeResources();
         }
 
         public void OnLoad()
         {
             ResourceLoader.OnLoad();
-            TreeConfig.Load();
         }
 
         public T GetResourceFile<T>(string id) where T : ResourceFile

@@ -7,62 +7,13 @@ using static OssianForge.Engine.Utils.MathUtils;
 namespace OssianForge.Engine.Resources.Config
 {
 
-    public class NodeDependency
-    {
-        public HashSet<string> ResourceFileIds { get; } = new();
-        public HashSet<string> ResourceIds { get; } = new();
-
-        public NodeDependency(JsonElement element)
-        {
-            ExtractFromNode(element);
-        }
-
-        private void ExtractFromNode(JsonElement el)
-        {
-            if (el.TryGetProperty("properties", out var props))
-                foreach (var prop in props.EnumerateArray())
-                    ExtractFromProperty(prop);
-
-            if (el.TryGetProperty("children", out var children))
-                foreach (var child in children.EnumerateArray())
-                    ExtractFromNode(child);
-        }
-
-        private void ExtractFromProperty(JsonElement el)
-        {
-            var data = el.TryGetProperty("data", out var d) ? d : (JsonElement?)null;
-            if (data == null) return;
-
-            string raw = data.Value.GetRawText();
-            ExtractByPrefixes(raw, ResourceFile.Prefixes, ResourceFileIds);
-            ExtractByPrefixes(raw, Resource.Prefixes, ResourceIds);
-        }
-
-        private static void ExtractByPrefixes(string raw, HashSet<string> prefixes, HashSet<string> ids)
-        {
-            foreach (var prefix in prefixes)
-            {
-                int start = 0;
-                while (true)
-                {
-                    int idx = raw.IndexOf('"' + prefix, start, StringComparison.OrdinalIgnoreCase);
-                    if (idx < 0) break;
-                    int begin = idx + 1;
-                    int end = raw.IndexOf('"', begin);
-                    if (end < 0) break;
-                    ids.Add(raw[begin..end]);
-                    start = end + 1;
-                }
-            }
-        }
-    }
-
+    
 
 
     public class SceneConfig : ConfigFile
     {
 
-        private JsonDocument Document;
+        public JsonDocument Document;
 
         public SceneConfig(string id, string path) : base(id, path) { }
 
@@ -79,11 +30,6 @@ namespace OssianForge.Engine.Resources.Config
         public Node GetScene()
         {
             return ParseNode(Document.RootElement);
-        }
-
-        public NodeDependency GetDependency()
-        {
-            return new NodeDependency(Document.RootElement);
         }
 
         // ── node ─────────────────────────────────────────────────────────────────
@@ -136,6 +82,7 @@ namespace OssianForge.Engine.Resources.Config
                 "ControlProperty" => ParseControlProperty(data),
                 "SoundProperty" => ParseSoundProperty(data),
                 "ScriptProperty" => new ScriptProperty(Str(data, 0)),
+                "GroupProperty" => new GroupProperty(Str(data, 0)),
                 _ => throw new Exception($"[SCENE CONFIG] Unknown property type '{type}'")
             };
         }

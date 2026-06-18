@@ -7,6 +7,9 @@
       "name": "Camera1",
       "properties": [
         {
+          "type": "TransformProperty"
+        },
+        {
           "type": "CameraProperty"
         }
       ]
@@ -88,8 +91,8 @@
             false,
             null,
             {
-              "OnClick": [ "printHello" ],
-              "OnHover": [ "printHi" ]
+              "OnClick": [ "action.myActions.printHello" ],
+              "OnHover": [ "action.myActions.printHi" ]
             }
           ]
         }

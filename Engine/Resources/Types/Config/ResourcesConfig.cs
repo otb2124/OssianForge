@@ -37,7 +37,6 @@ namespace OssianForge.Engine.Resources.Config
     }
 
     // ── config ───────────────────────────────────────────────────────────────────
-
     public class ResourcesConfig : JsonSerialConfig<ResourceRecord>
     {
         // ── live instance list ───────────────────────────────────────────────────
@@ -124,9 +123,27 @@ namespace OssianForge.Engine.Resources.Config
         {
             _resources.Clear();
             foreach (var record in GetAllRecords())
+            {
                 _resources.Add(InstantiateResource(record));
+            }
 
             Console.WriteLine($"[RESOURCES CONFIG] Built {_resources.Count} Resource instance(s).");
+        }
+
+        public void BuildInstances(params string[] ids)
+        {
+            var idSet = new HashSet<string>(ids);
+            var records = GetAllRecords().Where(r => idSet.Contains(r.Id));
+
+            foreach (var record in records)
+            {
+                var instance = InstantiateResource(record);
+                int idx = _resources.FindIndex(r => r.Id == record.Id);
+                if (idx >= 0) _resources[idx] = instance;
+                else _resources.Add(instance);
+            }
+
+            Console.WriteLine($"[RESOURCES CONFIG] Built {ids.Length} Resource instance(s) by id.");
         }
 
         // ── instance lookups ─────────────────────────────────────────────────────
@@ -176,6 +193,21 @@ namespace OssianForge.Engine.Resources.Config
                 resource.Load();
 
             Console.WriteLine($"[RESOURCES CONFIG] Loaded {targets.Count} {typeof(T).Name} instance(s).");
+        }
+
+        public void LoadResources(params string[] ids)
+        {
+            foreach (var id in ids)
+            {
+                var instance = GetInstanceById(id);
+                if (instance == null)
+                {
+                    Console.WriteLine($"[RESOURCES CONFIG] Instance '{id}' not found, skipping.");
+                    continue;
+                }
+                instance.Load();
+            }
+            Console.WriteLine($"[RESOURCES CONFIG] Loaded {ids.Length} Resource instance(s) by id.");
         }
     }
 }

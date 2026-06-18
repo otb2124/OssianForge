@@ -16,6 +16,14 @@ namespace OssianForge.Engine.Nodes.Props
             Camera = new Camera();
         }
 
+        public override void OnStart(Node node)
+        {
+            var transform = node.GetProperty<TransformProperty>();
+
+            Console.WriteLine(transform.Transform.Position.Y);
+            Camera.Position = transform.Transform.Position;
+        }
+
         public override void OnUpdate(Node node, double delta)
         {
             Camera.OnUpdate(delta);
