@@ -26,7 +26,6 @@ namespace OssianForge.Engine.Resources.Config
 
         public static object? InvokeWithResult(string call, object?[] args)
         {
-            //TODO: optimize it better
             call = PronounResolver.Resolve(call);
 
             int lastDot = call.LastIndexOf('.');
