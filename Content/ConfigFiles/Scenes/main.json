@@ -286,7 +286,7 @@
             false,
             null,
             {
-              "OnClick": [ "action.myActions.printHello" ],
+              "OnClick": [ "action.myActions.printHello", "action.myActions.getMyValue" ],
               "OnHover": [ "action.myActions.printHi" ]
             }
           ]

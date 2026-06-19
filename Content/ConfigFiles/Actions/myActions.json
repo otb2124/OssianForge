@@ -18,5 +18,11 @@
     "id": "action.myActions.printHi",
     "call": "System.Console.WriteLine",
     "args": [ "Hi" ]
+  },
+  {
+    "id": "action.myActions.getMyValue",
+    "call": "OssianForge.Engine.Nodes.GetMyValue",
+    "args": [ "Qos input" ],
+    "storeValue": "value.myActions.myValue"
   }
 ]

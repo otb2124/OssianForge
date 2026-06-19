@@ -45,6 +45,11 @@ namespace OssianForge.Engine.Nodes
 
             NodeManager.OnStart();
         }
+
+        public string GetMyValue(string input)
+        {
+            return input + " is my value";
+        }
         public void OnUpdate(double delta)
         { 
             NodeManager.OnUpdate(delta);

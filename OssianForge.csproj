@@ -236,10 +236,10 @@
     <None Update="Content\ConfigFiles\Fonts\roboto.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Content\ConfigFiles\Core\resourceFiles.json">
+    <None Update="Content\ConfigFiles\Core\Resources\resourceFiles.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Content\ConfigFiles\Core\resources.json">
+    <None Update="Content\ConfigFiles\Core\Resources\resources.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Content\ConfigFiles\Core\scriptPacks.json">
