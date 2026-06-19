@@ -10,9 +10,11 @@ namespace OssianForge.Engine.Resources
 {
     public class NodeDependency
     {
+
         public static readonly HashSet<string> AlwaysInclude = new()
         {
             "configfile.actions",
+            "configfile.inputKeys"
         };
 
         public HashSet<string> ResourceFileIds { get; } = new();

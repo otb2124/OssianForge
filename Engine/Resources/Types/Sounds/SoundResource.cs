@@ -96,7 +96,7 @@ namespace OssianForge.Engine.Resources.Sounds
         }
 
         /// <summary>
-        /// Update world position for 3D spatial sounds.
+        /// OnUpdate world position for 3D spatial sounds.
         /// Call this every frame from SoundProperty.OnUpdate.
         /// </summary>
         public void SetPosition(Vector3 position)

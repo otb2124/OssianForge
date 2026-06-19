@@ -84,6 +84,7 @@ namespace OssianForge.Engine.Resources.Config
                 "soundfile" => typeof(Sounds.SoundFile),
                 "actions" => typeof(Config.ActionsConfig),
                 "tree" => typeof(Config.TreeConfig),
+                "inputKeys" => typeof(Config.InputKeysConfig),
                 _ => throw new Exception($"[RESOURCE FILES CONFIG] Unknown type '{type}'")
             };
         }

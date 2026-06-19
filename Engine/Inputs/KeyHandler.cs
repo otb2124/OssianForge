@@ -1,18 +1,17 @@
-﻿using Silk.NET.Input;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using OssianForge.Engine.Resources.Config;
 
 namespace OssianForge.Engine.Inputs
 {
     public class KeyHandler
     {
-
         public struct InputKey
         {
             public bool IsMouseButton;
-            public Key? KeyboardKey;
+            public Silk.NET.Input.Key? KeyboardKey;
             public FlatMouse.MouseButtons? MouseButton;
 
-            public InputKey(Key key)
+            public InputKey(Silk.NET.Input.Key key)
             {
                 IsMouseButton = false;
                 KeyboardKey = key;
@@ -27,149 +26,93 @@ namespace OssianForge.Engine.Inputs
             }
         }
 
-        public enum KeyStates
+        // Pre-resolved binding, built once in OnLoad — no string parsing at runtime
+        private struct ResolvedBinding
         {
-            //Player keys
-            JUMPPRESSED,
-            MOVERIGHTPRESSED,
-            MOVELEFTPRESSED,
-            MOVEDOWNPRESSED,
-            MOVEUPPRESSED,
-            ATTACKLIGHTPRESSED,
-            ATTACKHEAVYPRESSED,
-            TOGGLEWEAPONPRESSED,
-            SPRINTPRESSED,
-            INTERACTRESSED,
-            PARRYPRESSED,
-            BLOCKPRESSED,
-
-            //Camera
-            CAMERALEFTPRESSED,
-            CAMERARIGHTPRESSED,
-            CAMERAUPPRESSED,
-            CAMERADOWNPRESSED,
-
-            CAMERAZOOMUPPRESSED,
-            CAMERAZOOMDOWNPRESSED,
-
-            //UI
-            TOGGLEMENUPRESSED,
-            TOGGLEHUDPRESSED,
-
-            //debug
-            TOGGLECOLLISIONDEBUGPRESSED,
-            TOGGLEHITBOXDEBUGPRESSED
+            public string Id;
+            public InputKeyType Type;
+            public List<InputKey> Keys;
         }
 
-        private Dictionary<KeyStates, bool> ActiveStates = new();
+        private readonly List<ResolvedBinding> _bindings = new();
 
+        public KeyHandler() { }
 
-        public Dictionary<(KeyStates state, bool clickOnly), List<InputKey>> KeyBindings = new Dictionary<(KeyStates, bool), List<InputKey>>
+        // ── load ──────────────────────────────────────────────────────────────────
+
+        /// <summary>
+        /// Resolves all InputKeysConfig resource files into flat bindings.
+        /// Call once after resources are loaded — not per-frame.
+        /// </summary>
+        public void OnLoad()
         {
-            //Player keys
-            { (KeyStates.MOVERIGHTPRESSED, false), new List<InputKey> { new InputKey(Key.D) } },
-            { (KeyStates.MOVELEFTPRESSED, false), new List<InputKey> { new InputKey(Key.A) } },
-            { (KeyStates.MOVEDOWNPRESSED, false), new List<InputKey> { new InputKey(Key.S) } },
-            { (KeyStates.MOVEUPPRESSED, false), new List<InputKey> { new InputKey(Key.W) } },
-            { (KeyStates.SPRINTPRESSED, false), new List<InputKey> { new InputKey(Key.ShiftLeft) } },
-            { (KeyStates.JUMPPRESSED, false), new List<InputKey> { new InputKey(Key.Space) } },
-            { (KeyStates.INTERACTRESSED, true), new List<InputKey> { new InputKey(Key.E) } },
-            { (KeyStates.BLOCKPRESSED, false), new List<InputKey> { new InputKey(Key.AltLeft) } },
-            { (KeyStates.TOGGLEWEAPONPRESSED, true), new List<InputKey> { new InputKey(Key.R),  new InputKey(Key.CapsLock) } },
-            { (KeyStates.PARRYPRESSED, false), new List<InputKey> { new InputKey(Key.ControlLeft) } },
-            { (KeyStates.ATTACKLIGHTPRESSED, true), new List<InputKey> { new InputKey(FlatMouse.MouseButtons.Left) } },
-            { (KeyStates.ATTACKHEAVYPRESSED, true), new List<InputKey> { new InputKey(FlatMouse.MouseButtons.Right) } },
+            _bindings.Clear();
 
-            //Camera
-            { (KeyStates.CAMERALEFTPRESSED, false), new List<InputKey> { new InputKey(Key.Left) } },
-            { (KeyStates.CAMERARIGHTPRESSED, false), new List<InputKey> { new InputKey(Key.Right) } },
-            { (KeyStates.CAMERAUPPRESSED, false), new List<InputKey> { new InputKey(Key.Up) } },
-            { (KeyStates.CAMERADOWNPRESSED, false), new List<InputKey> { new InputKey(Key.Down) } },
-            { (KeyStates.CAMERAZOOMUPPRESSED, false), new List<InputKey> { new InputKey(Key.Equal) } },
-            { (KeyStates.CAMERAZOOMDOWNPRESSED, false), new List<InputKey> { new InputKey(Key.Minus) } },
-
-            //ui
-            { (KeyStates.TOGGLEMENUPRESSED, true), new List<InputKey> { new InputKey(Key.Escape) } },
-            { (KeyStates.TOGGLEHUDPRESSED, true), new List<InputKey> { new InputKey(Key.F1) } },
-
-            //debug
-            { (KeyStates.TOGGLECOLLISIONDEBUGPRESSED, true), new List<InputKey> { new InputKey(Key.F3) } },
-            { (KeyStates.TOGGLEHITBOXDEBUGPRESSED, true), new List<InputKey> { new InputKey(Key.F4) } },
-        };
-
-
-        public KeyHandler() {
-        }
-
-        public void Update()
-        {
-            HandleKeyClicks();
-            HandleKeyPresses();
-            HandleKeyReleases();
-        }
-
-        private void HandleKeyClicks()
-        {
-            foreach (var ((state, clickOnly), bindings) in KeyBindings)
+            var configs = Engine.Resources.GetResourceFiles<InputKeysConfig>();
+            foreach (var config in configs)
             {
-                if (!clickOnly) continue;
-                bool isPressed = false;
-                foreach (var binding in bindings)
+                foreach (var record in config.GetAllRecords())
                 {
-                    if (binding.IsMouseButton)
-                        isPressed |= Engine.Inputs.mouse.IsMouseButtonPressed(binding.MouseButton!.Value);
-                    else
-                        isPressed |= Engine.Inputs.keyboard.IsKeyClicked(binding.KeyboardKey!.Value);
+                    _bindings.Add(new ResolvedBinding
+                    {
+                        Id = record.Id,
+                        Type = record.Type,
+                        Keys = config.ResolveBindings(record)
+                    });
                 }
-                SetState(state, isPressed); // ← uncomment
+            }
+
+            Console.WriteLine($"[KEY HANDLER] Loaded {_bindings.Count} input bindings from {configs.Count} config(s).");
+        }
+
+        // ── update ────────────────────────────────────────────────────────────────
+
+        public void OnUpdate()
+        {
+            foreach (var binding in _bindings)
+            {
+                bool result = binding.Type switch
+                {
+                    InputKeyType.Click => AnyClicked(binding.Keys),
+                    InputKeyType.Release => AnyReleased(binding.Keys),
+                    InputKeyType.Down => AnyDown(binding.Keys),
+                    _ => false
+                };
+
+                InputStateStore.Set(binding.Id, result);
             }
         }
 
-        private void HandleKeyPresses()
+        private static bool AnyDown(List<InputKey> bindings)
         {
-            foreach (var ((state, clickOnly), bindings) in KeyBindings)
-            {
-                if (clickOnly) continue;
-                bool isPressed = false;
-                foreach (var binding in bindings)
-                {
-                    if (binding.IsMouseButton)
-                        isPressed |= Engine.Inputs.mouse.IsMouseButtonDown(binding.MouseButton!.Value);
-                    else
-                        isPressed |= Engine.Inputs.keyboard.IsKeyDown(binding.KeyboardKey!.Value);
-                }
-                SetState(state, isPressed); // ← uncomment
-            }
+            bool isPressed = false;
+            foreach (var b in bindings)
+                isPressed |= b.IsMouseButton
+                    ? Engine.Inputs.mouse.IsMouseButtonDown(b.MouseButton!.Value)
+                    : Engine.Inputs.keyboard.IsKeyDown(b.KeyboardKey!.Value);
+            return isPressed;
         }
 
-        private void HandleKeyReleases()
+        private static bool AnyClicked(List<InputKey> bindings)
         {
-            foreach (var ((state, clickOnly), bindings) in KeyBindings)
-            {
-                if (clickOnly) continue;
-                bool allReleased = true;
-                foreach (var binding in bindings)
-                {
-                    bool isReleased = binding.IsMouseButton
-                        ? Engine.Inputs.mouse.IsMouseButtonReleased(binding.MouseButton!.Value)
-                        : Engine.Inputs.keyboard.IsKeyReleased(binding.KeyboardKey!.Value);
-                    allReleased &= isReleased;
-                }
-                if (allReleased)
-                    SetState(state, false); // ← uncomment
-            }
+            bool isClicked = false;
+            foreach (var b in bindings)
+                isClicked |= b.IsMouseButton
+                    ? Engine.Inputs.mouse.IsMouseButtonPressed(b.MouseButton!.Value)
+                    : Engine.Inputs.keyboard.IsKeyClicked(b.KeyboardKey!.Value);
+            return isClicked;
         }
 
-        public bool IsStateActive(KeyStates state) =>
-            ActiveStates.TryGetValue(state, out bool val) && val;
-
-        private void SetState(KeyStates state, bool value) =>
-            ActiveStates[state] = value;
-
-
-        private bool IsAnyPressed()
+        private static bool AnyReleased(List<InputKey> bindings)
         {
-            return Engine.Inputs.keyboard.GetPressedKeys().Count > 0 || Engine.Inputs.mouse.GetPressedButtons().Count > 0;
+            bool isReleased = false;
+            foreach (var b in bindings)
+                isReleased |= b.IsMouseButton
+                    ? Engine.Inputs.mouse.IsMouseButtonReleased(b.MouseButton!.Value)
+                    : Engine.Inputs.keyboard.IsKeyReleased(b.KeyboardKey!.Value);
+            return isReleased;
         }
+
+        public bool IsStateActive(string id) => InputStateStore.IsActive(id);
     }
 }

@@ -7,7 +7,7 @@ namespace OssianForge.Engine.UI
     /// <summary>
     /// Singleton that owns globally unique UI state: which node has focus,
     /// and which node is currently being dragged.
-    /// Call DragDrop.Update() once per frame BEFORE node tree updates.
+    /// Call DragDrop.OnUpdate() once per frame BEFORE node tree updates.
     /// </summary>
     public static class DragDrop
     {

@@ -1,0 +1,27 @@
+[
+  {
+    "id": "walk_up",
+    "type": "down",
+    "keys": [ "W", "Up" ]
+  },
+  {
+    "id": "jump",
+    "clickOnly": true,
+    "keys": [ "Space" ]
+  },
+  {
+    "id": "mouseleft_click",
+    "type": "click",
+    "keys": [ "mouseleft" ]
+  },
+  {
+    "id": "mouseleft_down",
+    "type": "down",
+    "keys": [ "mouseleft" ]
+  },
+  {
+    "id": "mouseleft_released",
+    "type": "release",
+    "keys": [ "mouseleft" ]
+  }
+]

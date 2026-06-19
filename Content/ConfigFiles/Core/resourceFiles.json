@@ -265,6 +265,11 @@
     "type": "actions"
   },
   {
+    "id": "configfile.inputKeys.myInputKeys",
+    "path": "ConfigFiles/InputKeys/myInputKeys.json",
+    "type": "inputKeys"
+  },
+  {
     "id": "soundfile.est-drink",
     "path": "SoundFiles/est-drink.ogg",
     "type": "soundfile"

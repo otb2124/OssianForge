@@ -248,6 +248,9 @@
     <None Update="Content\ConfigFiles\Actions\myActions.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="Content\ConfigFiles\InputKeys\myInputKeys.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Content\ConfigFiles\Scenes\terrainTest.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

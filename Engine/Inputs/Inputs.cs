@@ -24,13 +24,14 @@ namespace OssianForge.Engine.Inputs
             keyboard.Initialize(InputContext.Keyboards[0]);
             mouse.Initialize(InputContext.Mice[0]);
             //mouse.SetCursorMode(CursorMode.Disabled);
+            KeyHandler.OnLoad();
         }
 
         public void OnUpdate(double delta)
         {
             keyboard.Update();
             mouse.Update();
-            KeyHandler.Update();
+            KeyHandler.OnUpdate();
         }
     }
 }

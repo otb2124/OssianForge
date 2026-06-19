@@ -179,9 +179,9 @@ namespace OssianForge.Engine.Nodes.Props
                     OnScroll.Emit(scroll);
             }
 
-            bool lmbDown = Engine.Inputs.mouse.IsMouseButtonDown(Inputs.FlatMouse.MouseButtons.Left);
-            bool lmbPressed = Engine.Inputs.mouse.IsMouseButtonPressed(Inputs.FlatMouse.MouseButtons.Left);
-            bool lmbReleased = Engine.Inputs.mouse.IsMouseButtonReleased(Inputs.FlatMouse.MouseButtons.Left);
+            bool lmbDown = Engine.Inputs.KeyHandler.IsStateActive("mouseleft_down");
+            bool lmbPressed = Engine.Inputs.KeyHandler.IsStateActive("mouseleft_click");
+            bool lmbReleased = Engine.Inputs.KeyHandler.IsStateActive("mouseleft_released");
 
             // ── press ───────────────────────────────────────────────────────
             if (lmbPressed && inside)
