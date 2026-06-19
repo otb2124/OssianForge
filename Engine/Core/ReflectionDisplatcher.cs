@@ -26,6 +26,9 @@ namespace OssianForge.Engine.Resources.Config
 
         public static object? InvokeWithResult(string call, object?[] args)
         {
+            //TODO: optimize it better
+            call = PronounResolver.Resolve(call);
+
             int lastDot = call.LastIndexOf('.');
             if (lastDot < 0)
                 throw new Exception($"[DISPATCHER] Invalid call format '{call}'.");

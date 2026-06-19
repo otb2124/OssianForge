@@ -1,0 +1,12 @@
+﻿[
+  {
+    "id": "pronoun.SetNodePropVal",
+    "target": "OssianForge.Engine.Nodes.SetNodePropertyValue",
+    "pronouns": [ "setNodePropVal", "Nodes.SetNodePropVal" ]
+  },
+  {
+    "id": "pronoun.console",
+    "target": "System.Console.WriteLine",
+    "pronouns":  ["console"]
+  }
+]

@@ -270,6 +270,11 @@
     "type": "inputKeys"
   },
   {
+    "id": "configfile.pronouns.myPronouns",
+    "path": "ConfigFiles/Pronouns/myPronouns.json",
+    "type": "pronouns"
+  },
+  {
     "id": "soundfile.est-drink",
     "path": "SoundFiles/est-drink.ogg",
     "type": "soundfile"

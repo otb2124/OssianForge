@@ -8,6 +8,7 @@ namespace OssianForge.Engine.Resources
 
         public static readonly HashSet<string> AlwaysInclude = new()
         {
+            "configfile.pronouns",
             "configfile.actions",
             "configfile.inputKeys"
         };

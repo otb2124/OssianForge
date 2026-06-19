@@ -11,12 +11,12 @@
   },
   {
     "id": "action.myActions.printHello",
-    "call": "System.Console.WriteLine",
+    "call": "console",
     "args": [ "$value.myActions.myValue" ]
   },
   {
     "id": "action.myActions.printHi",
-    "call": "System.Console.WriteLine",
+    "call": "console",
     "args": [ "Hi" ]
   },
   {
