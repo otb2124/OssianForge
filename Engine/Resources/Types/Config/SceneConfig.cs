@@ -34,7 +34,7 @@ namespace OssianForge.Engine.Resources.Config
 
         // ── node ─────────────────────────────────────────────────────────────────
 
-        private static Node ParseNode(JsonElement el)
+        public static Node ParseNode(JsonElement el)
         {
             var node = new Node();
 
@@ -80,6 +80,7 @@ namespace OssianForge.Engine.Resources.Config
                 "PhysicalProperty" => ParsePhysicalProperty(el, data),
                 "AnimationProperty" => ParseAnimationProperty(el, data),
                 "ControlProperty" => ParseControlProperty(data),
+                "ActionProperty" => ParseActionProperty(data),
                 "SoundProperty" => ParseSoundProperty(data),
                 "ScriptProperty" => new ScriptProperty(Str(data, 0)),
                 "GroupProperty" => new GroupProperty(Str(data, 0)),
@@ -242,6 +243,34 @@ namespace OssianForge.Engine.Resources.Config
             }
 
             return new ControlProperty(isInteractable, isDraggable, isDropTarget, dragGroupId, actionMap);
+        }
+
+
+        private static ActionProperty ParseActionProperty(JsonElement? data)
+        {
+            Dictionary<string, List<string>> actionMap = null;
+
+            if (data != null)
+            {
+                var arr = data.Value;
+                if (arr.GetArrayLength() > 0 && arr[0].ValueKind == JsonValueKind.Object)
+                    actionMap = ParseActionMap(arr[0]);
+            }
+
+            return new ActionProperty(actionMap);
+        }
+
+        private static Dictionary<string, List<string>> ParseActionMap(JsonElement obj)
+        {
+            var actionMap = new Dictionary<string, List<string>>();
+            foreach (var entry in obj.EnumerateObject())
+            {
+                var ids = new List<string>();
+                foreach (var id in entry.Value.EnumerateArray())
+                    ids.Add(id.GetString()!);
+                actionMap[entry.Name] = ids;
+            }
+            return actionMap;
         }
 
         private static SoundProperty ParseSoundProperty(JsonElement? data)

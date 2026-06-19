@@ -1,4 +1,18 @@
 {
-  "mainScene": "main",
-  "version":  "1.0.0"
+  "node": {
+    "id": "tree",
+    "name": "Tree",
+    "properties": [
+      {
+        "type": "ActionProperty",
+        "data": [
+          {
+            "OnStart": [ "action.myActions.printHello" ]
+          }
+        ]
+      }
+    ]
+  },
+  "mainScene": "configfile.scene.main",
+  "version": "1.0.0"
 }

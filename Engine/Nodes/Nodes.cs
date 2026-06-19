@@ -1,4 +1,5 @@
 ﻿using OssianForge.Engine.Resources.Config;
+using Silk.NET.Assimp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,8 +23,9 @@ namespace OssianForge.Engine.Nodes
 
         public void OnLoad()
         {
-            var tree = new Node();
-            tree.Name = "tree";
+            var treeConfig = Engine.Resources.GetResourceFile<TreeConfig>("configfile.tree");
+            var tree = treeConfig.GetTreeNode();
+            tree.AddChild(Engine.Resources.GetResourceFile<SceneConfig>(treeConfig.MainScene).GetScene());
 
             //script packs test
             /*
@@ -38,8 +40,6 @@ namespace OssianForge.Engine.Nodes
 
             Console.WriteLine($"{stateInstance.ToString()}, StateName={StateName}");
             */
-
-            tree.AddChild(Engine.Resources.GetResourceFile<SceneConfig>("configfile.scene." + Engine.Resources.GetResourceFile<TreeConfig>("configfile.tree").MainScene).GetScene());
 
             NodeManager.RegisterTree(tree);
 

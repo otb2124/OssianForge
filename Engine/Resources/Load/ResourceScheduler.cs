@@ -20,7 +20,8 @@ namespace OssianForge.Engine.Resources
 
         public void Initialize()
         {
-            NodeDependency.Extract("configfile.scene." + Engine.Resources.GetResourceFile<TreeConfig>("configfile.tree").MainScene);
+            NodeDependency.ExtractTree("configfile.tree");
+            NodeDependency.ExtractScene(Engine.Resources.GetResourceFile<TreeConfig>("configfile.tree").MainScene);
         }
     }
 }

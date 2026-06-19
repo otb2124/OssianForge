@@ -1,10 +1,5 @@
 ﻿using OssianForge.Engine.Resources.Config;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace OssianForge.Engine.Resources
 {
@@ -25,12 +20,22 @@ namespace OssianForge.Engine.Resources
             
         }
 
-        public void Extract(string sceneConfigId)
+        public void ExtractTree(string treeConfigId)
+        {
+            ResolveAlwaysInclude();
+            var treeConfig = Engine.Resources.GetResourceFile<TreeConfig>(treeConfigId);
+            ExtractDocument(treeConfig.Document);
+        }
+
+        public void ExtractScene(string sceneConfigId)
         {
             var sceneConfig = Engine.Resources.GetResourceFile<SceneConfig>(sceneConfigId);
+            ExtractDocument(sceneConfig.Document);
+        }
 
-            ResolveAlwaysInclude();
-            ExtractFromNode(sceneConfig.Document.RootElement);
+        public void ExtractDocument(JsonDocument document)
+        {
+            ExtractFromNode(document.RootElement);
             ResolveResourceFileDependencies();
 
             Console.WriteLine($"[NODE DEPENDENCY] Extracted {ResourceFileIds.Count} resourceFiles, {ResourceIds.Count} resources");

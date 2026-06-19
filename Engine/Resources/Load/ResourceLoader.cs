@@ -25,11 +25,11 @@ namespace OssianForge.Engine.Resources
             ResourceFilesConfig.Load();
             ResourcesConfig.Load();
 
-            ResourceFilesConfig.BuildInstances<SceneConfig>();
-            ResourceFilesConfig.LoadResourceFiles<SceneConfig>(); 
-
             ResourceFilesConfig.BuildInstances<TreeConfig>();
             ResourceFilesConfig.LoadResourceFiles<TreeConfig>();
+
+            ResourceFilesConfig.BuildInstances<SceneConfig>();
+            ResourceFilesConfig.LoadResourceFiles<SceneConfig>(); 
         }
 
         public void InitializeResources()

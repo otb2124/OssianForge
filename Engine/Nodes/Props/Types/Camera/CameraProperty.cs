@@ -19,8 +19,6 @@ namespace OssianForge.Engine.Nodes.Props
         public override void OnStart(Node node)
         {
             var transform = node.GetProperty<TransformProperty>();
-
-            Console.WriteLine(transform.Transform.Position.Y);
             Camera.Position = transform.Transform.Position;
         }
 
