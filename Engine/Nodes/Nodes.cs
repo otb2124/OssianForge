@@ -46,9 +46,9 @@ namespace OssianForge.Engine.Nodes
             NodeManager.OnStart();
         }
 
-        public string GetMyValue(string input)
+        public string GetMyValue(Node node, string input)
         {
-            return input + " is my value";
+            return $"[{node.Name}] {input} +  is my value";
         }
         public void OnUpdate(double delta)
         { 

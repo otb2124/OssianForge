@@ -136,18 +136,18 @@ namespace OssianForge.Engine.Nodes.Props
 
         public override void OnStart(Node node)
         {
-            OnClick.Connect(() => OnClickActions.ForEach(Engine.Resources.InvokeAction));
-            OnHover.Connect(() => OnHoverActions.ForEach(Engine.Resources.InvokeAction));
-            OnExit.Connect(() => OnExitActions.ForEach(Engine.Resources.InvokeAction));
-            OnFocus.Connect(() => OnFocusActions.ForEach(Engine.Resources.InvokeAction));
-            OnUnfocus.Connect(() => OnUnfocusActions.ForEach(Engine.Resources.InvokeAction));
-            OnPress.Connect(() => OnPressActions.ForEach(Engine.Resources.InvokeAction));
-            OnRelease.Connect(() => OnReleaseActions.ForEach(Engine.Resources.InvokeAction));
-            OnScroll.Connect(_ => OnScrollActions.ForEach(Engine.Resources.InvokeAction));
-            OnDragStart.Connect(() => OnDragStartActions.ForEach(Engine.Resources.InvokeAction));
-            OnDragEnd.Connect(() => OnDragEndActions.ForEach(Engine.Resources.InvokeAction));
-            OnDrop.Connect(_ => OnDropActions.ForEach(Engine.Resources.InvokeAction));
-            OnDropReceived.Connect(_ => OnDropReceivedActions.ForEach(Engine.Resources.InvokeAction));
+            OnClick.Connect(() => OnClickActions.ForEach(id => Engine.Resources.InvokeAction(id, node)));
+            OnHover.Connect(() => OnHoverActions.ForEach(id => Engine.Resources.InvokeAction(id, node)));
+            OnExit.Connect(() => OnExitActions.ForEach(id => Engine.Resources.InvokeAction(id, node)));
+            OnFocus.Connect(() => OnFocusActions.ForEach(id => Engine.Resources.InvokeAction(id, node)));
+            OnUnfocus.Connect(() => OnUnfocusActions.ForEach(id => Engine.Resources.InvokeAction(id, node)));
+            OnPress.Connect(() => OnPressActions.ForEach(id => Engine.Resources.InvokeAction(id, node)));
+            OnRelease.Connect(() => OnReleaseActions.ForEach(id => Engine.Resources.InvokeAction(id, node)));
+            OnScroll.Connect(_ => OnScrollActions.ForEach(id => Engine.Resources.InvokeAction(id, node)));
+            OnDragStart.Connect(() => OnDragStartActions.ForEach(id => Engine.Resources.InvokeAction(id, node)));
+            OnDragEnd.Connect(() => OnDragEndActions.ForEach(id => Engine.Resources.InvokeAction(id, node)));
+            OnDrop.Connect(_ => OnDropActions.ForEach(id => Engine.Resources.InvokeAction(id, node)));
+            OnDropReceived.Connect(_ => OnDropReceivedActions.ForEach(id => Engine.Resources.InvokeAction(id, node)));
         }
 
         // ────────────────────────────────────────────────────────────────────

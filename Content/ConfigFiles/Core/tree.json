@@ -7,7 +7,7 @@
         "type": "ActionProperty",
         "data": [
           {
-            "OnStart": [ "action.myActions.printHello" ]
+            "OnStart": [ "action.myActions.printHi" ]
           }
         ]
       }

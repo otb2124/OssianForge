@@ -12,7 +12,7 @@
   {
     "id": "action.myActions.printHello",
     "call": "System.Console.WriteLine",
-    "args": [ "Hello" ]
+    "args": [ "$value.myActions.myValue" ]
   },
   {
     "id": "action.myActions.printHi",
@@ -22,7 +22,7 @@
   {
     "id": "action.myActions.getMyValue",
     "call": "OssianForge.Engine.Nodes.GetMyValue",
-    "args": [ "Qos input" ],
+    "args": [ "@self", "Qos input" ],
     "storeValue": "value.myActions.myValue"
   }
 ]

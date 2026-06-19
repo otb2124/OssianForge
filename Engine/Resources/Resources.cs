@@ -59,13 +59,13 @@ namespace OssianForge.Engine.Resources
                 ?? throw new Exception($"Type '{typeName}' not found in '{packOrFileId}'");
         }
 
-        public void InvokeAction(string actionId)
+        public void InvokeAction(string actionId, object context = null)
         {
             foreach (var config in GetResourceFiles<ActionsConfig>())
             {
                 if (config.GetById(actionId) != null)
                 {
-                    config.Execute(actionId);
+                    config.Execute(actionId, context);
                     return;
                 }
             }

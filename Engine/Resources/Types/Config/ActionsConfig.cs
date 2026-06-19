@@ -120,32 +120,31 @@ namespace OssianForge.Engine.Resources.Config
 
         // ── execution ─────────────────────────────────────────────────────────────
 
-        public void Execute(string id)
+        public void Execute(string id, object context = null)
         {
             var record = GetById(id)
                 ?? throw new Exception($"[ACTIONS CONFIG] Action '{id}' not found.");
-            ExecuteRecord(record);
+            ExecuteRecord(record, context);
         }
 
-        public object? ExecuteWithResult(string id)
+        public object? ExecuteWithResult(string id, object context = null)
         {
             var record = GetById(id)
                 ?? throw new Exception($"[ACTIONS CONFIG] Action '{id}' not found.");
-            return ExecuteRecord(record);
+            return ExecuteRecord(record, context);
         }
 
-        public void ExecuteAll(IEnumerable<string> ids)
+        public void ExecuteAll(IEnumerable<string> ids, object context = null)
         {
             foreach (var id in ids)
-                Execute(id);
+                Execute(id, context);
         }
 
         // ── internal dispatch ─────────────────────────────────────────────────────
 
-        private object? ExecuteRecord(ActionRecord record)
+        private object? ExecuteRecord(ActionRecord record, object context)
         {
-            // Resolve any args that reference stored values via "$value.key" syntax
-            var args = ResolveArgs(record.Args);
+            var args = ResolveArgs(record.Args, context);
 
             object? result = ReflectionDispatcher.InvokeWithResult(record.Call, args);
 
@@ -159,12 +158,20 @@ namespace OssianForge.Engine.Resources.Config
         /// Args starting with "$" are treated as value store lookups.
         /// e.g. "$value.myActionOne.result" → ActionValueStore.Get("value.myActionOne.result")
         /// </summary>
-        private static object?[] ResolveArgs(List<JsonElement> args)
+        private static object?[] ResolveArgs(List<JsonElement> args, object context)
             => args.Select(el =>
             {
                 var unboxed = ReflectionDispatcher.UnboxJsonElement(el);
-                if (unboxed is string s && s.StartsWith('$'))
-                    return ActionValueStore.Get(s[1..]);
+
+                if (unboxed is string s)
+                {
+                    if (s == "@self")
+                        return context;
+
+                    if (s.StartsWith('$'))
+                        return ActionValueStore.Get(s[1..]);
+                }
+
                 return unboxed;
             }).ToArray();
 

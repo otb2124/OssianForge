@@ -13,14 +13,14 @@ namespace OssianForge.Engine.Graphics.Camera
         private float _yaw = -90f; // facing forward by default
         private float _pitch = 0f;
 
-        private Vector2 _lastMousePos;
-        private bool _firstMouse = true;
+        //private Vector2 _lastMousePos;
+        //private bool _firstMouse = true;
 
-        private const float MoveSpeed = 3f;
-        private const float MouseSensitivity = 0.3f;
-        private const float ZoomSpeed = 2f;
-        private const float MinFov = 10f;
-        private const float MaxFov = 120f;
+        //private const float MoveSpeed = 3f;
+        //private const float MouseSensitivity = 0.3f;
+        //private const float ZoomSpeed = 2f;
+        //private const float MinFov = 10f;
+        //private const float MaxFov = 120f;
 
         public Camera()
         {

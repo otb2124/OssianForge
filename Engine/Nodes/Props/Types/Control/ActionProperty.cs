@@ -17,13 +17,14 @@ namespace OssianForge.Engine.Nodes.Props
             if (actionMap.TryGetValue("OnRender", out v)) OnRenderActions = v;
         }
 
+        // ActionProperty
         public override void OnStart(Node node)
-            => OnStartActions.ForEach(Engine.Resources.InvokeAction);
+            => OnStartActions.ForEach(id => Engine.Resources.InvokeAction(id, node));
 
         public override void OnUpdate(Node node, double delta)
-            => OnUpdateActions.ForEach(Engine.Resources.InvokeAction);
+            => OnUpdateActions.ForEach(id => Engine.Resources.InvokeAction(id, node));
 
         public override void OnRender(Node node, double delta)
-            => OnRenderActions.ForEach(Engine.Resources.InvokeAction);
+            => OnRenderActions.ForEach(id => Engine.Resources.InvokeAction(id, node));
     }
 }
