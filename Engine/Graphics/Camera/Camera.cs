@@ -32,6 +32,16 @@ namespace OssianForge.Engine.Graphics.Camera
             //ControlCamera((float)delta);
         }
 
+        public void SetRotation(Vector3 rotationDegrees)
+        {
+            // rotationDegrees is (pitch, yaw, roll) per your engine's Transform convention
+            // (matches PhysicsBody's ToEuler/CreateFromYawPitchRoll usage: X=pitch, Y=yaw, Z=roll).
+            _pitch = rotationDegrees.X;
+            _yaw = rotationDegrees.Y;
+            // roll (rotationDegrees.Z) isn't modeled by this Camera's yaw/pitch-only forward
+            // vector — GetForward() has no roll term, so it's silently dropped here.
+        }
+
         /*
         private void ControlCamera(float delta)
         {

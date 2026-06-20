@@ -18,12 +18,8 @@ namespace OssianForge.Engine.Physics
         public ColliderProperty ColliderProperty;
         public TransformProperty TransformProperty;
 
-        // Null for static mesh bodies — those use world.NullBody directly
         public RigidBody? JitterBody;
-
-        // The shapes we added, kept so we can remove them on Unregister
         public List<RigidBodyShape> OwnedShapes = new();
-
 
         private JVector _initialPosition;
         private JQuaternion _initialOrientation;
@@ -37,12 +33,14 @@ namespace OssianForge.Engine.Physics
             ColliderProperty = node.GetProperty<ColliderProperty>();
             TransformProperty = node.GetProperty<TransformProperty>();
 
-            var pos = TransformProperty.Transform.Position;
+            // Use WorldTransform — spawn position/orientation/scale must account
+            // for any parent composition (e.g. a collider on a child of "player").
+            var pos = TransformProperty.WorldTransform.Position;
             var jPos = new JVector(pos.X, pos.Y, pos.Z);
 
             if (PhysicsProperty.IsStatic)
             {
-                var t = TransformProperty.Transform;
+                var t = TransformProperty.WorldTransform;
                 pos = t.Position;
                 var scale = t.Scale;
 
@@ -56,7 +54,6 @@ namespace OssianForge.Engine.Physics
                     var b = sourceMesh.Vertices[idx.IndexB];
                     var c = sourceMesh.Vertices[idx.IndexC];
 
-                    // Use scale, then rotation, then position
                     a = TransformJVertex(a, t);
                     b = TransformJVertex(b, t);
                     c = TransformJVertex(c, t);
@@ -74,10 +71,9 @@ namespace OssianForge.Engine.Physics
             }
             else
             {
-                var t = TransformProperty.Transform;
+                var t = TransformProperty.WorldTransform;
                 var scale = t.Scale;
 
-                // Apply scale to the point cloud so the convex hull matches the rendered size
                 var scaledPoints = ColliderProperty.ColliderResource.Points
                     .Select(p => new JVector(p.X * scale.X, p.Y * scale.Y, p.Z * scale.Z))
                     .ToList();
@@ -93,7 +89,7 @@ namespace OssianForge.Engine.Physics
                 JitterBody.Damping = (PhysicsProperty.LinearDamping, PhysicsProperty.AngularDamping);
                 JitterBody.Tag = NodeId;
 
-                var rot = t.Rotation; // Euler degrees
+                var rot = t.Rotation;
                 var initRot = System.Numerics.Quaternion.CreateFromYawPitchRoll(
                     float.DegreesToRadians(rot.Y),
                     float.DegreesToRadians(rot.X),
@@ -114,12 +110,29 @@ namespace OssianForge.Engine.Physics
             EnforceAxisLocks(lockPosition, lockRotation);
 
             var p = JitterBody.Position;
-            TransformProperty.Transform.Position = new Vector3(p.X, p.Y, p.Z);
-
             var o = JitterBody.Orientation;
-            TransformProperty.Transform.Rotation = ToEuler(o);
-
             var v = JitterBody.Velocity;
+
+            // Physics is the authority on world position/rotation for this node.
+            // Write to WorldTransform (read by rendering) — NOT local Transform,
+            // since Transform is meant to stay the authored/script-editable value
+            // and TransformProperty.OnUpdate will overwrite WorldTransform from
+            // Transform + parent every frame anyway, undoing this otherwise.
+            //
+            // If this body has no parent (the common physics case — top-level
+            // dynamic objects), Transform and WorldTransform should be kept in
+            // sync so script reads of either field stay consistent.
+            TransformProperty.WorldTransform.Position = new Vector3(p.X, p.Y, p.Z);
+            TransformProperty.WorldTransform.Rotation = ToEuler(o);
+
+            var parent = Engine.Nodes.NodeManager.GetNode(NodeId).Parent;
+
+            if (parent?.GetProperty<TransformProperty>() == null)
+            {
+                TransformProperty.Transform.Position = TransformProperty.WorldTransform.Position;
+                TransformProperty.Transform.Rotation = TransformProperty.WorldTransform.Rotation;
+            }
+
             PhysicsProperty.Velocity = new Vector3(v.X, v.Y, v.Z);
         }
 
@@ -136,8 +149,6 @@ namespace OssianForge.Engine.Physics
             PhysicsProperty.ManualVelocity = Vector3.Zero;
         }
 
-
-
         public void AddForce(Vector3 force)
         {
             JitterBody?.AddForce(new JVector(force.X, force.Y, force.Z));
@@ -145,27 +156,21 @@ namespace OssianForge.Engine.Physics
 
         public void AddImpulse(Vector3 impulse)
         {
-            // Impulse = force applied for one frame's worth of time
             if (JitterBody == null) return;
             JitterBody.Velocity += new JVector(impulse.X, impulse.Y, impulse.Z);
         }
 
-
         private static JVector TransformJVertex(JVector local, Transform t)
         {
-            // Reuse the same matrix your renderer uses
             var matrix = t.ToMatrix();
-
             var v = System.Numerics.Vector3.Transform(
                 new System.Numerics.Vector3(local.X, local.Y, local.Z),
                 matrix);
-
             return new JVector(v.X, v.Y, v.Z);
         }
 
         private static Vector3 ToEuler(JQuaternion q)
         {
-            // Convert JQuaternion to System.Numerics.Quaternion then to Euler
             var sq = new System.Numerics.Quaternion(q.X, q.Y, q.Z, q.W);
 
             float sinr_cosp = 2f * (sq.W * sq.X + sq.Y * sq.Z);
@@ -181,7 +186,6 @@ namespace OssianForge.Engine.Physics
             float cosy_cosp = 1f - 2f * (sq.Y * sq.Y + sq.Z * sq.Z);
             float yaw = MathF.Atan2(siny_cosp, cosy_cosp);
 
-            // Convert radians to degrees if your Transform expects degrees
             return new Vector3(
                 roll * (180f / MathF.PI),
                 pitch * (180f / MathF.PI),
@@ -206,39 +210,20 @@ namespace OssianForge.Engine.Physics
             return new Vector3(roll, pitch, yaw);
         }
 
-
         private void EnforceAxisLocks(AxisLock lockPosition, AxisLock lockRotation)
         {
             if (JitterBody == null) return;
 
-            // ── Position locks ──────────────────────────────────────────────────────
-            // Snap the body back to its initial coordinate on locked axes
-            // and kill velocity on that axis so it can't drift.
             var pos = JitterBody.Position;
             var vel = JitterBody.Velocity;
 
-            if (lockPosition.HasFlag(AxisLock.X))
-            {
-                pos.X = _initialPosition.X;
-                vel.X = 0f;
-            }
-            if (lockPosition.HasFlag(AxisLock.Y))
-            {
-                pos.Y = _initialPosition.Y;
-                vel.Y = 0f;
-            }
-            if (lockPosition.HasFlag(AxisLock.Z))
-            {
-                pos.Z = _initialPosition.Z;
-                vel.Z = 0f;
-            }
+            if (lockPosition.HasFlag(AxisLock.X)) { pos.X = _initialPosition.X; vel.X = 0f; }
+            if (lockPosition.HasFlag(AxisLock.Y)) { pos.Y = _initialPosition.Y; vel.Y = 0f; }
+            if (lockPosition.HasFlag(AxisLock.Z)) { pos.Z = _initialPosition.Z; vel.Z = 0f; }
 
             JitterBody.Position = pos;
             JitterBody.Velocity = vel;
 
-            // ── Rotation locks ──────────────────────────────────────────────────────
-            // Kill angular velocity on locked axes, then rebuild the orientation
-            // quaternion from only the free axis so the body can't tumble.
             var angVel = JitterBody.AngularVelocity;
 
             if (lockRotation.HasFlag(AxisLock.X)) angVel.X = 0f;
@@ -247,12 +232,9 @@ namespace OssianForge.Engine.Physics
 
             JitterBody.AngularVelocity = angVel;
 
-            // If any rotation axis is locked, also correct the orientation itself
-            // so accumulated drift doesn't sneak in over many frames.
             if (lockRotation != AxisLock.None)
             {
                 var q = JitterBody.Orientation;
-                // Convert to System.Numerics.Quaternion for easier manipulation
                 var sq = new System.Numerics.Quaternion(q.X, q.Y, q.Z, q.W);
                 var euler = ToEulerRadians(sq);
 

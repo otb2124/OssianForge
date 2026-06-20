@@ -10,8 +10,8 @@ namespace OssianForge.Engine.Nodes.Props
     public class NodeProperty
     {
 
-
-        public virtual void OnStart(Node node) { }
+        public string NodeId;
+        public virtual void OnStart(Node node) { NodeId = node.Id; }
 
         public virtual void OnUpdate(Node node, double delta) { }
 

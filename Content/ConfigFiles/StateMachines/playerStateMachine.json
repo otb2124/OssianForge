@@ -7,30 +7,93 @@
       "onEnter": []
     },
     {
-      "id": "Walk",
-      "onUpdate": [ "action.myActions.walkStep" ]
+      "id": "WalkForward",
+      "onUpdate": [ "action.myActions.transformForward" ]
+    },
+    {
+      "id": "WalkBackward",
+      "onUpdate": [ "action.myActions.transformBackward" ]
+    },
+    {
+      "id": "WalkLeft",
+      "onUpdate": [ "action.myActions.transformLeft" ]
+    },
+    {
+      "id": "WalkRight",
+      "onUpdate": [ "action.myActions.transformRight" ]
     }
   ],
   "transitions": [
     {
       "from": "Idle",
-      "to": "Walk",
+      "to": "WalkForward",
       "condition": {
         "call": "OssianForge.Engine.Inputs.KeyHandler.IsStateActive",
-        "args": [ "walk_up" ],
-        "compare": "equals",
-        "value": true
+        "args": [ "walk_up" ]
       }
     },
     {
-      "from": "Walk",
+      "from": "Idle",
+      "to": "WalkBackward",
+      "condition": {
+        "call": "OssianForge.Engine.Inputs.KeyHandler.IsStateActive",
+        "args": [ "walk_down" ]
+      }
+    },
+    {
+      "from": "Idle",
+      "to": "WalkLeft",
+      "condition": {
+        "call": "OssianForge.Engine.Inputs.KeyHandler.IsStateActive",
+        "args": [ "walk_left" ]
+      }
+    },
+    {
+      "from": "Idle",
+      "to": "WalkRight",
+      "condition": {
+        "call": "OssianForge.Engine.Inputs.KeyHandler.IsStateActive",
+        "args": [ "walk_right" ]
+      }
+    },
+
+    {
+      "from": "WalkForward",
       "to": "Idle",
       "condition": {
         "not": {
           "call": "OssianForge.Engine.Inputs.KeyHandler.IsStateActive",
-          "args": [ "walk_up" ],
-          "compare": "equals",
-          "value": true
+          "args": [ "walk_up" ]
+        }
+      }
+    },
+    {
+      "from": "WalkBackward",
+      "to": "Idle",
+      "condition": {
+        "not": {
+          "call": "OssianForge.Engine.Inputs.KeyHandler.IsStateActive",
+          "args": [ "walk_down" ]
+        }
+      }
+    },
+    {
+      "from": "WalkLeft",
+      "to": "Idle",
+      "condition": {
+        "not": {
+          "call": "OssianForge.Engine.Inputs.KeyHandler.IsStateActive",
+          "args": [ "walk_left" ]
+        }
+      }
+    },
+    {
+      "from": "WalkRight",
+      "to": "Idle",
+      "condition": {
+        "not": {
+          "call": "OssianForge.Engine.Inputs.KeyHandler.IsStateActive",
+          "args": [ "walk_right" ]
         }
       }
     }

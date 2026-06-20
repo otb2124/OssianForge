@@ -20,6 +20,7 @@ namespace OssianForge.Engine.Nodes.Props
 
         public override void OnStart(Node node)
         {
+            base.OnStart(node);
             //SoundResource.Spatial = true;
             //SoundResource.Loop = true;
             if(AutoPlay) SoundResource.Play();

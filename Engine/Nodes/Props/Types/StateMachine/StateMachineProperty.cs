@@ -79,7 +79,10 @@ namespace OssianForge.Engine.Nodes.Props
         // ── lifecycle ─────────────────────────────────────────────────────────────
 
         public override void OnStart(Node node)
-            => Current?.OnEnter(node);
+        {
+            base.OnStart(node);
+            Current?.OnEnter(node);
+        }
 
         public override void OnUpdate(Node node, double delta)
         {

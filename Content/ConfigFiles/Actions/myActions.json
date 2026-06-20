@@ -16,8 +16,38 @@
     "storeValue": "value.myActions.myValue"
   },
   {
-    "id": "action.myActions.walkStep",
-    "call": "OssianForge.Engine.Nodes.NodeReflection.SetNodePropertyValue",
-    "args": [ "$self", "PhysicsProperty", "ManualVelocity", "10,0,0" ]
+    "id": "action.myActions.walkUp",
+    "call": "node.setValue",
+    "args": [ "$self", "PhysicsProperty", "ManualVelocity", "1,0,0" ]
+  },
+  {
+    "id": "action.myActions.transformRight",
+    "call": "node.addValue",
+    "args": [ "$self", "TransformProperty", "Transform.Position", "1,0,0", "$delta" ]
+  },
+  {
+    "id": "action.myActions.transformLeft",
+    "call": "node.addValue",
+    "args": [ "$self", "TransformProperty", "Transform.Position", "-1,0,0", "$delta" ]
+  },
+  {
+    "id": "action.myActions.transformUp",
+    "call": "node.addValue",
+    "args": [ "$self", "TransformProperty", "Transform.Position", "0,1,0", "$delta" ]
+  },
+  {
+    "id": "action.myActions.transformDown",
+    "call": "node.addValue",
+    "args": [ "$self", "TransformProperty", "Transform.Position", "0,-1,0", "$delta" ]
+  },
+  {
+    "id": "action.myActions.transformForward",
+    "call": "node.addValue",
+    "args": [ "$self", "TransformProperty", "Transform.Position", "0,0,-1", "$delta" ]
+  },
+  {
+    "id": "action.myActions.transformBackward",
+    "call": "node.addValue",
+    "args": [ "$self", "TransformProperty", "Transform.Position", "0,0,1", "$delta" ]
   }
 ]

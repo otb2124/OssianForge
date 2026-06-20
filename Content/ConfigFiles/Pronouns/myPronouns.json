@@ -7,6 +7,16 @@
   {
     "id": "pronoun.console",
     "target": "System.Console.WriteLine",
-    "pronouns":  ["console"]
+    "pronouns": [ "console" ]
+  },
+  {
+    "id": "pronoun.node.addValue",
+    "target": "OssianForge.Engine.Nodes.NodeReflection.AddNodePropertyValueScaled",
+    "pronouns": [ "node.addValue" ]
+  },
+  {
+    "id": "pronoun.node.setValue",
+    "target": "OssianForge.Engine.Nodes.NodeReflection.SetNodePropertyValue",
+    "pronouns": [ "node.setValue" ]
   }
 ]

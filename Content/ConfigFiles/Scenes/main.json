@@ -17,15 +17,31 @@
           ]
         },
         {
-          "type": "MeshProperty",
-          "data": [ "mesh.cube" ]
-        },
-        {
-          "type": "TextureMaterialProperty",
-          "data": [ "texture.house.wood", "shader.basic" ]
+          "type": "StateMachineProperty",
+          "data": [ "configfile.statemachine.player" ]
         }
       ],
       "children": [
+        {
+          "id": "playerBody",
+          "name": "playerBody",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [ "0,0,-5", "0,0,0", "1,1,1" ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [ "mesh.cube" ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [ "texture.house.wood", "shader.basic" ]
+            }
+          ]
+        },
         {
           "id": "camera",
           "name": "Camera",
@@ -33,7 +49,7 @@
             {
               "type": "TransformProperty",
               "data": [
-                [ "0,1,1", "0,0,0", "1,1,1" ]
+                [ "0,0,0", "0,0,0", "1,1,1" ]
               ]
             },
             {
@@ -298,10 +314,6 @@
         {
           "type": "ScriptProperty",
           "data": [ "script.scripts.PlayerControllerScript" ]
-        },
-        {
-          "type": "StateMachineProperty",
-          "data": [ "configfile.statemachine.player" ]
         }
       ]
     },

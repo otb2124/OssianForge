@@ -56,8 +56,6 @@ namespace OssianForge.Engine.Nodes
         /// </summary>
         public static void AddNodePropertyValueScaled(Node node, string propertyTypeName, string memberPath, string rawDelta, double delta)
         {
-            Console.WriteLine($"[NODE REFLECTION] AddNodePropertyValueScaled START node={node.Id} prop={propertyTypeName} path={memberPath} raw={rawDelta} delta={delta}");
-
             var prop = FindNodeProperty(node, propertyTypeName);
             string[] segments = memberPath.Split('.');
 
@@ -70,13 +68,8 @@ namespace OssianForge.Engine.Nodes
             object scaledDelta = Scale(valueType, parsedDelta, delta);
             object result = Add(valueType, current, scaledDelta);
 
-            Console.WriteLine($"[NODE REFLECTION] current={current} parsedDelta={parsedDelta} scaledDelta={scaledDelta} result={result}");
-
             SetMember(finalOwner, finalMember, result);
             WriteBackChain(chain);
-
-            var verify = GetMember(finalOwner, finalMember);
-            Console.WriteLine($"[NODE REFLECTION] after SetMember, value on owner = {verify}");
         }
 
 

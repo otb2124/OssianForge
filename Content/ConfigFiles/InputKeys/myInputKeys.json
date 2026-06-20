@@ -5,6 +5,21 @@
     "keys": [ "W", "Up" ]
   },
   {
+    "id": "walk_down",
+    "type": "down",
+    "keys": [ "S", "Down" ]
+  },
+  {
+    "id": "walk_left",
+    "type": "down",
+    "keys": [ "A", "Left" ]
+  },
+  {
+    "id": "walk_right",
+    "type": "down",
+    "keys": [ "D", "Right" ]
+  },
+  {
     "id": "jump",
     "type": "click",
     "keys": [ "Space" ]

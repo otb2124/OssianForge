@@ -19,7 +19,11 @@ namespace OssianForge.Engine.Nodes.Props
 
         // ActionProperty
         public override void OnStart(Node node)
-            => OnStartActions.ForEach(id => Engine.Resources.InvokeAction(id, node));
+        {
+            base.OnStart(node);
+            OnStartActions.ForEach(id => Engine.Resources.InvokeAction(id, node));
+        }
+        
 
         public override void OnUpdate(Node node, double delta)
             => OnUpdateActions.ForEach(id => Engine.Resources.InvokeAction(id, node));

@@ -19,6 +19,7 @@ namespace OssianForge.Engine.Nodes.Props
 
         public override void OnStart(Node node)
         {
+            base.OnStart(node);
             // Lazy-init here so the resource system is guaranteed to be loaded
             if (_instance == null)
                 Initialize();

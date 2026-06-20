@@ -136,6 +136,7 @@ namespace OssianForge.Engine.Nodes.Props
 
         public override void OnStart(Node node)
         {
+            base.OnStart(node);
             OnClick.Connect(() => OnClickActions.ForEach(id => Engine.Resources.InvokeAction(id, node)));
             OnHover.Connect(() => OnHoverActions.ForEach(id => Engine.Resources.InvokeAction(id, node)));
             OnExit.Connect(() => OnExitActions.ForEach(id => Engine.Resources.InvokeAction(id, node)));
