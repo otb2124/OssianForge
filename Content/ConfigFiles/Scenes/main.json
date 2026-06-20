@@ -83,7 +83,7 @@
           "data": [ "collider.cube" ]
         },
         {
-          "type": "PhysicalProperty",
+          "type": "PhysicsProperty",
           "data": [ true, false ]
         }
       ]
@@ -111,7 +111,7 @@
           "data": [ "collider.ball" ]
         },
         {
-          "type": "PhysicalProperty",
+          "type": "PhysicsProperty",
           "data": [ false, true, 1, 1 ]
         }
       ]
@@ -139,7 +139,7 @@
           "data": [ "collider.cube" ]
         },
         {
-          "type": "PhysicalProperty",
+          "type": "PhysicsProperty",
           "data": [ false, true, 1, 1 ]
         }
       ]
@@ -167,7 +167,7 @@
           "data": [ "collider.ball" ]
         },
         {
-          "type": "PhysicalProperty",
+          "type": "PhysicsProperty",
           "data": [ false, true, 1, 1 ]
         }
       ]
@@ -195,7 +195,7 @@
           "data": [ "collider.cube" ]
         },
         {
-          "type": "PhysicalProperty",
+          "type": "PhysicsProperty",
           "data": [ false, true, 1, 1 ]
         }
       ]
@@ -223,7 +223,7 @@
           "data": [ "collider.pyramid" ]
         },
         {
-          "type": "PhysicalProperty",
+          "type": "PhysicsProperty",
           "data": [ false, true, 1, 1 ]
         }
       ]
@@ -271,7 +271,7 @@
           "data": [ "collider.remy" ]
         },
         {
-          "type": "PhysicalProperty",
+          "type": "PhysicsProperty",
           "data": [ false, true, 1, 1 ]
         },
         {
@@ -298,6 +298,10 @@
         {
           "type": "ScriptProperty",
           "data": [ "script.scripts.PlayerControllerScript" ]
+        },
+        {
+          "type": "StateMachineProperty",
+          "data": [ "configfile.statemachine.player" ]
         }
       ]
     },
@@ -335,7 +339,7 @@
           "data": [ "collider.thickquad" ]
         },
         {
-          "type": "PhysicalProperty",
+          "type": "PhysicsProperty",
           "data": [ false, true, 1, 1 ]
         }
       ]
@@ -364,7 +368,7 @@
           "data": [ "collider.thickquad" ]
         },
         {
-          "type": "PhysicalProperty",
+          "type": "PhysicsProperty",
           "data": [ false, true, 1, 1 ]
         }
       ]
@@ -393,7 +397,7 @@
           "data": [ "collider.thickquad" ]
         },
         {
-          "type": "PhysicalProperty",
+          "type": "PhysicsProperty",
           "data": [ false, true, 1, 1 ]
         }
       ]

@@ -1,6 +1,4 @@
-﻿// ── state machine property ─────────────────────────────────────────────────────
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using OssianForge.Engine.Core;
 using OssianForge.Engine.Resources.Config;
@@ -22,21 +20,30 @@ namespace OssianForge.Engine.Nodes.Props
     // Thin state backed entirely by action ids — no subclass needed
     public class ActionState : State
     {
-        private readonly string? _onEnter;
-        private readonly string? _onExit;
-        private readonly string? _onUpdate;
+        private readonly List<string> _onEnter;
+        private readonly List<string> _onExit;
+        private readonly List<string> _onUpdate;
 
-        public ActionState(string name, string? onEnter = null, string? onExit = null, string? onUpdate = null)
+        public ActionState(
+            string name,
+            List<string>? onEnter = null,
+            List<string>? onExit = null,
+            List<string>? onUpdate = null)
             : base(name)
         {
-            _onEnter = onEnter;
-            _onExit = onExit;
-            _onUpdate = onUpdate;
+            _onEnter = onEnter ?? new List<string>();
+            _onExit = onExit ?? new List<string>();
+            _onUpdate = onUpdate ?? new List<string>();
         }
 
-        public override void OnEnter(Node node) { if (_onEnter != null) ReflectionDispatcher.Invoke(_onEnter); }
-        public override void OnExit(Node node) { if (_onExit != null) ReflectionDispatcher.Invoke(_onExit); }
-        public override void OnUpdate(Node node, double delta) { if (_onUpdate != null) ReflectionDispatcher.Invoke(_onUpdate); }
+        public override void OnEnter(Node node)
+            => _onEnter.ForEach(id => Engine.Resources.InvokeAction(id, node));
+
+        public override void OnExit(Node node)
+            => _onExit.ForEach(id => Engine.Resources.InvokeAction(id, node));
+
+        public override void OnUpdate(Node node, double delta)
+            => _onUpdate.ForEach(id => Engine.Resources.InvokeAction(id, node, delta));
     }
 
     public class StateMachineProperty : NodeProperty
@@ -99,6 +106,8 @@ namespace OssianForge.Engine.Nodes.Props
             if (!_states.TryGetValue(name, out var next))
                 throw new InvalidOperationException($"[SM] Unknown state '{name}'");
             if (next == Current) return;
+
+            Console.WriteLine($"[STATEMACHINE PROPERTY] '{node.Id}' transitioning: {Current?.Name ?? "(none)"} → {next.Name}");
 
             Current?.OnExit(node);
             Current = next;

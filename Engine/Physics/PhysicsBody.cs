@@ -14,7 +14,7 @@ namespace OssianForge.Engine.Physics
     public class PhysicsBody
     {
         public string NodeId;
-        public PhysicalProperty PhysicalProperty;
+        public PhysicsProperty PhysicsProperty;
         public ColliderProperty ColliderProperty;
         public TransformProperty TransformProperty;
 
@@ -33,14 +33,14 @@ namespace OssianForge.Engine.Physics
         public PhysicsBody(Node node, World jitterWorld)
         {
             NodeId = node.Id;
-            PhysicalProperty = node.GetProperty<PhysicalProperty>();
+            PhysicsProperty = node.GetProperty<PhysicsProperty>();
             ColliderProperty = node.GetProperty<ColliderProperty>();
             TransformProperty = node.GetProperty<TransformProperty>();
 
             var pos = TransformProperty.Transform.Position;
             var jPos = new JVector(pos.X, pos.Y, pos.Z);
 
-            if (PhysicalProperty.IsStatic)
+            if (PhysicsProperty.IsStatic)
             {
                 var t = TransformProperty.Transform;
                 pos = t.Position;
@@ -87,10 +87,10 @@ namespace OssianForge.Engine.Physics
                 JitterBody = jitterWorld.CreateRigidBody();
                 JitterBody.AddShape(shape);
                 JitterBody.Position = new JVector(t.Position.X, t.Position.Y, t.Position.Z);
-                JitterBody.AffectedByGravity = PhysicalProperty.UseGravity;
-                JitterBody.Friction = PhysicalProperty.Friction;
-                JitterBody.Restitution = PhysicalProperty.Bounciness;
-                JitterBody.Damping = (PhysicalProperty.LinearDamping, PhysicalProperty.AngularDamping);
+                JitterBody.AffectedByGravity = PhysicsProperty.UseGravity;
+                JitterBody.Friction = PhysicsProperty.Friction;
+                JitterBody.Restitution = PhysicsProperty.Bounciness;
+                JitterBody.Damping = (PhysicsProperty.LinearDamping, PhysicsProperty.AngularDamping);
                 JitterBody.Tag = NodeId;
 
                 var rot = t.Rotation; // Euler degrees
@@ -111,7 +111,6 @@ namespace OssianForge.Engine.Physics
         {
             if (JitterBody == null) return;
 
-            // Enforce locks directly on the Jitter body BEFORE reading back to Transform
             EnforceAxisLocks(lockPosition, lockRotation);
 
             var p = JitterBody.Position;
@@ -121,8 +120,23 @@ namespace OssianForge.Engine.Physics
             TransformProperty.Transform.Rotation = ToEuler(o);
 
             var v = JitterBody.Velocity;
-            PhysicalProperty.Velocity = new Vector3(v.X, v.Y, v.Z);
+            PhysicsProperty.Velocity = new Vector3(v.X, v.Y, v.Z);
         }
+
+        public void SyncToJitter()
+        {
+            if (JitterBody == null) return;
+            if (PhysicsProperty.ManualVelocity == Vector3.Zero) return;
+
+            JitterBody.Velocity = new JVector(
+                PhysicsProperty.ManualVelocity.X,
+                PhysicsProperty.ManualVelocity.Y,
+                PhysicsProperty.ManualVelocity.Z);
+
+            PhysicsProperty.ManualVelocity = Vector3.Zero;
+        }
+
+
 
         public void AddForce(Vector3 force)
         {

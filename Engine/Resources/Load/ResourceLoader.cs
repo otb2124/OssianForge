@@ -16,8 +16,8 @@ namespace OssianForge.Engine.Resources
 
         public ResourceLoader()
         {
-            ResourceFilesConfig = new ResourceFilesConfig("configfile.resourceFiles", "ConfigFiles/Core/Resources/resourceFiles.json");
-            ResourcesConfig = new ResourcesConfig("configfile.resources", "ConfigFiles/Core/Resources/resources.json");
+            ResourceFilesConfig = new ResourceFilesConfig("configfile.resourceFiles", "ConfigFiles/Resources/resourceFiles.json");
+            ResourcesConfig = new ResourcesConfig("configfile.resources", "ConfigFiles/Resources/resources.json");
         }
 
         public void InitializeCore()

@@ -236,10 +236,10 @@
     <None Update="Content\ConfigFiles\Fonts\roboto.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Content\ConfigFiles\Core\Resources\resourceFiles.json">
+    <None Update="Content\ConfigFiles\Resources\resourceFiles.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Content\ConfigFiles\Core\Resources\resources.json">
+    <None Update="Content\ConfigFiles\Resources\resources.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Content\ConfigFiles\Core\scriptPacks.json">
@@ -264,6 +264,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Content\ConfigFiles\Scenes\uiscene.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Content\ConfigFiles\StateMachines\playerStateMachine.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Content\SoundFiles\est-drink.ogg">

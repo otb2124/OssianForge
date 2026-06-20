@@ -35,11 +35,11 @@ namespace OssianForge.Engine.Physics
         public void RegisterAll()
         {
             _bodies.Clear();
-            var nodes = Engine.Nodes.NodeManager.GetNodesWithProperty<PhysicalProperty>();
+            var nodes = Engine.Nodes.NodeManager.GetNodesWithProperty<PhysicsProperty>();
             foreach (var node in nodes)
             {
                 // only register nodes that belong to this world
-                if (node.GetProperty<PhysicalProperty>().WorldIndex == WorldIndex)
+                if (node.GetProperty<PhysicsProperty>().WorldIndex == WorldIndex)
                     Register(node);
             }
         }
@@ -76,7 +76,12 @@ namespace OssianForge.Engine.Physics
         public void OnUpdate(double delta)
         {
             float dt = Math.Clamp((float)delta, 0.001f, 0.033f);
+
+            foreach (var body in _bodies)
+                body.SyncToJitter();
+
             JitterWorld.Step(dt, multiThread: false);
+
             foreach (var body in _bodies)
             {
                 if (WorldIndex == 1)

@@ -1,0 +1,38 @@
+﻿{
+  "id": "statemachine.player",
+  "initial": "Idle",
+  "states": [
+    {
+      "id": "Idle",
+      "onEnter": []
+    },
+    {
+      "id": "Walk",
+      "onUpdate": [ "action.myActions.walkStep" ]
+    }
+  ],
+  "transitions": [
+    {
+      "from": "Idle",
+      "to": "Walk",
+      "condition": {
+        "call": "OssianForge.Engine.Inputs.KeyHandler.IsStateActive",
+        "args": [ "walk_up" ],
+        "compare": "equals",
+        "value": true
+      }
+    },
+    {
+      "from": "Walk",
+      "to": "Idle",
+      "condition": {
+        "not": {
+          "call": "OssianForge.Engine.Inputs.KeyHandler.IsStateActive",
+          "args": [ "walk_up" ],
+          "compare": "equals",
+          "value": true
+        }
+      }
+    }
+  ]
+}

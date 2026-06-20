@@ -275,6 +275,11 @@
     "type": "pronouns"
   },
   {
+    "id": "configfile.statemachine.player",
+    "path": "ConfigFiles/StateMachines/playerStateMachine.json",
+    "type": "statemachine"
+  },
+  {
     "id": "soundfile.est-drink",
     "path": "SoundFiles/est-drink.ogg",
     "type": "soundfile"

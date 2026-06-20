@@ -8,9 +8,11 @@ namespace OssianForge.Engine.Resources
 
         public static readonly HashSet<string> AlwaysInclude = new()
         {
+            //for now
             "configfile.pronouns",
             "configfile.actions",
-            "configfile.inputKeys"
+            "configfile.inputKeys",
+            "configfile.statemachine",
         };
 
         public HashSet<string> ResourceFileIds { get; } = new();

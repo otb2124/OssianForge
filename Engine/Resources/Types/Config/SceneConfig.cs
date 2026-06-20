@@ -77,13 +77,14 @@ namespace OssianForge.Engine.Resources.Config
                 "SpotEmissionProperty" => ParseSpotEmissionProperty(data),
                 "EmissionProperty" => ParsePointEmissionProperty(data),
                 "ColliderProperty" => new ColliderProperty(Str(data, 0)),
-                "PhysicalProperty" => ParsePhysicalProperty(el, data),
+                "PhysicsProperty" => ParsePhysicsProperty(el, data),
                 "AnimationProperty" => ParseAnimationProperty(el, data),
                 "ControlProperty" => ParseControlProperty(data),
                 "ActionProperty" => ParseActionProperty(data),
                 "SoundProperty" => ParseSoundProperty(data),
                 "ScriptProperty" => new ScriptProperty(Str(data, 0)),
                 "GroupProperty" => new GroupProperty(Str(data, 0)),
+                "StateMachineProperty" => ParseStateMachineProperty(data),
                 _ => throw new Exception($"[SCENE CONFIG] Unknown property type '{type}'")
             };
         }
@@ -179,15 +180,15 @@ namespace OssianForge.Engine.Resources.Config
             return new SpotEmissionProperty(direction, color, intensity, radius, inner, outer);
         }
 
-        private static PhysicalProperty ParsePhysicalProperty(JsonElement el, JsonElement? data)
+        private static PhysicsProperty ParsePhysicsProperty(JsonElement el, JsonElement? data)
         {
             var arr = data!.Value;
             bool isStatic = arr[0].GetBoolean();
             bool isDynamic = arr[1].GetBoolean();
 
-            PhysicalProperty prop = arr.GetArrayLength() > 2
-                ? new PhysicalProperty(isStatic, isDynamic, arr[2].GetSingle(), arr[3].GetSingle())
-                : new PhysicalProperty(isStatic, isDynamic);
+            PhysicsProperty prop = arr.GetArrayLength() > 2
+                ? new PhysicsProperty(isStatic, isDynamic, arr[2].GetSingle(), arr[3].GetSingle())
+                : new PhysicsProperty(isStatic, isDynamic);
 
             if (el.TryGetProperty("world", out var world))
                 prop.SetWorld(world.GetInt32());
@@ -279,6 +280,14 @@ namespace OssianForge.Engine.Resources.Config
             string resId = arr[0].GetString();
             bool autoPlay = arr.GetArrayLength() > 1 && arr[1].GetBoolean();
             return new SoundProperty(resId) { AutoPlay = autoPlay };
+        }
+
+
+        private static StateMachineProperty ParseStateMachineProperty(JsonElement? data)
+        {
+            string smConfigId = Str(data, 0); // e.g. "configfile.statemachine.player"
+            var config = Engine.Resources.GetResourceFile<StateMachineConfig>(smConfigId);
+            return config.BuildProperty();
         }
 
         // ── RenderAction helper ───────────────────────────────────────────────────

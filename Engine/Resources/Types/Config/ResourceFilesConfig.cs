@@ -86,6 +86,7 @@ namespace OssianForge.Engine.Resources.Config
                 "tree" => typeof(Config.TreeConfig),
                 "inputKeys" => typeof(Config.InputKeysConfig),
                 "pronouns" => typeof(Config.PronounsConfig),
+                "statemachine" => typeof(Config.StateMachineConfig),
                 _ => throw new Exception($"[RESOURCE FILES CONFIG] Unknown type '{type}'")
             };
         }

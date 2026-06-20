@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text.Json;
 using OssianForge.Engine.Nodes;
+using OssianForge.Engine.Resources.Config;
 
 namespace OssianForge.Engine.Utils.ConditionNode
 {
@@ -37,4 +38,50 @@ namespace OssianForge.Engine.Utils.ConditionNode
         public override bool Evaluate(Node context) => !_child.Evaluate(context);
     }
 
+    public enum Comparator
+    {
+        Equals, NotEquals, Greater, Less, GreaterOrEqual, LessOrEqual
+    }
+
+    public class LeafConditionNode : ConditionNode
+    {
+        private readonly string _call;
+        private readonly object?[] _args;
+        private readonly Comparator _comparator;
+        private readonly object? _expected;
+
+        public LeafConditionNode(string call, object?[] args, Comparator comparator, object? expected)
+        {
+            _call = call;
+            _args = args;
+            _comparator = comparator;
+            _expected = expected;
+        }
+
+        public override bool Evaluate(Node context)
+        {
+            // "$self" resolution, same convention as ActionsConfig.ResolveArgs
+            var resolved = _args.Select(a => a is string s && s == "$self" ? (object?)context : a).ToArray();
+            object? actual = ReflectionDispatcher.InvokeWithResult(_call, resolved);
+            return Compare(actual, _expected, _comparator);
+        }
+
+        private static bool Compare(object? actual, object? expected, Comparator cmp)
+        {
+            if (cmp == Comparator.Equals) return Equals(actual, expected);
+            if (cmp == Comparator.NotEquals) return !Equals(actual, expected);
+
+            // numeric comparisons
+            double a = Convert.ToDouble(actual);
+            double b = Convert.ToDouble(expected);
+            return cmp switch
+            {
+                Comparator.Greater => a > b,
+                Comparator.Less => a < b,
+                Comparator.GreaterOrEqual => a >= b,
+                Comparator.LessOrEqual => a <= b,
+                _ => false
+            };
+        }
+    }
 }

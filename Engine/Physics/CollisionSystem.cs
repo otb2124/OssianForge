@@ -26,8 +26,8 @@ namespace OssianForge.Engine.Physics
                     if (colA == null || colB == null) continue;
                     if (!colA.IsTrigger && !colB.IsTrigger) continue;
 
-                    var physA = nodeA.GetProperty<PhysicalProperty>();
-                    var physB = nodeB.GetProperty<PhysicalProperty>();
+                    var physA = nodeA.GetProperty<PhysicsProperty>();
+                    var physB = nodeB.GetProperty<PhysicsProperty>();
                     if (physA == null || physB == null) continue;
                     if (physA.WorldIndex != physB.WorldIndex) continue;
 

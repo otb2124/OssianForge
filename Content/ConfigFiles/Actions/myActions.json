@@ -1,28 +1,23 @@
 [
   {
-    "id": "action0",
-    "call": "OssianForge.Engine.Nodes.LoadScene",
-    "args": [ "scene.gameplay" ]
-  },
-  {
-    "id": "action1",
-    "call": "OssianForge.Engine.Nodes.SetNodePropertyValue",
-    "args": [ "main", "panel_settings", "Visible", false ]
-  },
-  {
     "id": "action.myActions.printHello",
-    "call": "console",
+    "call": "System.Console.WriteLine",
     "args": [ "$value.myActions.myValue" ]
   },
   {
     "id": "action.myActions.printHi",
-    "call": "console",
+    "call": "System.Console.WriteLine",
     "args": [ "Hi" ]
   },
   {
     "id": "action.myActions.getMyValue",
     "call": "OssianForge.Engine.Nodes.GetMyValue",
-    "args": [ "@self", "Qos input" ],
+    "args": [ "$self", "Qos input" ],
     "storeValue": "value.myActions.myValue"
+  },
+  {
+    "id": "action.myActions.walkStep",
+    "call": "OssianForge.Engine.Nodes.NodeReflection.SetNodePropertyValue",
+    "args": [ "$self", "PhysicsProperty", "ManualVelocity", "10,0,0" ]
   }
 ]

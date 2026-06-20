@@ -120,31 +120,23 @@ namespace OssianForge.Engine.Resources.Config
 
         // ── execution ─────────────────────────────────────────────────────────────
 
-        public void Execute(string id, object context = null)
+        public void Execute(string id, object context = null, double? delta = null)
         {
             var record = GetById(id)
                 ?? throw new Exception($"[ACTIONS CONFIG] Action '{id}' not found.");
-            ExecuteRecord(record, context);
+            ExecuteRecord(record, context, delta);
         }
 
-        public object? ExecuteWithResult(string id, object context = null)
+        public object? ExecuteWithResult(string id, object context = null, double? delta = null)
         {
             var record = GetById(id)
                 ?? throw new Exception($"[ACTIONS CONFIG] Action '{id}' not found.");
-            return ExecuteRecord(record, context);
+            return ExecuteRecord(record, context, delta);
         }
 
-        public void ExecuteAll(IEnumerable<string> ids, object context = null)
+        private object? ExecuteRecord(ActionRecord record, object context, double? delta)
         {
-            foreach (var id in ids)
-                Execute(id, context);
-        }
-
-        // ── internal dispatch ─────────────────────────────────────────────────────
-
-        private object? ExecuteRecord(ActionRecord record, object context)
-        {
-            var args = ResolveArgs(record.Args, context);
+            var args = ResolveArgs(record.Args, context, delta);
 
             object? result = ReflectionDispatcher.InvokeWithResult(record.Call, args);
 
@@ -154,22 +146,33 @@ namespace OssianForge.Engine.Resources.Config
             return result;
         }
 
+        public void ExecuteAll(IEnumerable<string> ids, object context = null)
+        {
+            foreach (var id in ids)
+                Execute(id, context);
+        }
+
+
         /// <summary>
         /// Args starting with "$" are treated as value store lookups.
         /// e.g. "$value.myActionOne.result" → ActionValueStore.Get("value.myActionOne.result")
         /// </summary>
-        private static object?[] ResolveArgs(List<JsonElement> args, object context)
+        /// <summary>
+        /// Resolves special tokens in args:
+        ///   "$self"  → the context object (e.g. calling Node)
+        ///   "$delta" → the frame delta (double), if provided
+        ///   "$value.key" → ActionValueStore.Get("value.key")
+        /// </summary>
+        private static object?[] ResolveArgs(List<JsonElement> args, object context, double? delta)
             => args.Select(el =>
             {
                 var unboxed = ReflectionDispatcher.UnboxJsonElement(el);
 
                 if (unboxed is string s)
                 {
-                    if (s == "@self")
-                        return context;
-
-                    if (s.StartsWith('$'))
-                        return ActionValueStore.Get(s[1..]);
+                    if (s == "$self") return context;
+                    if (s == "$delta") return delta ?? 0.0;
+                    if (s.StartsWith('$')) return ActionValueStore.Get(s[1..]);
                 }
 
                 return unboxed;

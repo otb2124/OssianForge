@@ -2,7 +2,7 @@
 
 namespace OssianForge.Engine.Nodes.Props
 {
-    public class PhysicalProperty : NodeProperty
+    public class PhysicsProperty : NodeProperty
     {
         public Vector3 Velocity;
         public float Mass = 1f;
@@ -15,7 +15,9 @@ namespace OssianForge.Engine.Nodes.Props
 
         public int WorldIndex = 0;
 
-        public PhysicalProperty(bool isStatic, bool useGravity,
+        public Vector3 ManualVelocity;
+
+        public PhysicsProperty(bool isStatic, bool useGravity,
                                 float mass = 1f, float bounciness = 0f,
                                 float friction = 0.6f,
                                 float linearDamping = 0.02f,
