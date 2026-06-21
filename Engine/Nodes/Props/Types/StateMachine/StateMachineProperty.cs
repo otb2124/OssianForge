@@ -110,7 +110,7 @@ namespace OssianForge.Engine.Nodes.Props
                 throw new InvalidOperationException($"[SM] Unknown state '{name}'");
             if (next == Current) return;
 
-            Console.WriteLine($"[STATEMACHINE PROPERTY] '{node.Id}' transitioning: {Current?.Name ?? "(none)"} → {next.Name}");
+            //Console.WriteLine($"[STATEMACHINE PROPERTY] '{node.Id}' transitioning: {Current?.Name ?? "(none)"} → {next.Name}");
 
             Current?.OnExit(node);
             Current = next;

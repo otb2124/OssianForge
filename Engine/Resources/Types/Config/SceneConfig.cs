@@ -1,14 +1,12 @@
 ﻿using OssianForge.Engine.Nodes;
 using OssianForge.Engine.Nodes.Props;
+using OssianForge.Engine.Nodes.Props.Types.Scene;
 using System.Numerics;
 using System.Text.Json;
 using static OssianForge.Engine.Utils.MathUtils;
 
 namespace OssianForge.Engine.Resources.Config
 {
-
-    
-
 
     public class SceneConfig : ConfigFile
     {
@@ -85,6 +83,7 @@ namespace OssianForge.Engine.Resources.Config
                 "ScriptProperty" => new ScriptProperty(Str(data, 0)),
                 "GroupProperty" => new GroupProperty(Str(data, 0)),
                 "StateMachineProperty" => ParseStateMachineProperty(data),
+                "SceneReferenceProperty" => new SceneReferenceProperty(Str(data, 0)),
                 _ => throw new Exception($"[SCENE CONFIG] Unknown property type '{type}'")
             };
         }

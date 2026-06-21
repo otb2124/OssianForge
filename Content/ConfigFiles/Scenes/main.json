@@ -3,67 +3,12 @@
   "name": "scene",
   "children": [
     {
-      "id": "player",
-      "name": "Player",
+      "id": "playerSceneRef",
+      "name": "PlayerSceneRef",
       "properties": [
         {
-          "type": "GroupProperty",
-          "data": [ "player" ]
-        },
-        {
-          "type": "TransformProperty",
-          "data": [
-            [ "0,3,10", "0,-90,0", "1,1,1" ]
-          ]
-        },
-        {
-          "type": "StateMachineProperty",
-          "data": [ "configfile.statemachine.player" ]
-        },
-        {
-          "type": "ActionProperty",
-          "data": [
-            {
-              "OnUpdate": [ "action.myActions.transformMouseYawX", "action.myActions.transformMouseYawY" ]
-            }
-          ]
-        }
-      ],
-      "children": [
-        {
-          "id": "playerBody",
-          "name": "playerBody",
-          "properties": [
-            {
-              "type": "TransformProperty",
-              "data": [
-                [ "0,-2,-5", "0,0,0", "1,1,1" ]
-              ]
-            },
-            {
-              "type": "MeshProperty",
-              "data": [ "mesh.cube" ]
-            },
-            {
-              "type": "TextureMaterialProperty",
-              "data": [ "texture.house.wood", "shader.basic" ]
-            }
-          ]
-        },
-        {
-          "id": "camera",
-          "name": "Camera",
-          "properties": [
-            {
-              "type": "TransformProperty",
-              "data": [
-                [ "0,0,0", "0,0,0", "1,1,1" ]
-              ]
-            },
-            {
-              "type": "CameraProperty"
-            }
-          ]
+          "type": "SceneReferenceProperty",
+          "data": [ "configfile.scene.player" ]
         }
       ]
     },
