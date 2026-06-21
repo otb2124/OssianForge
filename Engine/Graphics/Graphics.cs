@@ -72,6 +72,7 @@ namespace OssianForge.Engine.Graphics
         public void InitializeBatch()
         {
             Batch.Init();
+            SystemStats.Initialize();
         }
 
 

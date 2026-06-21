@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Linq;
 using System.Numerics;
 using System.Reflection;
+using System.Runtime.ExceptionServices;
 using OssianForge.Engine.Nodes;
 using OssianForge.Engine.Nodes.Props;
 
@@ -93,28 +94,77 @@ namespace OssianForge.Engine.Nodes
             var prop = FindNodeProperty(node, propertyTypeName);
             var argTypes = args.Select(a => a?.GetType() ?? typeof(object)).ToArray();
 
-            var method = prop.GetType()
+            var overloads = prop.GetType()
                 .GetMethods(BindingFlags.Public | BindingFlags.Instance)
                 .Where(m => m.Name == methodName)
-                .Where(m => m.GetParameters().Length == args.Length)
-                .FirstOrDefault(m =>
+                .ToList();
+
+            var sameArity = overloads.Where(m => m.GetParameters().Length == args.Length).ToList();
+
+            MethodInfo? method = null;
+            object?[]? coercedArgs = null;
+
+            foreach (var candidate in sameArity)
+            {
+                var ps = candidate.GetParameters();
+                bool isMatch = true;
+                var attemptedArgs = new object?[args.Length];
+
+                for (int i = 0; i < ps.Length; i++)
                 {
-                    var ps = m.GetParameters();
-                    for (int i = 0; i < ps.Length; i++)
+                    if (args[i] == null)
                     {
-                        if (args[i] == null) continue;
-                        if (ps[i].ParameterType.IsAssignableFrom(argTypes[i])) continue;
-                        return false;
+                        attemptedArgs[i] = null;
+                        continue;
                     }
-                    return true;
-                });
+
+                    bool assignable = ps[i].ParameterType.IsAssignableFrom(argTypes[i]);
+
+                    if (assignable)
+                    {
+                        attemptedArgs[i] = args[i];
+                    }
+                    else if (args[i] is string rawStr)
+                    {
+                        try
+                        {
+                            attemptedArgs[i] = ParseValue(ps[i].ParameterType, rawStr);
+                        }
+                        catch
+                        {
+                            isMatch = false;
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        isMatch = false;
+                        break;
+                    }
+                }
+
+                if (isMatch)
+                {
+                    method = candidate;
+                    coercedArgs = attemptedArgs;
+                    break;
+                }
+            }
 
             if (method == null)
                 throw new Exception(
                     $"[NODE REFLECTION] Method '{methodName}' not found on '{prop.GetType().FullName}' " +
                     $"with args ({string.Join(", ", argTypes.Select(t => t?.Name ?? "null"))}).");
 
-            return method.Invoke(prop, args);
+            try
+            {
+                return method.Invoke(prop, coercedArgs);
+            }
+            catch (TargetInvocationException tie) when (tie.InnerException != null)
+            {
+                ExceptionDispatchInfo.Capture(tie.InnerException).Throw();
+                throw;
+            }
         }
 
         private static void ApplyScaled(Node node, string propertyTypeName, string memberPath, string rawDelta, double combined)

@@ -3,11 +3,11 @@ using System.Numerics;
 
 namespace OssianForge.Engine.Inputs
 {
-    public sealed class FlatMouse
+    public sealed class MouseInput
     {
         public enum MouseButtons { Left, Right, Middle }
-        private static Lazy<FlatMouse> LazyInstance = new(() => new FlatMouse());
-        public static FlatMouse Instance => LazyInstance.Value;
+        private static Lazy<MouseInput> LazyInstance = new(() => new MouseInput());
+        public static MouseInput Instance => LazyInstance.Value;
         private IMouse _mouse;
         private HashSet<MouseButton> _curr = new();
         private HashSet<MouseButton> _prev = new();
@@ -19,8 +19,9 @@ namespace OssianForge.Engine.Inputs
         public Vector2 Delta { get; private set; }   // ← new: frame-to-frame movement
         private double _lastDeltaTime;
         public float ScrollDelta { get; private set; }
+        public bool LockCursorToCenter { get; set; } = true;
 
-        private FlatMouse() { }
+        private MouseInput() { }
 
         public void Initialize(IMouse mouse)
         {
@@ -47,7 +48,20 @@ namespace OssianForge.Engine.Inputs
             Delta = _firstUpdate ? Vector2.Zero : new Vector2(
                 -(currentPos.X - _prevPosition.X),
                  (currentPos.Y - _prevPosition.Y)) / dt;
-            _prevPosition = currentPos;
+
+            if (LockCursorToCenter && _mouse != null)
+            {
+                var windowSize = Engine.Graphics.WindowSize;
+                Vector2 center = new Vector2(windowSize.X / 2f, windowSize.Y / 2f);
+
+                _mouse.Position = center;
+                _prevPosition = center;
+            }
+            else
+            {
+                _prevPosition = currentPos;
+            }
+
             _firstUpdate = false;
         }
 

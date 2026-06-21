@@ -1,0 +1,177 @@
+﻿[
+  {
+    "id": "action.debug.getFPS",
+    "call": "OssianForge.Engine.Graphics.GraphicsStats.GetFPS",
+    "args": [],
+    "storeValue": "value.debug.fps"
+  },
+  {
+    "id": "action.debug.setFpsText",
+    "call": "node.callMethod",
+    "args": [ "$self", "TextMaterialProperty", "SetText", "$value.debug.fps" ]
+  },
+  {
+    "id": "action.debug.getSmoothFPS",
+    "call": "OssianForge.Engine.Graphics.GraphicsStats.GetSmoothFPS",
+    "args": [],
+    "storeValue": "value.debug.smoothfps"
+  },
+  {
+    "id": "action.debug.setSmoothFpsText",
+    "call": "node.callMethod",
+    "args": [ "$self", "TextMaterialProperty", "SetText", "$value.debug.smoothfps" ]
+  },
+  {
+    "id": "action.debug.getFrameTimeMs",
+    "call": "OssianForge.Engine.Graphics.GraphicsStats.GetFrameTimeMs",
+    "args": [],
+    "storeValue": "value.debug.frametime"
+  },
+  {
+    "id": "action.debug.setFrameTimeMsText",
+    "call": "node.callMethod",
+    "args": [ "$self", "TextMaterialProperty", "SetText", "$value.debug.frametime" ]
+  },
+  {
+    "id": "action.debug.getDrawCalls",
+    "call": "OssianForge.Engine.Graphics.GraphicsStats.GetDrawCalls",
+    "args": [],
+    "storeValue": "value.debug.drawcalls"
+  },
+  {
+    "id": "action.debug.setDrawCallsText",
+    "call": "node.callMethod",
+    "args": [ "$self", "TextMaterialProperty", "SetText", "$value.debug.drawcalls" ]
+  },
+  {
+    "id": "action.debug.getVertexCount",
+    "call": "OssianForge.Engine.Graphics.GraphicsStats.GetVertexCount",
+    "args": [],
+    "storeValue": "value.debug.vertices"
+  },
+  {
+    "id": "action.debug.setVertexCountText",
+    "call": "node.callMethod",
+    "args": [ "$self", "TextMaterialProperty", "SetText", "$value.debug.vertices" ]
+  },
+
+  {
+    "id": "action.debug.getCpuUsage",
+    "call": "OssianForge.Engine.Graphics.SystemStats.GetCpuUsage",
+    "args": [],
+    "storeValue": "value.debug.cpu"
+  },
+  {
+    "id": "action.debug.setCpuText",
+    "call": "node.callMethod",
+    "args": [ "$self", "TextMaterialProperty", "SetText", "$value.debug.cpu" ]
+  },
+
+  {
+    "id": "action.debug.getMemoryUsage",
+    "call": "OssianForge.Engine.Graphics.SystemStats.GetMemoryUsage",
+    "args": [],
+    "storeValue": "value.debug.memory"
+  },
+  {
+    "id": "action.debug.setMemoryText",
+    "call": "node.callMethod",
+    "args": [ "$self", "TextMaterialProperty", "SetText", "$value.debug.memory" ]
+  },
+
+  {
+    "id": "action.debug.getManagedMemory",
+    "call": "OssianForge.Engine.Graphics.SystemStats.GetManagedMemory",
+    "args": [],
+    "storeValue": "value.debug.managedmemory"
+  },
+  {
+    "id": "action.debug.setManagedMemoryText",
+    "call": "node.callMethod",
+    "args": [ "$self", "TextMaterialProperty", "SetText", "$value.debug.managedmemory" ]
+  },
+
+  {
+    "id": "action.debug.getGcInfo",
+    "call": "OssianForge.Engine.Graphics.SystemStats.GetGcInfo",
+    "args": [],
+    "storeValue": "value.debug.gc"
+  },
+  {
+    "id": "action.debug.setGcText",
+    "call": "node.callMethod",
+    "args": [ "$self", "TextMaterialProperty", "SetText", "$value.debug.gc" ]
+  },
+
+  {
+    "id": "action.debug.getGpuRenderer",
+    "call": "OssianForge.Engine.Graphics.SystemStats.GetGpuRenderer",
+    "args": [],
+    "storeValue": "value.debug.gpurenderer"
+  },
+  {
+    "id": "action.debug.setGpuRendererText",
+    "call": "node.callMethod",
+    "args": [ "$self", "TextMaterialProperty", "SetText", "$value.debug.gpurenderer" ]
+  },
+
+  {
+    "id": "action.debug.getGpuVendor",
+    "call": "OssianForge.Engine.Graphics.SystemStats.GetGpuVendor",
+    "args": [],
+    "storeValue": "value.debug.gpuvendor"
+  },
+  {
+    "id": "action.debug.setGpuVendorText",
+    "call": "node.callMethod",
+    "args": [ "$self", "TextMaterialProperty", "SetText", "$value.debug.gpuvendor" ]
+  },
+
+  {
+    "id": "action.debug.getGpuVersion",
+    "call": "OssianForge.Engine.Graphics.SystemStats.GetGpuVersion",
+    "args": [],
+    "storeValue": "value.debug.gpuversion"
+  },
+  {
+    "id": "action.debug.setGpuVersionText",
+    "call": "node.callMethod",
+    "args": [ "$self", "TextMaterialProperty", "SetText", "$value.debug.gpuversion" ]
+  },
+
+  {
+    "id": "action.debug.getGlslVersion",
+    "call": "OssianForge.Engine.Graphics.SystemStats.GetGlslVersion",
+    "args": [],
+    "storeValue": "value.debug.glslversion"
+  },
+  {
+    "id": "action.debug.setGlslVersionText",
+    "call": "node.callMethod",
+    "args": [ "$self", "TextMaterialProperty", "SetText", "$value.debug.glslversion" ]
+  },
+
+  {
+    "id": "action.debug.getProcessorCount",
+    "call": "OssianForge.Engine.Graphics.SystemStats.GetProcessorCount",
+    "args": [],
+    "storeValue": "value.debug.processorcount"
+  },
+  {
+    "id": "action.debug.setProcessorCountText",
+    "call": "node.callMethod",
+    "args": [ "$self", "TextMaterialProperty", "SetText", "$value.debug.processorcount" ]
+  },
+
+  {
+    "id": "action.debug.getOsVersion",
+    "call": "OssianForge.Engine.Graphics.SystemStats.GetOsVersion",
+    "args": [],
+    "storeValue": "value.debug.osversion"
+  },
+  {
+    "id": "action.debug.setOsVersionText",
+    "call": "node.callMethod",
+    "args": [ "$self", "TextMaterialProperty", "SetText", "$value.debug.osversion" ]
+  }
+]

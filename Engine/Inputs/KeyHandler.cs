@@ -9,7 +9,7 @@ namespace OssianForge.Engine.Inputs
         {
             public bool IsMouseButton;
             public Silk.NET.Input.Key? KeyboardKey;
-            public FlatMouse.MouseButtons? MouseButton;
+            public MouseInput.MouseButtons? MouseButton;
 
             public InputKey(Silk.NET.Input.Key key)
             {
@@ -18,7 +18,7 @@ namespace OssianForge.Engine.Inputs
                 MouseButton = null;
             }
 
-            public InputKey(FlatMouse.MouseButtons button)
+            public InputKey(MouseInput.MouseButtons button)
             {
                 IsMouseButton = true;
                 KeyboardKey = null;

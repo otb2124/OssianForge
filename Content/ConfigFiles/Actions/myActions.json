@@ -5,15 +5,14 @@
     "args": [ "$value.myActions.myValue" ]
   },
   {
+    "id": "action.myActions.playAnimBackflip",
+    "call": "node.callMethod",
+    "args": [ "$self", "AnimationProperty", "Play", "remy.backflip", false, 1.0 ]
+  },
+  {
     "id": "action.myActions.printHi",
     "call": "System.Console.WriteLine",
     "args": [ "Hi" ]
-  },
-  {
-    "id": "action.myActions.getMyValue",
-    "call": "OssianForge.Engine.Nodes.GetMyValue",
-    "args": [ "$self", "Qos input" ],
-    "storeValue": "value.myActions.myValue"
   },
   {
     "id": "action.myActions.walkUp",
@@ -59,60 +58,5 @@
     "id": "action.myActions.transformMouseYawY",
     "call": "node.addValue",
     "args": [ "$self", "TransformProperty", "Transform.Rotation", "1,0,0", "$mouse_y", "$delta" ]
-  },
-  {
-    "id": "action.myActions.getFPS",
-    "call": "OssianForge.Engine.Graphics.GraphicsStats.GetFPS",
-    "args": [],
-    "storeValue": "value.debug.fps"
-  },
-  {
-    "id": "action.myActions.setFpsText",
-    "call": "node.callMethod",
-    "args": [ "$self", "TextMaterialProperty", "SetText", "$value.debug.fps" ]
-  },
-  {
-    "id": "action.myActions.getSmoothFPS",
-    "call": "OssianForge.Engine.Graphics.GraphicsStats.GetSmoothFPS",
-    "args": [],
-    "storeValue": "value.debug.smoothfps"
-  },
-  {
-    "id": "action.myActions.setSmoothFpsText",
-    "call": "node.callMethod",
-    "args": [ "$self", "TextMaterialProperty", "SetText", "$value.debug.smoothfps" ]
-  },
-  {
-    "id": "action.myActions.getFrameTimeMs",
-    "call": "OssianForge.Engine.Graphics.GraphicsStats.GetFrameTimeMs",
-    "args": [],
-    "storeValue": "value.debug.frametime"
-  },
-  {
-    "id": "action.myActions.setFrameTimeMsText",
-    "call": "node.callMethod",
-    "args": [ "$self", "TextMaterialProperty", "SetText", "$value.debug.frametime" ]
-  },
-  {
-    "id": "action.myActions.getDrawCalls",
-    "call": "OssianForge.Engine.Graphics.GraphicsStats.GetDrawCalls",
-    "args": [],
-    "storeValue": "value.debug.drawcalls"
-  },
-  {
-    "id": "action.myActions.setDrawCallsText",
-    "call": "node.callMethod",
-    "args": [ "$self", "TextMaterialProperty", "SetText", "$value.debug.drawcalls" ]
-  },
-  {
-    "id": "action.myActions.getVertexCount",
-    "call": "OssianForge.Engine.Graphics.GraphicsStats.GetVertexCount",
-    "args": [],
-    "storeValue": "value.debug.vertices"
-  },
-  {
-    "id": "action.myActions.setVertexCountText",
-    "call": "node.callMethod",
-    "args": [ "$self", "TextMaterialProperty", "SetText", "$value.debug.vertices" ]
   }
 ]

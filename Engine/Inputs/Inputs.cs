@@ -7,14 +7,14 @@ namespace OssianForge.Engine.Inputs
     {
         public IInputContext InputContext;
 
-        public FlatKeyboard keyboard;
-        public FlatMouse mouse;
+        public KeyboardInput keyboard;
+        public MouseInput mouse;
         public KeyHandler KeyHandler;
 
         public void Initialize()
         {
-            keyboard = FlatKeyboard.Instance;
-            mouse = FlatMouse.Instance;
+            keyboard = KeyboardInput.Instance;
+            mouse = MouseInput.Instance;
             KeyHandler = new KeyHandler();
         }
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.ExceptionServices;
 using System.Text.Json;
 
 namespace OssianForge.Engine.Resources.Config
@@ -83,7 +84,25 @@ namespace OssianForge.Engine.Resources.Config
                     + $"with args ({string.Join(", ", argTypes.Select(t => t.Name))}).");
 
             object?[] coercedArgs = CoerceArgs(method, args);
-            return method.Invoke(target, coercedArgs);
+
+            try
+            {
+                return method.Invoke(target, coercedArgs);
+            }
+            catch (TargetInvocationException tie) when (tie.InnerException != null)
+            {
+                // Unwrap so the crash log shows the REAL exception (type, message,
+                // original stack trace) instead of the generic reflection wrapper.
+                ExceptionDispatchInfo.Capture(tie.InnerException).Throw();
+                throw; // unreachable, satisfies the compiler
+            }
+            catch (Exception ex)
+            {
+                // Helpful context: which "call" string actually failed, and with what args.
+                throw new Exception(
+                    $"[DISPATCHER] Invoke failed for '{call}' with args " +
+                    $"({string.Join(", ", coercedArgs.Select(a => a?.ToString() ?? "null"))}).", ex);
+            }
         }
 
         // ── numeric coercion ──────────────────────────────────────────────────────

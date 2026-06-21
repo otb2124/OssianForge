@@ -1,4 +1,5 @@
-﻿using OssianForge.Engine.Resources.Config;
+﻿using OssianForge.Engine.Graphics;
+using OssianForge.Engine.Resources.Config;
 using OssianForge.Engine.Resources.Scripts;
 
 
@@ -27,6 +28,11 @@ namespace OssianForge.Engine.Resources
         public void OnLoad()
         {
             ResourceLoader.OnLoad();
+        }
+
+        public void OnUpdate() 
+        {
+            SystemStats.Update();
         }
 
         public T GetResourceFile<T>(string id) where T : ResourceFile

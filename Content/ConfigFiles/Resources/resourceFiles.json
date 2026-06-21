@@ -271,7 +271,12 @@
   },
   {
     "id": "configfile.actions.myActions",
-    "path": "ConfigFiles/Actions/myActions.json",
+    "path": "ConfigFiles/Actions/myActions.json", 
+    "type": "actions"
+  },
+  {
+    "id": "configfile.actions.debug",
+    "path": "ConfigFiles/Actions/debugactions.json",
     "type": "actions"
   },
   {

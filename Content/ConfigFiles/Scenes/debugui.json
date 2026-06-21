@@ -3,330 +3,978 @@
   "name": "debug ui",
   "children": [
     {
-      "id": "label_fps",
-      "name": "Label Fps",
+      "id": "debug_performance",
+      "name": "Performance",
       "properties": [
         {
           "type": "TransformProperty",
           "data": [
-            [ "200,-30,0", "0,0,0", "200,40,1" ],
+            [ "0,0,0", "0,0,0", "400,280,1" ],
             "ScreenSpace",
             "TopLeft"
           ]
-        },
+        }
+      ],
+      "children": [
         {
-          "type": "MeshProperty",
-          "data": [ "mesh.quad" ]
-        },
-        {
-          "type": "TextMaterialProperty",
-          "data": [
-            "Fps",
-            42,
-            "1,1,1,1",
-            "font.roboto",
-            "shader.sdf",
-            [ "DisableDepthTest" ]
+          "id": "label_fps_prefix",
+          "name": "FPS Prefix",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [ "0,-30,0", "0,0,0", "200,40,1" ],
+                "ScreenSpace",
+                "TopLeft"
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [ "mesh.quad" ]
+            },
+            {
+              "type": "TextMaterialProperty",
+              "data": [
+                "FPS:",
+                42,
+                "1,1,1,1",
+                "font.roboto",
+                "shader.sdf",
+                [ "DisableDepthTest" ]
+              ]
+            }
           ]
         },
         {
-          "type": "ActionProperty",
-          "data": [
+          "id": "label_fps",
+          "name": "FPS",
+          "properties": [
             {
-              "OnUpdate": [ "action.myActions.getFPS", "action.myActions.setFpsText" ]
+              "type": "TransformProperty",
+              "data": [
+                [ "200,-30,0", "0,0,0", "200,40,1" ],
+                "ScreenSpace",
+                "TopLeft"
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [ "mesh.quad" ]
+            },
+            {
+              "type": "TextMaterialProperty",
+              "data": [
+                "0",
+                42,
+                "1,1,1,1",
+                "font.roboto",
+                "shader.sdf",
+                [ "DisableDepthTest" ]
+              ]
+            },
+            {
+              "type": "ActionProperty",
+              "data": [ { "OnUpdate": [ "action.debug.getFPS", "action.debug.setFpsText" ] } ]
+            }
+          ]
+        },
+        {
+          "id": "label_smoothfps_prefix",
+          "name": "Smooth FPS Prefix",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [ "0,-75,0", "0,0,0", "200,40,1" ],
+                "ScreenSpace",
+                "TopLeft"
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [ "mesh.quad" ]
+            },
+            {
+              "type": "TextMaterialProperty",
+              "data": [
+                "Smooth FPS:",
+                42,
+                "1,1,1,1",
+                "font.roboto",
+                "shader.sdf",
+                [ "DisableDepthTest" ]
+              ]
+            }
+          ]
+        },
+        {
+          "id": "label_smoothfps",
+          "name": "Smooth FPS",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [ "200,-75,0", "0,0,0", "200,40,1" ],
+                "ScreenSpace",
+                "TopLeft"
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [ "mesh.quad" ]
+            },
+            {
+              "type": "TextMaterialProperty",
+              "data": [
+                "0",
+                42,
+                "1,1,1,1",
+                "font.roboto",
+                "shader.sdf",
+                [ "DisableDepthTest" ]
+              ]
+            },
+            {
+              "type": "ActionProperty",
+              "data": [ { "OnUpdate": [ "action.debug.getSmoothFPS", "action.debug.setSmoothFpsText" ] } ]
+            }
+          ]
+        },
+        {
+          "id": "label_frametime_prefix",
+          "name": "Frame MS Prefix",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [ "0,-142,0", "0,0,0", "200,40,1" ],
+                "ScreenSpace",
+                "TopLeft"
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [ "mesh.quad" ]
+            },
+            {
+              "type": "TextMaterialProperty",
+              "data": [
+                "Frame MS:",
+                42,
+                "1,1,1,1",
+                "font.roboto",
+                "shader.sdf",
+                [ "DisableDepthTest" ]
+              ]
+            }
+          ]
+        },
+        {
+          "id": "label_frametime",
+          "name": "Frame MS",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [ "200,-142,0", "0,0,0", "200,40,1" ],
+                "ScreenSpace",
+                "TopLeft"
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [ "mesh.quad" ]
+            },
+            {
+              "type": "TextMaterialProperty",
+              "data": [
+                "0",
+                42,
+                "1,1,1,1",
+                "font.roboto",
+                "shader.sdf",
+                [ "DisableDepthTest" ]
+              ]
+            },
+            {
+              "type": "ActionProperty",
+              "data": [ { "OnUpdate": [ "action.debug.getFrameTimeMs", "action.debug.setFrameTimeMsText" ] } ]
+            }
+          ]
+        },
+        {
+          "id": "label_drawcalls_prefix",
+          "name": "Draw Calls Prefix",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [ "0,-165,0", "0,0,0", "200,40,1" ],
+                "ScreenSpace",
+                "TopLeft"
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [ "mesh.quad" ]
+            },
+            {
+              "type": "TextMaterialProperty",
+              "data": [
+                "Draw Calls:",
+                42,
+                "1,1,1,1",
+                "font.roboto",
+                "shader.sdf",
+                [ "DisableDepthTest" ]
+              ]
+            }
+          ]
+        },
+        {
+          "id": "label_drawcalls",
+          "name": "Draw Calls",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [ "200,-165,0", "0,0,0", "200,40,1" ],
+                "ScreenSpace",
+                "TopLeft"
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [ "mesh.quad" ]
+            },
+            {
+              "type": "TextMaterialProperty",
+              "data": [
+                "0",
+                42,
+                "1,1,1,1",
+                "font.roboto",
+                "shader.sdf",
+                [ "DisableDepthTest" ]
+              ]
+            },
+            {
+              "type": "ActionProperty",
+              "data": [ { "OnUpdate": [ "action.debug.getDrawCalls", "action.debug.setDrawCallsText" ] } ]
+            }
+          ]
+        },
+        {
+          "id": "label_vertices_prefix",
+          "name": "Vertices Prefix",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [ "0,-210,0", "0,0,0", "200,40,1" ],
+                "ScreenSpace",
+                "TopLeft"
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [ "mesh.quad" ]
+            },
+            {
+              "type": "TextMaterialProperty",
+              "data": [
+                "Vertices:",
+                42,
+                "1,1,1,1",
+                "font.roboto",
+                "shader.sdf",
+                [ "DisableDepthTest" ]
+              ]
+            }
+          ]
+        },
+        {
+          "id": "label_vertices",
+          "name": "Vertices",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [ "200,-210,0", "0,0,0", "200,40,1" ],
+                "ScreenSpace",
+                "TopLeft"
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [ "mesh.quad" ]
+            },
+            {
+              "type": "TextMaterialProperty",
+              "data": [
+                "0",
+                42,
+                "1,1,1,1",
+                "font.roboto",
+                "shader.sdf",
+                [ "DisableDepthTest" ]
+              ]
+            },
+            {
+              "type": "ActionProperty",
+              "data": [ { "OnUpdate": [ "action.debug.getVertexCount", "action.debug.setVertexCountText" ] } ]
             }
           ]
         }
       ]
     },
     {
-      "id": "label_fps_prefix",
-      "name": "Label Fps Prefix",
+      "id": "debug_system",
+      "name": "System",
       "properties": [
         {
           "type": "TransformProperty",
           "data": [
-            [ "0,-30,0", "0,0,0", "200,40,1" ],
+            [ "0,0,0", "0,0,0", "400,330,1" ],
             "ScreenSpace",
-            "TopLeft"
-          ]
-        },
-        {
-          "type": "MeshProperty",
-          "data": [ "mesh.quad" ]
-        },
-        {
-          "type": "TextMaterialProperty",
-          "data": [
-            "FPS:",
-            42,
-            "1,1,1,1",
-            "font.roboto",
-            "shader.sdf",
-            [ "DisableDepthTest" ]
+            "TopRight"
           ]
         }
-      ]
-    },
-    {
-      "id": "label_smoothfps_prefix",
-      "name": "Label SmoothFps Prefix",
-      "properties": [
+      ],
+      "children": [
         {
-          "type": "TransformProperty",
-          "data": [
-            [ "0,-80,0", "0,0,0", "200,40,1" ],
-            "ScreenSpace",
-            "TopLeft"
-          ]
-        },
-        {
-          "type": "MeshProperty",
-          "data": [ "mesh.quad" ]
-        },
-        {
-          "type": "TextMaterialProperty",
-          "data": [
-            "Smooth FPS:",
-            42,
-            "1,1,1,1",
-            "font.roboto",
-            "shader.sdf",
-            [ "DisableDepthTest" ]
-          ]
-        }
-      ]
-    },
-    {
-      "id": "label_smoothfps",
-      "name": "Label SmoothFps",
-      "properties": [
-        {
-          "type": "TransformProperty",
-          "data": [
-            [ "200,-80,0", "0,0,0", "200,40,1" ],
-            "ScreenSpace",
-            "TopLeft"
-          ]
-        },
-        {
-          "type": "MeshProperty",
-          "data": [ "mesh.quad" ]
-        },
-        {
-          "type": "TextMaterialProperty",
-          "data": [
-            "0",
-            42,
-            "1,1,1,1",
-            "font.roboto",
-            "shader.sdf",
-            [ "DisableDepthTest" ]
-          ]
-        },
-        {
-          "type": "ActionProperty",
-          "data": [
+          "id": "label_cpu_prefix",
+          "name": "CPU Prefix",
+          "properties": [
             {
-              "OnUpdate": [ "action.myActions.getSmoothFPS", "action.myActions.setSmoothFpsText" ]
+              "type": "TransformProperty",
+              "data": [
+                [ "0,-30,0", "0,0,0", "200,40,1" ],
+                "ScreenSpace",
+                "TopLeft"
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [ "mesh.quad" ]
+            },
+            {
+              "type": "TextMaterialProperty",
+              "data": [
+                "CPU:",
+                42,
+                "1,1,1,1",
+                "font.roboto",
+                "shader.sdf",
+                [ "DisableDepthTest" ]
+              ]
+            }
+          ]
+        },
+        {
+          "id": "label_cpu",
+          "name": "CPU",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [ "200,-30,0", "0,0,0", "200,40,1" ],
+                "ScreenSpace",
+                "TopLeft"
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [ "mesh.quad" ]
+            },
+            {
+              "type": "TextMaterialProperty",
+              "data": [
+                "0%",
+                42,
+                "1,1,1,1",
+                "font.roboto",
+                "shader.sdf",
+                [ "DisableDepthTest" ]
+              ]
+            },
+            {
+              "type": "ActionProperty",
+              "data": [ { "OnUpdate": [ "action.debug.getCpuUsage", "action.debug.setCpuText" ] } ]
+            }
+          ]
+        },
+        {
+          "id": "label_memory_prefix",
+          "name": "Memory Prefix",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [ "0,-75,0", "0,0,0", "200,40,1" ],
+                "ScreenSpace",
+                "TopLeft"
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [ "mesh.quad" ]
+            },
+            {
+              "type": "TextMaterialProperty",
+              "data": [
+                "Memory:",
+                42,
+                "1,1,1,1",
+                "font.roboto",
+                "shader.sdf",
+                [ "DisableDepthTest" ]
+              ]
+            }
+          ]
+        },
+        {
+          "id": "label_memory",
+          "name": "Memory",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [ "200,-75,0", "0,0,0", "200,40,1" ],
+                "ScreenSpace",
+                "TopLeft"
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [ "mesh.quad" ]
+            },
+            {
+              "type": "TextMaterialProperty",
+              "data": [
+                "0 MB",
+                42,
+                "1,1,1,1",
+                "font.roboto",
+                "shader.sdf",
+                [ "DisableDepthTest" ]
+              ]
+            },
+            {
+              "type": "ActionProperty",
+              "data": [ { "OnUpdate": [ "action.debug.getMemoryUsage", "action.debug.setMemoryText" ] } ]
+            }
+          ]
+        },
+        {
+          "id": "label_managedmemory_prefix",
+          "name": "Managed Memory Prefix",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [ "0,-142,0", "0,0,0", "200,40,1" ],
+                "ScreenSpace",
+                "TopLeft"
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [ "mesh.quad" ]
+            },
+            {
+              "type": "TextMaterialProperty",
+              "data": [
+                "Managed:",
+                42,
+                "1,1,1,1",
+                "font.roboto",
+                "shader.sdf",
+                [ "DisableDepthTest" ]
+              ]
+            }
+          ]
+        },
+        {
+          "id": "label_managedmemory",
+          "name": "Managed Memory",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [ "200,-142,0", "0,0,0", "200,40,1" ],
+                "ScreenSpace",
+                "TopLeft"
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [ "mesh.quad" ]
+            },
+            {
+              "type": "TextMaterialProperty",
+              "data": [
+                "0 MB",
+                42,
+                "1,1,1,1",
+                "font.roboto",
+                "shader.sdf",
+                [ "DisableDepthTest" ]
+              ]
+            },
+            {
+              "type": "ActionProperty",
+              "data": [ { "OnUpdate": [ "action.debug.getManagedMemory", "action.debug.setManagedMemoryText" ] } ]
+            }
+          ]
+        },
+        {
+          "id": "label_gc_prefix",
+          "name": "GC Prefix",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [ "0,-165,0", "0,0,0", "200,40,1" ],
+                "ScreenSpace",
+                "TopLeft"
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [ "mesh.quad" ]
+            },
+            {
+              "type": "TextMaterialProperty",
+              "data": [
+                "GC:",
+                42,
+                "1,1,1,1",
+                "font.roboto",
+                "shader.sdf",
+                [ "DisableDepthTest" ]
+              ]
+            }
+          ]
+        },
+        {
+          "id": "label_gc",
+          "name": "GC",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [ "200,-165,0", "0,0,0", "200,40,1" ],
+                "ScreenSpace",
+                "TopLeft"
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [ "mesh.quad" ]
+            },
+            {
+              "type": "TextMaterialProperty",
+              "data": [
+                "G0:0 G1:0 G2:0",
+                42,
+                "1,1,1,1",
+                "font.roboto",
+                "shader.sdf",
+                [ "DisableDepthTest" ]
+              ]
+            },
+            {
+              "type": "ActionProperty",
+              "data": [ { "OnUpdate": [ "action.debug.getGcInfo", "action.debug.setGcText" ] } ]
+            }
+          ]
+        },
+        {
+          "id": "label_processors_prefix",
+          "name": "Processors Prefix",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [ "0,-210,0", "0,0,0", "200,40,1" ],
+                "ScreenSpace",
+                "TopLeft"
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [ "mesh.quad" ]
+            },
+            {
+              "type": "TextMaterialProperty",
+              "data": [
+                "Processors:",
+                42,
+                "1,1,1,1",
+                "font.roboto",
+                "shader.sdf",
+                [ "DisableDepthTest" ]
+              ]
+            }
+          ]
+        },
+        {
+          "id": "label_processors",
+          "name": "Processors",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [ "200,-210,0", "0,0,0", "200,40,1" ],
+                "ScreenSpace",
+                "TopLeft"
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [ "mesh.quad" ]
+            },
+            {
+              "type": "TextMaterialProperty",
+              "data": [
+                "0",
+                42,
+                "1,1,1,1",
+                "font.roboto",
+                "shader.sdf",
+                [ "DisableDepthTest" ]
+              ]
+            },
+            {
+              "type": "ActionProperty",
+              "data": [ { "OnUpdate": [ "action.debug.getProcessorCount", "action.debug.setProcessorCountText" ] } ]
+            }
+          ]
+        },
+        {
+          "id": "label_os_prefix",
+          "name": "OS Prefix",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [ "0,-255,0", "0,0,0", "200,40,1" ],
+                "ScreenSpace",
+                "TopLeft"
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [ "mesh.quad" ]
+            },
+            {
+              "type": "TextMaterialProperty",
+              "data": [
+                "OS:",
+                42,
+                "1,1,1,1",
+                "font.roboto",
+                "shader.sdf",
+                [ "DisableDepthTest" ]
+              ]
+            }
+          ]
+        },
+        {
+          "id": "label_os",
+          "name": "OS",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [ "200,-255,0", "0,0,0", "200,40,1" ],
+                "ScreenSpace",
+                "TopLeft"
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [ "mesh.quad" ]
+            },
+            {
+              "type": "TextMaterialProperty",
+              "data": [
+                "-",
+                42,
+                "1,1,1,1",
+                "font.roboto",
+                "shader.sdf",
+                [ "DisableDepthTest" ]
+              ]
+            },
+            {
+              "type": "ActionProperty",
+              "data": [ { "OnUpdate": [ "action.debug.getOsVersion", "action.debug.setOsVersionText" ] } ]
             }
           ]
         }
       ]
     },
     {
-      "id": "label_frametime_prefix",
-      "name": "Label Frametime Prefix",
+      "id": "debug_gpu",
+      "name": "GPU",
       "properties": [
         {
           "type": "TransformProperty",
           "data": [
-            [ "0,-130,0", "0,0,0", "200,40,1" ],
+            [ "0,0,0", "0,0,0", "400,230,1" ],
             "ScreenSpace",
-            "TopLeft"
-          ]
-        },
-        {
-          "type": "MeshProperty",
-          "data": [ "mesh.quad" ]
-        },
-        {
-          "type": "TextMaterialProperty",
-          "data": [
-            "Frame MS:",
-            42,
-            "1,1,1,1",
-            "font.roboto",
-            "shader.sdf",
-            [ "DisableDepthTest" ]
+            "BottomLeft"
           ]
         }
-      ]
-    },
-    {
-      "id": "label_frametime",
-      "name": "Label Frametime",
-      "properties": [
+      ],
+      "children": [
         {
-          "type": "TransformProperty",
-          "data": [
-            [ "200,-130,0", "0,0,0", "200,40,1" ],
-            "ScreenSpace",
-            "TopLeft"
-          ]
-        },
-        {
-          "type": "MeshProperty",
-          "data": [ "mesh.quad" ]
-        },
-        {
-          "type": "TextMaterialProperty",
-          "data": [
-            "0",
-            42,
-            "1,1,1,1",
-            "font.roboto",
-            "shader.sdf",
-            [ "DisableDepthTest" ]
-          ]
-        },
-        {
-          "type": "ActionProperty",
-          "data": [
+          "id": "label_gpurenderer_prefix",
+          "name": "GPU Renderer Prefix",
+          "properties": [
             {
-              "OnUpdate": [ "action.myActions.getFrameTimeMs", "action.myActions.setFrameTimeMsText" ]
+              "type": "TransformProperty",
+              "data": [
+                [ "0,-30,0", "0,0,0", "200,40,1" ],
+                "ScreenSpace",
+                "TopLeft"
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [ "mesh.quad" ]
+            },
+            {
+              "type": "TextMaterialProperty",
+              "data": [
+                "GPU:",
+                42,
+                "1,1,1,1",
+                "font.roboto",
+                "shader.sdf",
+                [ "DisableDepthTest" ]
+              ]
             }
           ]
-        }
-      ]
-    },
-    {
-      "id": "label_drawcalls_prefix",
-      "name": "Label DrawCalls Prefix",
-      "properties": [
-        {
-          "type": "TransformProperty",
-          "data": [
-            [ "0,-180,0", "0,0,0", "200,40,1" ],
-            "ScreenSpace",
-            "TopLeft"
-          ]
         },
         {
-          "type": "MeshProperty",
-          "data": [ "mesh.quad" ]
-        },
-        {
-          "type": "TextMaterialProperty",
-          "data": [
-            "Draw Calls:",
-            42,
-            "1,1,1,1",
-            "font.roboto",
-            "shader.sdf",
-            [ "DisableDepthTest" ]
-          ]
-        }
-      ]
-    },
-    {
-      "id": "label_drawcalls",
-      "name": "Label DrawCalls",
-      "properties": [
-        {
-          "type": "TransformProperty",
-          "data": [
-            [ "200,-180,0", "0,0,0", "200,40,1" ],
-            "ScreenSpace",
-            "TopLeft"
-          ]
-        },
-        {
-          "type": "MeshProperty",
-          "data": [ "mesh.quad" ]
-        },
-        {
-          "type": "TextMaterialProperty",
-          "data": [
-            "0",
-            42,
-            "1,1,1,1",
-            "font.roboto",
-            "shader.sdf",
-            [ "DisableDepthTest" ]
-          ]
-        },
-        {
-          "type": "ActionProperty",
-          "data": [
+          "id": "label_gpurenderer",
+          "name": "GPU Renderer",
+          "properties": [
             {
-              "OnUpdate": [ "action.myActions.getDrawCalls", "action.myActions.setDrawCallsText" ]
+              "type": "TransformProperty",
+              "data": [
+                [ "200,-30,0", "0,0,0", "200,40,1" ],
+                "ScreenSpace",
+                "TopLeft"
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [ "mesh.quad" ]
+            },
+            {
+              "type": "TextMaterialProperty",
+              "data": [
+                "-",
+                42,
+                "1,1,1,1",
+                "font.roboto",
+                "shader.sdf",
+                [ "DisableDepthTest" ]
+              ]
+            },
+            {
+              "type": "ActionProperty",
+              "data": [ { "OnUpdate": [ "action.debug.getGpuRenderer", "action.debug.setGpuRendererText" ] } ]
             }
           ]
-        }
-      ]
-    },
-    {
-      "id": "label_vertices_prefix",
-      "name": "Label Vertices Prefix",
-      "properties": [
-        {
-          "type": "TransformProperty",
-          "data": [
-            [ "0,-230,0", "0,0,0", "200,40,1" ],
-            "ScreenSpace",
-            "TopLeft"
-          ]
         },
         {
-          "type": "MeshProperty",
-          "data": [ "mesh.quad" ]
-        },
-        {
-          "type": "TextMaterialProperty",
-          "data": [
-            "Vertices:",
-            42,
-            "1,1,1,1",
-            "font.roboto",
-            "shader.sdf",
-            [ "DisableDepthTest" ]
-          ]
-        }
-      ]
-    },
-    {
-      "id": "label_vertices",
-      "name": "Label Vertices",
-      "properties": [
-        {
-          "type": "TransformProperty",
-          "data": [
-            [ "200,-230,0", "0,0,0", "200,40,1" ],
-            "ScreenSpace",
-            "TopLeft"
-          ]
-        },
-        {
-          "type": "MeshProperty",
-          "data": [ "mesh.quad" ]
-        },
-        {
-          "type": "TextMaterialProperty",
-          "data": [
-            "0",
-            42,
-            "1,1,1,1",
-            "font.roboto",
-            "shader.sdf",
-            [ "DisableDepthTest" ]
-          ]
-        },
-        {
-          "type": "ActionProperty",
-          "data": [
+          "id": "label_gpuvendor_prefix",
+          "name": "GPU Vendor Prefix",
+          "properties": [
             {
-              "OnUpdate": [ "action.myActions.getVertexCount", "action.myActions.setVertexCountText" ]
+              "type": "TransformProperty",
+              "data": [
+                [ "0,-75,0", "0,0,0", "200,40,1" ],
+                "ScreenSpace",
+                "TopLeft"
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [ "mesh.quad" ]
+            },
+            {
+              "type": "TextMaterialProperty",
+              "data": [
+                "Vendor:",
+                42,
+                "1,1,1,1",
+                "font.roboto",
+                "shader.sdf",
+                [ "DisableDepthTest" ]
+              ]
+            }
+          ]
+        },
+        {
+          "id": "label_gpuvendor",
+          "name": "GPU Vendor",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [ "200,-75,0", "0,0,0", "200,40,1" ],
+                "ScreenSpace",
+                "TopLeft"
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [ "mesh.quad" ]
+            },
+            {
+              "type": "TextMaterialProperty",
+              "data": [
+                "-",
+                42,
+                "1,1,1,1",
+                "font.roboto",
+                "shader.sdf",
+                [ "DisableDepthTest" ]
+              ]
+            },
+            {
+              "type": "ActionProperty",
+              "data": [ { "OnUpdate": [ "action.debug.getGpuVendor", "action.debug.setGpuVendorText" ] } ]
+            }
+          ]
+        },
+        {
+          "id": "label_gpuversion_prefix",
+          "name": "GPU Version Prefix",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [ "0,-142,0", "0,0,0", "200,40,1" ],
+                "ScreenSpace",
+                "TopLeft"
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [ "mesh.quad" ]
+            },
+            {
+              "type": "TextMaterialProperty",
+              "data": [
+                "GL Version:",
+                42,
+                "1,1,1,1",
+                "font.roboto",
+                "shader.sdf",
+                [ "DisableDepthTest" ]
+              ]
+            }
+          ]
+        },
+        {
+          "id": "label_gpuversion",
+          "name": "GPU Version",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [ "200,-142,0", "0,0,0", "200,40,1" ],
+                "ScreenSpace",
+                "TopLeft"
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [ "mesh.quad" ]
+            },
+            {
+              "type": "TextMaterialProperty",
+              "data": [
+                "-",
+                42,
+                "1,1,1,1",
+                "font.roboto",
+                "shader.sdf",
+                [ "DisableDepthTest" ]
+              ]
+            },
+            {
+              "type": "ActionProperty",
+              "data": [ { "OnUpdate": [ "action.debug.getGpuVersion", "action.debug.setGpuVersionText" ] } ]
+            }
+          ]
+        },
+        {
+          "id": "label_glslversion_prefix",
+          "name": "GLSL Version Prefix",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [ "0,-165,0", "0,0,0", "200,40,1" ],
+                "ScreenSpace",
+                "TopLeft"
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [ "mesh.quad" ]
+            },
+            {
+              "type": "TextMaterialProperty",
+              "data": [
+                "GLSL:",
+                42,
+                "1,1,1,1",
+                "font.roboto",
+                "shader.sdf",
+                [ "DisableDepthTest" ]
+              ]
+            }
+          ]
+        },
+        {
+          "id": "label_glslversion",
+          "name": "GLSL Version",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [ "200,-165,0", "0,0,0", "200,40,1" ],
+                "ScreenSpace",
+                "TopLeft"
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [ "mesh.quad" ]
+            },
+            {
+              "type": "TextMaterialProperty",
+              "data": [
+                "-",
+                42,
+                "1,1,1,1",
+                "font.roboto",
+                "shader.sdf",
+                [ "DisableDepthTest" ]
+              ]
+            },
+            {
+              "type": "ActionProperty",
+              "data": [ { "OnUpdate": [ "action.debug.getGlslVersion", "action.debug.setGlslVersionText" ] } ]
             }
           ]
         }

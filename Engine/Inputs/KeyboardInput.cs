@@ -3,10 +3,10 @@ using Silk.NET.GLFW;
 
 namespace OssianForge.Engine.Inputs
 {
-    public sealed class FlatKeyboard
+    public sealed class KeyboardInput
     {
-        private static Lazy<FlatKeyboard> LazyInstance = new(() => new FlatKeyboard());
-        public static FlatKeyboard Instance => LazyInstance.Value;
+        private static Lazy<KeyboardInput> LazyInstance = new(() => new KeyboardInput());
+        public static KeyboardInput Instance => LazyInstance.Value;
 
         private IKeyboard _keyboard;
         private HashSet<Key> _curr = new();
@@ -14,7 +14,7 @@ namespace OssianForge.Engine.Inputs
 
         public bool IsKeyAvailable => _curr.Count > 0;
 
-        private FlatKeyboard() { }
+        private KeyboardInput() { }
 
         public void Initialize(IKeyboard keyboard)
         {

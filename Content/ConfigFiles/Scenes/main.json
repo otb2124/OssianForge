@@ -255,7 +255,7 @@
             false,
             null,
             {
-              "OnClick": [ "action.myActions.getMyValue", "action.myActions.printHello" ],
+              "OnClick": [ "action.myActions.playAnimBackflip", "action.myActions.printHello" ],
               "OnHover": [ "action.myActions.printHi" ]
             }
           ]

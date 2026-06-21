@@ -141,13 +141,13 @@ namespace OssianForge.Engine.Resources.Config
             throw new Exception($"[INPUT KEYS CONFIG] Unknown key name '{name}'.");
         }
 
-        private static bool TryParseMouseButton(string name, out FlatMouse.MouseButtons button)
+        private static bool TryParseMouseButton(string name, out MouseInput.MouseButtons button)
         {
             switch (name.ToLowerInvariant())
             {
-                case "mouseleft": button = FlatMouse.MouseButtons.Left; return true;
-                case "mouseright": button = FlatMouse.MouseButtons.Right; return true;
-                case "mousemiddle": button = FlatMouse.MouseButtons.Middle; return true;
+                case "mouseleft": button = MouseInput.MouseButtons.Left; return true;
+                case "mouseright": button = MouseInput.MouseButtons.Right; return true;
+                case "mousemiddle": button = MouseInput.MouseButtons.Middle; return true;
                 default: button = default; return false;
             }
         }
