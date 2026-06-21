@@ -10,7 +10,7 @@ namespace OssianForge.Engine.Graphics.Camera
         public float Fov = 45f;
         public float AspectRatio;
 
-        private float _yaw = -90f; // facing forward by default
+        private float _yaw = -90f;
         private float _pitch = 0f;
 
         //private Vector2 _lastMousePos;
@@ -163,7 +163,6 @@ namespace OssianForge.Engine.Graphics.Camera
                  * Matrix4x4.CreateTranslation(transform.Position);
         }
 
-        //TODO? mb smth w Z axis...
         public Matrix4x4 GetScreenSpaceModel(Transform transform)
         {
             float rollRad = float.DegreesToRadians(transform.Rotation.Z);

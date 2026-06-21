@@ -77,6 +77,35 @@ namespace OssianForge.Engine.Nodes
         }
 
 
+        public static void AddValueCurrentDirection(
+            Node node, string propertyTypeName, string memberPath,
+            string rawDirection, double delta)
+        {
+            var transformProp = node.GetProperty<TransformProperty>();
+            if (transformProp == null) return;
+
+            // Extract yaw from the player's world rotation (Y axis only — no pitch/roll)
+            float yawRad = float.DegreesToRadians(transformProp.WorldTransform.Rotation.Y);
+
+            Vector3 dir = ParseVector3(rawDirection);
+
+            float cos = MathF.Cos(yawRad);
+            float sin = MathF.Sin(yawRad);
+
+            Vector3 rotated = new Vector3(
+                dir.X * cos + dir.Z * sin,
+                dir.Y,
+                -dir.X * sin + dir.Z * cos
+            );
+
+            ApplyScaled(node, propertyTypeName, memberPath,
+                $"{rotated.X.ToString(CultureInfo.InvariantCulture)}," +
+                $"{rotated.Y.ToString(CultureInfo.InvariantCulture)}," +
+                $"{rotated.Z.ToString(CultureInfo.InvariantCulture)}", delta);
+        }
+
+
+
         public static object? CallPropertyMethod(Node node, string propertyTypeName, string methodName)
     => InvokePropertyMethod(node, propertyTypeName, methodName, Array.Empty<object?>());
 

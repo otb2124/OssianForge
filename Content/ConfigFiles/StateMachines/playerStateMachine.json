@@ -4,23 +4,25 @@
   "states": [
     {
       "id": "Idle",
-      "onEnter": []
+      "onEnter": [ "action.myActions.playAnimIdle" ]
     },
     {
       "id": "WalkForward",
-      "onUpdate": [ "action.myActions.transformForward" ]
+      "onEnter": [ "action.myActions.playAnimWalking" ],
+      "onUpdate": [ "action.transform.transformForward" ]
     },
     {
       "id": "WalkBackward",
-      "onUpdate": [ "action.myActions.transformBackward" ]
+      "onEnter": [ "action.myActions.playAnimWalking" ], 
+      "onUpdate": [ "action.transform.transformBackward" ]
     },
     {
       "id": "WalkLeft",
-      "onUpdate": [ "action.myActions.transformLeft" ]
+      "onUpdate": [ "action.transform.transformLeft" ]
     },
     {
       "id": "WalkRight",
-      "onUpdate": [ "action.myActions.transformRight" ]
+      "onUpdate": [ "action.transform.transformRight" ]
     }
   ],
   "transitions": [

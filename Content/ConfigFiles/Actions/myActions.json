@@ -2,7 +2,17 @@
   {
     "id": "action.myActions.printHello",
     "call": "System.Console.WriteLine",
-    "args": [ "$value.myActions.myValue" ]
+    "args": [ "[ACTION] Hello" ]
+  },
+  {
+    "id": "action.myActions.printHi",
+    "call": "System.Console.WriteLine",
+    "args": [ "[ACTION] Hi" ]
+  },
+  {
+    "id": "action.myActions.playAnimIdle",
+    "call": "node.callMethod",
+    "args": [ "$child.playerBody", "AnimationProperty", "Play", "remy.idle", true, 1.0 ]
   },
   {
     "id": "action.myActions.playAnimBackflip",
@@ -10,53 +20,13 @@
     "args": [ "$self", "AnimationProperty", "Play", "remy.backflip", false, 1.0 ]
   },
   {
-    "id": "action.myActions.printHi",
-    "call": "System.Console.WriteLine",
-    "args": [ "Hi" ]
+    "id": "action.myActions.playAnimWalking",
+    "call": "node.callMethod",
+    "args": [ "$child.playerBody", "AnimationProperty", "Play", "remy.walking", true, 1.0 ]
   },
   {
     "id": "action.myActions.walkUp",
     "call": "node.setValue",
     "args": [ "$self", "PhysicsProperty", "ManualVelocity", "1,0,0" ]
-  },
-  {
-    "id": "action.myActions.transformRight",
-    "call": "node.addValue",
-    "args": [ "$self", "TransformProperty", "Transform.Position", "1,0,0", "$delta" ]
-  },
-  {
-    "id": "action.myActions.transformLeft",
-    "call": "node.addValue",
-    "args": [ "$self", "TransformProperty", "Transform.Position", "-1,0,0", "$delta" ]
-  },
-  {
-    "id": "action.myActions.transformUp",
-    "call": "node.addValue",
-    "args": [ "$self", "TransformProperty", "Transform.Position", "0,1,0", "$delta" ]
-  },
-  {
-    "id": "action.myActions.transformDown",
-    "call": "node.addValue",
-    "args": [ "$self", "TransformProperty", "Transform.Position", "0,-1,0", "$delta" ]
-  },
-  {
-    "id": "action.myActions.transformForward",
-    "call": "node.addValue",
-    "args": [ "$self", "TransformProperty", "Transform.Position", "0,0,-1", "$delta" ]
-  },
-  {
-    "id": "action.myActions.transformBackward",
-    "call": "node.addValue",
-    "args": [ "$self", "TransformProperty", "Transform.Position", "0,0,1", "$delta" ]
-  },
-  {
-    "id": "action.myActions.transformMouseYawX",
-    "call": "node.addValue",
-    "args": [ "$self", "TransformProperty", "Transform.Rotation", "0,1,0", "$mouse_x", "$delta" ]
-  },
-  {
-    "id": "action.myActions.transformMouseYawY",
-    "call": "node.addValue",
-    "args": [ "$self", "TransformProperty", "Transform.Rotation", "1,0,0", "$mouse_y", "$delta" ]
   }
 ]

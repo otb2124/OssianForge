@@ -9,7 +9,7 @@
     {
       "type": "TransformProperty",
       "data": [
-        [ "0,3,10", "0,-90,0", "1,1,1" ]
+        [ "0,3,10", "0,180,0", "1,1,1" ]
       ]
     },
     {
@@ -20,7 +20,7 @@
       "type": "ActionProperty",
       "data": [
         {
-          "OnUpdate": [ "action.myActions.transformMouseYawX", "action.myActions.transformMouseYawY" ]
+          "OnUpdate": [ "action.transform.transformMouseYawX", "action.transform.transformMouseYawY" ]
         }
       ]
     }
@@ -29,32 +29,59 @@
     {
       "id": "playerBody",
       "name": "playerBody",
-      "renderEnabled": false,
       "properties": [
         {
           "type": "TransformProperty",
           "data": [
-            [ "0,-2,-5", "0,0,0", "1,1,1" ]
+            [ "0,-3,0", "0,0,0", "1,1,1" ]
           ]
         },
         {
           "type": "MeshProperty",
-          "data": [ "mesh.cube" ]
+          "data": [ "mesh.remy" ]
+        },
+        {
+          "type": "TextureMaterialProperty",
+          "data": [ "texture.house.barrel", "shader.basic" ]
+        },
+        {
+          "type": "TextureMaterialProperty",
+          "data": [ "texture.brick", "shader.basic" ]
+        },
+        {
+          "type": "TextureMaterialProperty",
+          "data": [ "texture.house.windows", "shader.basic" ]
         },
         {
           "type": "TextureMaterialProperty",
           "data": [ "texture.house.wood", "shader.basic" ]
+        },
+        {
+          "type": "TextureMaterialProperty",
+          "data": [ "texture.house.wood", "shader.basic" ]
+        },
+        { 
+          "type": "TextureMaterialProperty",
+          "data": [ "texture.house.wood", "shader.basic" ]
+        },
+        {
+          "type": "AnimationProperty",
+          "data": [ "animation.remy" ]
+        },
+        {
+          "type": "SoundProperty",
+          "data": [ "sound.est-drink" ]
         }
       ]
     },
     {
-      "id": "camera",
-      "name": "Camera",
+      "id": "playerCamera",
+      "name": "Player Camera",
       "properties": [
         {
           "type": "TransformProperty",
           "data": [
-            [ "0,0,0", "0,0,0", "1,1,1" ]
+            [ "0,2,2", "0,0,0", "1,1,1" ]
           ]
         },
         {

@@ -271,12 +271,17 @@
   },
   {
     "id": "configfile.actions.myActions",
-    "path": "ConfigFiles/Actions/myActions.json", 
+    "path": "ConfigFiles/Actions/myActions.json",
     "type": "actions"
   },
   {
     "id": "configfile.actions.debug",
-    "path": "ConfigFiles/Actions/debugactions.json",
+    "path": "ConfigFiles/Actions/debugActions.json",
+    "type": "actions"
+  },
+  {
+    "id": "configfile.actions.transform",
+    "path": "ConfigFiles/Actions/transformActions.json",
     "type": "actions"
   },
   {

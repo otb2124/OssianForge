@@ -230,7 +230,10 @@
     <None Update="Content\AnimationFiles\remy.waving.fbx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Content\ConfigFiles\Actions\debugactions.json">
+    <None Update="Content\ConfigFiles\Actions\debugActions.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Content\ConfigFiles\Actions\transformActions.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Content\ConfigFiles\Core\tree.json">

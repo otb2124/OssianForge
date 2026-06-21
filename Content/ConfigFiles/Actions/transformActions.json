@@ -1,0 +1,32 @@
+﻿[
+  {
+    "id": "action.transform.transformRight",
+    "call": "node.addValue",
+    "args": [ "$self", "TransformProperty", "Transform.Position", "1,0,0", "$delta" ]
+  },
+  {
+    "id": "action.transform.transformLeft",
+    "call": "node.addValue",
+    "args": [ "$self", "TransformProperty", "Transform.Position", "-1,0,0", "$delta" ]
+  },
+  {
+    "id": "action.transform.transformForward",
+    "call": "node.addValueCurrentDirection",
+    "args": [ "$self", "TransformProperty", "Transform.Position", "0,0,1", "$delta" ]
+  },
+  {
+    "id": "action.transform.transformBackward",
+    "call": "node.addValueCurrentDirection",
+    "args": [ "$self", "TransformProperty", "Transform.Position", "0,0,-1", "$delta" ]
+  },
+  {
+    "id": "action.transform.transformMouseYawX",
+    "call": "node.addValue",
+    "args": [ "$self", "TransformProperty", "Transform.Rotation", "0,1,0", "$mouse_x", "$delta" ]
+  },
+  {
+    "id": "action.transform.transformMouseYawY",
+    "call": "node.addValue",
+    "args": [ "$self", "TransformProperty", "Transform.Rotation", "1,0,0", "$mouse_y", "$delta" ]
+  }
+]

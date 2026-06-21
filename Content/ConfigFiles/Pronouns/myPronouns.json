@@ -23,5 +23,10 @@
     "id": "pronoun.node.callPropertyMethod",
     "target": "OssianForge.Engine.Nodes.NodeReflection.CallPropertyMethod",
     "pronouns": [ "node.callMethod" ]
+  },
+  {
+    "id": "pronoun.node.addValueCurrentDirection",
+    "target": "OssianForge.Engine.Nodes.NodeReflection.AddValueCurrentDirection",
+    "pronouns": [ "node.addValueCurrentDirection" ]
   }
 ]

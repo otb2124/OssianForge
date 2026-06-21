@@ -1,4 +1,5 @@
 ﻿using OssianForge.Engine.Core;
+using OssianForge.Engine.Nodes;
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
@@ -210,6 +211,13 @@ namespace OssianForge.Engine.Resources.Config
                 {
                     if (s == "$self") return context;
                     if (s == "$delta") return delta ?? 0.0;
+                    if (s.StartsWith("$child."))
+                    {
+                        string childId = s["$child.".Length..];
+                        if (context is Node node)
+                            return node.Children.FirstOrDefault(c => c.Id == childId);
+                        return null;
+                    }
                     if (s.StartsWith('$'))
                     {
                         string key = s[1..];
