@@ -8,15 +8,16 @@ namespace OssianForge.Engine.Resources.Config
 
     public class InputAxisRecord : ConfigRecord
     {
-        public override IEnumerable<string> FieldNames { get; } = ["source", "sensitivity"];
-
+        public override IEnumerable<string> FieldNames { get; } = ["source", "sensitivity", "invert"];
         public string Source { get; set; } = "";
         public float Sensitivity { get; set; } = 1f;
+        public bool Invert { get; set; } = false;
 
         public override string GetField(string name) => name switch
         {
             "source" => Source,
             "sensitivity" => Sensitivity.ToString(System.Globalization.CultureInfo.InvariantCulture),
+            "invert" => Invert.ToString().ToLower(),
             _ => throw new ArgumentException($"Unknown field '{name}' on InputAxisRecord")
         };
 
@@ -24,20 +25,21 @@ namespace OssianForge.Engine.Resources.Config
         {
             switch (name)
             {
-                case "source":
-                    Source = value;
-                    break;
+                case "source": Source = value; break;
                 case "sensitivity":
                     Sensitivity = float.TryParse(value, System.Globalization.NumberStyles.Float,
                         System.Globalization.CultureInfo.InvariantCulture, out var s) ? s : 1f;
+                    break;
+                case "invert":
+                    Invert = value == "true";
                     break;
                 default:
                     throw new ArgumentException($"Unknown field '{name}' on InputAxisRecord");
             }
         }
 
-        public static InputAxisRecord Create(string id, string source, float sensitivity = 1f)
-            => new InputAxisRecord { Id = id, Source = source, Sensitivity = sensitivity };
+        public static InputAxisRecord Create(string id, string source, float sensitivity = 1f, bool invert = false)
+            => new InputAxisRecord { Id = id, Source = source, Sensitivity = sensitivity, Invert = invert };
     }
 
     // ── config ───────────────────────────────────────────────────────────────────
@@ -53,12 +55,12 @@ namespace OssianForge.Engine.Resources.Config
             string prefix = $"[{index}]";
             string id = GetString($"{prefix}.id");
             if (string.IsNullOrEmpty(id)) return null;
-
             return new InputAxisRecord
             {
                 Id = id,
                 Source = GetString($"{prefix}.source"),
-                Sensitivity = GetFloat($"{prefix}.sensitivity", 1f)
+                Sensitivity = GetFloat($"{prefix}.sensitivity", 1f),
+                Invert = GetBool($"{prefix}.invert", false)
             };
         }
 
@@ -68,6 +70,7 @@ namespace OssianForge.Engine.Resources.Config
             Set($"{prefix}.id", record.Id);
             Set($"{prefix}.source", record.Source);
             Set($"{prefix}.sensitivity", record.Sensitivity);
+            Set($"{prefix}.invert", record.Invert);
         }
 
         // ── records ───────────────────────────────────────────────────────────────

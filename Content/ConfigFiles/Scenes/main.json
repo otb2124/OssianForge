@@ -19,6 +19,14 @@
         {
           "type": "StateMachineProperty",
           "data": [ "configfile.statemachine.player" ]
+        },
+        {
+          "type": "ActionProperty",
+          "data": [
+            {
+              "OnUpdate": [ "action.myActions.transformMouseYawX", "action.myActions.transformMouseYawY" ]
+            }
+          ]
         }
       ],
       "children": [

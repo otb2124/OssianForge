@@ -40,6 +40,7 @@ namespace OssianForge.Engine.Inputs
             public string Id;
             public string Source;
             public float Sensitivity;
+            public bool Invert;
         }
 
         private readonly List<ResolvedBinding> _bindings = new();
@@ -81,7 +82,8 @@ namespace OssianForge.Engine.Inputs
                     {
                         Id = record.Id,
                         Source = record.Source,
-                        Sensitivity = record.Sensitivity
+                        Sensitivity = record.Sensitivity,
+                        Invert = record.Invert
                     });
                 }
             }
@@ -110,7 +112,7 @@ namespace OssianForge.Engine.Inputs
             foreach (var axis in _axisBindings)
             {
                 float raw = ResolveAxisSource(axis.Source);
-                float scaled = raw * axis.Sensitivity;
+                float scaled = raw * axis.Sensitivity * (axis.Invert ? -1f : 1f);
                 ValueStore.Set(axis.Id, scaled);
             }
         }

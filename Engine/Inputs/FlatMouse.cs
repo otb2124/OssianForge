@@ -44,7 +44,9 @@ namespace OssianForge.Engine.Inputs
             Vector2 currentPos = Position;
             // Normalize to pixels/second so consumers can multiply by $delta
             float dt = (float)Math.Max(deltaTime, 0.0001);
-            Delta = _firstUpdate ? Vector2.Zero : (currentPos - _prevPosition) / dt;
+            Delta = _firstUpdate ? Vector2.Zero : new Vector2(
+                -(currentPos.X - _prevPosition.X),
+                 (currentPos.Y - _prevPosition.Y)) / dt;
             _prevPosition = currentPos;
             _firstUpdate = false;
         }
