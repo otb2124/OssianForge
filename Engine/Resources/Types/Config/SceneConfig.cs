@@ -42,15 +42,57 @@ namespace OssianForge.Engine.Resources.Config
             if (el.TryGetProperty("name", out var name))
                 node.Name = name.GetString();
 
+            if (el.TryGetProperty("StartEnabled", out var onStart))
+                node.StartEnabled = onStart.GetBoolean();
+
+            if (el.TryGetProperty("UpdateEnabled", out var onUpdate))
+                node.UpdateEnabled = onUpdate.GetBoolean();
+
+            if (el.TryGetProperty("renderEnabled", out var onRender))
+                node.RenderEnabled = onRender.GetBoolean();
+
+            if (el.TryGetProperty("enabled", out var enabled))
+                node.Enabled = enabled.GetBoolean();
+
             if (el.TryGetProperty("properties", out var props))
                 foreach (var prop in props.EnumerateArray())
                     node.AddProperty(ParseProperty(prop));
+
+            var sceneRef = node.GetProperty<SceneReferenceProperty>();
+            if (sceneRef != null)
+                return ResolveSceneReference(sceneRef, node, el);
 
             if (el.TryGetProperty("children", out var children))
                 foreach (var child in children.EnumerateArray())
                     node.AddChild(ParseNode(child));
 
             return node;
+        }
+
+        private static Node ResolveSceneReference(SceneReferenceProperty sceneRef, Node overrides, JsonElement el)
+        {
+            var sceneConfig = Engine.Resources.GetResourceFile<SceneConfig>(sceneRef.SceneId)
+                ?? throw new Exception($"[SCENE REFERENCE] SceneConfig '{sceneRef.SceneId}' not found.");
+
+            var root = sceneConfig.GetScene();
+
+            // Inject overriding properties — SceneReferenceProperty itself is skipped
+            foreach (var prop in overrides.Properties)
+            {
+                if (prop is SceneReferenceProperty) continue;
+                root.SetProperty(prop);
+            }
+
+            // Re-parent existing children
+            foreach (var child in root.Children)
+                child.Parent = root;
+
+            // Attach any extra children defined on the referencing node
+            if (el.TryGetProperty("children", out var children))
+                foreach (var child in children.EnumerateArray())
+                    root.AddChild(ParseNode(child));
+
+            return root;
         }
 
         // ── property dispatch ─────────────────────────────────────────────────────

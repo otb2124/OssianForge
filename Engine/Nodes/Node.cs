@@ -11,9 +11,14 @@ namespace OssianForge.Engine.Nodes
         public List<NodeProperty> Properties = new();
 
         // ── lifecycle toggles ────────────────────────────────────────────────
-        public bool OnStartEnabled = true;
-        public bool OnUpdateEnabled = true;
-        public bool OnRenderEnabled = true;
+        public bool StartEnabled = true;
+        public bool UpdateEnabled = true;
+        public bool RenderEnabled = true;
+
+        public bool Enabled
+        {
+            set => StartEnabled = UpdateEnabled = RenderEnabled = value;
+        }
 
         public void AddChild(Node child)
         {
@@ -69,7 +74,7 @@ namespace OssianForge.Engine.Nodes
 
         public virtual void OnStart() 
         {
-            if (!OnStartEnabled) return;
+            if (!StartEnabled) return;
             foreach (var property in Properties)
             {
                 property.OnStart(this);
@@ -81,7 +86,7 @@ namespace OssianForge.Engine.Nodes
 
         public virtual void OnUpdate(double delta)
         {
-            if (!OnUpdateEnabled) return;
+            if (!UpdateEnabled) return;
             foreach (var property in Properties)
             {
                 property.OnUpdate(this, delta);
@@ -94,7 +99,7 @@ namespace OssianForge.Engine.Nodes
 
         public virtual void OnRender(double delta)
         {
-            if (!OnRenderEnabled) return;
+            if (!RenderEnabled) return;
             foreach (var property in Properties)
             {
                 property.OnRender(this, delta);

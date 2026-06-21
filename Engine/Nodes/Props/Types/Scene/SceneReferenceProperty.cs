@@ -10,18 +10,5 @@ namespace OssianForge.Engine.Nodes.Props.Types.Scene
         {
             SceneId = sceneId;
         }
-
-        public override void OnStart(Node node)
-        {
-            base.OnStart(node);
-
-            var sceneConfig = Engine.Resources.GetResourceFile<SceneConfig>(SceneId)
-                ?? throw new Exception($"[SCENE REFERENCE] SceneConfig '{SceneId}' not found.");
-
-            var referencedRoot = sceneConfig.GetScene();
-
-            node.AddChild(referencedRoot);
-
-        }
     }
 }

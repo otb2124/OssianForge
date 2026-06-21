@@ -29,6 +29,7 @@
     {
       "id": "playerBody",
       "name": "playerBody",
+      "renderEnabled": false,
       "properties": [
         {
           "type": "TransformProperty",

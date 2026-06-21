@@ -257,6 +257,9 @@
     <None Update="Content\ConfigFiles\Pronouns\myPronouns.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="Content\ConfigFiles\Scenes\debugui.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Content\ConfigFiles\Scenes\player.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

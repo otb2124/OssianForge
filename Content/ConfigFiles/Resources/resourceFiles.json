@@ -260,6 +260,11 @@
     "type": "scene"
   },
   {
+    "id": "configfile.scene.debugui",
+    "path": "ConfigFiles/Scenes/debugui.json",
+    "type": "scene"
+  },
+  {
     "id": "configfile.tree",
     "path": "ConfigFiles/Core/tree.json",
     "type": "tree"

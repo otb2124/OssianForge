@@ -160,14 +160,38 @@ namespace OssianForge.Engine.Utils.Console
         public void Execute(CommandContext ctx)
         {
             var parentId = ctx.Get("parent");
-            var nodes = parentId != null
-                ? Engine.Nodes.NodeManager.GetNode(parentId)?.Children ?? new()
-                : Engine.Nodes.NodeManager.Roots;
 
-            foreach (var node in nodes)
-                DebugConsole.Write($"  [{node.Id}] {node.Name}", ConsoleColor.White);
+            List<Node> roots;
+            if (parentId != null)
+            {
+                var parent = Engine.Nodes.NodeManager.GetNode(parentId);
+                if (parent == null)
+                {
+                    DebugConsole.Write($"Node '{parentId}' not found.", ConsoleColor.Red);
+                    return;
+                }
+                roots = parent.Children;
+            }
+            else
+            {
+                roots = Engine.Nodes.NodeManager.Roots;
+            }
 
-            DebugConsole.Write($"{nodes.Count} node(s)", ConsoleColor.Gray);
+            int total = 0;
+            foreach (var node in roots)
+                total += PrintNode(node, 0);
+
+            DebugConsole.Write($"{total} node(s)", ConsoleColor.Gray);
+        }
+
+        private static int PrintNode(Node node, int indent)
+        {
+            string pad = new string(' ', indent * 2);
+            DebugConsole.Write($"{pad}[{node.Id}] {node.Name}", ConsoleColor.White);
+            int count = 1;
+            foreach (var child in node.Children)
+                count += PrintNode(child, indent + 1);
+            return count;
         }
     }
 
