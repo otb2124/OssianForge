@@ -56,6 +56,54 @@ namespace OssianForge.Engine.Resources.Config
 
     public class ActionsConfig : JsonSerialConfig<ActionRecord>
     {
+
+
+        private Dictionary<string, ActionRecord>? _cache;
+        private Dictionary<string, ActionRecord> Cache
+        {
+            get
+            {
+                if (_cache == null)
+                {
+                    _cache = new Dictionary<string, ActionRecord>();
+                    int last = GetLastIndex();
+
+                    for (int i = 0; i <= last; i++)
+                    {
+                        string prefix = $"[{i}]";
+                        string id = GetString($"{prefix}.id");
+                        if (string.IsNullOrEmpty(id)) continue;
+
+                        var record = new ActionRecord
+                        {
+                            Id = id,
+                            Call = GetString($"{prefix}.call"),
+                            StoreValue = NullIfEmpty(GetString($"{prefix}.storeValue"))
+                        };
+
+                        // Read args individually from flat store — args is a JSON array
+                        // flattened as [i].args[0], [i].args[1], etc.
+                        var argsList = new List<string>();
+                        int j = 0;
+                        while (true)
+                        {
+                            string val = GetString($"{prefix}.args[{j}]");
+                            if (string.IsNullOrEmpty(val)) break;
+                            argsList.Add(val);
+                            j++;
+                        }
+                        record.ArgsJson = JsonSerializer.Serialize(argsList);
+
+                        _cache[record.Id] = record;
+                    }
+
+                    Console.WriteLine($"[ACTIONS CACHE] Done — {_cache.Count} records.");
+                }
+                return _cache;
+            }
+        }
+
+
         public ActionsConfig(string id, string path) : base(id, path) { }
 
         // ── flat-store I/O ────────────────────────────────────────────────────────
@@ -101,20 +149,10 @@ namespace OssianForge.Engine.Resources.Config
 
         // ── records ───────────────────────────────────────────────────────────────
 
-        public new List<ActionRecord> GetAllRecords()
-        {
-            int last = GetLastIndex();
-            var result = new List<ActionRecord>();
-            for (int i = 0; i <= last; i++)
-            {
-                var record = ReadActionRecord(i);
-                if (record != null) result.Add(record);
-            }
-            return result;
-        }
+        public new List<ActionRecord> GetAllRecords() => Cache.Values.ToList();
 
         public new ActionRecord? GetById(string id)
-            => GetAllRecords().FirstOrDefault(r => r.Id == id);
+        => Cache.TryGetValue(id, out var r) ? r : null;
 
         public List<ActionRecord> GetByCall(string call)
             => GetAllRecords().Where(r => r.Call == call).ToList();

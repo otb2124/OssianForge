@@ -12,6 +12,9 @@ namespace OssianForge.Engine.Resources.Config
             typeof(int), typeof(float), typeof(double), typeof(long), typeof(short), typeof(byte), typeof(decimal)
         };
 
+        private static readonly Dictionary<string, (object? target, Type type)> _memberPathCache = new();
+        private static readonly Dictionary<(string call, int argCount), MethodInfo?> _methodCache = new();
+
         // ── primary entry points ──────────────────────────────────────────────────
 
         public static void Invoke(string call, params string[] args)
@@ -40,29 +43,40 @@ namespace OssianForge.Engine.Resources.Config
             string memberPath = call[..lastDot];
             string methodName = call[(lastDot + 1)..];
 
-            var (target, targetType) = ResolveMemberPath(memberPath);
+            // ── cached member path resolution ─────────────────────────────────────
+            if (!_memberPathCache.TryGetValue(memberPath, out var resolved))
+            {
+                resolved = ResolveMemberPath(memberPath);
+                _memberPathCache[memberPath] = resolved;
+            }
+            var (target, targetType) = resolved;
 
             Type[] argTypes = args.Select(a => a?.GetType() ?? typeof(object)).ToArray();
-
             var lookupType = target?.GetType() ?? targetType;
             var bindingFlags = BindingFlags.Public |
-                                (target == null ? BindingFlags.Static : BindingFlags.Instance);
+                               (target == null ? BindingFlags.Static : BindingFlags.Instance);
 
-            var method = lookupType.GetMethods(bindingFlags)
-                .Where(m => m.Name == methodName)
-                .Where(m => m.GetParameters().Length == args.Length)
-                .FirstOrDefault(m =>
-                {
-                    var ps = m.GetParameters();
-                    for (int i = 0; i < ps.Length; i++)
+            // ── cached method lookup ───────────────────────────────────────────────
+            var methodKey = (call, args.Length);
+            if (!_methodCache.TryGetValue(methodKey, out var method))
+            {
+                method = lookupType.GetMethods(bindingFlags)
+                    .Where(m => m.Name == methodName)
+                    .Where(m => m.GetParameters().Length == args.Length)
+                    .FirstOrDefault(m =>
                     {
-                        if (args[i] == null) continue;
-                        if (ps[i].ParameterType.IsAssignableFrom(argTypes[i])) continue;
-                        if (IsNumericConvertible(ps[i].ParameterType, argTypes[i])) continue;
-                        return false;
-                    }
-                    return true;
-                });
+                        var ps = m.GetParameters();
+                        for (int i = 0; i < ps.Length; i++)
+                        {
+                            if (args[i] == null) continue;
+                            if (ps[i].ParameterType.IsAssignableFrom(argTypes[i])) continue;
+                            if (IsNumericConvertible(ps[i].ParameterType, argTypes[i])) continue;
+                            return false;
+                        }
+                        return true;
+                    });
+                _methodCache[methodKey] = method;
+            }
 
             if (method == null)
                 throw new Exception($"[DISPATCHER] Method '{methodName}' not found on '{lookupType.FullName}' "
