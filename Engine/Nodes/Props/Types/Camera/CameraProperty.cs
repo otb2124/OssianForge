@@ -32,12 +32,8 @@ namespace OssianForge.Engine.Nodes.Props
             var transform = node.GetProperty<TransformProperty>();
             if (transform == null) return;
 
-            // World-space, not local — matters as soon as the camera is parented
-            // (e.g. under "player"). TransformProperty.WorldTransform is recomputed
-            // every frame from local Transform + parent, so reading it here keeps
-            // the camera correctly following its parent's live position/rotation.
             Camera.Position = transform.WorldTransform.Position;
-            Camera.SetRotation(transform.WorldTransform.Rotation);
+            Camera.SetViewMatrix(transform.WorldTransform.ToMatrix());
         }
     }
 }

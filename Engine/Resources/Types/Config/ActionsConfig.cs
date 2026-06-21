@@ -147,10 +147,10 @@ namespace OssianForge.Engine.Resources.Config
             return result;
         }
 
-        public void ExecuteAll(IEnumerable<string> ids, object context = null)
+        public void ExecuteAll(IEnumerable<string> ids, object context = null, double? delta = null)
         {
             foreach (var id in ids)
-                Execute(id, context);
+                Execute(id, context, delta);
         }
 
 

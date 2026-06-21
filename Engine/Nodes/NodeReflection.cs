@@ -54,20 +54,80 @@ namespace OssianForge.Engine.Nodes
         /// Reads the current value, adds the delta component-wise, writes it back.
         /// Works for the same numeric/Vector2/Vector3/Vector4 types SetNodePropertyValue supports.
         /// </summary>
-        public static void AddNodePropertyValueScaled(Node node, string propertyTypeName, string memberPath, string rawDelta, double delta)
+        /// 
+        public static void AddNodePropertyValueScaled(Node node, string propertyTypeName, string memberPath, string rawDelta)
+        {
+            ApplyScaled(node, propertyTypeName, memberPath, rawDelta, 1.0);
+        }
+        public static void AddNodePropertyValueScaled(Node node, string propertyTypeName, string memberPath, string rawDelta, double scale1)
+        {
+            ApplyScaled(node, propertyTypeName, memberPath, rawDelta, scale1);
+        }
+
+        public static void AddNodePropertyValueScaled(Node node, string propertyTypeName, string memberPath, string rawDelta, double scale1, double scale2)
+        {
+            double combined = scale1 * scale2;
+            ApplyScaled(node, propertyTypeName, memberPath, rawDelta, combined);
+        }
+
+        public static void AddNodePropertyValueScaled(Node node, string propertyTypeName, string memberPath, string rawDelta, double scale1, double scale2, double scale3)
+        {
+            ApplyScaled(node, propertyTypeName, memberPath, rawDelta, scale1 * scale2 * scale3);
+        }
+
+
+        public static object? CallPropertyMethod(Node node, string propertyTypeName, string methodName)
+    => InvokePropertyMethod(node, propertyTypeName, methodName, Array.Empty<object?>());
+
+        public static object? CallPropertyMethod(Node node, string propertyTypeName, string methodName, object? arg1)
+            => InvokePropertyMethod(node, propertyTypeName, methodName, new[] { arg1 });
+
+        public static object? CallPropertyMethod(Node node, string propertyTypeName, string methodName, object? arg1, object? arg2)
+            => InvokePropertyMethod(node, propertyTypeName, methodName, new[] { arg1, arg2 });
+
+        public static object? CallPropertyMethod(Node node, string propertyTypeName, string methodName, object? arg1, object? arg2, object? arg3)
+            => InvokePropertyMethod(node, propertyTypeName, methodName, new[] { arg1, arg2, arg3 });
+
+        private static object? InvokePropertyMethod(Node node, string propertyTypeName, string methodName, object?[] args)
+        {
+            var prop = FindNodeProperty(node, propertyTypeName);
+            var argTypes = args.Select(a => a?.GetType() ?? typeof(object)).ToArray();
+
+            var method = prop.GetType()
+                .GetMethods(BindingFlags.Public | BindingFlags.Instance)
+                .Where(m => m.Name == methodName)
+                .Where(m => m.GetParameters().Length == args.Length)
+                .FirstOrDefault(m =>
+                {
+                    var ps = m.GetParameters();
+                    for (int i = 0; i < ps.Length; i++)
+                    {
+                        if (args[i] == null) continue;
+                        if (ps[i].ParameterType.IsAssignableFrom(argTypes[i])) continue;
+                        return false;
+                    }
+                    return true;
+                });
+
+            if (method == null)
+                throw new Exception(
+                    $"[NODE REFLECTION] Method '{methodName}' not found on '{prop.GetType().FullName}' " +
+                    $"with args ({string.Join(", ", argTypes.Select(t => t?.Name ?? "null"))}).");
+
+            return method.Invoke(prop, args);
+        }
+
+        private static void ApplyScaled(Node node, string propertyTypeName, string memberPath, string rawDelta, double combined)
         {
             var prop = FindNodeProperty(node, propertyTypeName);
             string[] segments = memberPath.Split('.');
-
             var chain = WalkChain(prop, segments);
             var (finalOwner, finalMember, _) = chain[^1];
-
             Type valueType = GetMemberType(finalMember);
             object current = GetMember(finalOwner, finalMember)!;
             object parsedDelta = ParseValue(valueType, rawDelta);
-            object scaledDelta = Scale(valueType, parsedDelta, delta);
+            object scaledDelta = Scale(valueType, parsedDelta, combined);
             object result = Add(valueType, current, scaledDelta);
-
             SetMember(finalOwner, finalMember, result);
             WriteBackChain(chain);
         }

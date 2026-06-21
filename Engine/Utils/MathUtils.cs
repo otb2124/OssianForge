@@ -135,21 +135,6 @@ namespace OssianForge.Engine.Utils
                 Position = new Vector3(ndcX, ndcY, Position.Z);
                 Scale = new Vector3(ndcScaleX, ndcScaleY, Scale.Z);
             }
-
-            /// <summary>
-            /// Inverse of ToScreenSpace. Converts NDC back to center-origin pixel space.
-            /// </summary>
-            public void FromScreenSpace(Vector2 screen)
-            {
-                float pixelScaleX = Scale.X * screen.X * 0.5f;
-                float pixelScaleY = Scale.Y * screen.Y * 0.5f;
-
-                float pixelX = Position.X * screen.X * 0.5f;
-                float pixelY = Position.Y * screen.Y * 0.5f;
-
-                Position = new Vector3(pixelX, pixelY, Position.Z);
-                Scale = new Vector3(pixelScaleX, pixelScaleY, Scale.Z);
-            }
         }
     }
 }

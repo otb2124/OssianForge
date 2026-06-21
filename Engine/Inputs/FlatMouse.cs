@@ -17,6 +17,7 @@ namespace OssianForge.Engine.Inputs
 
         public Vector2 Position => _mouse?.Position ?? Vector2.Zero;
         public Vector2 Delta { get; private set; }   // ← new: frame-to-frame movement
+        private double _lastDeltaTime;
         public float ScrollDelta { get; private set; }
 
         private FlatMouse() { }
@@ -26,7 +27,7 @@ namespace OssianForge.Engine.Inputs
             _mouse = mouse;
         }
 
-        public void Update()
+        public void Update(double deltaTime)
         {
             _prev = new HashSet<MouseButton>(_curr);
             _curr.Clear();
@@ -41,7 +42,9 @@ namespace OssianForge.Engine.Inputs
             _prevScroll = scroll;
 
             Vector2 currentPos = Position;
-            Delta = _firstUpdate ? Vector2.Zero : currentPos - _prevPosition;
+            // Normalize to pixels/second so consumers can multiply by $delta
+            float dt = (float)Math.Max(deltaTime, 0.0001);
+            Delta = _firstUpdate ? Vector2.Zero : (currentPos - _prevPosition) / dt;
             _prevPosition = currentPos;
             _firstUpdate = false;
         }

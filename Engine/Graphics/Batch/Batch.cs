@@ -12,6 +12,9 @@ namespace OssianForge.Engine.Graphics.Batch
 
         public GL OpenGL;
 
+        public int DrawCallCount { get; private set; }
+        public int VertexCount { get; private set; }
+
         public Batch()
         {
 
@@ -58,6 +61,9 @@ namespace OssianForge.Engine.Graphics.Batch
             subMesh.Draw();
             material.PostApply();
             material.EndAction?.Invoke();
+
+            DrawCallCount++;
+            VertexCount += (int)subMesh.VertexCount;
         }
 
 
@@ -126,6 +132,8 @@ namespace OssianForge.Engine.Graphics.Batch
         public void Clear()
         {
             OpenGL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+            DrawCallCount = 0;
+            VertexCount = 0;
         }
 
         public void OnResize(Vector2D<int> size)

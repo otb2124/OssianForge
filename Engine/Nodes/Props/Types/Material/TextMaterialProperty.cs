@@ -71,6 +71,11 @@ namespace OssianForge.Engine.Nodes.Props
             InitGpuResources();
         }
 
+        public void SetText(string content)
+        {
+            Content = content;
+        }
+
         // ── Apply (scene render pass) ────────────────────────────────────
         public override void Apply(Matrix4x4 model, Matrix4x4 view, Matrix4x4 projection, Matrix4x4[] palette)
         {

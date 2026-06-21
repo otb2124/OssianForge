@@ -106,6 +106,7 @@ namespace OssianForge.Engine.Resources.Meshes
     {
         protected uint _vao, _vbo, _boneIndexVbo, _boneWeightVbo;
         protected uint _vertexCount;
+        public uint VertexCount => _vertexCount;
         public int MaterialIndex;
 
         public float[] RawVertices;

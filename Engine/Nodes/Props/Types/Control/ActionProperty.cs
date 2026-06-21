@@ -26,9 +26,9 @@ namespace OssianForge.Engine.Nodes.Props
         
 
         public override void OnUpdate(Node node, double delta)
-            => OnUpdateActions.ForEach(id => Engine.Resources.InvokeAction(id, node));
+            => OnUpdateActions.ForEach(id => Engine.Resources.InvokeAction(id, node, delta));
 
         public override void OnRender(Node node, double delta)
-            => OnRenderActions.ForEach(id => Engine.Resources.InvokeAction(id, node));
+            => OnRenderActions.ForEach(id => Engine.Resources.InvokeAction(id, node, delta));
     }
 }

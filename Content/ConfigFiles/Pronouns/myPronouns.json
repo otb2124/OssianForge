@@ -18,5 +18,10 @@
     "id": "pronoun.node.setValue",
     "target": "OssianForge.Engine.Nodes.NodeReflection.SetNodePropertyValue",
     "pronouns": [ "node.setValue" ]
+  },
+  {
+    "id": "pronoun.node.callPropertyMethod",
+    "target": "OssianForge.Engine.Nodes.NodeReflection.CallPropertyMethod",
+    "pronouns": [ "node.callMethod" ]
   }
 ]

@@ -23,6 +23,18 @@ namespace OssianForge.Engine.Graphics
         public Batch.Batch Batch;
 
         public double CurrentDelta;
+        private double _fpsAccum;
+        private int _fpsFrameCount;
+        private double _smoothFps;
+
+        public double FPS => CurrentDelta > 0 ? 1.0 / CurrentDelta : 0;
+        public double SmoothFPS => _smoothFps;
+        public int DrawCalls => Batch.DrawCallCount;
+        public int RenderedVertices => Batch.VertexCount;
+        public Vector2D<int> ViewportSize => WindowSize;
+        public double FrameTimeMs => CurrentDelta * 1000.0;
+
+
         public Vector2D<int> WindowSize;
         public string WindowTitle;
         public Vector2D<int> Resolution;
@@ -74,12 +86,24 @@ namespace OssianForge.Engine.Graphics
 
         public void OnRender(double delta)
         {
-            CurrentDelta = delta;
-            Batch.Clear();
+            UpdateRenderData(delta);
 
-            //PostProcess.BeginScene();
+            Batch.Clear();
             Engine.Nodes.OnRender(delta);
-            //PostProcess.EndScene();
+        }
+
+        public void UpdateRenderData(double delta)
+        {
+            CurrentDelta = delta;
+
+            _fpsAccum += delta;
+            _fpsFrameCount++;
+            if (_fpsAccum >= 0.5)
+            {
+                _smoothFps = _fpsFrameCount / _fpsAccum;
+                _fpsAccum = 0;
+                _fpsFrameCount = 0;
+            }
         }
 
         public void OnResize(Vector2D<int> size)
@@ -106,5 +130,15 @@ namespace OssianForge.Engine.Graphics
             }
 
         }
+    }
+
+    public static class GraphicsStats
+    {
+        public static string GetFPS() => Engine.Graphics.FPS.ToString("F1");
+        public static string GetSmoothFPS() => Engine.Graphics.SmoothFPS.ToString("F1");
+        public static string GetFrameTimeMs() => Engine.Graphics.FrameTimeMs.ToString("F2");
+        public static string GetDrawCalls() => Engine.Graphics.Batch.DrawCallCount.ToString();
+        public static string GetVertexCount() => Engine.Graphics.Batch.VertexCount.ToString();
+        public static string GetResolution() => $"{Engine.Graphics.WindowSize.X}x{Engine.Graphics.WindowSize.Y}";
     }
 }

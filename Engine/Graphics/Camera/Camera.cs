@@ -32,14 +32,16 @@ namespace OssianForge.Engine.Graphics.Camera
             //ControlCamera((float)delta);
         }
 
-        public void SetRotation(Vector3 rotationDegrees)
+        public void SetViewMatrix(Matrix4x4 worldMatrix)
         {
-            // rotationDegrees is (pitch, yaw, roll) per your engine's Transform convention
-            // (matches PhysicsBody's ToEuler/CreateFromYawPitchRoll usage: X=pitch, Y=yaw, Z=roll).
-            _pitch = rotationDegrees.X;
-            _yaw = rotationDegrees.Y;
-            // roll (rotationDegrees.Z) isn't modeled by this Camera's yaw/pitch-only forward
-            // vector — GetForward() has no roll term, so it's silently dropped here.
+            // Extract forward/right/up directly from the world rotation matrix.
+            // No Euler decomposition, no gimbal lock.
+            // Column 2 (Z column) of a rotation matrix is the forward vector.
+            var forward = Vector3.Normalize(new Vector3(worldMatrix.M31, worldMatrix.M32, worldMatrix.M33));
+
+            // Derive yaw/pitch from the forward vector — same math GetForward() uses, just inverted.
+            _pitch = float.RadiansToDegrees(MathF.Asin(forward.Y));
+            _yaw = float.RadiansToDegrees(MathF.Atan2(forward.Z, forward.X));
         }
 
         /*
@@ -219,11 +221,12 @@ namespace OssianForge.Engine.Graphics.Camera
         {
             float yawRad = float.DegreesToRadians(_yaw);
             float pitchRad = float.DegreesToRadians(_pitch);
-            return Vector3.Normalize(new Vector3(
+            var forward = Vector3.Normalize(new Vector3(
                 MathF.Cos(pitchRad) * MathF.Cos(yawRad),
                 MathF.Sin(pitchRad),
                 MathF.Cos(pitchRad) * MathF.Sin(yawRad)
             ));
+            return forward;
         }
     }
 }

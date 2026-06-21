@@ -196,7 +196,7 @@ namespace OssianForge.Engine.Resources.Config
         // ── json unboxing ─────────────────────────────────────────────────────────
 
         public static object? UnboxJsonElement(JsonElement el) => el.ValueKind switch
-        {
+        { 
             JsonValueKind.String => el.GetString(),
             JsonValueKind.Number => el.TryGetInt32(out int i) ? i
                                  : el.TryGetSingle(out float f) ? f

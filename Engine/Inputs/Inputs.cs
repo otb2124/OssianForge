@@ -30,7 +30,7 @@ namespace OssianForge.Engine.Inputs
         public void OnUpdate(double delta)
         {
             keyboard.Update();
-            mouse.Update();
+            mouse.Update(delta);
             KeyHandler.OnUpdate();
         }
     }
