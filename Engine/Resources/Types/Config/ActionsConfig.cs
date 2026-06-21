@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace OssianForge.Engine.Resources.Config
 {
@@ -141,7 +142,7 @@ namespace OssianForge.Engine.Resources.Config
             object? result = ReflectionDispatcher.InvokeWithResult(record.Call, args);
 
             if (record.StoreValue != null)
-                ActionValueStore.Set(record.StoreValue, result);
+                ValueStore.Set(record.StoreValue, result);
 
             return result;
         }
@@ -155,24 +156,28 @@ namespace OssianForge.Engine.Resources.Config
 
         /// <summary>
         /// Args starting with "$" are treated as value store lookups.
-        /// e.g. "$value.myActionOne.result" → ActionValueStore.Get("value.myActionOne.result")
+        /// e.g. "$value.myActionOne.result" → ValueStore.Get("value.myActionOne.result")
         /// </summary>
         /// <summary>
         /// Resolves special tokens in args:
         ///   "$self"  → the context object (e.g. calling Node)
         ///   "$delta" → the frame delta (double), if provided
-        ///   "$value.key" → ActionValueStore.Get("value.key")
+        ///   "$value.key" → ValueStore.Get("value.key")
         /// </summary>
         private static object?[] ResolveArgs(List<JsonElement> args, object context, double? delta)
             => args.Select(el =>
             {
                 var unboxed = ReflectionDispatcher.UnboxJsonElement(el);
-
                 if (unboxed is string s)
                 {
                     if (s == "$self") return context;
                     if (s == "$delta") return delta ?? 0.0;
-                    if (s.StartsWith('$')) return ActionValueStore.Get(s[1..]);
+                    if (s.StartsWith('$'))
+                    {
+                        string key = s[1..];
+                        var found = ValueStore.Get(key);
+                        return found;
+                    }
                 }
 
                 return unboxed;
@@ -187,7 +192,7 @@ namespace OssianForge.Engine.Resources.Config
 
     // ── value store ───────────────────────────────────────────────────────────────
 
-    public static class ActionValueStore
+    public static class ValueStore
     {
         private static readonly Dictionary<string, object?> _values = new();
 

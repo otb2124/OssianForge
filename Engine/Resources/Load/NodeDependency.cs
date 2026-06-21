@@ -12,6 +12,7 @@ namespace OssianForge.Engine.Resources
             "configfile.pronouns",
             "configfile.actions",
             "configfile.inputKeys",
+            "configfile.inputAxis",
             "configfile.statemachine",
         };
 

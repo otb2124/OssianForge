@@ -7,6 +7,11 @@ namespace OssianForge.Engine.Resources.Config
 {
     public static class ReflectionDispatcher
     {
+        private static readonly HashSet<Type> NumericTypes = new()
+        {
+            typeof(int), typeof(float), typeof(double), typeof(long), typeof(short), typeof(byte), typeof(decimal)
+        };
+
         // ── primary entry points ──────────────────────────────────────────────────
 
         public static void Invoke(string call, params string[] args)
@@ -52,8 +57,9 @@ namespace OssianForge.Engine.Resources.Config
                     for (int i = 0; i < ps.Length; i++)
                     {
                         if (args[i] == null) continue;
-                        if (!ps[i].ParameterType.IsAssignableFrom(argTypes[i]))
-                            return false;
+                        if (ps[i].ParameterType.IsAssignableFrom(argTypes[i])) continue;
+                        if (IsNumericConvertible(ps[i].ParameterType, argTypes[i])) continue;
+                        return false;
                     }
                     return true;
                 });
@@ -62,29 +68,50 @@ namespace OssianForge.Engine.Resources.Config
                 throw new Exception($"[DISPATCHER] Method '{methodName}' not found on '{lookupType.FullName}' "
                     + $"with args ({string.Join(", ", argTypes.Select(t => t.Name))}).");
 
-            return method.Invoke(target, args);
+            object?[] coercedArgs = CoerceArgs(method, args);
+            return method.Invoke(target, coercedArgs);
+        }
+
+        // ── numeric coercion ──────────────────────────────────────────────────────
+
+        /// <summary>
+        /// Reflection's GetMethod/Invoke does NOT perform the implicit numeric
+        /// widening (float→double, int→float, etc.) that a normal C# call site
+        /// gets for free. Without this, a method expecting `double` will fail to
+        /// match (and fail to invoke) when called with a boxed `float` argument —
+        /// e.g. from $delta (double) vs. an axis value stored as float.
+        /// This relaxes BOTH the match check and the actual invoke args so any
+        /// numeric type can bind to any other numeric parameter type.
+        /// </summary>
+        private static bool IsNumericConvertible(Type target, Type source)
+            => NumericTypes.Contains(target) && NumericTypes.Contains(source);
+
+        private static object?[] CoerceArgs(MethodInfo method, object?[] args)
+        {
+            var ps = method.GetParameters();
+            var result = new object?[args.Length];
+
+            for (int i = 0; i < args.Length; i++)
+            {
+                if (args[i] == null) { result[i] = null; continue; }
+
+                Type paramType = ps[i].ParameterType;
+                Type argType = args[i]!.GetType();
+
+                result[i] = (paramType != argType && NumericTypes.Contains(paramType) && NumericTypes.Contains(argType))
+                    ? Convert.ChangeType(args[i], paramType)
+                    : args[i];
+            }
+
+            return result;
         }
 
         // ── member path resolution ────────────────────────────────────────────────
 
-        /// <summary>
-        /// Resolves a dotted path like "OssianForge.Engine.Nodes" by walking left-to-right:
-        /// the longest leading segment that matches a real Type is the "root" (static class
-        /// or namespace anchor), then each remaining dot-segment is resolved as a static or
-        /// instance property/field access on the current target.
-        ///
-        /// Returns (target, type):
-        ///   - If the path resolves to a static class with no further member access,
-        ///     target is null and type is that static class — caller treats methodName as static.
-        ///   - If the path resolves through a property/field, target is the live instance
-        ///     and type is its declared type — caller treats methodName as instance.
-        /// </summary>
         private static (object? target, Type type) ResolveMemberPath(string path)
         {
             string[] segments = path.Split('.');
 
-            // Try shortest-to-longest root candidates so member-chain resolution
-            // (Engine -> Nodes property) is preferred over deeper direct type matches.
             for (int i = 1; i <= segments.Length; i++)
             {
                 string candidate = string.Join('.', segments[..i]);
@@ -97,7 +124,6 @@ namespace OssianForge.Engine.Resources.Config
                 }
                 catch
                 {
-                    // This root didn't pan out for the remaining segments — try a longer root.
                     continue;
                 }
             }

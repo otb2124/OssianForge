@@ -280,6 +280,11 @@
     "type": "statemachine"
   },
   {
+    "id": "configfile.inputAxis.myInputAxis",
+    "path": "ConfigFiles/InputAxis/myInputAxis.json",
+    "type": "inputAxis"
+  },
+  {
     "id": "soundfile.est-drink",
     "path": "SoundFiles/est-drink.ogg",
     "type": "soundfile"

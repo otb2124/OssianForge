@@ -49,5 +49,10 @@
     "id": "action.myActions.transformBackward",
     "call": "node.addValue",
     "args": [ "$self", "TransformProperty", "Transform.Position", "0,0,1", "$delta" ]
+  },
+  {
+    "id": "action.myActions.applyMouseYaw",
+    "call": "node.addValue",
+    "args": [ "$self", "TransformProperty", "Transform.Rotation", "0,1,0", "$mouse_x" ]
   }
 ]

@@ -1,0 +1,17 @@
+﻿[
+  {
+    "id": "mouse_x",
+    "source": "MouseDeltaX",
+    "sensitivity": 0.15
+  },
+  {
+    "id": "mouse_y",
+    "source": "MouseDeltaY",
+    "sensitivity": 0.15
+  },
+  {
+    "id": "scroll",
+    "source": "ScrollDelta",
+    "sensitivity": 1.0
+  }
+]

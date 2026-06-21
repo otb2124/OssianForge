@@ -6,16 +6,17 @@ namespace OssianForge.Engine.Inputs
     public sealed class FlatMouse
     {
         public enum MouseButtons { Left, Right, Middle }
-
         private static Lazy<FlatMouse> LazyInstance = new(() => new FlatMouse());
         public static FlatMouse Instance => LazyInstance.Value;
-
         private IMouse _mouse;
         private HashSet<MouseButton> _curr = new();
         private HashSet<MouseButton> _prev = new();
         private float _prevScroll;
+        private Vector2 _prevPosition;
+        private bool _firstUpdate = true;
 
         public Vector2 Position => _mouse?.Position ?? Vector2.Zero;
+        public Vector2 Delta { get; private set; }   // ← new: frame-to-frame movement
         public float ScrollDelta { get; private set; }
 
         private FlatMouse() { }
@@ -34,9 +35,15 @@ namespace OssianForge.Engine.Inputs
                 if (_mouse.IsButtonPressed(btn))
                     _curr.Add(btn);
             }
+
             float scroll = _mouse.ScrollWheels.Count > 0 ? _mouse.ScrollWheels[0].Y : 0f;
             ScrollDelta = scroll - _prevScroll;
             _prevScroll = scroll;
+
+            Vector2 currentPos = Position;
+            Delta = _firstUpdate ? Vector2.Zero : currentPos - _prevPosition;
+            _prevPosition = currentPos;
+            _firstUpdate = false;
         }
 
         private MouseButton ToSilk(MouseButtons btn) => btn switch

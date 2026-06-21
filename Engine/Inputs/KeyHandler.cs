@@ -34,22 +34,32 @@ namespace OssianForge.Engine.Inputs
             public List<InputKey> Keys;
         }
 
+        // Pre-resolved axis binding
+        private struct ResolvedAxisBinding
+        {
+            public string Id;
+            public string Source;
+            public float Sensitivity;
+        }
+
         private readonly List<ResolvedBinding> _bindings = new();
+        private readonly List<ResolvedAxisBinding> _axisBindings = new();
 
         public KeyHandler() { }
 
         // ── load ──────────────────────────────────────────────────────────────────
 
         /// <summary>
-        /// Resolves all InputKeysConfig resource files into flat bindings.
-        /// Call once after resources are loaded — not per-frame.
+        /// Resolves all InputKeysConfig and InputAxesConfig resource files into
+        /// flat bindings. Call once after resources are loaded — not per-frame.
         /// </summary>
         public void OnLoad()
         {
             _bindings.Clear();
+            _axisBindings.Clear();
 
-            var configs = Engine.Resources.GetResourceFiles<InputKeysConfig>();
-            foreach (var config in configs)
+            var keyConfigs = Engine.Resources.GetResourceFiles<InputKeysConfig>();
+            foreach (var config in keyConfigs)
             {
                 foreach (var record in config.GetAllRecords())
                 {
@@ -62,7 +72,22 @@ namespace OssianForge.Engine.Inputs
                 }
             }
 
-            Console.WriteLine($"[KEY HANDLER] Loaded {_bindings.Count} input bindings from {configs.Count} config(s).");
+            var axisConfigs = Engine.Resources.GetResourceFiles<InputAxesConfig>();
+            foreach (var config in axisConfigs)
+            {
+                foreach (var record in config.GetAllRecords())
+                {
+                    _axisBindings.Add(new ResolvedAxisBinding
+                    {
+                        Id = record.Id,
+                        Source = record.Source,
+                        Sensitivity = record.Sensitivity
+                    });
+                }
+            }
+
+            Console.WriteLine($"[KEY HANDLER] Loaded {_bindings.Count} input bindings from {keyConfigs.Count} config(s), "
+                + $"{_axisBindings.Count} axis bindings from {axisConfigs.Count} config(s).");
         }
 
         // ── update ────────────────────────────────────────────────────────────────
@@ -81,7 +106,22 @@ namespace OssianForge.Engine.Inputs
 
                 InputStateStore.Set(binding.Id, result);
             }
+
+            foreach (var axis in _axisBindings)
+            {
+                float raw = ResolveAxisSource(axis.Source);
+                float scaled = raw * axis.Sensitivity;
+                ValueStore.Set(axis.Id, scaled);
+            }
         }
+
+        private static float ResolveAxisSource(string source) => source switch
+        {
+            "MouseDeltaX" => Engine.Inputs.mouse.Delta.X,
+            "MouseDeltaY" => Engine.Inputs.mouse.Delta.Y,
+            "ScrollDelta" => Engine.Inputs.mouse.ScrollDelta,
+            _ => 0f
+        };
 
         private static bool AnyDown(List<InputKey> bindings)
         {
@@ -114,5 +154,7 @@ namespace OssianForge.Engine.Inputs
         }
 
         public bool IsStateActive(string id) => InputStateStore.IsActive(id);
+
+        public float GetAxis(string id) => ValueStore.Get(id) is float f ? f : 0f;
     }
 }
