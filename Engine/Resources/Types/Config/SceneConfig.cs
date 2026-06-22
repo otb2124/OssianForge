@@ -1,5 +1,6 @@
 ﻿using OssianForge.Engine.Nodes;
 using OssianForge.Engine.Nodes.Props;
+using OssianForge.Engine.Nodes.Props.Types.Camera;
 using OssianForge.Engine.Nodes.Props.Types.Scene;
 using System.Numerics;
 using System.Text.Json;
@@ -126,6 +127,8 @@ namespace OssianForge.Engine.Resources.Config
                 "GroupProperty" => new GroupProperty(Str(data, 0)),
                 "StateMachineProperty" => ParseStateMachineProperty(data),
                 "SceneReferenceProperty" => new SceneReferenceProperty(Str(data, 0)),
+                "OrbitalCameraProperty" => ParseOrbitalCameraProperty(data),
+                "ThirdPersonCameraProperty" => ParseThirdPersonCameraProperty(data),
                 _ => throw new Exception($"[SCENE CONFIG] Unknown property type '{type}'")
             };
         }
@@ -285,6 +288,33 @@ namespace OssianForge.Engine.Resources.Config
             }
 
             return new ControlProperty(isInteractable, isDraggable, isDropTarget, dragGroupId, actionMap);
+        }
+
+        private static OrbitalCameraProperty ParseOrbitalCameraProperty(JsonElement? data)
+        {
+            var arr = data!.Value;
+            int len = arr.GetArrayLength();
+
+            string targetNodeId = arr[0].GetString();
+            float orbitDistance = len > 1 ? arr[1].GetSingle() : 5f;
+            float minPitch = len > 2 ? arr[2].GetSingle() : -89f;
+            float maxPitch = len > 3 ? arr[3].GetSingle() : 89f;
+
+            return new OrbitalCameraProperty(targetNodeId, orbitDistance, minPitch, maxPitch);
+        }
+
+        private static ThirdPersonCameraProperty ParseThirdPersonCameraProperty(JsonElement? data)
+        {
+            var arr = data!.Value;
+            int len = arr.GetArrayLength();
+
+            string targetNodeId = arr[0].GetString();
+            float distance = len > 1 ? arr[1].GetSingle() : 5f;
+            float heightOffset = len > 2 ? arr[2].GetSingle() : 2f;
+            float minPitch = len > 3 ? arr[3].GetSingle() : -20f;
+            float maxPitch = len > 4 ? arr[4].GetSingle() : 60f;
+
+            return new ThirdPersonCameraProperty(targetNodeId, distance, heightOffset, minPitch, maxPitch);
         }
 
 

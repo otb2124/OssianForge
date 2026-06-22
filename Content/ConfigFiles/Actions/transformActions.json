@@ -1,23 +1,23 @@
 ﻿[
   {
-    "id": "action.transform.transformRight",
-    "call": "node.addValue",
-    "args": [ "$self", "TransformProperty", "Transform.Position", "1,0,0", "$delta" ]
-  },
-  {
-    "id": "action.transform.transformLeft",
-    "call": "node.addValue",
-    "args": [ "$self", "TransformProperty", "Transform.Position", "-1,0,0", "$delta" ]
-  },
-  {
     "id": "action.transform.transformForward",
-    "call": "node.addValueCurrentDirection",
-    "args": [ "$self", "TransformProperty", "Transform.Position", "0,0,1", "$delta" ]
+    "call": "node.addValueCameraDirection",
+    "args": [ "$self", "TransformProperty", "Transform.Position", "0,0,1", "playerCamera", "$delta" ]
   },
   {
     "id": "action.transform.transformBackward",
-    "call": "node.addValueCurrentDirection",
-    "args": [ "$self", "TransformProperty", "Transform.Position", "0,0,-1", "$delta" ]
+    "call": "node.addValueCameraDirection",
+    "args": [ "$self", "TransformProperty", "Transform.Position", "0,0,-1", "playerCamera", "$delta" ]
+  },
+  {
+    "id": "action.transform.transformRight",
+    "call": "node.addValueCameraDirection",
+    "args": [ "$self", "TransformProperty", "Transform.Position", "1,0,0", "playerCamera", "$delta" ]
+  },
+  {
+    "id": "action.transform.transformLeft",
+    "call": "node.addValueCameraDirection",
+    "args": [ "$self", "TransformProperty", "Transform.Position", "-1,0,0", "playerCamera", "$delta" ]
   },
   {
     "id": "action.transform.transformMouseYawX",

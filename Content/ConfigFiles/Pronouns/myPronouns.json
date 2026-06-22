@@ -25,8 +25,8 @@
     "pronouns": [ "node.callMethod" ]
   },
   {
-    "id": "pronoun.node.addValueCurrentDirection",
-    "target": "OssianForge.Engine.Nodes.NodeReflection.AddValueCurrentDirection",
-    "pronouns": [ "node.addValueCurrentDirection" ]
+    "id": "pronoun.node.addValueCameraDirection",
+    "target": "OssianForge.Engine.Nodes.NodeReflection.AddValueCameraDirection",
+    "pronouns": [ "node.addValueCameraDirection" ]
   }
 ]

@@ -227,5 +227,13 @@ namespace OssianForge.Engine.Graphics.Camera
             ));
             return forward;
         }
+
+
+        public void SetLookDirection(Vector3 direction)
+        {
+            direction = Vector3.Normalize(direction);
+            _pitch = float.RadiansToDegrees(MathF.Asin(direction.Y));
+            _yaw = float.RadiansToDegrees(MathF.Atan2(direction.Z, direction.X));
+        }
     }
 }

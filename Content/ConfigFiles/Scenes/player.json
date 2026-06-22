@@ -1,93 +1,115 @@
 ﻿{
-  "id": "player",
-  "name": "Player",
-  "properties": [
-    {
-      "type": "GroupProperty",
-      "data": [ "player" ]
-    },
-    {
-      "type": "TransformProperty",
-      "data": [
-        [ "0,3,10", "0,180,0", "1,1,1" ]
-      ]
-    },
-    {
-      "type": "StateMachineProperty",
-      "data": [ "configfile.statemachine.player" ]
-    },
-    {
-      "type": "ActionProperty",
-      "data": [
-        {
-          "OnUpdate": [ "action.transform.transformMouseYawX", "action.transform.transformMouseYawY" ]
-        }
-      ]
-    }
-  ],
+  "id": "playerScene",
+  "name": "Player Scene",
   "children": [
     {
-      "id": "playerBody",
-      "name": "playerBody",
+      "id": "player",
+      "name": "Player",
       "properties": [
+        {
+          "type": "GroupProperty",
+          "data": [ "player" ]
+        },
         {
           "type": "TransformProperty",
           "data": [
-            [ "0,-3,0", "0,0,0", "1,1,1" ]
+            [ "0,0,0", "0,0,0", "1,1,1" ]
           ]
         },
         {
-          "type": "MeshProperty",
-          "data": [ "mesh.remy" ]
+          "type": "StateMachineProperty",
+          "data": [ "configfile.statemachine.player" ]
         },
         {
-          "type": "TextureMaterialProperty",
-          "data": [ "texture.house.barrel", "shader.basic" ]
-        },
-        {
-          "type": "TextureMaterialProperty",
-          "data": [ "texture.brick", "shader.basic" ]
-        },
-        {
-          "type": "TextureMaterialProperty",
-          "data": [ "texture.house.windows", "shader.basic" ]
-        },
-        {
-          "type": "TextureMaterialProperty",
-          "data": [ "texture.house.wood", "shader.basic" ]
-        },
-        {
-          "type": "TextureMaterialProperty",
-          "data": [ "texture.house.wood", "shader.basic" ]
-        },
-        { 
-          "type": "TextureMaterialProperty",
-          "data": [ "texture.house.wood", "shader.basic" ]
-        },
-        {
-          "type": "AnimationProperty",
-          "data": [ "animation.remy" ]
-        },
-        {
-          "type": "SoundProperty",
-          "data": [ "sound.est-drink" ]
+          "type": "ActionProperty"
         }
-      ]
-    },
-    {
-      "id": "playerCamera",
-      "name": "Player Camera",
-      "properties": [
+      ],
+      "children": [
         {
-          "type": "TransformProperty",
-          "data": [
-            [ "0,2,2", "0,0,0", "1,1,1" ]
+          "id": "playerBody",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [ [ "0,0,0", "0,0,0", "1,1,1" ] ]
+            }
+          ],
+          "children": [
+            {
+              "id": "playerBodyMesh",
+              "properties": [
+                {
+                  "type": "TransformProperty",
+                  "data": [ [ "0,0,0", "0,0,0", "1,1,1" ] ]
+                },
+                {
+                  "type": "MeshProperty",
+                  "data": [ "mesh.remy" ]
+                },
+                {
+                  "type": "TextureMaterialProperty",
+                  "data": [ "texture.house.barrel", "shader.basic" ]
+                },
+                {
+                  "type": "TextureMaterialProperty",
+                  "data": [ "texture.brick", "shader.basic" ]
+                },
+                {
+                  "type": "TextureMaterialProperty",
+                  "data": [ "texture.house.windows", "shader.basic" ]
+                },
+                {
+                  "type": "TextureMaterialProperty",
+                  "data": [ "texture.house.wood", "shader.basic" ]
+                },
+                {
+                  "type": "TextureMaterialProperty",
+                  "data": [ "texture.house.wood", "shader.basic" ]
+                },
+                {
+                  "type": "TextureMaterialProperty",
+                  "data": [ "texture.house.wood", "shader.basic" ]
+                },
+                {
+                  "type": "AnimationProperty",
+                  "data": [ "animation.remy" ]
+                },
+                {
+                  "type": "SoundProperty",
+                  "data": [ "sound.est-drink" ]
+                }
+              ]
+            }
           ]
         },
         {
-          "type": "CameraProperty"
+          "id": "playerCamera",
+          "name": "Player Camera",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [ "0,0,0", "0,0,0", "1,1,1" ]
+              ]
+            },
+            {
+              "type": "ActionProperty",
+              "data": [
+                {
+                  "OnUpdate": [
+                    "action.transform.transformMouseYawX",
+                    "action.transform.transformMouseYawY"
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "OrbitalCameraProperty",
+              "data": [ "player", 6.0, -30.0, 60.0 ]
+            }
+          ]
         }
       ]
     }
   ]
 }
+

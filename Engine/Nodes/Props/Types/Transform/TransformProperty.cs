@@ -74,7 +74,36 @@ namespace OssianForge.Engine.Nodes.Props
         // WorldTransform fresh from the authored Transform + parent's WorldTransform.
         public override void OnUpdate(Node node, double delta)
         {
+            // Apply root motion from animation into world position
+            var anim = node.GetProperty<AnimationProperty>();
+            if (anim != null && anim.RootMotionDelta != Vector3.Zero)
+            {
+                // Root motion is in model-local space — rotate it by current world yaw
+                float yawRad = float.DegreesToRadians(WorldTransform.Rotation.Y);
+                float cos = MathF.Cos(yawRad);
+                float sin = MathF.Sin(yawRad);
+                Vector3 d = anim.RootMotionDelta;
+                Vector3 worldDelta = new Vector3(
+                    d.X * cos + d.Z * sin,
+                    d.Y,
+                    -d.X * sin + d.Z * cos);
+
+                Transform.Position += worldDelta;
+            }
+
+            Transform.Rotation = new Vector3(
+                NormalizeAngle(Transform.Rotation.X),
+                NormalizeAngle(Transform.Rotation.Y),
+                NormalizeAngle(Transform.Rotation.Z));
+
             RecomputeWorldTransform(node);
+        }
+
+        private static float NormalizeAngle(float degrees)
+        {
+            degrees %= 360f;
+            if (degrees < 0f) degrees += 360f;
+            return degrees;
         }
 
         private void RecomputeWorldTransform(Node node)

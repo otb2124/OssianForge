@@ -213,10 +213,15 @@ namespace OssianForge.Engine.Resources.Config
                     if (s == "$delta") return delta ?? 0.0;
                     if (s.StartsWith("$child."))
                     {
-                        string childId = s["$child.".Length..];
-                        if (context is Node node)
-                            return node.Children.FirstOrDefault(c => c.Id == childId);
-                        return null;
+                        string path = s["$child.".Length..];
+                        string[] ids = path.Split('.');
+                        Node current = context as Node;
+                        foreach (string childId in ids)
+                        {
+                            if (current == null) break;
+                            current = current.Children.FirstOrDefault(c => c.Id == childId);
+                        }
+                        return current;
                     }
                     if (s.StartsWith('$'))
                     {

@@ -77,26 +77,35 @@ namespace OssianForge.Engine.Nodes
         }
 
 
-        public static void AddValueCurrentDirection(
+        /// <summary>
+        /// Like AddValueCurrentDirection but derives the forward/right axes from a
+        /// sibling or child node's Transform.Rotation.Y (camera yaw) rather than
+        /// from this node's own world matrix. Used so WASD movement on the player
+        /// root is relative to the camera's facing, not the root's facing (which
+        /// is always zero in the Skyrim-style hierarchy).
+        ///
+        /// directionSourceNodeId: the id of the node whose Transform.Rotation.Y
+        /// is the camera yaw — e.g. "playerCamera".
+        /// </summary>
+        public static void AddValueCameraDirection(
             Node node, string propertyTypeName, string memberPath,
-            string rawDirection, double delta)
+            string rawDirection, string directionSourceNodeId, double delta)
         {
-            var transformProp = node.GetProperty<TransformProperty>();
-            if (transformProp == null) return;
+            var cameraNode = Engine.Nodes.NodeManager.GetNode(directionSourceNodeId);
+            var cameraSelfTransform = cameraNode?.GetProperty<TransformProperty>();
+            if (cameraSelfTransform == null) return;
 
-            // Extract yaw from the player's world rotation (Y axis only — no pitch/roll)
-            float yawRad = float.DegreesToRadians(transformProp.WorldTransform.Rotation.Y);
+            float yawRad = float.DegreesToRadians(cameraSelfTransform.Transform.Rotation.Y);
+
+            // Build XZ axes from camera yaw only — no pitch, no roll.
+            // Forward = into screen at yaw 0; Right = 90° clockwise from forward.
+            Vector3 forward = new Vector3(-MathF.Sin(yawRad), 0f, -MathF.Cos(yawRad));
+            Vector3 right = new Vector3(-MathF.Cos(yawRad), 0f, MathF.Sin(yawRad));
 
             Vector3 dir = ParseVector3(rawDirection);
 
-            float cos = MathF.Cos(yawRad);
-            float sin = MathF.Sin(yawRad);
-
-            Vector3 rotated = new Vector3(
-                dir.X * cos + dir.Z * sin,
-                dir.Y,
-                -dir.X * sin + dir.Z * cos
-            );
+            // dir.X = strafe, dir.Y = vertical (unused for ground movement), dir.Z = forward
+            Vector3 rotated = right * dir.X + Vector3.UnitY * dir.Y + forward * dir.Z;
 
             ApplyScaled(node, propertyTypeName, memberPath,
                 $"{rotated.X.ToString(CultureInfo.InvariantCulture)}," +

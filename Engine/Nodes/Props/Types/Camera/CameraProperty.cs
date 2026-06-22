@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 namespace OssianForge.Engine.Nodes.Props
 {
+
     public class CameraProperty : NodeProperty
     {
         public Camera Camera;

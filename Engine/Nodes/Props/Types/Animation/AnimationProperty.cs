@@ -10,6 +10,13 @@ namespace OssianForge.Engine.Nodes.Props
     {
         public AnimationResource AnimationResource { get; private set; }
         public Matrix4x4[] BonePalette { get; private set; } = Array.Empty<Matrix4x4>();
+        public Vector3 RootMotionDelta { get; private set; } = Vector3.Zero;
+
+        // The root bone name — set this to match your skeleton's root
+        // (e.g. "Hips", "mixamorig:Hips", "Root", etc.)
+        public string RootBoneName { get; set; } = "mixamorig:Hips";
+
+        private Vector3 _lastRootPosition = Vector3.Zero;
 
         public AnimationProperty(string animationResourceId)
         {
@@ -52,59 +59,74 @@ namespace OssianForge.Engine.Nodes.Props
             WalkSkeleton(skeleton, Matrix4x4.Identity, allBones, BonePalette, ref matched);
         }
 
+
+        private void ExtractRootMotion()
+        {
+            var channel = AnimationResource.CurrentClip?.Channels
+                .Find(c => c.BoneName == RootBoneName);
+
+            if (channel == null)
+            {
+                RootMotionDelta = Vector3.Zero;
+                return;
+            }
+
+            // Get current root position from animation
+            Vector3 currentRootPos = SamplePosition(channel, AnimationResource.CurrentTime);
+
+            RootMotionDelta = currentRootPos - _lastRootPosition;
+            _lastRootPosition = currentRootPos;
+
+            // Zero out root bone position keys so it doesn't move the mesh away from origin
+            // We do this by overriding TryGetBoneTransform result in WalkSkeleton via a flag,
+            // or more cleanly — neutralise position in the channel on the fly in WalkSkeleton
+        }
+
+        private Vector3 SamplePosition(BoneChannel ch, double time)
+        {
+            if (ch.PositionKeys.Count == 0) return Vector3.Zero;
+            if (ch.PositionKeys.Count == 1) return ch.PositionKeys[0].Value;
+
+            int i = 0;
+            for (; i < ch.PositionKeys.Count - 1; i++)
+                if (time < ch.PositionKeys[i + 1].Time) break;
+
+            int n = Math.Min(i + 1, ch.PositionKeys.Count - 1);
+            double d = ch.PositionKeys[n].Time - ch.PositionKeys[i].Time;
+            float t = d <= 0 ? 0f : Math.Clamp((float)((time - ch.PositionKeys[i].Time) / d), 0f, 1f);
+
+            return Vector3.Lerp(ch.PositionKeys[i].Value, ch.PositionKeys[n].Value, t);
+        }
+
+
         private void WalkSkeleton(SkeletonNode node, Matrix4x4 parentTransform,
-                                   List<BoneData> bones, Matrix4x4[] palette, ref int matched)
+                           List<BoneData> bones, Matrix4x4[] palette, ref int matched)
         {
             Matrix4x4? animated = AnimationResource.TryGetBoneTransform(node.Name);
             Matrix4x4 local = animated ?? node.LocalTransform;
 
-            // Row-vector convention (System.Numerics): global = local * parentTransform.
-            // See convention proof in comments below.
+            // Strip translation from root bone — position is owned by TransformProperty/world transform.
+            // Hips Y can optionally be kept if you want animation-driven vertical (crouch, jump squash).
+            if (node.Name == "mixamorig:Hips" && animated.HasValue)
+            {
+                Matrix4x4.Decompose(local, out var scale, out var rot, out _);
+                local = Matrix4x4.CreateScale(scale)
+                      * Matrix4x4.CreateFromQuaternion(rot);
+                // translation zeroed — mesh stays at origin, only rotates/scales
+            }
+
             Matrix4x4 global = local * parentTransform;
 
             int idx = bones.FindIndex(b => b.Name == node.Name);
             if (idx >= 0)
             {
-                // --- CONVENTION PROOF ---
-                // System.Numerics uses ROW-VECTOR convention: v' = v * M.
-                // Uploading a System.Numerics matrix with UniformMatrix4(transpose=false)
-                // causes OpenGL to see it transposed (because SN is row-major, GL is column-major).
-                // GLSL then does mat*vec, which is (SN_matrix^T)^T * v = SN_matrix * v.
-                // Net result: GLSL mat*vec == C# v*mat. The two conventions are consistent.
-                //
-                // Skinning formula (column-vector standard):
-                //   v_skinned_col = AnimGlobal_col * OffsetMatrix_col * v_col
-                //
-                // In row-vector: palette_rv = (AnimGlobal_col * OffsetMatrix_col)^T
-                //                           = OffsetMatrix_col^T * AnimGlobal_col^T
-                //                           = OffsetMatrix_rv   * AnimGlobal_rv
-                //                           = OffsetMatrix_rv   * global
-                //
-                // At bind pose: global == BindGlobal_rv, and OffsetMatrix_rv == inverse(BindGlobal_rv)
-                // so palette == Identity — vertices stay exactly where they are. ✓
                 palette[idx] = bones[idx].OffsetMatrix * global;
                 matched++;
-
-                // This node IS a real bone — propagate its full global transform to children.
                 foreach (var child in node.Children)
                     WalkSkeleton(child, global, bones, palette, ref matched);
             }
             else
             {
-                // This node is NOT a bone (e.g. scene RootNode, Armature helper, or any
-                // other FBX structural node that has no OffsetMatrix in the mesh).
-                //
-                // FIX: Do NOT accumulate its local transform into parentTransform.
-                //
-                // The OffsetMatrix for every real bone is already the full inverse bind-pose
-                // in mesh space, computed by Assimp from the entire chain root→bone. If we
-                // also fold non-bone ancestor transforms into `global`, those transforms get
-                // applied twice — once via the accumulated parentTransform here, and once
-                // implicitly inside the OffsetMatrix — causing the legs/hips to explode.
-                //
-                // Passing `parentTransform` unchanged (instead of `global`) makes non-bone
-                // nodes transparent to the skinning math. Only actual bone nodes contribute
-                // to the accumulated global transform.
                 foreach (var child in node.Children)
                     WalkSkeleton(child, parentTransform, bones, palette, ref matched);
             }
@@ -144,6 +166,21 @@ namespace OssianForge.Engine.Nodes.Props
             }
 
             return palette;
+        }
+
+        // Helpers to decompose matrix back to components
+        private static Vector3 GetScale(Matrix4x4 m)
+        {
+            return new Vector3(
+                new Vector3(m.M11, m.M12, m.M13).Length(),
+                new Vector3(m.M21, m.M22, m.M23).Length(),
+                new Vector3(m.M31, m.M32, m.M33).Length());
+        }
+
+        private static Quaternion GetRotation(Matrix4x4 m)
+        {
+            Matrix4x4.Decompose(m, out _, out var rot, out _);
+            return rot;
         }
     }
 }
