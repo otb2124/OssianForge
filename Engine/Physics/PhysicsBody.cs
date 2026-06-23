@@ -113,24 +113,14 @@ namespace OssianForge.Engine.Physics
             var o = JitterBody.Orientation;
             var v = JitterBody.Velocity;
 
-            // Physics is the authority on world position/rotation for this node.
-            // Write to WorldTransform (read by rendering) — NOT local Transform,
-            // since Transform is meant to stay the authored/script-editable value
-            // and TransformProperty.OnUpdate will overwrite WorldTransform from
-            // Transform + parent every frame anyway, undoing this otherwise.
-            //
-            // If this body has no parent (the common physics case — top-level
-            // dynamic objects), Transform and WorldTransform should be kept in
-            // sync so script reads of either field stay consistent.
             TransformProperty.WorldTransform.Position = new Vector3(p.X, p.Y, p.Z);
             TransformProperty.WorldTransform.Rotation = ToEuler(o);
 
             var parent = Engine.Nodes.NodeManager.GetNode(NodeId).Parent;
-
             if (parent?.GetProperty<TransformProperty>() == null)
             {
-                TransformProperty.Transform.Position = TransformProperty.WorldTransform.Position;
-                TransformProperty.Transform.Rotation = TransformProperty.WorldTransform.Rotation;
+                TransformProperty._transform.Position = TransformProperty.WorldTransform.Position;
+                TransformProperty._transform.Rotation = TransformProperty.WorldTransform.Rotation;
             }
 
             PhysicsProperty.Velocity = new Vector3(v.X, v.Y, v.Z);
@@ -139,6 +129,31 @@ namespace OssianForge.Engine.Physics
         public void SyncToJitter()
         {
             if (JitterBody == null) return;
+
+            Console.WriteLine($"{TransformProperty.TransformDirty}, {NodeId}");
+
+            // Script teleported the node — push new transform into Jitter before the step
+            if (TransformProperty.TransformDirty)
+            {
+
+                var t = TransformProperty._transform;
+
+                JitterBody.Position = new JVector(t.Position.X, t.Position.Y, t.Position.Z);
+
+                var rot = t.Rotation;
+                var q = System.Numerics.Quaternion.CreateFromYawPitchRoll(
+                    float.DegreesToRadians(rot.Y),
+                    float.DegreesToRadians(rot.X),
+                    float.DegreesToRadians(rot.Z));
+                JitterBody.Orientation = new JQuaternion(q.X, q.Y, q.Z, q.W);
+
+                JitterBody.Velocity = JVector.Zero;
+                JitterBody.AngularVelocity = JVector.Zero;
+
+                TransformProperty.TransformDirty = false;
+                return;
+            }
+
             if (PhysicsProperty.ManualVelocity == Vector3.Zero) return;
 
             JitterBody.Velocity = new JVector(

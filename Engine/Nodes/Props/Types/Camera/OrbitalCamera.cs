@@ -30,7 +30,7 @@ namespace OssianForge.Engine.Nodes.Props.Types.Camera
             {
                 // Clamp pitch on the stored rotation so it never accumulates past limits.
                 // Yaw is left free — full 360 horizontal rotation is correct for 3rd person.
-                selfTransform.Transform.Rotation = new Vector3(
+                selfTransform._transform.Rotation = new Vector3(
                     Math.Clamp(selfTransform.Transform.Rotation.X, MinPitch, MaxPitch),
                     selfTransform.Transform.Rotation.Y,
                     selfTransform.Transform.Rotation.Z);

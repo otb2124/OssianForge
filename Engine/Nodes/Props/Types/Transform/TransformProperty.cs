@@ -27,20 +27,42 @@ namespace OssianForge.Engine.Nodes.Props
 
     public class TransformProperty : NodeProperty
     {
-        // Authored/local transform — what scenes set, what actions/scripts mutate.
-        // Never overwritten by parent composition.
-        public Transform Transform;
+        public bool TransformDirty = false;
 
-        // Computed world transform — Transform composed with every ancestor's
-        // Transform, recomputed every frame in OnUpdate. Rendering, physics,
-        // and anything needing "where is this actually in the world" should
-        // read THIS, not Transform.
+        public Transform _transform;
+
+        public Transform Transform
+        {
+            get => _transform;
+            set
+            {
+                _transform = value;
+                TransformDirty = true;
+            }
+        }
+
+        public Vector3 Position
+        {
+            get => _transform.Position;
+            set { _transform.Position = value; TransformDirty = true; }
+        }
+
+        public Vector3 Rotation
+        {
+            get => _transform.Rotation;
+            set { _transform.Rotation = value; TransformDirty = true; }
+        }
+
+        public Vector3 Scale
+        {
+            get => _transform.Scale;
+            set { _transform.Scale = value; TransformDirty = true; }
+        }
+
         public Transform WorldTransform;
 
-        // --- clipping ---
         public bool ClipsChildren = false;
 
-        // --- render space ---
         public RenderSpace RenderSpace = RenderSpace.World;
         public Anchor Anchor = Anchor.None;
 
@@ -49,7 +71,7 @@ namespace OssianForge.Engine.Nodes.Props
             RenderSpace renderSpace = RenderSpace.World,
             Anchor anchor = Anchor.None)
         {
-            Transform = transform;
+            _transform = transform;
             WorldTransform = transform;
             RenderSpace = renderSpace;
             Anchor = anchor;
@@ -57,11 +79,10 @@ namespace OssianForge.Engine.Nodes.Props
 
         public TransformProperty()
         {
-            Transform = Transform.Default;
+            _transform = Transform.Default;
             WorldTransform = Transform.Default;
         }
 
-        // Called after the full scene tree is built, so Parent is guaranteed to be set.
         public override void OnStart(Node node)
         {
             base.OnStart(node);
@@ -69,16 +90,11 @@ namespace OssianForge.Engine.Nodes.Props
             RecomputeWorldTransform(node);
         }
 
-        // Recompute every frame so live parent edits (e.g. player walking) propagate
-        // down to children automatically — no compounding, since we always rebuild
-        // WorldTransform fresh from the authored Transform + parent's WorldTransform.
         public override void OnUpdate(Node node, double delta)
         {
-            // Apply root motion from animation into world position
             var anim = node.GetProperty<AnimationProperty>();
             if (anim != null && anim.ApplyRootMotion && anim.RootMotionDelta != Vector3.Zero)
             {
-                // Root motion is in model-local space — rotate it by current world yaw
                 float yawRad = float.DegreesToRadians(WorldTransform.Rotation.Y);
                 float cos = MathF.Cos(yawRad);
                 float sin = MathF.Sin(yawRad);
@@ -88,15 +104,22 @@ namespace OssianForge.Engine.Nodes.Props
                     d.Y,
                     -d.X * sin + d.Z * cos);
 
-                Transform.Position += worldDelta;
+                _transform.Position += worldDelta;
             }
 
-            Transform.Rotation = new Vector3(
-                Transform.Rotation.X,
-                NormalizeAngle(Transform.Rotation.Y),
-                Transform.Rotation.Z);
+            _transform.Rotation = new Vector3(
+                _transform.Rotation.X,
+                NormalizeAngle(_transform.Rotation.Y),
+                _transform.Rotation.Z);
 
             RecomputeWorldTransform(node);
+        }
+
+        internal void SetTransformFromPhysics(Vector3 position, Vector3 rotation)
+        {
+            _transform.Position = position;
+            _transform.Rotation = rotation;
+            // deliberately does NOT set TransformDirty
         }
 
         private static float NormalizeAngle(float degrees)
@@ -110,24 +133,20 @@ namespace OssianForge.Engine.Nodes.Props
         {
             if (RenderSpace == RenderSpace.ScreenSpace)
             {
-                WorldTransform = Transform;
+                WorldTransform = _transform;
                 return;
             }
 
             TransformProperty parentTransform = node?.Parent?.GetProperty<TransformProperty>();
             if (parentTransform == null)
             {
-                WorldTransform = Transform;
+                WorldTransform = _transform;
                 return;
             }
 
-            Matrix4x4 world = Transform.ToMatrix() * parentTransform.WorldTransform.ToMatrix();
+            Matrix4x4 world = _transform.ToMatrix() * parentTransform.WorldTransform.ToMatrix();
             WorldTransform.SetMatrix(world);
         }
-
-        // -----------------------------------------------------------------------
-        // Core layout resolution
-        // -----------------------------------------------------------------------
 
         private void ApplyRenderSpaceDefaults(Node node)
         {
@@ -148,12 +167,12 @@ namespace OssianForge.Engine.Nodes.Props
             if (hasScreenSpaceParent)
             {
                 containerSizePx = new Vector2(
-                    parentTransform.Transform.Scale.X * screen.X * 0.5f,
-                    parentTransform.Transform.Scale.Y * screen.Y * 0.5f);
+                    parentTransform._transform.Scale.X * screen.X * 0.5f,
+                    parentTransform._transform.Scale.Y * screen.Y * 0.5f);
 
                 containerCenterPx = new Vector2(
-                    parentTransform.Transform.Position.X * screen.X * 0.5f,
-                    parentTransform.Transform.Position.Y * screen.Y * 0.5f);
+                    parentTransform._transform.Position.X * screen.X * 0.5f,
+                    parentTransform._transform.Position.Y * screen.Y * 0.5f);
             }
             else
             {
@@ -162,9 +181,9 @@ namespace OssianForge.Engine.Nodes.Props
             }
 
             Vector2 halfContainer = containerSizePx * 0.5f;
-            Vector2 halfSelf = new Vector2(Transform.Scale.X * 0.5f, Transform.Scale.Y * 0.5f);
+            Vector2 halfSelf = new Vector2(_transform.Scale.X * 0.5f, _transform.Scale.Y * 0.5f);
 
-            Vector2 localOffset = new Vector2(Transform.Position.X, Transform.Position.Y);
+            Vector2 localOffset = new Vector2(_transform.Position.X, _transform.Position.Y);
 
             Vector2 centerInContainer;
             if (Anchor != Anchor.None)
@@ -179,15 +198,11 @@ namespace OssianForge.Engine.Nodes.Props
 
             Vector2 centerInScreen = containerCenterPx + centerInContainer;
 
-            Transform.Position = new Vector3(centerInScreen.X, centerInScreen.Y, Transform.Position.Z);
-            Transform.ToScreenSpace(screen);
+            _transform.Position = new Vector3(centerInScreen.X, centerInScreen.Y, _transform.Position.Z);
+            _transform.ToScreenSpace(screen);  // mutates _transform directly — no copy problem
         }
 
-        // -----------------------------------------------------------------------
-        // Matrix helpers
-        // -----------------------------------------------------------------------
-
-        public void SetMatrix(Matrix4x4 matrix) => Transform.SetMatrix(matrix);
+        public void SetMatrix(Matrix4x4 matrix) => _transform.SetMatrix(matrix);  // mutates _transform directly
 
         public Matrix4x4 GetCameraModel()
         {
@@ -214,10 +229,6 @@ namespace OssianForge.Engine.Nodes.Props
                 return Matrix4x4.Identity;
             return Engine.Graphics.GetCurrentCamera().GetProjection();
         }
-
-        // -----------------------------------------------------------------------
-        // Anchor helper
-        // -----------------------------------------------------------------------
 
         private static Vector2 AnchorOrigin(Anchor anchor, Vector2 halfContainer, Vector2 halfSelf)
         {

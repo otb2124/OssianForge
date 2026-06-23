@@ -122,7 +122,7 @@ namespace OssianForge.Engine.Nodes
                     }
                 }
 
-                tp.Transform.Position += worldDelta * (float)delta;
+                tp.Position += worldDelta * (float)delta;
                 return;
             }
 
