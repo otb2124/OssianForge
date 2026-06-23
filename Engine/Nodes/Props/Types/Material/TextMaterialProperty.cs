@@ -100,7 +100,7 @@ namespace OssianForge.Engine.Nodes.Props
             gl.ActiveTexture(TextureUnit.Texture0);
             gl.BindTexture(TextureTarget.Texture2D, _rtTexture);
             ShaderResource.SetInt("uTexture", 0);
-            ShaderResource.SetVec4("uTextColor", Color);
+            ShaderResource.SetVector4("uTextColor", Color);
         }
 
         public override void PostApply() { }
@@ -235,7 +235,7 @@ namespace OssianForge.Engine.Nodes.Props
             });
 
             FontResource.Bind(0);
-            ShaderResource.SetVec4("uTextColor", Color);
+            ShaderResource.SetVector4("uTextColor", Color);
             ShaderResource.SetFloat("uDistanceRange", atlas.DistanceRange);
 
             gl.BindVertexArray(_bakeVao);

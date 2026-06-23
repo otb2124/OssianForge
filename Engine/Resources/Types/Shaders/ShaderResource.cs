@@ -74,7 +74,7 @@ namespace OssianForge.Engine.Resources.Shaders
         public void SetVector3Indexed(string array, int i, string field, Vector3 v)
              => SetVector3($"{array}[{i}].{field}", v);
 
-        public void SetVec4(string name, Vector4 v)
+        public void SetVector4(string name, Vector4 v)
         {
             int loc = Engine.Graphics.Batch.OpenGL.GetUniformLocation(Handle, name);
             if (loc >= 0) Engine.Graphics.Batch.OpenGL.Uniform4(loc, v.X, v.Y, v.Z, v.W);

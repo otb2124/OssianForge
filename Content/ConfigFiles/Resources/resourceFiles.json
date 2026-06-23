@@ -15,6 +15,11 @@
     "type": "shaderfile"
   },
   {
+    "id": "shaderfile.wireframe.frag",
+    "path": "ShaderFiles/wireframe.frag",
+    "type": "shaderfile"
+  },
+  {
     "id": "shaderfile.skybox.vert",
     "path": "ShaderFiles/skybox.vert",
     "type": "shaderfile"
@@ -137,6 +142,11 @@
   {
     "id": "texturefile.frame",
     "path": "TextureFiles/3d/frame.png",
+    "type": "texturefile"
+  },
+  {
+    "id": "texturefile.green",
+    "path": "TextureFiles/3d/green.png",
     "type": "texturefile"
   },
   {

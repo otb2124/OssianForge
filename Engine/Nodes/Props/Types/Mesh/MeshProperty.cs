@@ -12,7 +12,7 @@ using OssianForge.Engine.Resources.Textures;
 
 namespace OssianForge.Engine.Nodes.Props
 {
-    public class MeshProperty : NodeProperty, IDisposable
+    public class MeshProperty : NodeProperty
     {
 
         public string MeshResourceId;
@@ -22,15 +22,6 @@ namespace OssianForge.Engine.Nodes.Props
             MeshResourceId = meshId;
             MeshResource = Engine.Resources.GetResource<MeshResource>(MeshResourceId)
                     ?? throw new Exception($"MeshResource not found: '{meshId}'");
-        }
-        public virtual void Draw()  
-        {
-            MeshResource.Draw();
-        }
-
-        public virtual void Dispose()
-        {
-            MeshResource?.Dispose();
         }
 
         public override void OnRender(Node node, double delta)

@@ -26,6 +26,8 @@ namespace OssianForge.Engine.Physics
 
         public readonly List<Constraint> Constraints = new();
 
+        private JVector _colliderCentroidOffset;
+
         public PhysicsBody(Node node, World jitterWorld)
         {
             NodeId = node.Id;
@@ -78,11 +80,26 @@ namespace OssianForge.Engine.Physics
                     .Select(p => new JVector(p.X * scale.X, p.Y * scale.Y, p.Z * scale.Z))
                     .ToList();
 
-                var shape = new PointCloudShape(scaledPoints);
+                // Compute centroid and re-center points around origin
+                var centroid = new JVector(
+                    scaledPoints.Average(p => p.X),
+                    scaledPoints.Average(p => p.Y),
+                    scaledPoints.Average(p => p.Z));
+
+                var centeredPoints = scaledPoints
+                    .Select(p => new JVector(p.X - centroid.X, p.Y - centroid.Y, p.Z - centroid.Z))
+                    .ToList();
+
+                var shape = new PointCloudShape(centeredPoints);
 
                 JitterBody = jitterWorld.CreateRigidBody();
                 JitterBody.AddShape(shape);
-                JitterBody.Position = new JVector(t.Position.X, t.Position.Y, t.Position.Z);
+
+                // Offset spawn position by centroid so mesh origin stays correct
+                JitterBody.Position = new JVector(
+                    t.Position.X + centroid.X,
+                    t.Position.Y + centroid.Y,
+                    t.Position.Z + centroid.Z);
                 JitterBody.AffectedByGravity = PhysicsProperty.UseGravity;
                 JitterBody.Friction = PhysicsProperty.Friction;
                 JitterBody.Restitution = PhysicsProperty.Bounciness;
@@ -113,7 +130,10 @@ namespace OssianForge.Engine.Physics
             var o = JitterBody.Orientation;
             var v = JitterBody.Velocity;
 
-            TransformProperty.WorldTransform.Position = new Vector3(p.X, p.Y, p.Z);
+            TransformProperty.WorldTransform.Position = new Vector3(
+                p.X - _colliderCentroidOffset.X,
+                p.Y - _colliderCentroidOffset.Y,
+                p.Z - _colliderCentroidOffset.Z);
             TransformProperty.WorldTransform.Rotation = ToEuler(o);
 
             var parent = Engine.Nodes.NodeManager.GetNode(NodeId).Parent;
@@ -130,15 +150,15 @@ namespace OssianForge.Engine.Physics
         {
             if (JitterBody == null) return;
 
-            Console.WriteLine($"{TransformProperty.TransformDirty}, {NodeId}");
-
-            // Script teleported the node — push new transform into Jitter before the step
             if (TransformProperty.TransformDirty)
             {
 
                 var t = TransformProperty._transform;
 
-                JitterBody.Position = new JVector(t.Position.X, t.Position.Y, t.Position.Z);
+                JitterBody.Position = new JVector(
+                    t.Position.X + _colliderCentroidOffset.X,
+                    t.Position.Y + _colliderCentroidOffset.Y,
+                    t.Position.Z + _colliderCentroidOffset.Z);
 
                 var rot = t.Rotation;
                 var q = System.Numerics.Quaternion.CreateFromYawPitchRoll(

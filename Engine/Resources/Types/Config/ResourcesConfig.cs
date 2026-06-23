@@ -106,6 +106,7 @@ namespace OssianForge.Engine.Resources.Config
                 "terrainmesh" => new TerrainMeshResource(record.Id, record.Data[0]),
                 "animation" => new AnimationResource(record.Id, record.Data.ToArray()),
                 "basicshader" => new BasicShaderResource(record.Id, record.Data[0], record.Data[1]),
+                "wireframeshader" => new WireframeShaderResource(record.Id, record.Data[0], record.Data[1]),
                 "skyboxshader" => new SkyboxShaderResource(record.Id, record.Data[0], record.Data[1]),
                 "shader" => new ShaderResource(record.Id, record.Data[0], record.Data[1]),
                 "sdfshader" => new SdfShaderResource(record.Id, record.Data[0], record.Data[1]),

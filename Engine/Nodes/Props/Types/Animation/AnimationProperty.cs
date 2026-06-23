@@ -102,19 +102,16 @@ namespace OssianForge.Engine.Nodes.Props
 
 
         private void WalkSkeleton(SkeletonNode node, Matrix4x4 parentTransform,
-                           List<BoneData> bones, Matrix4x4[] palette, ref int matched)
+                   List<BoneData> bones, Matrix4x4[] palette, ref int matched)
         {
             Matrix4x4? animated = AnimationResource.TryGetBoneTransform(node.Name);
             Matrix4x4 local = animated ?? node.LocalTransform;
 
-            // Strip translation from root bone — position is owned by TransformProperty/world transform.
-            // Hips Y can optionally be kept if you want animation-driven vertical (crouch, jump squash).
-            if (node.Name == "mixamorig:Hips" && animated.HasValue)
+            if (node.Name == RootBoneName && animated.HasValue)
             {
                 Matrix4x4.Decompose(local, out var scale, out var rot, out _);
                 local = Matrix4x4.CreateScale(scale)
                       * Matrix4x4.CreateFromQuaternion(rot);
-                // translation zeroed — mesh stays at origin, only rotates/scales
             }
 
             Matrix4x4 global = local * parentTransform;
@@ -124,14 +121,12 @@ namespace OssianForge.Engine.Nodes.Props
             {
                 palette[idx] = bones[idx].OffsetMatrix * global;
                 matched++;
-                foreach (var child in node.Children)
-                    WalkSkeleton(child, global, bones, palette, ref matched);
             }
-            else
-            {
-                foreach (var child in node.Children)
-                    WalkSkeleton(child, parentTransform, bones, palette, ref matched);
-            }
+
+            // Always pass global to children — whether or not this node is a bone.
+            // Intermediate structural nodes still contribute their transform to the chain.
+            foreach (var child in node.Children)
+                WalkSkeleton(child, global, bones, palette, ref matched);
         }
 
         public Matrix4x4 GetBoneTransform(string boneName)
@@ -149,17 +144,23 @@ namespace OssianForge.Engine.Nodes.Props
         }
 
 
+        //TODO: something strange here in params...
         public Matrix4x4[] GetPalette(MeshProperty mesh, SubMeshResource subMesh)
+        {
+            return GetPalette(mesh.MeshResource, subMesh);
+        }
+
+        public Matrix4x4[] GetPalette(MeshResource meshResource, SubMeshResource subMesh)
         {
             Matrix4x4[] palette = null;
             if (BonePalette != null && BonePalette.Length > 0
-                && mesh.MeshResource.AllBones != null)
+                && meshResource.AllBones != null)
             {
                 // Build a palette in THIS submesh's bone order
                 palette = new Matrix4x4[subMesh.Bones.Count];
                 for (int i = 0; i < subMesh.Bones.Count; i++)
                 {
-                    int unifiedIdx = mesh.MeshResource.AllBones
+                    int unifiedIdx = meshResource.AllBones
                         .FindIndex(b => b.Name == subMesh.Bones[i].Name);
                     palette[i] = unifiedIdx >= 0
                         ? BonePalette[unifiedIdx]

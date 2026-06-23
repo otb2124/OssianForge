@@ -34,21 +34,50 @@ namespace OssianForge.Engine.Graphics.Batch
 
         public void DrawMesh(MeshProperty mesh, List<MaterialProperty> materials, TransformProperty transform, AnimationProperty animation)
         {
-            if (mesh == null) return;
+            DrawMesh(mesh.MeshResource, materials, transform, animation, mesh.MeshResource);
+        }
 
-            int minMatIndex = mesh.MeshResource.SubMeshes.Count > 0
-                ? mesh.MeshResource.SubMeshes.Min(s => s.MaterialIndex) : 0;
+        public void DrawMesh(MeshResource meshResource, List<MaterialProperty> materials, TransformProperty transform, AnimationProperty animation)
+        {
+            DrawMesh(meshResource, materials, transform, animation, meshResource);
+        }
 
-            foreach (var subMesh in mesh.MeshResource.SubMeshes)
+        public void DrawMesh(MeshResource meshResource, List<MaterialProperty> materials, TransformProperty transform, AnimationProperty animation, MeshResource paletteMeshResource)
+        {
+            if (meshResource == null) return;
+
+            int minMatIndex = meshResource.SubMeshes.Count > 0
+                ? meshResource.SubMeshes.Min(s => s.MaterialIndex) : 0;
+
+            foreach (var subMesh in meshResource.SubMeshes)
             {
                 int matIndex = subMesh.MaterialIndex - minMatIndex;
                 if (matIndex < 0 || matIndex >= materials.Count) continue;
 
                 Matrix4x4[] palette = null;
-                if(animation != null)
+                if (animation != null)
                 {
-                    palette = animation.GetPalette(mesh, subMesh);
+                    palette = animation.GetPalette(paletteMeshResource, subMesh);
                 }
+
+                DrawSubMesh(subMesh, materials[matIndex], transform.GetCameraModel(), transform.GetCameraView(), transform.GetCameraProjection(), palette);
+            }
+        }
+
+        //TODO: sort things out
+        public void DrawMesh(MeshResource meshResource, List<MaterialProperty> materials, TransformProperty transform, Func<SubMeshResource, Matrix4x4[]> getPalette)
+        {
+            if (meshResource == null) return;
+
+            int minMatIndex = meshResource.SubMeshes.Count > 0
+                ? meshResource.SubMeshes.Min(s => s.MaterialIndex) : 0;
+
+            foreach (var subMesh in meshResource.SubMeshes)
+            {
+                int matIndex = subMesh.MaterialIndex - minMatIndex;
+                if (matIndex < 0 || matIndex >= materials.Count) continue;
+
+                Matrix4x4[] palette = getPalette?.Invoke(subMesh);
 
                 DrawSubMesh(subMesh, materials[matIndex], transform.GetCameraModel(), transform.GetCameraView(), transform.GetCameraProjection(), palette);
             }
@@ -65,7 +94,6 @@ namespace OssianForge.Engine.Graphics.Batch
             DrawCallCount++;
             VertexCount += (int)subMesh.VertexCount;
         }
-
 
         public unsafe uint CreateRenderTexture(float TextureWidth, float TextureHeight)
         {

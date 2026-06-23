@@ -55,6 +55,11 @@
     "type": "basicshader"
   },
   {
+    "id": "shader.wireframe",
+    "data": [ "shaderfile.basic.vert", "shaderfile.wireframe.frag" ],
+    "type": "wireframeshader"
+  },
+  {
     "id": "shader.skybox",
     "data": [ "shaderfile.skybox.vert", "shaderfile.skybox.frag" ],
     "type": "skyboxshader"
@@ -97,6 +102,11 @@
   {
     "id": "texture.house.wood",
     "data": [ "texturefile.house.wood" ],
+    "type": "texture"
+  },
+  {
+    "id": "texture.green",
+    "data": [ "texturefile.green" ],
     "type": "texture"
   },
   {

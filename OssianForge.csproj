@@ -23,8 +23,6 @@
     <None Remove="Content\MeshFiles\remy.fbx" />
     <None Remove="Content\ShaderFiles\Basic.frag" />
     <None Remove="Content\ShaderFiles\Basic.vert" />
-    <None Remove="Content\ShaderFiles\debugline.frag" />
-    <None Remove="Content\ShaderFiles\debugline.vert" />
     <None Remove="Content\ShaderFiles\post.frag" />
     <None Remove="Content\ShaderFiles\post.vert" />
     <None Remove="Content\ShaderFiles\sdf.frag" />
@@ -79,12 +77,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\ShaderFiles\basic.vert">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\ShaderFiles\debugline.frag">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\ShaderFiles\debugline.vert">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\ShaderFiles\post.frag">
@@ -284,6 +276,9 @@
     <None Update="Content\ConfigFiles\StateMachines\playerStateMachine.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="Content\ShaderFiles\wireframe.frag">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Content\SoundFiles\est-drink.ogg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -291,6 +286,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Content\TextureFiles\3d\frame.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Content\TextureFiles\3d\green.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Content\TextureFiles\Fonts\roboto.png">

@@ -10,7 +10,7 @@ namespace OssianForge.Engine.Resources.Colliders
         public TriangleMesh? TriangleMesh;
         public List<JVector> Points = new();
 
-        private MeshResource _source;
+        public MeshResource _source;
 
         public ColliderResource(string id, string meshResourceId)
         {

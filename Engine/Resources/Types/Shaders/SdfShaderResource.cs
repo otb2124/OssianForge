@@ -21,7 +21,7 @@ public class SdfShaderResource : ShaderResource
         SetMatrix4("uView", ctx.View);
         SetMatrix4("uProjection", ctx.Projection);
 
-        // uTextColor is set separately via SetVec4 before Apply() is called,
+        // uTextColor is set separately via SetVector4 before Apply() is called,
         // so we don't need to touch it here
     }
 }

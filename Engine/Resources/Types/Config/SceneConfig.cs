@@ -120,7 +120,7 @@ namespace OssianForge.Engine.Resources.Config
                 "SunEmissionProperty" => ParseSunEmissionProperty(data),
                 "SpotEmissionProperty" => ParseSpotEmissionProperty(data),
                 "EmissionProperty" => ParsePointEmissionProperty(data),
-                "ColliderProperty" => new ColliderProperty(Str(data, 0)),
+                "ColliderProperty" => ParseColliderProperty(data),
                 "PhysicsProperty" => ParsePhysicsProperty(el, data),
                 "AnimationProperty" => ParseAnimationProperty(el, data),
                 "ControlProperty" => ParseControlProperty(data),
@@ -303,6 +303,21 @@ namespace OssianForge.Engine.Resources.Config
             float maxPitch = len > 3 ? arr[3].GetSingle() : 89f;
 
             return new OrbitalCameraProperty(targetNodeId, orbitDistance, minPitch, maxPitch);
+        }
+
+
+        private static ColliderProperty ParseColliderProperty(JsonElement? data)
+        {
+            var arr = data!.Value;
+            int len = arr.GetArrayLength();
+
+            string colliderId = arr[0].GetString();
+            string animationSourceNodeId = len > 1 && arr[1].ValueKind == JsonValueKind.String
+                ? arr[1].GetString()
+                : null;
+            bool isTrigger = len > 2 && arr[2].GetBoolean();
+
+            return new ColliderProperty(colliderId, animationSourceNodeId, isTrigger);
         }
 
 
