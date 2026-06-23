@@ -194,23 +194,23 @@ namespace OssianForge.Engine.Physics
             if (JitterBody == null) return;
 
             if (TransformProperty.TransformDirty)
-            {
-                var worldPos = GetCurrentWorldPosition();
-                var worldRot = GetCurrentWorldRotation();
+{
+    var worldPos = GetCurrentWorldPosition();
+    var worldRot = GetCurrentWorldRotation();
 
-                JitterBody.Position = new JVector(
-                    worldPos.X + _colliderCentroidOffset.X,
-                    worldPos.Y + _colliderCentroidOffset.Y,
-                    worldPos.Z + _colliderCentroidOffset.Z);
+    JitterBody.Position = new JVector(
+        worldPos.X + _colliderCentroidOffset.X,
+        worldPos.Y + _colliderCentroidOffset.Y,
+        worldPos.Z + _colliderCentroidOffset.Z);
 
-                JitterBody.Orientation = new JQuaternion(worldRot.X, worldRot.Y, worldRot.Z, worldRot.W);
+    JitterBody.Orientation = new JQuaternion(worldRot.X, worldRot.Y, worldRot.Z, worldRot.W);
 
-                JitterBody.Velocity = JVector.Zero;
-                JitterBody.AngularVelocity = JVector.Zero;
+    JitterBody.Velocity = JVector.Zero;
+    JitterBody.AngularVelocity = JVector.Zero;
 
-                TransformProperty.TransformDirty = false;
-                return;
-            }
+    TransformProperty.TransformDirty = false;
+    return;
+}
 
             if (PhysicsProperty.ManualVelocity == Vector3.Zero) return;
 
