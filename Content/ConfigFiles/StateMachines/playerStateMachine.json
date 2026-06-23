@@ -13,8 +13,8 @@
     },
     {
       "id": "WalkBackward",
-      "onEnter": [ "action.myActions.playAnimWalking" ], 
-      "onUpdate": [ "action.transform.transformPositionCameraDirBackward" ]
+      "onEnter": [ "action.myActions.playAnimWalking" ],
+      "onUpdate": [ "action.transform.transformPositionCameraDirBackward", "action.transform.setBodyYawBackward" ]
     },
     {
       "id": "WalkLeft"
