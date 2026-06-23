@@ -26,19 +26,18 @@ namespace OssianForge.Engine.Nodes.Props.Types.Camera
         {
             var selfTransform = node.GetProperty<TransformProperty>();
             var target = FindTargetTransform();
-
             if (selfTransform != null && target != null)
             {
-                // Yaw and pitch both come from THIS node's own transform.
-                // Mouse X writes to selfTransform.Transform.Rotation.Y (camera yaw).
-                // Mouse Y writes to selfTransform.Transform.Rotation.X (camera pitch).
-                // The player root stays at zero rotation — it's a pure position anchor.
-                float yawRad = float.DegreesToRadians(selfTransform.Transform.Rotation.Y);
-                float pitchRad = float.DegreesToRadians(
-                    Math.Clamp(selfTransform.Transform.Rotation.X, MinPitch, MaxPitch));
+                // Clamp pitch on the stored rotation so it never accumulates past limits.
+                // Yaw is left free — full 360 horizontal rotation is correct for 3rd person.
+                selfTransform.Transform.Rotation = new Vector3(
+                    Math.Clamp(selfTransform.Transform.Rotation.X, MinPitch, MaxPitch),
+                    selfTransform.Transform.Rotation.Y,
+                    selfTransform.Transform.Rotation.Z);
 
-                // Spherical offset: camera sits OrbitDistance behind and above the target.
-                // Yaw 0 → camera is at +Z (behind when facing -Z), adjust the phase if needed.
+                float yawRad = float.DegreesToRadians(selfTransform.Transform.Rotation.Y);
+                float pitchRad = float.DegreesToRadians(selfTransform.Transform.Rotation.X);
+
                 Vector3 orbitOffset = new Vector3(
                     OrbitDistance * MathF.Cos(pitchRad) * MathF.Sin(yawRad),
                     OrbitDistance * MathF.Sin(pitchRad),
@@ -50,7 +49,6 @@ namespace OssianForge.Engine.Nodes.Props.Types.Camera
                 Vector3 toTarget = Vector3.Normalize(lookAt - Camera.Position);
                 Camera.SetLookDirection(toTarget);
             }
-
             Camera.OnUpdate(delta);
         }
 

@@ -92,9 +92,9 @@ namespace OssianForge.Engine.Nodes.Props
             }
 
             Transform.Rotation = new Vector3(
-                NormalizeAngle(Transform.Rotation.X),
+                Transform.Rotation.X,
                 NormalizeAngle(Transform.Rotation.Y),
-                NormalizeAngle(Transform.Rotation.Z));
+                Transform.Rotation.Z);
 
             RecomputeWorldTransform(node);
         }
