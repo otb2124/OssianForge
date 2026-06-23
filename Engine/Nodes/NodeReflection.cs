@@ -155,21 +155,16 @@ namespace OssianForge.Engine.Nodes
             targetYaw %= 360f;
             if (targetYaw < 0f) targetYaw += 360f;
 
-            Console.WriteLine($"[SET YAW] camera yaw={cameraYaw:F2} offset={yawOffset} → targetYaw={targetYaw:F2}");
-
             var prop = FindNodeProperty(targetNode, propertyTypeName);
             string[] segments = memberPath.Split('.');
             var chain = WalkChain(prop, segments);
             var (finalOwner, finalMember, _) = chain[^1];
             var current = (Vector3)GetMember(finalOwner, finalMember)!;
 
-            Console.WriteLine($"[SET YAW] {targetNode.Id} rotation before={current:F2}");
-
             SetMember(finalOwner, finalMember, new Vector3(current.X, targetYaw, current.Z));
             WriteBackChain(chain);
 
             var after = (Vector3)GetMember(finalOwner, finalMember)!;
-            Console.WriteLine($"[SET YAW] {targetNode.Id} rotation after={after:F2}");
         }
 
 

@@ -22,6 +22,7 @@ namespace OssianForge.App
             Engine.Engine.Graphics.Window.Load += Engine.Engine.OnLoad;
             Engine.Engine.Graphics.Window.Update += Engine.Engine.OnUpdate;
             Engine.Engine.Graphics.Window.Render += Engine.Engine.OnRender;
+            Engine.Engine.Graphics.Window.FocusChanged += Engine.Engine.OnFocusChanged;
             Engine.Engine.Graphics.Window.Resize += Engine.Engine.OnResize;
         }
 

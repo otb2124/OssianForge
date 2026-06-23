@@ -20,6 +20,7 @@ namespace OssianForge.Engine.Inputs
         private double _lastDeltaTime;
         public float ScrollDelta { get; private set; }
         public bool LockCursorToCenter { get; set; } = true;
+        public bool IsFocused { get; set; } = true;
 
         private MouseInput() { }
 
@@ -45,15 +46,14 @@ namespace OssianForge.Engine.Inputs
             Vector2 currentPos = Position;
             // Normalize to pixels/second so consumers can multiply by $delta
             float dt = (float)Math.Max(deltaTime, 0.0001);
-            Delta = _firstUpdate ? Vector2.Zero : new Vector2(
+            Delta = (_firstUpdate || !IsFocused) ? Vector2.Zero : new Vector2(
                 -(currentPos.X - _prevPosition.X),
                  (currentPos.Y - _prevPosition.Y)) / dt;
 
-            if (LockCursorToCenter && _mouse != null)
+            if (LockCursorToCenter && IsFocused && _mouse != null)
             {
                 var windowSize = Engine.Graphics.WindowSize;
                 Vector2 center = new Vector2(windowSize.X / 2f, windowSize.Y / 2f);
-
                 _mouse.Position = center;
                 _prevPosition = center;
             }
@@ -90,6 +90,11 @@ namespace OssianForge.Engine.Inputs
             {
                 _mouse.Cursor.CursorMode = mode;
             }
+        }
+
+        public void SetFocused(bool focused)
+        {
+            IsFocused = focused;
         }
     }
 }

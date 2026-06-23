@@ -33,5 +33,10 @@ namespace OssianForge.Engine.Inputs
             mouse.Update(delta);
             KeyHandler.OnUpdate();
         }
+
+        public void OnFocusChanged(bool focused)
+        {
+            mouse.SetFocused(focused);
+        }
     }
 }

@@ -92,5 +92,10 @@ namespace OssianForge.Engine
         {
             Graphics.OnResize(size);
         }
+
+        public static void OnFocusChanged(bool focused)
+        {
+            Inputs.OnFocusChanged(focused);
+        }
     }
 }

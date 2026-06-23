@@ -123,15 +123,6 @@ namespace OssianForge.Engine.Nodes.Props
 
             Matrix4x4 world = Transform.ToMatrix() * parentTransform.WorldTransform.ToMatrix();
             WorldTransform.SetMatrix(world);
-
-            // DEBUG
-            if (node.Id == "player" || node.Id == "playerBody" || node.Id == "playerBodyMesh")
-            {
-                Console.WriteLine($"[TRANSFORM] {node.Id} | " +
-                    $"local pos={Transform.Position:F2} rot={Transform.Rotation:F2} | " +
-                    $"world pos={WorldTransform.Position:F2} rot={WorldTransform.Rotation:F2} | " +
-                    $"parent={node.Parent?.Id} parent world pos={parentTransform.WorldTransform.Position:F2}");
-            }
         }
 
         // -----------------------------------------------------------------------
