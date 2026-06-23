@@ -144,6 +144,27 @@ namespace OssianForge.Engine.Nodes.Props
         }
 
 
+        public (Vector3 min, Vector3 max) GetAnimatedWorldBounds(Matrix4x4 worldMatrix)
+        {
+            if (BonePalette == null || BonePalette.Length == 0)
+                return (Vector3.Zero, Vector3.Zero);
+
+            var min = new Vector3(float.MaxValue);
+            var max = new Vector3(float.MinValue);
+
+            foreach (var bone in BonePalette)
+            {
+                // Each palette entry = offsetMatrix * globalTransform
+                // Extract the translation (bone world position approximation)
+                var pos = Vector3.Transform(Vector3.Zero, bone * worldMatrix);
+                min = Vector3.Min(min, pos);
+                max = Vector3.Max(max, pos);
+            }
+
+            return (min, max);
+        }
+
+
         //TODO: something strange here in params...
         public Matrix4x4[] GetPalette(MeshProperty mesh, SubMeshResource subMesh)
         {

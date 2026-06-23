@@ -188,6 +188,136 @@
       ]
     },
     {
+      "id": "testWall",
+      "name": "testWall",
+      "properties": [
+        {
+          "type": "TransformProperty",
+          "data": [ [ "5,2,5", "0,0,0", "1,4,6" ] ]
+        },
+        {
+          "type": "MeshProperty",
+          "data": [ "mesh.cube" ]
+        },
+        {
+          "type": "TextureMaterialProperty",
+          "data": [ "texture.brick", "shader.basic" ]
+        },
+        {
+          "type": "ColliderProperty",
+          "data": [ "collider.cube" ]
+        },
+        {
+          "type": "PhysicsProperty",
+          "data": [ true, false ]
+        }
+      ]
+    },
+    {
+      "id": "testPlatform",
+      "name": "testPlatform",
+      "properties": [
+        {
+          "type": "TransformProperty",
+          "data": [ [ "-5,1,5", "0,0,0", "4,2,4" ] ]
+        },
+        {
+          "type": "MeshProperty",
+          "data": [ "mesh.cube" ]
+        },
+        {
+          "type": "TextureMaterialProperty",
+          "data": [ "texture.house.wood", "shader.basic" ]
+        },
+        {
+          "type": "ColliderProperty",
+          "data": [ "collider.cube" ]
+        },
+        {
+          "type": "PhysicsProperty",
+          "data": [ true, false ]
+        }
+      ]
+    },
+    {
+      "id": "corridorLeft",
+      "name": "corridorLeft",
+      "properties": [
+        {
+          "type": "TransformProperty",
+          "data": [ [ "-2,2,-5", "0,0,0", "0.5,4,8" ] ]
+        },
+        {
+          "type": "MeshProperty",
+          "data": [ "mesh.cube" ]
+        },
+        {
+          "type": "TextureMaterialProperty",
+          "data": [ "texture.brick", "shader.basic" ]
+        },
+        {
+          "type": "ColliderProperty",
+          "data": [ "collider.cube" ]
+        },
+        {
+          "type": "PhysicsProperty",
+          "data": [ true, false ]
+        }
+      ]
+    },
+    {
+      "id": "corridorRight",
+      "name": "corridorRight",
+      "properties": [
+        {
+          "type": "TransformProperty",
+          "data": [ [ "2,2,-5", "0,0,0", "0.5,4,8" ] ]
+        },
+        {
+          "type": "MeshProperty",
+          "data": [ "mesh.cube" ]
+        },
+        {
+          "type": "TextureMaterialProperty",
+          "data": [ "texture.brick", "shader.basic" ]
+        },
+        {
+          "type": "ColliderProperty",
+          "data": [ "collider.cube" ]
+        },
+        {
+          "type": "PhysicsProperty",
+          "data": [ true, false ]
+        }
+      ]
+    },
+    {
+      "id": "rampNode",
+      "name": "rampNode",
+      "properties": [
+        {
+          "type": "TransformProperty",
+          "data": [ [ "0,1,-12", "20,0,0", "4,0.5,6" ] ]
+        },
+        {
+          "type": "MeshProperty",
+          "data": [ "mesh.cube" ]
+        },
+        {
+          "type": "TextureMaterialProperty",
+          "data": [ "texture.house.wood", "shader.basic" ]
+        },
+        {
+          "type": "ColliderProperty",
+          "data": [ "collider.cube" ]
+        },
+        {
+          "type": "PhysicsProperty",
+          "data": [ true, false ]
+        }
+      ]
+    },
+    {
       "id": "sunNode",
       "name": "sun",
       "properties": [

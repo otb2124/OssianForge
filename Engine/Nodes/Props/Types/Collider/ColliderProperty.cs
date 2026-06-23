@@ -22,6 +22,7 @@ namespace OssianForge.Engine.Nodes.Props
             Material = new WireframeMaterialProperty(new Vector4(0f, 1f, 0f, 1f));
         }
 
+        /*
         public override void OnRender(Node node, double delta)
         {
             var transform = node.GetProperty<TransformProperty>();
@@ -47,6 +48,6 @@ namespace OssianForge.Engine.Nodes.Props
                     visMesh ?? ColliderResource._source,
                     visMesh?.SubMeshes.ElementAtOrDefault(
                         ColliderResource._source.SubMeshes.IndexOf(subMesh)) ?? subMesh));
-        }
+        }*/
     }
 }

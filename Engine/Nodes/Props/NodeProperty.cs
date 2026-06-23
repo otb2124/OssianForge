@@ -12,9 +12,7 @@ namespace OssianForge.Engine.Nodes.Props
 
         public string NodeId;
         public virtual void OnStart(Node node) { NodeId = node.Id; }
-
         public virtual void OnUpdate(Node node, double delta) { }
-
         public virtual void OnRender(Node node, double delta) { }
     }
 }

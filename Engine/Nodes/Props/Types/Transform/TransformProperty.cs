@@ -34,29 +34,25 @@ namespace OssianForge.Engine.Nodes.Props
         public Transform Transform
         {
             get => _transform;
-            set
-            {
-                _transform = value;
-                TransformDirty = true;
-            }
+            set { _transform = value; SetDirty(); }
         }
 
         public Vector3 Position
         {
             get => _transform.Position;
-            set { _transform.Position = value; TransformDirty = true; }
+            set { _transform.Position = value; SetDirty(); }
         }
 
         public Vector3 Rotation
         {
             get => _transform.Rotation;
-            set { _transform.Rotation = value; TransformDirty = true; }
+            set { _transform.Rotation = value; SetDirty(); }
         }
 
         public Vector3 Scale
         {
             get => _transform.Scale;
-            set { _transform.Scale = value; TransformDirty = true; }
+            set { _transform.Scale = value; SetDirty(); }
         }
 
         public Transform WorldTransform;
@@ -228,6 +224,25 @@ namespace OssianForge.Engine.Nodes.Props
             if (RenderSpace == RenderSpace.ScreenSpace)
                 return Matrix4x4.Identity;
             return Engine.Graphics.GetCurrentCamera().GetProjection();
+        }
+
+
+        private void SetDirty()
+        {
+            TransformDirty = true;
+            var node = Engine.Nodes.NodeManager.GetNode(NodeId);
+            if (node == null) return;
+            foreach (var child in node.Children)
+                child.GetProperty<TransformProperty>()?.SetDirtyRecursive();
+        }
+
+        private void SetDirtyRecursive()
+        {
+            TransformDirty = true;
+            var node = Engine.Nodes.NodeManager.GetNode(NodeId);
+            if (node == null) return;
+            foreach (var child in node.Children)
+                child.GetProperty<TransformProperty>()?.SetDirtyRecursive();
         }
 
         private static Vector2 AnchorOrigin(Anchor anchor, Vector2 halfContainer, Vector2 halfSelf)

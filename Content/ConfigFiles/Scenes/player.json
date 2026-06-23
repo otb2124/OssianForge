@@ -13,20 +13,12 @@
         {
           "type": "TransformProperty",
           "data": [
-            [ "0,10,10", "0,180,0", "1,1,1" ]
+            [ "0,3,10", "0,180,0", "1,1,1" ]
           ]
         },
         {
           "type": "StateMachineProperty",
           "data": [ "configfile.statemachine.player" ]
-        },
-        {
-          "type": "ColliderProperty",
-          "data": [ "collider.remy" ]
-        },
-        {
-          "type": "PhysicsProperty",
-          "data": [ false, true, 1, 1 ]
         }
       ],
       "children": [
@@ -81,6 +73,14 @@
                 {
                   "type": "SoundProperty",
                   "data": [ "sound.est-drink" ]
+                },
+                {
+                  "type": "ColliderProperty",
+                  "data": [ "collider.remy" ]
+                },
+                {
+                  "type": "PhysicsProperty",
+                  "data": [ false, true, 1, 1 ]
                 }
               ]
             }

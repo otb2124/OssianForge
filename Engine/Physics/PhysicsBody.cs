@@ -86,6 +86,10 @@ namespace OssianForge.Engine.Physics
                     scaledPoints.Average(p => p.Y),
                     scaledPoints.Average(p => p.Z));
 
+                _colliderCentroidOffset = centroid; // ← this line was missing
+
+                Console.WriteLine($"[COLLIDER] {NodeId} centroid offset: {_colliderCentroidOffset}");
+
                 var centeredPoints = scaledPoints
                     .Select(p => new JVector(p.X - centroid.X, p.Y - centroid.Y, p.Z - centroid.Z))
                     .ToList();
@@ -120,6 +124,45 @@ namespace OssianForge.Engine.Physics
             }
         }
 
+        private JVector GetCurrentWorldPosition()
+        {
+            var node = Engine.Nodes.NodeManager.GetNode(NodeId);
+            if (node == null) return JitterBody.Position;
+
+            // Recompose world matrix fresh from the current _transform values
+            // without relying on WorldTransform which may be stale this frame
+            var matrix = TransformProperty._transform.ToMatrix();
+            var parent = node.Parent;
+            while (parent != null)
+            {
+                var parentTp = parent.GetProperty<TransformProperty>();
+                if (parentTp == null) break;
+                matrix = matrix * parentTp._transform.ToMatrix();
+                parent = parent.Parent;
+            }
+
+            return new JVector(matrix.M41, matrix.M42, matrix.M43);
+        }
+
+        private System.Numerics.Quaternion GetCurrentWorldRotation()
+        {
+            var node = Engine.Nodes.NodeManager.GetNode(NodeId);
+            if (node == null) return System.Numerics.Quaternion.Identity;
+
+            var matrix = TransformProperty._transform.ToMatrix();
+            var parent = node.Parent;
+            while (parent != null)
+            {
+                var parentTp = parent.GetProperty<TransformProperty>();
+                if (parentTp == null) break;
+                matrix = matrix * parentTp._transform.ToMatrix();
+                parent = parent.Parent;
+            }
+
+            Matrix4x4.Decompose(matrix, out _, out var rot, out _);
+            return rot;
+        }
+
         public void SyncFromJitter(AxisLock lockPosition = AxisLock.None, AxisLock lockRotation = AxisLock.None)
         {
             if (JitterBody == null) return;
@@ -152,20 +195,15 @@ namespace OssianForge.Engine.Physics
 
             if (TransformProperty.TransformDirty)
             {
-
-                var t = TransformProperty._transform;
+                var worldPos = GetCurrentWorldPosition();
+                var worldRot = GetCurrentWorldRotation();
 
                 JitterBody.Position = new JVector(
-                    t.Position.X + _colliderCentroidOffset.X,
-                    t.Position.Y + _colliderCentroidOffset.Y,
-                    t.Position.Z + _colliderCentroidOffset.Z);
+                    worldPos.X + _colliderCentroidOffset.X,
+                    worldPos.Y + _colliderCentroidOffset.Y,
+                    worldPos.Z + _colliderCentroidOffset.Z);
 
-                var rot = t.Rotation;
-                var q = System.Numerics.Quaternion.CreateFromYawPitchRoll(
-                    float.DegreesToRadians(rot.Y),
-                    float.DegreesToRadians(rot.X),
-                    float.DegreesToRadians(rot.Z));
-                JitterBody.Orientation = new JQuaternion(q.X, q.Y, q.Z, q.W);
+                JitterBody.Orientation = new JQuaternion(worldRot.X, worldRot.Y, worldRot.Z, worldRot.W);
 
                 JitterBody.Velocity = JVector.Zero;
                 JitterBody.AngularVelocity = JVector.Zero;

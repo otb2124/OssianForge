@@ -1,6 +1,7 @@
 ﻿using Jitter2.LinearMath;
 using OssianForge.Engine.Nodes;
 using OssianForge.Engine.Nodes.Props;
+using System.Numerics;
 
 
 namespace OssianForge.Engine.Physics
@@ -31,34 +32,49 @@ namespace OssianForge.Engine.Physics
                     if (physA == null || physB == null) continue;
                     if (physA.WorldIndex != physB.WorldIndex) continue;
 
-                    var world = Engine.Physics.GetWorld(physA.WorldIndex);
-                    var bodyA = world.GetBody(nodeA.Id);
-                    var bodyB = world.GetBody(nodeB.Id);
-                    if (bodyA == null || bodyB == null) continue;
-
                     var transA = nodeA.GetProperty<TransformProperty>();
                     var transB = nodeB.GetProperty<TransformProperty>();
 
-                    var posA = bodyA.JitterBody?.Position
-                        ?? new JVector(transA.Transform.Position.X, transA.Transform.Position.Y, transA.Transform.Position.Z);
-                    var posB = bodyB.JitterBody?.Position
-                        ?? new JVector(transB.Transform.Position.X, transB.Transform.Position.Y, transB.Transform.Position.Z);
+                    var (minA, maxA) = GetNodeBounds(nodeA, transA);
+                    var (minB, maxB) = GetNodeBounds(nodeB, transB);
 
-                    // Use the actual half-extents from each collider's scale
-                    var scaleA = transA.Transform.Scale;
-                    var scaleB = transB.Transform.Scale;
-                    float radiusA = Math.Max(scaleA.X, scaleA.Y) * 0.5f;
-                    float radiusB = Math.Max(scaleB.X, scaleB.Y) * 0.5f;
+                    bool overlaps =
+                        minA.X <= maxB.X && maxA.X >= minB.X &&
+                        minA.Y <= maxB.Y && maxA.Y >= minB.Y &&
+                        minA.Z <= maxB.Z && maxA.Z >= minB.Z;
 
-                    var dist = (posA - posB).Length();
-                    float combinedRadius = radiusA + radiusB;
-
-                    if (dist < combinedRadius)
+                    if (overlaps)
                     {
                         colA.OnCollision?.Invoke(nodeB);
                         colB.OnCollision?.Invoke(nodeA);
                     }
                 }
+        }
+
+        private static (Vector3 min, Vector3 max) GetNodeBounds(Node node, TransformProperty trans)
+        {
+            var animSourceNode = node.GetProperty<ColliderProperty>()?.AnimationSourceNodeId != null
+                ? Engine.Nodes.NodeManager.GetNode(node.GetProperty<ColliderProperty>().AnimationSourceNodeId)
+                : node;
+
+            var anim = animSourceNode?.GetProperty<AnimationProperty>();
+            var worldMatrix = trans.WorldTransform.ToMatrix();
+
+            if (anim != null && anim.BonePalette.Length > 0)
+                return anim.GetAnimatedWorldBounds(worldMatrix);
+
+            // Static fallback — use collider source mesh local AABB transformed to world
+            var mesh = node.GetProperty<ColliderProperty>()?.ColliderResource._source;
+            if (mesh != null)
+            {
+                var wMin = Vector3.Transform(mesh.LocalAabbMin, worldMatrix);
+                var wMax = Vector3.Transform(mesh.LocalAabbMax, worldMatrix);
+                return (Vector3.Min(wMin, wMax), Vector3.Max(wMin, wMax));
+            }
+
+            // Last resort — point
+            var p = trans.WorldTransform.Position;
+            return (p, p);
         }
     }
 }
