@@ -80,7 +80,7 @@
                 },
                 {
                   "type": "PhysicsProperty",
-                  "data": [ false, true, 1, 1 ]
+                  "data": [ false, true, 1, 0 ]
                 }
               ]
             }
