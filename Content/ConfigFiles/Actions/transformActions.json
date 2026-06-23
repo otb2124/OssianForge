@@ -1,32 +1,32 @@
 ﻿[
   {
-    "id": "action.transform.transformForward",
+    "id": "action.transform.transformPositionCameraDirForward",
     "call": "node.addValueCameraDirection",
     "args": [ "$self", "TransformProperty", "Transform.Position", "0,0,1", "playerCamera", "$delta" ]
   },
   {
-    "id": "action.transform.transformBackward",
+    "id": "action.transform.transformPositionCameraDirBackward",
     "call": "node.addValueCameraDirection",
     "args": [ "$self", "TransformProperty", "Transform.Position", "0,0,-1", "playerCamera", "$delta" ]
   },
   {
-    "id": "action.transform.transformRight",
-    "call": "node.addValueCameraDirection",
-    "args": [ "$self", "TransformProperty", "Transform.Position", "1,0,0", "playerCamera", "$delta" ]
-  },
-  {
-    "id": "action.transform.transformLeft",
-    "call": "node.addValueCameraDirection",
-    "args": [ "$self", "TransformProperty", "Transform.Position", "-1,0,0", "playerCamera", "$delta" ]
-  },
-  {
-    "id": "action.transform.transformMouseYawX",
+    "id": "action.transform.transformRotationMouseYawX",
     "call": "node.addValue",
     "args": [ "$self", "TransformProperty", "Transform.Rotation", "0,1,0", "$mouse_x", "$delta" ]
   },
   {
-    "id": "action.transform.transformMouseYawY",
+    "id": "action.transform.transformRotationMouseYawY",
     "call": "node.addValue",
     "args": [ "$self", "TransformProperty", "Transform.Rotation", "1,0,0", "$mouse_y", "$delta" ]
+  },
+  {
+    "id": "action.transform.setBodyYawForward",
+    "call": "node.setYawFromCamera",
+    "args": [ "$child.playerBody", "TransformProperty", "Transform.Rotation", "playerCamera", 0.0 ]
+  },
+  {
+    "id": "action.transform.setBodyYawBackward",
+    "call": "node.setYawFromCamera",
+    "args": [ "$child.playerBody", "TransformProperty", "Transform.Rotation", "playerCamera", 180.0 ]
   }
 ]

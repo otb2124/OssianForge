@@ -97,20 +97,79 @@ namespace OssianForge.Engine.Nodes
 
             float yawRad = float.DegreesToRadians(cameraSelfTransform.Transform.Rotation.Y);
 
-            // Build XZ axes from camera yaw only — no pitch, no roll.
-            // Forward = into screen at yaw 0; Right = 90° clockwise from forward.
             Vector3 forward = new Vector3(-MathF.Sin(yawRad), 0f, -MathF.Cos(yawRad));
             Vector3 right = new Vector3(-MathF.Cos(yawRad), 0f, MathF.Sin(yawRad));
-
             Vector3 dir = ParseVector3(rawDirection);
+            Vector3 worldDelta = right * dir.X + Vector3.UnitY * dir.Y + forward * dir.Z;
 
-            // dir.X = strafe, dir.Y = vertical (unused for ground movement), dir.Z = forward
-            Vector3 rotated = right * dir.X + Vector3.UnitY * dir.Y + forward * dir.Z;
+            // ── transform world delta into the node's local space ────────────────────
+            // The player root may have a non-zero parent rotation. Applying a world-space
+            // offset to a local position produces orbiting. We need to undo the parent's
+            // world rotation so the delta lands correctly in local space.
+            var tp = FindNodeProperty(node, propertyTypeName) as TransformProperty;
+            if (tp != null)
+            {
+                var parentTransform = node.Parent?.GetProperty<TransformProperty>();
+                if (parentTransform != null)
+                {
+                    // Invert the parent's world rotation to convert world → local
+                    if (Matrix4x4.Invert(parentTransform.WorldTransform.ToMatrix(), out var invParent))
+                    {
+                        // Only rotate, don't translate — strip the translation column
+                        var rotOnly = invParent;
+                        rotOnly.M41 = 0; rotOnly.M42 = 0; rotOnly.M43 = 0;
+                        worldDelta = Vector3.Transform(worldDelta, rotOnly);
+                    }
+                }
 
+                tp.Transform.Position += worldDelta * (float)delta;
+                return;
+            }
+
+            // fallback
             ApplyScaled(node, propertyTypeName, memberPath,
-                $"{rotated.X.ToString(CultureInfo.InvariantCulture)}," +
-                $"{rotated.Y.ToString(CultureInfo.InvariantCulture)}," +
-                $"{rotated.Z.ToString(CultureInfo.InvariantCulture)}", delta);
+                $"{worldDelta.X.ToString(CultureInfo.InvariantCulture)}," +
+                $"{worldDelta.Y.ToString(CultureInfo.InvariantCulture)}," +
+                $"{worldDelta.Z.ToString(CultureInfo.InvariantCulture)}", delta);
+        }
+
+
+        /// <summary>
+        /// Sets Transform.Rotation.Y on the target node to match the camera node's yaw + an offset.
+        /// targetNode: the node whose rotation to set (e.g. playerBody passed as $child.playerBody)
+        /// cameraNodeId: id string of the node holding the camera yaw
+        /// yawOffset: 0 = face camera direction, 180 = face opposite
+        /// </summary>
+        public static void SetYawFromCamera(
+            Node targetNode, string propertyTypeName, string memberPath,
+            string cameraNodeId, string yawOffsetRaw)
+        {
+            float yawOffset = float.Parse(yawOffsetRaw, CultureInfo.InvariantCulture);
+
+            var cameraNode = Engine.Nodes.NodeManager.GetNode(cameraNodeId);
+            var cameraTransform = cameraNode?.GetProperty<TransformProperty>();
+            if (cameraTransform == null) return;
+
+            float cameraYaw = cameraTransform.Transform.Rotation.Y;
+            float targetYaw = cameraYaw + yawOffset;
+            targetYaw %= 360f;
+            if (targetYaw < 0f) targetYaw += 360f;
+
+            Console.WriteLine($"[SET YAW] camera yaw={cameraYaw:F2} offset={yawOffset} → targetYaw={targetYaw:F2}");
+
+            var prop = FindNodeProperty(targetNode, propertyTypeName);
+            string[] segments = memberPath.Split('.');
+            var chain = WalkChain(prop, segments);
+            var (finalOwner, finalMember, _) = chain[^1];
+            var current = (Vector3)GetMember(finalOwner, finalMember)!;
+
+            Console.WriteLine($"[SET YAW] {targetNode.Id} rotation before={current:F2}");
+
+            SetMember(finalOwner, finalMember, new Vector3(current.X, targetYaw, current.Z));
+            WriteBackChain(chain);
+
+            var after = (Vector3)GetMember(finalOwner, finalMember)!;
+            Console.WriteLine($"[SET YAW] {targetNode.Id} rotation after={after:F2}");
         }
 
 

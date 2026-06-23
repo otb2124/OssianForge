@@ -76,7 +76,7 @@ namespace OssianForge.Engine.Nodes.Props
         {
             // Apply root motion from animation into world position
             var anim = node.GetProperty<AnimationProperty>();
-            if (anim != null && anim.RootMotionDelta != Vector3.Zero)
+            if (anim != null && anim.ApplyRootMotion && anim.RootMotionDelta != Vector3.Zero)
             {
                 // Root motion is in model-local space — rotate it by current world yaw
                 float yawRad = float.DegreesToRadians(WorldTransform.Rotation.Y);
@@ -110,9 +110,6 @@ namespace OssianForge.Engine.Nodes.Props
         {
             if (RenderSpace == RenderSpace.ScreenSpace)
             {
-                // ScreenSpace already writes its final layout straight into Transform
-                // via ApplyRenderSpaceDefaults — mirror it into WorldTransform so
-                // GetCameraModel has a single consistent source to read from.
                 WorldTransform = Transform;
                 return;
             }
@@ -124,8 +121,17 @@ namespace OssianForge.Engine.Nodes.Props
                 return;
             }
 
-            Matrix4x4 world = parentTransform.WorldTransform.ToMatrix() * Transform.ToMatrix();
+            Matrix4x4 world = Transform.ToMatrix() * parentTransform.WorldTransform.ToMatrix();
             WorldTransform.SetMatrix(world);
+
+            // DEBUG
+            if (node.Id == "player" || node.Id == "playerBody" || node.Id == "playerBodyMesh")
+            {
+                Console.WriteLine($"[TRANSFORM] {node.Id} | " +
+                    $"local pos={Transform.Position:F2} rot={Transform.Rotation:F2} | " +
+                    $"world pos={WorldTransform.Position:F2} rot={WorldTransform.Rotation:F2} | " +
+                    $"parent={node.Parent?.Id} parent world pos={parentTransform.WorldTransform.Position:F2}");
+            }
         }
 
         // -----------------------------------------------------------------------

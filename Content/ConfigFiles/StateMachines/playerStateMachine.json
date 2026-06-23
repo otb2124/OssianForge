@@ -9,20 +9,18 @@
     {
       "id": "WalkForward",
       "onEnter": [ "action.myActions.playAnimWalking" ],
-      "onUpdate": [ "action.transform.transformForward" ]
+      "onUpdate": [ "action.transform.transformPositionCameraDirForward", "action.transform.setBodyYawForward" ]
     },
     {
       "id": "WalkBackward",
       "onEnter": [ "action.myActions.playAnimWalking" ], 
-      "onUpdate": [ "action.transform.transformBackward" ]
+      "onUpdate": [ "action.transform.transformPositionCameraDirBackward" ]
     },
     {
-      "id": "WalkLeft",
-      "onUpdate": [ "action.transform.transformLeft" ]
+      "id": "WalkLeft"
     },
     {
-      "id": "WalkRight",
-      "onUpdate": [ "action.transform.transformRight" ]
+      "id": "WalkRight"
     }
   ],
   "transitions": [

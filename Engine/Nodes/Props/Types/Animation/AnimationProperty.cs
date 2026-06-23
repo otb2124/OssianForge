@@ -17,6 +17,8 @@ namespace OssianForge.Engine.Nodes.Props
         public string RootBoneName { get; set; } = "mixamorig:Hips";
 
         private Vector3 _lastRootPosition = Vector3.Zero;
+        public bool ApplyRootMotion = false;
+
 
         public AnimationProperty(string animationResourceId)
         {

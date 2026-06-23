@@ -28,5 +28,10 @@
     "id": "pronoun.node.addValueCameraDirection",
     "target": "OssianForge.Engine.Nodes.NodeReflection.AddValueCameraDirection",
     "pronouns": [ "node.addValueCameraDirection" ]
+  },
+  {
+    "id": "pronoun.node.setYawFromCamera",
+    "target": "OssianForge.Engine.Nodes.NodeReflection.SetYawFromCamera",
+    "pronouns": [ "node.setYawFromCamera" ]
   }
 ]
