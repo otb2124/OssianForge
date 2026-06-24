@@ -1,5 +1,6 @@
 ﻿using OssianForge.Engine.Nodes.Props;
 using OssianForge.Engine.Resources.Meshes;
+using Silk.NET.Assimp;
 using Silk.NET.Maths;
 using Silk.NET.OpenGL;
 using System.Numerics;
@@ -49,6 +50,8 @@ namespace OssianForge.Engine.Graphics.Batch
             int minMatIndex = meshResource.SubMeshes.Count > 0
                 ? meshResource.SubMeshes.Min(s => s.MaterialIndex) : 0;
 
+            Matrix4x4 model = Matrix4x4.CreateTranslation(-meshResource.HipsOffset) * transform.GetCameraModel();
+
             foreach (var subMesh in meshResource.SubMeshes)
             {
                 int matIndex = subMesh.MaterialIndex - minMatIndex;
@@ -60,7 +63,7 @@ namespace OssianForge.Engine.Graphics.Batch
                     palette = animation.GetPalette(paletteMeshResource, subMesh);
                 }
 
-                DrawSubMesh(subMesh, materials[matIndex], transform.GetCameraModel(), transform.GetCameraView(), transform.GetCameraProjection(), palette);
+                DrawSubMesh(subMesh, materials[matIndex], model, transform.GetCameraView(), transform.GetCameraProjection(), palette);
             }
         }
 

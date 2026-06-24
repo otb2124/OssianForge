@@ -58,7 +58,9 @@ namespace OssianForge.Engine.Nodes.Props
                 BonePalette[i] = Matrix4x4.Identity;
 
             int matched = 0;
-            WalkSkeleton(skeleton, Matrix4x4.Identity, allBones, BonePalette, ref matched);
+
+            Matrix4x4 rootOffset = Matrix4x4.CreateTranslation(mesh.MeshResource.HipsOffset);
+            WalkSkeleton(skeleton, rootOffset, allBones, BonePalette, ref matched);
         }
 
 

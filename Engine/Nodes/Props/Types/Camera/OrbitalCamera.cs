@@ -46,8 +46,6 @@ namespace OssianForge.Engine.Nodes.Props.Types.Camera
                 Vector3 lookAt = target.WorldTransform.Position;
                 Camera.Position = lookAt + orbitOffset;
 
-                Console.WriteLine($"transform:{target.Transform.Position}, world:{target.WorldTransform.Position}");
-
                 Vector3 toTarget = Vector3.Normalize(lookAt - Camera.Position);
                 Camera.SetLookDirection(toTarget);
             }

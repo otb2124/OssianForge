@@ -54,6 +54,63 @@
       ]
     },
     {
+      "id": "testremy",
+      "name": "testremy",
+      "properties": [
+        {
+          "type": "TransformProperty",
+          "data": [
+            [ "0,0,0", "0,0,0", "1,2,1" ]
+          ]
+        },
+        {
+          "type": "MeshProperty",
+          "data": [ "mesh.remy" ]
+        },
+        {
+          "type": "TextureMaterialProperty",
+          "data": [ "texture.house.wood", "shader.basic" ]
+        },
+        {
+          "type": "TextureMaterialProperty",
+          "data": [ "texture.house.wood", "shader.basic" ]
+        },
+        {
+          "type": "TextureMaterialProperty",
+          "data": [ "texture.house.wood", "shader.basic" ]
+        },
+        {
+          "type": "TextureMaterialProperty",
+          "data": [ "texture.house.wood", "shader.basic" ]
+        },
+        {
+          "type": "TextureMaterialProperty",
+          "data": [ "texture.house.wood", "shader.basic" ]
+        }
+      ]
+    },
+    {
+      "id": "testbox",
+      "name": "testbox",
+      "enabled": false,
+      "properties": [
+        {
+          "type": "TransformProperty",
+          "data": [
+            [ "0,0,0", "0,0,0", "1,2,1" ]
+          ]
+        },
+        {
+          "type": "MeshProperty",
+          "data": [ "mesh.cube" ]
+        },
+        {
+          "type": "TextureMaterialProperty",
+          "data": [ "texture.house.wood", "shader.basic" ]
+        }
+      ]
+    },
+    {
       "id": "ball",
       "name": "ball",
       "properties": [

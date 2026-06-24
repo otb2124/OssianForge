@@ -20,7 +20,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="Content\MeshFiles\remy.fbx" />
     <None Remove="Content\ShaderFiles\Basic.frag" />
     <None Remove="Content\ShaderFiles\Basic.vert" />
     <None Remove="Content\ShaderFiles\post.frag" />

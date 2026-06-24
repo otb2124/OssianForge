@@ -110,6 +110,7 @@ namespace OssianForge.Engine.Resources.MeshFiles
                 }
 
                 RootNode = BuildSkeletonNode(scene->MRootNode);
+
                 if (unitScale != 1f)
                     ScaleSkeletonTranslations(RootNode, unitScale);
 

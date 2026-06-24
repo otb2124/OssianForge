@@ -157,7 +157,6 @@ namespace OssianForge.Engine.Resources.Config
         {
             if (data == null)
             {
-                Console.WriteLine($"[TRANSFORM PARSE] null data → default TransformProperty");
                 return new TransformProperty();
             }
 
@@ -176,8 +175,6 @@ namespace OssianForge.Engine.Resources.Config
 
             if (len > 1) space = Enum.Parse<RenderSpace>(arr[1].GetString()!, true);
             if (len > 2) anchor = Enum.Parse<Anchor>(arr[2].GetString()!, true);
-
-            Console.WriteLine($"[TRANSFORM PARSE] pos={position} rot={rotation} scale={scale} space={space} anchor={anchor}");
 
             return new TransformProperty(transform, space, anchor);
         }

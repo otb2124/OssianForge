@@ -34,12 +34,17 @@ namespace OssianForge.Engine.Resources.Colliders
                 stride += 2;
 
                 var v = sub.RawVertices;
+
+                JVector Offset(int idx) => new JVector(
+                    v[idx] - _source.HipsOffset.X,
+                    v[idx + 1] - _source.HipsOffset.Y,
+                    v[idx + 2] - _source.HipsOffset.Z);
+
                 for (int i = 0; i + stride * 3 <= v.Length; i += stride * 3)
                 {
-                    var a = new JVector(v[i], v[i + 1], v[i + 2]);
-                    var b = new JVector(v[i + stride], v[i + stride + 1], v[i + stride + 2]);
-                    var c = new JVector(v[i + stride * 2], v[i + stride * 2 + 1], v[i + stride * 2 + 2]);
-
+                    var a = Offset(i);
+                    var b = Offset(i + stride);
+                    var c = Offset(i + stride * 2);
                     triangles.Add(new JTriangle(a, b, c));
                     Points.Add(a);
                     Points.Add(b);

@@ -4,11 +4,11 @@
   "states": [
     {
       "id": "Idle",
-      "onEnter": [  ]
+      "onEnter": [ "action.myActions.playAnimIdle" ]
     },
     {
       "id": "WalkForward",
-      "onEnter": [ ],
+      "onEnter": [ "action.myActions.playAnimWalking" ],
       "onUpdate": [ "action.transform.transformPositionCameraDirForward", "action.transform.setBodyYawForward" ]
     },
     {

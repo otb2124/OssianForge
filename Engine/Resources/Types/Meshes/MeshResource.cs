@@ -17,6 +17,8 @@ namespace OssianForge.Engine.Resources.Meshes
 
         public string ResourceId;
 
+        public Vector3 HipsOffset { get; private set; } = Vector3.Zero;
+
         public MeshResource(string id, string meshId)
         {
             Id = id;
@@ -49,6 +51,13 @@ namespace OssianForge.Engine.Resources.Meshes
                 ?? throw new Exception($"MeshFile not found: '{ResourceId}'");
 
                 Skeleton = meshFile.RootNode;
+
+                var hipsNode = Skeleton.Children.FirstOrDefault(c => c.Children.Count > 0);
+                if (hipsNode != null)
+                {
+                    var h = hipsNode.LocalTransform;
+                    HipsOffset = new Vector3(h.M41, h.M42, h.M43);
+                }
 
                 foreach (var (verts, matIndex, bones) in meshFile.SubMeshes)
                 {
