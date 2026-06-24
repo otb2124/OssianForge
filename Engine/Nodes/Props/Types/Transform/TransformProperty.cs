@@ -25,6 +25,26 @@ namespace OssianForge.Engine.Nodes.Props
         BottomLeft, BottomCenter, BottomRight,
     }
 
+    [Flags]
+    public enum PropagationLock
+    {
+        None = 0,
+        PosX = 1 << 0,
+        PosY = 1 << 1,
+        PosZ = 1 << 2,
+        RotX = 1 << 3,
+        RotY = 1 << 4,
+        RotZ = 1 << 5,
+        ScaleX = 1 << 6,
+        ScaleY = 1 << 7,
+        ScaleZ = 1 << 8,
+
+        Position = PosX | PosY | PosZ,
+        Rotation = RotX | RotY | RotZ,
+        Scale = ScaleX | ScaleY | ScaleZ,
+        All = Position | Rotation | Scale,
+    }
+
     public class TransformProperty : NodeProperty
     {
         public bool TransformDirty = false;
@@ -63,16 +83,19 @@ namespace OssianForge.Engine.Nodes.Props
         public RenderSpace RenderSpace = RenderSpace.World;
         public Anchor2D Anchor = Anchor2D.None;
 
+        public PropagationLock StopPropagation = PropagationLock.None;
+
         public TransformProperty(
             Transform transform,
             RenderSpace renderSpace = RenderSpace.World,
-            Anchor2D anchor = Anchor2D.None)
+            Anchor2D anchor = Anchor2D.None, PropagationLock stopProp = PropagationLock.None)
         {
             InitialTransform = transform;
             _transform = transform;
             WorldTransform = transform;
             RenderSpace = renderSpace;
             Anchor = anchor;
+            StopPropagation = stopProp;
         }
 
         public TransformProperty()
@@ -147,6 +170,24 @@ namespace OssianForge.Engine.Nodes.Props
 
             Matrix4x4 world = _transform.ToMatrix() * parentTransform.WorldTransform.ToMatrix();
             WorldTransform.SetMatrix(world);
+
+            if (StopPropagation != PropagationLock.None)
+            {
+                var w = WorldTransform;
+                var l = _transform;
+
+                if (StopPropagation.HasFlag(PropagationLock.PosX)) w.Position.X = l.Position.X;
+                if (StopPropagation.HasFlag(PropagationLock.PosY)) w.Position.Y = l.Position.Y;
+                if (StopPropagation.HasFlag(PropagationLock.PosZ)) w.Position.Z = l.Position.Z;
+                if (StopPropagation.HasFlag(PropagationLock.RotX)) w.Rotation.X = l.Rotation.X;
+                if (StopPropagation.HasFlag(PropagationLock.RotY)) w.Rotation.Y = l.Rotation.Y;
+                if (StopPropagation.HasFlag(PropagationLock.RotZ)) w.Rotation.Z = l.Rotation.Z;
+                if (StopPropagation.HasFlag(PropagationLock.ScaleX)) w.Scale.X = l.Scale.X;
+                if (StopPropagation.HasFlag(PropagationLock.ScaleY)) w.Scale.Y = l.Scale.Y;
+                if (StopPropagation.HasFlag(PropagationLock.ScaleZ)) w.Scale.Z = l.Scale.Z;
+
+                WorldTransform = w;
+            }
         }
 
         public void ApplyRenderSpaceDefaults(Node node)

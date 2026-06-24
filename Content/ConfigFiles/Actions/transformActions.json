@@ -22,11 +22,11 @@
   {
     "id": "action.transform.setBodyYawForward",
     "call": "node.setYawFromCamera",
-    "args": [ "$child.playerBody", "TransformProperty", "Transform.Rotation", "playerCamera", 0.0 ]
+    "args": [ "$child.playerBodyMesh", "TransformProperty", "Transform.Rotation", "playerCamera", 0.0 ]
   },
   {
     "id": "action.transform.setBodyYawBackward",
     "call": "node.setYawFromCamera",
-    "args": [ "$child.playerBody", "TransformProperty", "Transform.Rotation", "playerCamera", 180.0 ]
+    "args": [ "$child.playerBodyMesh", "TransformProperty", "Transform.Rotation", "playerCamera", 180.0 ]
   }
 ]

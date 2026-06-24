@@ -167,6 +167,8 @@ namespace OssianForge.Engine.Resources.Config
             var rotation = ParseVector3(vec3arr[1].GetString());
             var scale = ParseVector3(vec3arr[2].GetString());
             var transform = new Transform(position, rotation, scale);
+            var stopProp = PropagationLock.None;
+
 
             int len = arr.GetArrayLength();
 
@@ -175,8 +177,13 @@ namespace OssianForge.Engine.Resources.Config
 
             if (len > 1) space = Enum.Parse<RenderSpace>(arr[1].GetString()!, true);
             if (len > 2) anchor = Enum.Parse<Anchor2D>(arr[2].GetString()!, true);
+            if (len > 3 && arr[3].ValueKind == JsonValueKind.Array)
+            {
+                foreach (var flag in arr[3].EnumerateArray())
+                    stopProp |= Enum.Parse<PropagationLock>(flag.GetString()!, true);
+            }
 
-            return new TransformProperty(transform, space, anchor);
+            return new TransformProperty(transform, space, anchor, stopProp);
         }
 
         // "data": [ "texture.id", "shader.id" ]
