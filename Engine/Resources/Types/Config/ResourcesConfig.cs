@@ -113,6 +113,7 @@ namespace OssianForge.Engine.Resources.Config
                 "texture" => new TextureResource(record.Id, record.Data.ToArray()),
                 "cubemaptexture" => new CubemapTextureResource(record.Id, record.Data[0], record.Data[1], record.Data[2], record.Data[3], record.Data[4], record.Data[5]),
                 "collider" => new ColliderResource(record.Id, record.Data[0]),
+                "capsulecollider" => new CapsuleColliderResource(record.Id, ToFloat(record.Data[0]), ToFloat(record.Data[1])),
                 "font" => new FontResource(record.Id, record.Data[0], record.Data[1]),
                 "sound" => new SoundResource(record.Id, record.Data[0]),
                 _ => throw new Exception($"[RESOURCES CONFIG] Unknown type '{record.Type}' (id: '{record.Id}')")
@@ -209,6 +210,11 @@ namespace OssianForge.Engine.Resources.Config
                 instance.Load();
             }
             Console.WriteLine($"[RESOURCES CONFIG] Loaded {ids.Length} Resource instance(s) by id.");
+        }
+
+        public static float ToFloat(string input)
+        {
+            return float.Parse(input, System.Globalization.CultureInfo.InvariantCulture);
         }
     }
 }

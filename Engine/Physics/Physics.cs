@@ -8,7 +8,6 @@ namespace OssianForge.Engine.Physics
     public class Physics
     {
         public List<PhysicsWorld> PhysicsWorlds = new();
-        public CollisionSystem CollisionSystem;
 
         // Convenience accessors
         public PhysicsWorld World3D => PhysicsWorlds[0];
@@ -20,8 +19,6 @@ namespace OssianForge.Engine.Physics
             PhysicsWorlds.Add(new PhysicsWorld(1, new Vector3(0, -9.81f / 3f, 0)));
             //PhysicsWorlds[1].LockPosition = AxisLock.Z;
             //PhysicsWorlds[1].LockRotation = AxisLock.X | AxisLock.Y;
-
-            CollisionSystem = new CollisionSystem();
         }
 
         public void OnLoad()
@@ -34,8 +31,6 @@ namespace OssianForge.Engine.Physics
         {
             foreach (var world in PhysicsWorlds)
                 world.OnUpdate(delta);
-
-            CollisionSystem.OnUpdate(delta);
         }
 
         public PhysicsWorld GetWorld(int index) => PhysicsWorlds[index];

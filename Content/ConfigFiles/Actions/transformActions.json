@@ -2,12 +2,12 @@
   {
     "id": "action.transform.transformPositionCameraDirForward",
     "call": "node.addValueCameraDirection",
-    "args": [ "$self", "TransformProperty", "Transform.Position", "0,0,1", "playerCamera", "$delta" ]
+    "args": [ "$self", "TransformProperty", "Transform.Position", "0,0,2", "playerCamera", "$delta" ]
   },
   {
     "id": "action.transform.transformPositionCameraDirBackward",
     "call": "node.addValueCameraDirection",
-    "args": [ "$self", "TransformProperty", "Transform.Position", "0,0,-1", "playerCamera", "$delta" ]
+    "args": [ "$self", "TransformProperty", "Transform.Position", "0,0,-2", "playerCamera", "$delta" ]
   },
   {
     "id": "action.transform.transformRotationMouseYawX",

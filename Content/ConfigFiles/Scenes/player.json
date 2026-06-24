@@ -76,7 +76,7 @@
                 },
                 {
                   "type": "ColliderProperty",
-                  "data": [ "collider.remy" ]
+                  "data": [ "collider.capsule.player", "Bottom" ]
                 },
                 {
                   "type": "PhysicsProperty",

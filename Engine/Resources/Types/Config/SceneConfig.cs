@@ -171,10 +171,10 @@ namespace OssianForge.Engine.Resources.Config
             int len = arr.GetArrayLength();
 
             RenderSpace space = RenderSpace.World;
-            Anchor anchor = Anchor.None;
+            Anchor2D anchor = Anchor2D.None;
 
             if (len > 1) space = Enum.Parse<RenderSpace>(arr[1].GetString()!, true);
-            if (len > 2) anchor = Enum.Parse<Anchor>(arr[2].GetString()!, true);
+            if (len > 2) anchor = Enum.Parse<Anchor2D>(arr[2].GetString()!, true);
 
             return new TransformProperty(transform, space, anchor);
         }
@@ -331,12 +331,22 @@ namespace OssianForge.Engine.Resources.Config
             int len = arr.GetArrayLength();
 
             string colliderId = arr[0].GetString();
-            string animationSourceNodeId = len > 1 && arr[1].ValueKind == JsonValueKind.String
-                ? arr[1].GetString()
-                : null;
-            bool isTrigger = len > 2 && arr[2].GetBoolean();
 
-            return new ColliderProperty(colliderId, animationSourceNodeId, isTrigger);
+            Anchor3D anchor = Anchor3D.Center;
+            if (len > 1 && arr[1].ValueKind == JsonValueKind.String)
+                anchor = Enum.Parse<Anchor3D>(arr[1].GetString()!, true);
+
+            Transform? localTransform = null;
+            if (len > 2 && arr[2].ValueKind == JsonValueKind.Array)
+            {
+                var lt = arr[2];
+                var position = ParseVector3(lt[0].GetString());
+                var rotation = ParseVector3(lt[1].GetString());
+                var scale = ParseVector3(lt[2].GetString());
+                localTransform = new Transform(position, rotation, scale);
+            }
+
+            return new ColliderProperty(colliderId, anchor, localTransform);
         }
 
 

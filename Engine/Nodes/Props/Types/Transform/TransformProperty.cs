@@ -17,7 +17,7 @@ namespace OssianForge.Engine.Nodes.Props
         ScreenSpace,
     }
 
-    public enum Anchor
+    public enum Anchor2D
     {
         None,
         TopLeft, TopCenter, TopRight,
@@ -61,12 +61,12 @@ namespace OssianForge.Engine.Nodes.Props
         public bool ClipsChildren = false;
 
         public RenderSpace RenderSpace = RenderSpace.World;
-        public Anchor Anchor = Anchor.None;
+        public Anchor2D Anchor = Anchor2D.None;
 
         public TransformProperty(
             Transform transform,
             RenderSpace renderSpace = RenderSpace.World,
-            Anchor anchor = Anchor.None)
+            Anchor2D anchor = Anchor2D.None)
         {
             InitialTransform = transform;
             _transform = transform;
@@ -188,7 +188,7 @@ namespace OssianForge.Engine.Nodes.Props
             Vector2 localOffset = new Vector2(_transform.Position.X, _transform.Position.Y);
 
             Vector2 centerInContainer;
-            if (Anchor != Anchor.None)
+            if (Anchor != Anchor2D.None)
             {
                 Vector2 anchorFlush = AnchorOrigin(Anchor, halfContainer, halfSelf);
                 centerInContainer = anchorFlush + localOffset;
@@ -251,7 +251,7 @@ namespace OssianForge.Engine.Nodes.Props
                 child.GetProperty<TransformProperty>()?.SetDirtyRecursive();
         }
 
-        private static Vector2 AnchorOrigin(Anchor anchor, Vector2 halfContainer, Vector2 halfSelf)
+        private static Vector2 AnchorOrigin(Anchor2D anchor, Vector2 halfContainer, Vector2 halfSelf)
         {
             float hw = halfContainer.X;
             float hh = halfContainer.Y;
@@ -260,15 +260,15 @@ namespace OssianForge.Engine.Nodes.Props
 
             return anchor switch
             {
-                Anchor.TopLeft => new Vector2(-hw + ex, hh - ey),
-                Anchor.TopCenter => new Vector2(0, hh - ey),
-                Anchor.TopRight => new Vector2(hw - ex, hh - ey),
-                Anchor.MiddleLeft => new Vector2(-hw + ex, 0),
-                Anchor.MiddleCenter => new Vector2(0, 0),
-                Anchor.MiddleRight => new Vector2(hw - ex, 0),
-                Anchor.BottomLeft => new Vector2(-hw + ex, -hh + ey),
-                Anchor.BottomCenter => new Vector2(0, -hh + ey),
-                Anchor.BottomRight => new Vector2(hw - ex, -hh + ey),
+                Anchor2D.TopLeft => new Vector2(-hw + ex, hh - ey),
+                Anchor2D.TopCenter => new Vector2(0, hh - ey),
+                Anchor2D.TopRight => new Vector2(hw - ex, hh - ey),
+                Anchor2D.MiddleLeft => new Vector2(-hw + ex, 0),
+                Anchor2D.MiddleCenter => new Vector2(0, 0),
+                Anchor2D.MiddleRight => new Vector2(hw - ex, 0),
+                Anchor2D.BottomLeft => new Vector2(-hw + ex, -hh + ey),
+                Anchor2D.BottomCenter => new Vector2(0, -hh + ey),
+                Anchor2D.BottomRight => new Vector2(hw - ex, -hh + ey),
                 _ => Vector2.Zero,
             };
         }

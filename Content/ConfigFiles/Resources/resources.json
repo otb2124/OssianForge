@@ -30,6 +30,11 @@
     "type": "mesh"
   },
   {
+    "id": "mesh.capsule",
+    "data": [ "fastmesh.capsule" ],
+    "type": "mesh"
+  },
+  {
     "id": "mesh.remy",
     "data": [ "meshfile.remy" ],
     "type": "mesh"
@@ -233,6 +238,11 @@
     "id": "collider.pyramid",
     "data": [ "mesh.pyramid" ],
     "type": "collider"
+  },
+  {
+    "id": "collider.capsule.player",
+    "data": [ 0.35, 3.7 ],
+    "type": "capsulecollider"
   },
   {
     "id": "font.roboto",

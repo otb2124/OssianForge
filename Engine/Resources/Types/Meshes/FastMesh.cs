@@ -263,5 +263,106 @@ namespace OssianForge.Resources.Meshes
             );
             return (n * r, n); // normal = unit direction, pos = scaled by radius
         }
+
+
+
+        public static FastMesh Capsule => new FastMesh("capsule", GenerateCapsule(0.3f, 1.8f, 16, 8));
+
+        private static float[] GenerateCapsule(float radius, float height, int slices, int stacks)
+        {
+            var verts = new List<float>();
+            float halfH = height / 2f - radius; // cylinder half-height (caps extend beyond)
+
+            // Top hemisphere
+            for (int i = 0; i < stacks / 2; i++)
+            {
+                float phi0 = MathF.PI * i / stacks;
+                float phi1 = MathF.PI * (i + 1) / stacks;
+
+                for (int j = 0; j < slices; j++)
+                {
+                    float theta0 = 2 * MathF.PI * j / slices;
+                    float theta1 = 2 * MathF.PI * (j + 1) / slices;
+
+                    var (p00, n00) = CapsuleVertex(radius, phi0, theta0, halfH, true);
+                    var (p10, n10) = CapsuleVertex(radius, phi1, theta0, halfH, true);
+                    var (p01, n01) = CapsuleVertex(radius, phi0, theta1, halfH, true);
+                    var (p11, n11) = CapsuleVertex(radius, phi1, theta1, halfH, true);
+
+                    float u0 = (float)j / slices, v0 = (float)i / stacks;
+                    float u1 = (float)(j + 1) / slices, v1 = (float)(i + 1) / stacks;
+
+                    verts.AddRange(V(p00.X, p00.Y, p00.Z, n00.X, n00.Y, n00.Z, u0, v0));
+                    verts.AddRange(V(p10.X, p10.Y, p10.Z, n10.X, n10.Y, n10.Z, u0, v1));
+                    verts.AddRange(V(p11.X, p11.Y, p11.Z, n11.X, n11.Y, n11.Z, u1, v1));
+                    verts.AddRange(V(p00.X, p00.Y, p00.Z, n00.X, n00.Y, n00.Z, u0, v0));
+                    verts.AddRange(V(p11.X, p11.Y, p11.Z, n11.X, n11.Y, n11.Z, u1, v1));
+                    verts.AddRange(V(p01.X, p01.Y, p01.Z, n01.X, n01.Y, n01.Z, u1, v0));
+                }
+            }
+
+            // Bottom hemisphere
+            for (int i = stacks / 2; i < stacks; i++)
+            {
+                float phi0 = MathF.PI * i / stacks;
+                float phi1 = MathF.PI * (i + 1) / stacks;
+
+                for (int j = 0; j < slices; j++)
+                {
+                    float theta0 = 2 * MathF.PI * j / slices;
+                    float theta1 = 2 * MathF.PI * (j + 1) / slices;
+
+                    var (p00, n00) = CapsuleVertex(radius, phi0, theta0, halfH, false);
+                    var (p10, n10) = CapsuleVertex(radius, phi1, theta0, halfH, false);
+                    var (p01, n01) = CapsuleVertex(radius, phi0, theta1, halfH, false);
+                    var (p11, n11) = CapsuleVertex(radius, phi1, theta1, halfH, false);
+
+                    float u0 = (float)j / slices, v0 = (float)i / stacks;
+                    float u1 = (float)(j + 1) / slices, v1 = (float)(i + 1) / stacks;
+
+                    verts.AddRange(V(p00.X, p00.Y, p00.Z, n00.X, n00.Y, n00.Z, u0, v0));
+                    verts.AddRange(V(p10.X, p10.Y, p10.Z, n10.X, n10.Y, n10.Z, u0, v1));
+                    verts.AddRange(V(p11.X, p11.Y, p11.Z, n11.X, n11.Y, n11.Z, u1, v1));
+                    verts.AddRange(V(p00.X, p00.Y, p00.Z, n00.X, n00.Y, n00.Z, u0, v0));
+                    verts.AddRange(V(p11.X, p11.Y, p11.Z, n11.X, n11.Y, n11.Z, u1, v1));
+                    verts.AddRange(V(p01.X, p01.Y, p01.Z, n01.X, n01.Y, n01.Z, u1, v0));
+                }
+            }
+
+            // Cylinder body
+            for (int j = 0; j < slices; j++)
+            {
+                float theta0 = 2 * MathF.PI * j / slices;
+                float theta1 = 2 * MathF.PI * (j + 1) / slices;
+
+                float x0 = MathF.Cos(theta0), z0 = MathF.Sin(theta0);
+                float x1 = MathF.Cos(theta1), z1 = MathF.Sin(theta1);
+
+                float u0 = (float)j / slices, u1 = (float)(j + 1) / slices;
+
+                verts.AddRange(V(x0 * radius, -halfH, z0 * radius, x0, 0f, z0, u0, 0f));
+                verts.AddRange(V(x1 * radius, -halfH, z1 * radius, x1, 0f, z1, u1, 0f));
+                verts.AddRange(V(x1 * radius, halfH, z1 * radius, x1, 0f, z1, u1, 1f));
+                verts.AddRange(V(x0 * radius, -halfH, z0 * radius, x0, 0f, z0, u0, 0f));
+                verts.AddRange(V(x1 * radius, halfH, z1 * radius, x1, 0f, z1, u1, 1f));
+                verts.AddRange(V(x0 * radius, halfH, z0 * radius, x0, 0f, z0, u0, 1f));
+            }
+
+            return verts.ToArray();
+        }
+
+        private static (Vector3 pos, Vector3 normal) CapsuleVertex(float r, float phi, float theta, float halfH, bool top)
+        {
+            var n = new Vector3(
+                MathF.Sin(phi) * MathF.Cos(theta),
+                MathF.Cos(phi),
+                MathF.Sin(phi) * MathF.Sin(theta)
+            );
+            float yOffset = top ? halfH : -halfH;
+            // flip Y for bottom hemisphere so normals point outward
+            var pos = new Vector3(n.X * r, (top ? n.Y : -n.Y) * r + yOffset, n.Z * r);
+            var normal = new Vector3(n.X, top ? n.Y : -n.Y, n.Z);
+            return (pos, normal);
+        }
     }
 }

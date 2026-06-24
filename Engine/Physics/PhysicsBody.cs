@@ -34,9 +34,8 @@ namespace OssianForge.Engine.Physics
             PhysicsProperty = node.GetProperty<PhysicsProperty>();
             ColliderProperty = node.GetProperty<ColliderProperty>();
             TransformProperty = node.GetProperty<TransformProperty>();
+            var MeshProperty = node.GetProperty<MeshProperty>();
 
-            // Use WorldTransform — spawn position/orientation/scale must account
-            // for any parent composition (e.g. a collider on a child of "player").
             var pos = TransformProperty.WorldTransform.Position;
             var jPos = new JVector(pos.X, pos.Y, pos.Z);
 
@@ -74,24 +73,33 @@ namespace OssianForge.Engine.Physics
             else
             {
                 var t = TransformProperty.WorldTransform;
-                var scale = t.Scale;
+                var nodeScale = t.Scale;
+                var localMatrix = ColliderProperty.LocalTransform.ToMatrix();
+                var localOffset = ColliderProperty.LocalTransform.Position;
 
-                var scaledPoints = ColliderProperty.ColliderResource.Points
-                    .Select(p => new JVector(p.X * scale.X, p.Y * scale.Y, p.Z * scale.Z))
+                // Apply node scale then LocalTransform to each point
+                var transformedPoints = ColliderProperty.ColliderResource.Points
+                    .Select(p =>
+                    {
+                        var scaled = new Vector3(p.X * nodeScale.X, p.Y * nodeScale.Y, p.Z * nodeScale.Z);
+                        var local = Vector3.Transform(scaled, localMatrix);
+                        return new JVector(local.X, local.Y, local.Z);
+                    })
                     .ToList();
 
-                // Compute centroid and re-center points around origin
+                // Centroid of transformed points — Jitter needs shape centered at origin
                 var centroid = new JVector(
-                    scaledPoints.Average(p => p.X),
-                    scaledPoints.Average(p => p.Y),
-                    scaledPoints.Average(p => p.Z));
+                    transformedPoints.Average(p => p.X),
+                    transformedPoints.Average(p => p.Y),
+                    transformedPoints.Average(p => p.Z));
 
-                _colliderCentroidOffset = centroid; // ← this line was missing
+                _colliderCentroidOffset = centroid;
 
-                Console.WriteLine($"[COLLIDER] {NodeId} centroid offset: {_colliderCentroidOffset}");
-
-                var centeredPoints = scaledPoints
-                    .Select(p => new JVector(p.X - centroid.X, p.Y - centroid.Y, p.Z - centroid.Z))
+                var centeredPoints = transformedPoints
+                    .Select(p => new JVector(
+                        p.X - centroid.X,
+                        p.Y - centroid.Y,
+                        p.Z - centroid.Z))
                     .ToList();
 
                 var shape = new PointCloudShape(centeredPoints);
@@ -99,11 +107,11 @@ namespace OssianForge.Engine.Physics
                 JitterBody = jitterWorld.CreateRigidBody();
                 JitterBody.AddShape(shape);
 
-                // Offset spawn position by centroid so mesh origin stays correct
                 JitterBody.Position = new JVector(
                     t.Position.X + centroid.X,
                     t.Position.Y + centroid.Y,
                     t.Position.Z + centroid.Z);
+
                 JitterBody.AffectedByGravity = PhysicsProperty.UseGravity;
                 JitterBody.Friction = PhysicsProperty.Friction;
                 JitterBody.Restitution = PhysicsProperty.Bounciness;
@@ -194,23 +202,23 @@ namespace OssianForge.Engine.Physics
             if (JitterBody == null) return;
 
             if (TransformProperty.TransformDirty)
-{
-    var worldPos = GetCurrentWorldPosition();
-    var worldRot = GetCurrentWorldRotation();
+            {
+                var worldPos = GetCurrentWorldPosition();
+                var worldRot = GetCurrentWorldRotation();
 
-    JitterBody.Position = new JVector(
-        worldPos.X + _colliderCentroidOffset.X,
-        worldPos.Y + _colliderCentroidOffset.Y,
-        worldPos.Z + _colliderCentroidOffset.Z);
+                JitterBody.Position = new JVector(
+                    worldPos.X + _colliderCentroidOffset.X,
+                    worldPos.Y + _colliderCentroidOffset.Y,
+                    worldPos.Z + _colliderCentroidOffset.Z);
 
-    JitterBody.Orientation = new JQuaternion(worldRot.X, worldRot.Y, worldRot.Z, worldRot.W);
+                JitterBody.Orientation = new JQuaternion(worldRot.X, worldRot.Y, worldRot.Z, worldRot.W);
 
-    JitterBody.Velocity = JVector.Zero;
-    JitterBody.AngularVelocity = JVector.Zero;
+                JitterBody.Velocity = JVector.Zero;
+                JitterBody.AngularVelocity = JVector.Zero;
 
-    TransformProperty.TransformDirty = false;
-    return;
-}
+                TransformProperty.TransformDirty = false;
+                return;
+            }
 
             if (PhysicsProperty.ManualVelocity == Vector3.Zero) return;
 
