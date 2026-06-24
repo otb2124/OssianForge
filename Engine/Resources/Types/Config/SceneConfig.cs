@@ -33,7 +33,7 @@ namespace OssianForge.Engine.Resources.Config
 
         // ── node ─────────────────────────────────────────────────────────────────
 
-        public static Node ParseNode(JsonElement el)
+        public static Node ParseNode(JsonElement el, Node parent = null)
         {
             var node = new Node();
 
@@ -61,24 +61,30 @@ namespace OssianForge.Engine.Resources.Config
 
             var sceneRef = node.GetProperty<SceneReferenceProperty>();
             if (sceneRef != null)
-                return ResolveSceneReference(sceneRef, node, el);
+            {
+                var resolved = ResolveSceneReference(sceneRef, node, el, parent);
+                return resolved;
+            }
 
             if (el.TryGetProperty("children", out var children))
                 foreach (var child in children.EnumerateArray())
-                    node.AddChild(ParseNode(child));
+                {
+                    var childNode = ParseNode(child, node);
+                    childNode.Parent = node;
+                    node.AddChild(childNode);
+                }
 
             return node;
         }
 
-        private static Node ResolveSceneReference(SceneReferenceProperty sceneRef, Node overrides, JsonElement el)
+        private static Node ResolveSceneReference(SceneReferenceProperty sceneRef, Node overrides, JsonElement el, Node parent)
         {
             var sceneConfig = Engine.Resources.GetResourceFile<SceneConfig>(sceneRef.SceneId)
                 ?? throw new Exception($"[SCENE REFERENCE] SceneConfig '{sceneRef.SceneId}' not found.");
 
             var root = sceneConfig.GetScene();
+            root.Parent = parent; // ← this is the fix
 
-            // Find the node to inject overrides into — if the root is a pure wrapper
-            // with no meaningful properties, push overrides onto its first child instead.
             Node injectTarget = (root.Properties.Count == 0 && root.Children.Count == 1)
                 ? root.Children[0]
                 : root;
@@ -94,7 +100,12 @@ namespace OssianForge.Engine.Resources.Config
 
             if (el.TryGetProperty("children", out var children))
                 foreach (var child in children.EnumerateArray())
-                    root.AddChild(ParseNode(child));
+                {
+                    var childNode = ParseNode(child, root);
+                    root.AddChild(childNode);
+                }
+
+            Console.WriteLine($"[SCENE REF] '{sceneRef.SceneId}' root='{root.Id}' parent='{root.Parent?.Id ?? "NULL"}'");
 
             return root;
         }
@@ -139,7 +150,11 @@ namespace OssianForge.Engine.Resources.Config
 
         private static TransformProperty ParseTransformProperty(JsonElement? data)
         {
-            if (data == null) return new TransformProperty();
+            if (data == null)
+            {
+                Console.WriteLine($"[TRANSFORM PARSE] null data → default TransformProperty");
+                return new TransformProperty();
+            }
 
             var arr = data.Value;
 
@@ -156,6 +171,8 @@ namespace OssianForge.Engine.Resources.Config
 
             if (len > 1) space = Enum.Parse<RenderSpace>(arr[1].GetString()!, true);
             if (len > 2) anchor = Enum.Parse<Anchor>(arr[2].GetString()!, true);
+
+            Console.WriteLine($"[TRANSFORM PARSE] pos={position} rot={rotation} scale={scale} space={space} anchor={anchor}");
 
             return new TransformProperty(transform, space, anchor);
         }

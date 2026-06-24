@@ -36,6 +36,9 @@ namespace OssianForge.Engine.Nodes.Props
         private uint _bakeVbo;
         private uint _bakeVertexCount;
 
+        public bool AutoSizeTransform = true;
+        private bool _transformInitialized = false;
+
         // ────────────────────────────────────────────────────────────────
         public TextMaterialProperty(string fontResourceId, string shaderId, params RenderAction[] actions) : base(shaderId, actions)
         {
@@ -56,24 +59,80 @@ namespace OssianForge.Engine.Nodes.Props
             FontResource = Engine.Resources.GetResource<FontResource>(fontResourceId)
                 ?? throw new Exception($"FontResource not found: '{fontResourceId}'");
 
-            Content = content;
             FontSize = fontSize;
             Color = color;
-            //TODO: do autosize after adding to scene
-            //AutoSize();
+            Content = content;
+
+            var (w, h) = FontUtils.MeasureText(content, FontSize, FontResource);
+            TextureWidth = w;
+            TextureHeight = h;
 
             _lastContent = null;
             _lastFontSize = -1f;
             _lastColor = new Vector4(-1f);
 
-            // Init GPU resources once at construction, same as TextureMaterialProperty
-            // which receives ready-made resources from TextureResource.
             InitGpuResources();
         }
 
-        public void SetText(string content)
+        public override void OnStart(Node node)
         {
-            Content = content;
+            base.OnStart(node);
+        }
+
+        public override void OnUpdate(Node node, double delta)
+        {
+            base.OnUpdate(node, delta);
+
+            if (!AutoSizeTransform) return;
+
+            var transform = node.GetProperty<TransformProperty>();
+            if (transform == null || !transform.Started) return;
+
+            if (!_transformInitialized || NeedsRedraw)
+            {
+                ApplyTransformScale(node);
+                _transformInitialized = true;
+            }
+        }
+
+        private void ApplyTransformScale(Node node)
+        {
+            var transform = node.GetProperty<TransformProperty>();
+            if (transform == null) return;
+
+            if (transform.RenderSpace == RenderSpace.ScreenSpace)
+            {
+                transform._transform.Position = transform.InitialTransform.Position;
+                transform._transform.Scale = new Vector3(TextureWidth, TextureHeight, transform._transform.Scale.Z);
+                transform.ApplyRenderSpaceDefaults(node);
+                transform.RecomputeWorldTransform(node);
+            }
+        }
+
+        public void SetContent(object content)
+        {
+            string text = content?.ToString() ?? string.Empty;
+            Content = text;
+
+            var (w, h) = FontUtils.MeasureText(text, FontSize, FontResource);
+
+            if (w != TextureWidth || h != TextureHeight)
+                Resize(w, h);
+
+            BakeToTexture();
+
+            var node = Engine.Nodes.NodeManager.GetNode(NodeId);
+            if (AutoSizeTransform && node != null)
+                ApplyTransformScale(node);
+        }
+
+        public void Resize(int width, int height)
+        {
+            var gl = Engine.Graphics.Batch.OpenGL;
+            if (_rtTexture != 0) gl.DeleteTexture(_rtTexture);
+            TextureWidth = width;
+            TextureHeight = height;
+            _rtTexture = Engine.Graphics.Batch.CreateRenderTexture(TextureWidth, TextureHeight);
         }
 
         // ── Apply (scene render pass) ────────────────────────────────────
@@ -104,15 +163,6 @@ namespace OssianForge.Engine.Nodes.Props
         }
 
         public override void PostApply() { }
-
-
-        public void AutoSize()
-        {
-            var (width, height) = FontUtils.MeasureText(Content, FontSize, FontResource);
-            TextureWidth = width;
-            TextureHeight = height;
-        }
-
 
         // ── GPU resource init ────────────────────────────────────────────
         private unsafe void InitGpuResources()

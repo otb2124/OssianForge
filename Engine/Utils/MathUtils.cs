@@ -135,6 +135,25 @@ namespace OssianForge.Engine.Utils
                 Position = new Vector3(ndcX, ndcY, Position.Z);
                 Scale = new Vector3(ndcScaleX, ndcScaleY, Scale.Z);
             }
+
+            /// <summary>
+            /// Converts this transform from NDC back to screen-space pixel coordinates.
+            ///
+            /// Inverse of ToScreenSpace:
+            ///   - Position maps [-1 .. 1] → [-screenW/2 .. screenW/2]
+            ///   - Scale    maps NDC size  → pixel size  (size * screen / 2)
+            /// </summary>
+            public void ToWorld(Vector2 screen)
+            {
+                float pixelScaleX = Scale.X * screen.X * 0.5f;
+                float pixelScaleY = Scale.Y * screen.Y * 0.5f;
+
+                float pixelX = Position.X * (screen.X * 0.5f);
+                float pixelY = Position.Y * (screen.Y * 0.5f);
+
+                Position = new Vector3(pixelX, pixelY, Position.Z);
+                Scale = new Vector3(pixelScaleX, pixelScaleY, Scale.Z);
+            }
         }
     }
 }

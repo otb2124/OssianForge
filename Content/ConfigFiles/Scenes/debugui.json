@@ -9,7 +9,7 @@
         {
           "type": "TransformProperty",
           "data": [
-            [ "0,0,0", "0,0,0", "400,280,1" ],
+            [ "0,0,0", "0,0,0", "300,140,1" ],
             "ScreenSpace",
             "TopLeft"
           ]
@@ -23,7 +23,7 @@
             {
               "type": "TransformProperty",
               "data": [
-                [ "0,-30,0", "0,0,0", "200,40,1" ],
+                [ "0,-10,0", "0,0,0", "1,1,1" ],
                 "ScreenSpace",
                 "TopLeft"
               ]
@@ -36,7 +36,7 @@
               "type": "TextMaterialProperty",
               "data": [
                 "FPS:",
-                42,
+                14,
                 "1,1,1,1",
                 "font.roboto",
                 "shader.sdf",
@@ -52,7 +52,7 @@
             {
               "type": "TransformProperty",
               "data": [
-                [ "200,-30,0", "0,0,0", "200,40,1" ],
+                [ "80,-10,0", "0,0,0", "1,1,1" ],
                 "ScreenSpace",
                 "TopLeft"
               ]
@@ -64,8 +64,8 @@
             {
               "type": "TextMaterialProperty",
               "data": [
-                "0",
-                42,
+                "120",
+                14,
                 "1,1,1,1",
                 "font.roboto",
                 "shader.sdf",
@@ -85,7 +85,7 @@
             {
               "type": "TransformProperty",
               "data": [
-                [ "0,-75,0", "0,0,0", "200,40,1" ],
+                [ "0,-30,0", "0,0,0", "1,1,1" ],
                 "ScreenSpace",
                 "TopLeft"
               ]
@@ -98,7 +98,7 @@
               "type": "TextMaterialProperty",
               "data": [
                 "Smooth FPS:",
-                42,
+                14,
                 "1,1,1,1",
                 "font.roboto",
                 "shader.sdf",
@@ -114,7 +114,7 @@
             {
               "type": "TransformProperty",
               "data": [
-                [ "200,-75,0", "0,0,0", "200,40,1" ],
+                [ "80,-30,0", "0,0,0", "1,1,1" ],
                 "ScreenSpace",
                 "TopLeft"
               ]
@@ -126,8 +126,8 @@
             {
               "type": "TextMaterialProperty",
               "data": [
-                "0",
-                42,
+                "120",
+                14,
                 "1,1,1,1",
                 "font.roboto",
                 "shader.sdf",
@@ -147,7 +147,7 @@
             {
               "type": "TransformProperty",
               "data": [
-                [ "0,-142,0", "0,0,0", "200,40,1" ],
+                [ "0,-50,0", "0,0,0", "1,1,1" ],
                 "ScreenSpace",
                 "TopLeft"
               ]
@@ -160,7 +160,7 @@
               "type": "TextMaterialProperty",
               "data": [
                 "Frame MS:",
-                42,
+                14,
                 "1,1,1,1",
                 "font.roboto",
                 "shader.sdf",
@@ -176,7 +176,7 @@
             {
               "type": "TransformProperty",
               "data": [
-                [ "200,-142,0", "0,0,0", "200,40,1" ],
+                [ "80,-50,0", "0,0,0", "1,1,1" ],
                 "ScreenSpace",
                 "TopLeft"
               ]
@@ -188,8 +188,8 @@
             {
               "type": "TextMaterialProperty",
               "data": [
-                "0",
-                42,
+                "0.00",
+                14,
                 "1,1,1,1",
                 "font.roboto",
                 "shader.sdf",
@@ -209,7 +209,7 @@
             {
               "type": "TransformProperty",
               "data": [
-                [ "0,-165,0", "0,0,0", "200,40,1" ],
+                [ "0,-70,0", "0,0,0", "1,1,1" ],
                 "ScreenSpace",
                 "TopLeft"
               ]
@@ -222,7 +222,7 @@
               "type": "TextMaterialProperty",
               "data": [
                 "Draw Calls:",
-                42,
+                14,
                 "1,1,1,1",
                 "font.roboto",
                 "shader.sdf",
@@ -238,7 +238,7 @@
             {
               "type": "TransformProperty",
               "data": [
-                [ "200,-165,0", "0,0,0", "200,40,1" ],
+                [ "80,-70,0", "0,0,0", "1,1,1" ],
                 "ScreenSpace",
                 "TopLeft"
               ]
@@ -251,7 +251,7 @@
               "type": "TextMaterialProperty",
               "data": [
                 "0",
-                42,
+                14,
                 "1,1,1,1",
                 "font.roboto",
                 "shader.sdf",
@@ -271,7 +271,7 @@
             {
               "type": "TransformProperty",
               "data": [
-                [ "0,-210,0", "0,0,0", "200,40,1" ],
+                [ "0,-90,0", "0,0,0", "1,1,1" ],
                 "ScreenSpace",
                 "TopLeft"
               ]
@@ -284,7 +284,7 @@
               "type": "TextMaterialProperty",
               "data": [
                 "Vertices:",
-                42,
+                14,
                 "1,1,1,1",
                 "font.roboto",
                 "shader.sdf",
@@ -300,7 +300,7 @@
             {
               "type": "TransformProperty",
               "data": [
-                [ "200,-210,0", "0,0,0", "200,40,1" ],
+                [ "80,-90,0", "0,0,0", "1,1,1" ],
                 "ScreenSpace",
                 "TopLeft"
               ]
@@ -313,7 +313,7 @@
               "type": "TextMaterialProperty",
               "data": [
                 "0",
-                42,
+                14,
                 "1,1,1,1",
                 "font.roboto",
                 "shader.sdf",
@@ -335,7 +335,7 @@
         {
           "type": "TransformProperty",
           "data": [
-            [ "0,0,0", "0,0,0", "400,330,1" ],
+            [ "0,0,0", "0,0,0", "300,200,1" ],
             "ScreenSpace",
             "TopRight"
           ]
@@ -349,7 +349,7 @@
             {
               "type": "TransformProperty",
               "data": [
-                [ "0,-30,0", "0,0,0", "200,40,1" ],
+                [ "0,-10,0", "0,0,0", "1,1,1" ],
                 "ScreenSpace",
                 "TopLeft"
               ]
@@ -362,7 +362,7 @@
               "type": "TextMaterialProperty",
               "data": [
                 "CPU:",
-                42,
+                14,
                 "1,1,1,1",
                 "font.roboto",
                 "shader.sdf",
@@ -378,7 +378,7 @@
             {
               "type": "TransformProperty",
               "data": [
-                [ "200,-30,0", "0,0,0", "200,40,1" ],
+                [ "80,-10,0", "0,0,0", "1,1,1" ],
                 "ScreenSpace",
                 "TopLeft"
               ]
@@ -391,7 +391,7 @@
               "type": "TextMaterialProperty",
               "data": [
                 "0%",
-                42,
+                14,
                 "1,1,1,1",
                 "font.roboto",
                 "shader.sdf",
@@ -411,7 +411,7 @@
             {
               "type": "TransformProperty",
               "data": [
-                [ "0,-75,0", "0,0,0", "200,40,1" ],
+                [ "0,-30,0", "0,0,0", "1,1,1" ],
                 "ScreenSpace",
                 "TopLeft"
               ]
@@ -424,7 +424,7 @@
               "type": "TextMaterialProperty",
               "data": [
                 "Memory:",
-                42,
+                14,
                 "1,1,1,1",
                 "font.roboto",
                 "shader.sdf",
@@ -440,7 +440,7 @@
             {
               "type": "TransformProperty",
               "data": [
-                [ "200,-75,0", "0,0,0", "200,40,1" ],
+                [ "80,-30,0", "0,0,0", "1,1,1" ],
                 "ScreenSpace",
                 "TopLeft"
               ]
@@ -453,7 +453,7 @@
               "type": "TextMaterialProperty",
               "data": [
                 "0 MB",
-                42,
+                14,
                 "1,1,1,1",
                 "font.roboto",
                 "shader.sdf",
@@ -473,7 +473,7 @@
             {
               "type": "TransformProperty",
               "data": [
-                [ "0,-142,0", "0,0,0", "200,40,1" ],
+                [ "0,-50,0", "0,0,0", "1,1,1" ],
                 "ScreenSpace",
                 "TopLeft"
               ]
@@ -486,7 +486,7 @@
               "type": "TextMaterialProperty",
               "data": [
                 "Managed:",
-                42,
+                14,
                 "1,1,1,1",
                 "font.roboto",
                 "shader.sdf",
@@ -502,7 +502,7 @@
             {
               "type": "TransformProperty",
               "data": [
-                [ "200,-142,0", "0,0,0", "200,40,1" ],
+                [ "80,-50,0", "0,0,0", "1,1,1" ],
                 "ScreenSpace",
                 "TopLeft"
               ]
@@ -515,7 +515,7 @@
               "type": "TextMaterialProperty",
               "data": [
                 "0 MB",
-                42,
+                14,
                 "1,1,1,1",
                 "font.roboto",
                 "shader.sdf",
@@ -535,7 +535,7 @@
             {
               "type": "TransformProperty",
               "data": [
-                [ "0,-165,0", "0,0,0", "200,40,1" ],
+                [ "0,-70,0", "0,0,0", "1,1,1" ],
                 "ScreenSpace",
                 "TopLeft"
               ]
@@ -548,7 +548,7 @@
               "type": "TextMaterialProperty",
               "data": [
                 "GC:",
-                42,
+                14,
                 "1,1,1,1",
                 "font.roboto",
                 "shader.sdf",
@@ -564,7 +564,7 @@
             {
               "type": "TransformProperty",
               "data": [
-                [ "200,-165,0", "0,0,0", "200,40,1" ],
+                [ "80,-70,0", "0,0,0", "1,1,1" ],
                 "ScreenSpace",
                 "TopLeft"
               ]
@@ -577,7 +577,7 @@
               "type": "TextMaterialProperty",
               "data": [
                 "G0:0 G1:0 G2:0",
-                42,
+                14,
                 "1,1,1,1",
                 "font.roboto",
                 "shader.sdf",
@@ -597,7 +597,7 @@
             {
               "type": "TransformProperty",
               "data": [
-                [ "0,-210,0", "0,0,0", "200,40,1" ],
+                [ "0,-90,0", "0,0,0", "1,1,1" ],
                 "ScreenSpace",
                 "TopLeft"
               ]
@@ -610,7 +610,7 @@
               "type": "TextMaterialProperty",
               "data": [
                 "Processors:",
-                42,
+                14,
                 "1,1,1,1",
                 "font.roboto",
                 "shader.sdf",
@@ -626,7 +626,7 @@
             {
               "type": "TransformProperty",
               "data": [
-                [ "200,-210,0", "0,0,0", "200,40,1" ],
+                [ "80,-90,0", "0,0,0", "1,1,1" ],
                 "ScreenSpace",
                 "TopLeft"
               ]
@@ -639,7 +639,7 @@
               "type": "TextMaterialProperty",
               "data": [
                 "0",
-                42,
+                14,
                 "1,1,1,1",
                 "font.roboto",
                 "shader.sdf",
@@ -659,7 +659,7 @@
             {
               "type": "TransformProperty",
               "data": [
-                [ "0,-255,0", "0,0,0", "200,40,1" ],
+                [ "0,-110,0", "0,0,0", "1,1,1" ],
                 "ScreenSpace",
                 "TopLeft"
               ]
@@ -672,7 +672,7 @@
               "type": "TextMaterialProperty",
               "data": [
                 "OS:",
-                42,
+                14,
                 "1,1,1,1",
                 "font.roboto",
                 "shader.sdf",
@@ -688,7 +688,7 @@
             {
               "type": "TransformProperty",
               "data": [
-                [ "200,-255,0", "0,0,0", "200,40,1" ],
+                [ "80,-110,0", "0,0,0", "1,1,1" ],
                 "ScreenSpace",
                 "TopLeft"
               ]
@@ -701,7 +701,7 @@
               "type": "TextMaterialProperty",
               "data": [
                 "-",
-                42,
+                14,
                 "1,1,1,1",
                 "font.roboto",
                 "shader.sdf",
@@ -717,13 +717,153 @@
       ]
     },
     {
+      "id": "debug_player",
+      "name": "Player",
+      "properties": [
+        {
+          "type": "TransformProperty",
+          "data": [
+            [ "0,0,0", "0,0,0", "300,40,1" ],
+            "ScreenSpace",
+            "MiddleLeft"
+          ]
+        }
+      ],
+      "children": [
+        {
+          "id": "label_player_world_position_prefix",
+          "name": "Player World Position Prefix",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [ "0,-10,0", "0,0,0", "1,1,1" ],
+                "ScreenSpace",
+                "TopLeft"
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [ "mesh.quad" ]
+            },
+            {
+              "type": "TextMaterialProperty",
+              "data": [
+                "World Position:",
+                14,
+                "1,1,1,1",
+                "font.roboto",
+                "shader.sdf",
+                [ "DisableDepthTest" ]
+              ]
+            }
+          ]
+        },
+        {
+          "id": "label_player_world_position",
+          "name": "Player World Position",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [ "120,-10,0", "0,0,0", "1,1,1" ],
+                "ScreenSpace",
+                "TopLeft"
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [ "mesh.quad" ]
+            },
+            {
+              "type": "TextMaterialProperty",
+              "data": [
+                "0,0,0",
+                14,
+                "1,1,1,1",
+                "font.roboto",
+                "shader.sdf",
+                [ "DisableDepthTest" ]
+              ]
+            },
+            {
+              "type": "ActionProperty",
+              "data": [ { "OnUpdate": [ "action.debug.getPlayerWorldPosition", "action.debug.setPlayerWorldPositionText" ] } ]
+            }
+          ]
+        },
+        {
+          "id": "label_player_relative_position_prefix",
+          "name": "Player Relative Position Prefix",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [ "0,-30,0", "0,0,0", "1,1,1" ],
+                "ScreenSpace",
+                "TopLeft"
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [ "mesh.quad" ]
+            },
+            {
+              "type": "TextMaterialProperty",
+              "data": [
+                "Relative Position:",
+                14,
+                "1,1,1,1",
+                "font.roboto",
+                "shader.sdf",
+                [ "DisableDepthTest" ]
+              ]
+            }
+          ]
+        },
+        {
+          "id": "label_player_relative_position",
+          "name": "Player Relative Position",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [ "120,-30,0", "0,0,0", "1,1,1" ],
+                "ScreenSpace",
+                "TopLeft"
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [ "mesh.quad" ]
+            },
+            {
+              "type": "TextMaterialProperty",
+              "data": [
+                "0,0,0",
+                14,
+                "1,1,1,1",
+                "font.roboto",
+                "shader.sdf",
+                [ "DisableDepthTest" ]
+              ]
+            },
+            {
+              "type": "ActionProperty",
+              "data": [ { "OnUpdate": [ "action.debug.getPlayerPosition", "action.debug.setPlayerPositionText" ] } ]
+            }
+          ]
+        }
+      ]
+    },
+    {
       "id": "debug_gpu",
       "name": "GPU",
       "properties": [
         {
           "type": "TransformProperty",
           "data": [
-            [ "0,0,0", "0,0,0", "400,230,1" ],
+            [ "0,0,0", "0,0,0", "300,120,1" ],
             "ScreenSpace",
             "BottomLeft"
           ]
@@ -737,7 +877,7 @@
             {
               "type": "TransformProperty",
               "data": [
-                [ "0,-30,0", "0,0,0", "200,40,1" ],
+                [ "0,-10,0", "0,0,0", "1,1,1" ],
                 "ScreenSpace",
                 "TopLeft"
               ]
@@ -750,7 +890,7 @@
               "type": "TextMaterialProperty",
               "data": [
                 "GPU:",
-                42,
+                14,
                 "1,1,1,1",
                 "font.roboto",
                 "shader.sdf",
@@ -766,7 +906,7 @@
             {
               "type": "TransformProperty",
               "data": [
-                [ "200,-30,0", "0,0,0", "200,40,1" ],
+                [ "80,-10,0", "0,0,0", "1,1,1" ],
                 "ScreenSpace",
                 "TopLeft"
               ]
@@ -779,7 +919,7 @@
               "type": "TextMaterialProperty",
               "data": [
                 "-",
-                42,
+                14,
                 "1,1,1,1",
                 "font.roboto",
                 "shader.sdf",
@@ -799,7 +939,7 @@
             {
               "type": "TransformProperty",
               "data": [
-                [ "0,-75,0", "0,0,0", "200,40,1" ],
+                [ "0,-30,0", "0,0,0", "1,1,1" ],
                 "ScreenSpace",
                 "TopLeft"
               ]
@@ -812,7 +952,7 @@
               "type": "TextMaterialProperty",
               "data": [
                 "Vendor:",
-                42,
+                14,
                 "1,1,1,1",
                 "font.roboto",
                 "shader.sdf",
@@ -828,7 +968,7 @@
             {
               "type": "TransformProperty",
               "data": [
-                [ "200,-75,0", "0,0,0", "200,40,1" ],
+                [ "80,-30,0", "0,0,0", "1,1,1" ],
                 "ScreenSpace",
                 "TopLeft"
               ]
@@ -841,7 +981,7 @@
               "type": "TextMaterialProperty",
               "data": [
                 "-",
-                42,
+                14,
                 "1,1,1,1",
                 "font.roboto",
                 "shader.sdf",
@@ -861,7 +1001,7 @@
             {
               "type": "TransformProperty",
               "data": [
-                [ "0,-142,0", "0,0,0", "200,40,1" ],
+                [ "0,-50,0", "0,0,0", "1,1,1" ],
                 "ScreenSpace",
                 "TopLeft"
               ]
@@ -874,7 +1014,7 @@
               "type": "TextMaterialProperty",
               "data": [
                 "GL Version:",
-                42,
+                14,
                 "1,1,1,1",
                 "font.roboto",
                 "shader.sdf",
@@ -890,7 +1030,7 @@
             {
               "type": "TransformProperty",
               "data": [
-                [ "200,-142,0", "0,0,0", "200,40,1" ],
+                [ "80,-50,0", "0,0,0", "1,1,1" ],
                 "ScreenSpace",
                 "TopLeft"
               ]
@@ -903,7 +1043,7 @@
               "type": "TextMaterialProperty",
               "data": [
                 "-",
-                42,
+                14,
                 "1,1,1,1",
                 "font.roboto",
                 "shader.sdf",
@@ -923,7 +1063,7 @@
             {
               "type": "TransformProperty",
               "data": [
-                [ "0,-165,0", "0,0,0", "200,40,1" ],
+                [ "0,-70,0", "0,0,0", "1,1,1" ],
                 "ScreenSpace",
                 "TopLeft"
               ]
@@ -936,7 +1076,7 @@
               "type": "TextMaterialProperty",
               "data": [
                 "GLSL:",
-                42,
+                14,
                 "1,1,1,1",
                 "font.roboto",
                 "shader.sdf",
@@ -952,7 +1092,7 @@
             {
               "type": "TransformProperty",
               "data": [
-                [ "200,-165,0", "0,0,0", "200,40,1" ],
+                [ "80,-70,0", "0,0,0", "1,1,1" ],
                 "ScreenSpace",
                 "TopLeft"
               ]
@@ -965,7 +1105,7 @@
               "type": "TextMaterialProperty",
               "data": [
                 "-",
-                42,
+                14,
                 "1,1,1,1",
                 "font.roboto",
                 "shader.sdf",

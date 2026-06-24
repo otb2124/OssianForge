@@ -223,6 +223,29 @@ namespace OssianForge.Engine.Resources.Config
                         }
                         return current;
                     }
+                    if (s.StartsWith("$group."))
+                    {
+                        // $group.groupName.nodeId  or  $group.groupName.0
+                        string rest = s["$group.".Length..];
+                        int dot = rest.IndexOf('.');
+                        if (dot >= 0)
+                        {
+                            string groupName = rest[..dot];
+                            string nodeRef = rest[(dot + 1)..];
+
+                            var group = Engine.Nodes.NodeManager.GetNodesInGroup(groupName);
+                            if (group != null)
+                            {
+                                // Try numeric index first, then id matchs
+                                if (int.TryParse(nodeRef, out int idx) && idx >= 0 && idx < group.Count)
+                                    return group[idx];
+
+                                return group.FirstOrDefault(n => n.Id == nodeRef);
+                            }
+                        }
+                        return null;
+                    }
+                    //TODO: fix gap so it doesnt check if found before
                     if (s.StartsWith('$'))
                     {
                         string key = s[1..];

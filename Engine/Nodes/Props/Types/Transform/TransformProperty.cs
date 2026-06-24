@@ -29,6 +29,7 @@ namespace OssianForge.Engine.Nodes.Props
     {
         public bool TransformDirty = false;
 
+        public Transform InitialTransform;
         public Transform _transform;
 
         public Transform Transform
@@ -67,6 +68,7 @@ namespace OssianForge.Engine.Nodes.Props
             RenderSpace renderSpace = RenderSpace.World,
             Anchor anchor = Anchor.None)
         {
+            InitialTransform = transform;
             _transform = transform;
             WorldTransform = transform;
             RenderSpace = renderSpace;
@@ -125,7 +127,7 @@ namespace OssianForge.Engine.Nodes.Props
             return degrees;
         }
 
-        private void RecomputeWorldTransform(Node node)
+        public void RecomputeWorldTransform(Node node)
         {
             if (RenderSpace == RenderSpace.ScreenSpace)
             {
@@ -144,7 +146,7 @@ namespace OssianForge.Engine.Nodes.Props
             WorldTransform.SetMatrix(world);
         }
 
-        private void ApplyRenderSpaceDefaults(Node node)
+        public void ApplyRenderSpaceDefaults(Node node)
         {
             if (RenderSpace != RenderSpace.ScreenSpace)
                 return;
@@ -162,6 +164,7 @@ namespace OssianForge.Engine.Nodes.Props
 
             if (hasScreenSpaceParent)
             {
+                // Parent scale is already NDC — convert back to pixels
                 containerSizePx = new Vector2(
                     parentTransform._transform.Scale.X * screen.X * 0.5f,
                     parentTransform._transform.Scale.Y * screen.Y * 0.5f);
