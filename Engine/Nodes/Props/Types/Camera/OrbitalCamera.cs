@@ -44,6 +44,7 @@ namespace OssianForge.Engine.Nodes.Props.Types.Camera
                     OrbitDistance * MathF.Cos(pitchRad) * MathF.Cos(yawRad));
 
                 Vector3 lookAt = target.WorldTransform.Position;
+
                 Camera.Position = lookAt + orbitOffset;
 
                 Vector3 toTarget = Vector3.Normalize(lookAt - Camera.Position);

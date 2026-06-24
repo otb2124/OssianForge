@@ -255,17 +255,24 @@ namespace OssianForge.Engine.Resources.Config
         private static PhysicsProperty ParsePhysicsProperty(JsonElement el, JsonElement? data)
         {
             var arr = data!.Value;
-            bool isStatic = arr[0].GetBoolean();
-            bool isDynamic = arr[1].GetBoolean();
+            int len = arr.GetArrayLength();
 
-            PhysicsProperty prop = arr.GetArrayLength() > 2
-                ? new PhysicsProperty(isStatic, isDynamic, arr[2].GetSingle(), arr[3].GetSingle())
-                : new PhysicsProperty(isStatic, isDynamic);
+            int world = arr[0].GetInt32();
+            bool isStatic = arr[1].GetBoolean();
+            bool isDynamic = arr[2].GetBoolean();
+            float mass = len > 3 ? arr[3].GetSingle() : 1f;
+            float bounciness = len > 4 ? arr[4].GetSingle() : 0f;
+            float friction = len > 5 ? arr[5].GetSingle() : 0.6f;
+            float linearDamping = len > 6 ? arr[6].GetSingle() : 0.02f;
+            float angularDamping = len > 7 ? arr[7].GetSingle() : 0.05f;
+            PhysicsLock pLock = PhysicsLock.None;
+            if (len > 8 && arr[8].ValueKind == JsonValueKind.Array)
+            {
+                foreach (var flag in arr[8].EnumerateArray())
+                    pLock |= Enum.Parse<PhysicsLock>(flag.GetString()!, true);
+            }
 
-            if (el.TryGetProperty("world", out var world))
-                prop.SetWorld(world.GetInt32());
-
-            return prop;
+            return new PhysicsProperty(world, isStatic, isDynamic, mass, bounciness, friction, linearDamping, angularDamping, pLock);
         }
 
         private static AnimationProperty ParseAnimationProperty(JsonElement el, JsonElement? data)

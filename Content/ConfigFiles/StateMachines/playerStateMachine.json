@@ -9,12 +9,12 @@
     {
       "id": "WalkForward",
       "onEnter": [ "action.myActions.playAnimWalking" ],
-      "onUpdate": [ "action.transform.transformPositionCameraDirForward", "action.transform.setBodyYawForward" ]
+      "onUpdate": [ "action.transform.transformBodyPositionCameraDirForward", "action.transform.setBodyYawForward" ]
     },
     {
       "id": "WalkBackward",
       "onEnter": [ "action.myActions.playAnimWalking" ],
-      "onUpdate": [ "action.transform.transformPositionCameraDirBackward", "action.transform.setBodyYawBackward" ]
+      "onUpdate": [ "action.transform.transformBodyPositionCameraDirBackward", "action.transform.setBodyYawBackward" ]
     },
     {
       "id": "WalkLeft"

@@ -1,13 +1,13 @@
 ﻿[
   {
-    "id": "action.transform.transformPositionCameraDirForward",
+    "id": "action.transform.transformBodyPositionCameraDirForward",
     "call": "node.addValueCameraDirection",
-    "args": [ "$self", "TransformProperty", "Transform.Position", "0,0,2", "playerCamera", "$delta" ]
+    "args": [ "$child.playerBodyMesh", "TransformProperty", "Transform.Position", "0,0,2", "playerCamera", "$delta" ]
   },
   {
-    "id": "action.transform.transformPositionCameraDirBackward",
+    "id": "action.transform.transformBodyPositionCameraDirBackward",
     "call": "node.addValueCameraDirection",
-    "args": [ "$self", "TransformProperty", "Transform.Position", "0,0,-2", "playerCamera", "$delta" ]
+    "args": [ "$child.playerBodyMesh", "TransformProperty", "Transform.Position", "0,0,-2", "playerCamera", "$delta" ]
   },
   {
     "id": "action.transform.transformRotationMouseYawX",

@@ -49,7 +49,7 @@
         },
         {
           "type": "PhysicsProperty",
-          "data": [ true, false ]
+          "data": [ 0, true, false ]
         }
       ]
     },
@@ -134,7 +134,7 @@
         },
         {
           "type": "PhysicsProperty",
-          "data": [ false, true, 1, 1 ]
+          "data": [ 0, false, true, 1, 1 ]
         }
       ]
     },
@@ -162,7 +162,7 @@
         },
         {
           "type": "PhysicsProperty",
-          "data": [ false, true, 1, 1 ]
+          "data": [ 0, false, true, 1, 1 ]
         }
       ]
     },
@@ -190,7 +190,7 @@
         },
         {
           "type": "PhysicsProperty",
-          "data": [ false, true, 1, 1 ]
+          "data": [ 0, false, true, 1, 1 ]
         }
       ]
     },
@@ -218,7 +218,7 @@
         },
         {
           "type": "PhysicsProperty",
-          "data": [ false, true, 1, 1 ]
+          "data": [ 0, false, true, 1, 1 ]
         }
       ]
     },
@@ -246,7 +246,7 @@
         },
         {
           "type": "PhysicsProperty",
-          "data": [ false, true, 1, 1 ]
+          "data": [ 0, false, true, 1, 1 ]
         }
       ]
     },
@@ -272,7 +272,7 @@
         },
         {
           "type": "PhysicsProperty",
-          "data": [ true, false ]
+          "data": [ 0, true, false ]
         }
       ]
     },
@@ -298,7 +298,7 @@
         },
         {
           "type": "PhysicsProperty",
-          "data": [ true, false ]
+          "data": [ 0, true, false ]
         }
       ]
     },
@@ -324,7 +324,7 @@
         },
         {
           "type": "PhysicsProperty",
-          "data": [ true, false ]
+          "data": [ 0, true, false ]
         }
       ]
     },
@@ -350,7 +350,7 @@
         },
         {
           "type": "PhysicsProperty",
-          "data": [ true, false ]
+          "data": [ 0, true, false ]
         }
       ]
     },
@@ -376,7 +376,7 @@
         },
         {
           "type": "PhysicsProperty",
-          "data": [ true, false ]
+          "data": [ 0, true, false ]
         }
       ]
     },
@@ -415,7 +415,7 @@
         },
         {
           "type": "PhysicsProperty",
-          "data": [ false, true, 1, 1 ]
+          "data": [ 0, false, true, 1, 1 ]
         }
       ]
     },
@@ -444,7 +444,7 @@
         },
         {
           "type": "PhysicsProperty",
-          "data": [ false, true, 1, 1 ]
+          "data": [ 0, false, true, 1, 1 ]
         }
       ]
     },
@@ -473,7 +473,7 @@
         },
         {
           "type": "PhysicsProperty",
-          "data": [ false, true, 1, 1 ]
+          "data": [ 0, false, true, 1, 1 ]
         }
       ]
     },
