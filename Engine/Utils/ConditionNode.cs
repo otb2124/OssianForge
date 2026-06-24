@@ -60,10 +60,58 @@ namespace OssianForge.Engine.Utils.ConditionNode
 
         public override bool Evaluate(Node context)
         {
-            // "$self" resolution, same convention as ActionsConfig.ResolveArgs
-            var resolved = _args.Select(a => a is string s && s == "$self" ? (object?)context : a).ToArray();
+            var resolved = _args.Select(a => ResolveArg(a, context)).ToArray();
             object? actual = ReflectionDispatcher.InvokeWithResult(_call, resolved);
             return Compare(actual, _expected, _comparator);
+        }
+
+        private static object? ResolveArg(object? arg, Node context)
+        {
+            if (arg is not string s) return arg;
+
+            if (s == "$self") return context;
+
+            if (s == "$delta") return 0.0; // delta not available in conditions
+
+            if (s.StartsWith("$child."))
+            {
+                string path = s["$child.".Length..];
+                string[] ids = path.Split('.');
+                Node? current = context;
+                foreach (string childId in ids)
+                {
+                    if (current == null) break;
+                    current = current.Children.FirstOrDefault(c => c.Id == childId);
+                }
+                return current;
+            }
+
+            if (s.StartsWith("$group."))
+            {
+                string rest = s["$group.".Length..];
+                int dot = rest.IndexOf('.');
+                if (dot >= 0)
+                {
+                    string groupName = rest[..dot];
+                    string nodeRef = rest[(dot + 1)..];
+                    var group = Engine.Nodes.NodeManager.GetNodesInGroup(groupName);
+                    if (group != null)
+                    {
+                        if (int.TryParse(nodeRef, out int idx) && idx >= 0 && idx < group.Count)
+                            return group[idx];
+                        return group.FirstOrDefault(n => n.Id == nodeRef);
+                    }
+                }
+                return null;
+            }
+
+            if (s.StartsWith('$'))
+            {
+                string key = s[1..];
+                return ValueStore.Get(key);
+            }
+
+            return arg;
         }
 
         private static bool Compare(object? actual, object? expected, Comparator cmp)

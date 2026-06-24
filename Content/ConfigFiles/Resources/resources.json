@@ -46,7 +46,7 @@
   },
   {
     "id": "animation.remy",
-    "data": [ "animationfile.remy.idle", "animationfile.remy.walking", "animationfile.remy.jumping", "animationfile.remy.jumping_jacks", "animationfile.remy.waving", "animationfile.remy.backflip" ],
+    "data": [ "animationfile.remy.idle", "animationfile.remy.walking", "animationfile.remy.jumping", "animationfile.remy.jumping_jacks", "animationfile.remy.waving", "animationfile.remy.backflip", "animationfile.remy.falling" ],
     "type": "animation"
   },
   {

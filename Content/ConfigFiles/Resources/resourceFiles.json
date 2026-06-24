@@ -85,6 +85,11 @@
     "type": "animationfile"
   },
   {
+    "id": "animationfile.remy.falling",
+    "path": "AnimationFiles/remy.falling.fbx",
+    "type": "animationfile"
+  },
+  {
     "id": "texturefile.IcingBaseColor",
     "path": "TextureFiles/3d/IcingBaseColor.jpg",
     "type": "texturefile"

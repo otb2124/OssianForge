@@ -7,6 +7,10 @@
       "onEnter": [ "action.myActions.playAnimIdle" ]
     },
     {
+      "id": "Falling",
+      "onEnter": [ "action.myActions.playAnimFalling" ]
+    },
+    {
       "id": "WalkForward",
       "onEnter": [ "action.myActions.playAnimWalking" ],
       "onUpdate": [ "action.transform.transformBodyPositionCameraDirForward", "action.transform.setBodyYawForward" ]
@@ -16,47 +20,132 @@
       "onEnter": [ "action.myActions.playAnimWalking" ],
       "onUpdate": [ "action.transform.transformBodyPositionCameraDirBackward", "action.transform.setBodyYawBackward" ]
     },
-    {
-      "id": "WalkLeft"
-    },
-    {
-      "id": "WalkRight"
-    }
+    { "id": "WalkLeft" },
+    { "id": "WalkRight" }
   ],
   "transitions": [
     {
       "from": "Idle",
+      "to": "Falling",
+      "condition": {
+        "not": {
+          "call": "OssianForge.Engine.Physics.PhysicsReflection.IsGrounded",
+          "args": [ "$child.playerBodyMesh" ]
+        }
+      }
+    },
+    {
+      "from": "Falling",
+      "to": "Idle",
+      "condition": {
+        "call": "OssianForge.Engine.Physics.PhysicsReflection.IsGrounded",
+        "args": [ "$child.playerBodyMesh" ]
+      }
+    },
+    {
+      "from": "WalkForward",
+      "to": "Falling",
+      "condition": {
+        "not": {
+          "call": "OssianForge.Engine.Physics.PhysicsReflection.IsGrounded",
+          "args": [ "$child.playerBodyMesh" ]
+        }
+      }
+    },
+    {
+      "from": "WalkBackward",
+      "to": "Falling",
+      "condition": {
+        "not": {
+          "call": "OssianForge.Engine.Physics.PhysicsReflection.IsGrounded",
+          "args": [ "$child.playerBodyMesh" ]
+        }
+      }
+    },
+    {
+      "from": "WalkLeft",
+      "to": "Falling",
+      "condition": {
+        "not": {
+          "call": "OssianForge.Engine.Physics.PhysicsReflection.IsGrounded",
+          "args": [ "$child.playerBodyMesh" ]
+        }
+      }
+    },
+    {
+      "from": "WalkRight",
+      "to": "Falling",
+      "condition": {
+        "not": {
+          "call": "OssianForge.Engine.Physics.PhysicsReflection.IsGrounded",
+          "args": [ "$child.playerBodyMesh" ]
+        }
+      }
+    },
+    {
+      "from": "Idle",
       "to": "WalkForward",
       "condition": {
-        "call": "OssianForge.Engine.Inputs.KeyHandler.IsStateActive",
-        "args": [ "walk_up" ]
+        "and": [
+          {
+            "call": "OssianForge.Engine.Inputs.KeyHandler.IsStateActive",
+            "args": [ "walk_up" ]
+          },
+          {
+            "call": "OssianForge.Engine.Physics.PhysicsReflection.IsGrounded",
+            "args": [ "$child.playerBodyMesh" ]
+          }
+        ]
       }
     },
     {
       "from": "Idle",
       "to": "WalkBackward",
       "condition": {
-        "call": "OssianForge.Engine.Inputs.KeyHandler.IsStateActive",
-        "args": [ "walk_down" ]
+        "and": [
+          {
+            "call": "OssianForge.Engine.Inputs.KeyHandler.IsStateActive",
+            "args": [ "walk_down" ]
+          },
+          {
+            "call": "OssianForge.Engine.Physics.PhysicsReflection.IsGrounded",
+            "args": [ "$child.playerBodyMesh" ]
+          }
+        ]
       }
     },
     {
       "from": "Idle",
       "to": "WalkLeft",
       "condition": {
-        "call": "OssianForge.Engine.Inputs.KeyHandler.IsStateActive",
-        "args": [ "walk_left" ]
+        "and": [
+          {
+            "call": "OssianForge.Engine.Inputs.KeyHandler.IsStateActive",
+            "args": [ "walk_left" ]
+          },
+          {
+            "call": "OssianForge.Engine.Physics.PhysicsReflection.IsGrounded",
+            "args": [ "$child.playerBodyMesh" ]
+          }
+        ]
       }
     },
     {
       "from": "Idle",
       "to": "WalkRight",
       "condition": {
-        "call": "OssianForge.Engine.Inputs.KeyHandler.IsStateActive",
-        "args": [ "walk_right" ]
+        "and": [
+          {
+            "call": "OssianForge.Engine.Inputs.KeyHandler.IsStateActive",
+            "args": [ "walk_right" ]
+          },
+          {
+            "call": "OssianForge.Engine.Physics.PhysicsReflection.IsGrounded",
+            "args": [ "$child.playerBodyMesh" ]
+          }
+        ]
       }
     },
-
     {
       "from": "WalkForward",
       "to": "Idle",
