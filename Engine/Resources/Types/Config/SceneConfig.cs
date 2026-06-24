@@ -83,7 +83,7 @@ namespace OssianForge.Engine.Resources.Config
                 ?? throw new Exception($"[SCENE REFERENCE] SceneConfig '{sceneRef.SceneId}' not found.");
 
             var root = sceneConfig.GetScene();
-            root.Parent = parent; // ← this is the fix
+            root.Parent = parent;
 
             Node injectTarget = (root.Properties.Count == 0 && root.Children.Count == 1)
                 ? root.Children[0]
@@ -92,8 +92,15 @@ namespace OssianForge.Engine.Resources.Config
             foreach (var prop in overrides.Properties)
             {
                 if (prop is SceneReferenceProperty) continue;
-                injectTarget.SetProperty(prop);
+                if (prop is TransformProperty)
+                    root.SetProperty(prop); // transform always on root for hierarchy
+                else
+                    injectTarget.SetProperty(prop);
             }
+
+            // Ensure root always has a TransformProperty for hierarchy climbing
+            if (root.GetProperty<TransformProperty>() == null)
+                root.SetProperty(new TransformProperty());
 
             foreach (var child in root.Children)
                 child.Parent = root;
@@ -104,8 +111,6 @@ namespace OssianForge.Engine.Resources.Config
                     var childNode = ParseNode(child, root);
                     root.AddChild(childNode);
                 }
-
-            Console.WriteLine($"[SCENE REF] '{sceneRef.SceneId}' root='{root.Id}' parent='{root.Parent?.Id ?? "NULL"}'");
 
             return root;
         }

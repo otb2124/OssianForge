@@ -84,8 +84,15 @@ namespace OssianForge.Engine.Nodes.Props
         public override void OnStart(Node node)
         {
             base.OnStart(node);
+            Console.WriteLine($"[TRANSFORM START] node='{node.Id}' parent='{node.Parent?.Id ?? "NULL"}' pos={_transform.Position} space={RenderSpace}");
+
+            var parentTp = node.Parent?.GetProperty<TransformProperty>();
+            Console.WriteLine($"[TRANSFORM START] parentTransform={(parentTp != null ? $"pos={parentTp._transform.Position} space={parentTp.RenderSpace}" : "NULL")}");
+
             ApplyRenderSpaceDefaults(node);
             RecomputeWorldTransform(node);
+
+            Console.WriteLine($"[TRANSFORM START] after recompute: worldPos={WorldTransform.Position} worldScale={WorldTransform.Scale}");
         }
 
         public override void OnUpdate(Node node, double delta)
