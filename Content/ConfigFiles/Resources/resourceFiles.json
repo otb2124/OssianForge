@@ -90,6 +90,16 @@
     "type": "animationfile"
   },
   {
+    "id": "animationfile.remy.run",
+    "path": "AnimationFiles/remy.run.fbx",
+    "type": "animationfile"
+  },
+  {
+    "id": "animationfile.remy.sprint",
+    "path": "AnimationFiles/remy.sprint.fbx",
+    "type": "animationfile"
+  },
+  {
     "id": "texturefile.IcingBaseColor",
     "path": "TextureFiles/3d/IcingBaseColor.jpg",
     "type": "texturefile"
@@ -297,6 +307,11 @@
   {
     "id": "configfile.actions.transform",
     "path": "ConfigFiles/Actions/transformActions.json",
+    "type": "actions"
+  },
+  {
+    "id": "configfile.actions.animations",
+    "path": "ConfigFiles/Actions/animationActions.json",
     "type": "actions"
   },
   {

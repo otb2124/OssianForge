@@ -13,6 +13,7 @@ namespace OssianForge.Engine.Resources.Config
         Click,    // edge-triggered: true for one frame on press
         Down,     // level-triggered: true while held
         Release,  // edge-triggered: true for one frame on release
+        Toggle
     }
 
     public class InputKeyRecord : ConfigRecord
@@ -49,6 +50,7 @@ namespace OssianForge.Engine.Resources.Config
             "click" => InputKeyType.Click,
             "down" => InputKeyType.Down,
             "release" => InputKeyType.Release,
+            "toggle" => InputKeyType.Toggle,
             _ => throw new ArgumentException($"Unknown input key type '{value}'")
         };
 
@@ -105,6 +107,7 @@ namespace OssianForge.Engine.Resources.Config
         {
             "click" => InputKeyType.Click,
             "release" => InputKeyType.Release,
+            "toggle" => InputKeyType.Toggle,
             _ => InputKeyType.Down
         };
 

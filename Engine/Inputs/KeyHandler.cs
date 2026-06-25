@@ -46,6 +46,8 @@ namespace OssianForge.Engine.Inputs
         private readonly List<ResolvedBinding> _bindings = new();
         private readonly List<ResolvedAxisBinding> _axisBindings = new();
 
+        private readonly Dictionary<string, bool> _toggleStates = new();
+
         public KeyHandler() { }
 
         // ── load ──────────────────────────────────────────────────────────────────
@@ -98,13 +100,30 @@ namespace OssianForge.Engine.Inputs
         {
             foreach (var binding in _bindings)
             {
-                bool result = binding.Type switch
+                bool result;
+
+                if (binding.Type == InputKeyType.Toggle)
                 {
-                    InputKeyType.Click => AnyClicked(binding.Keys),
-                    InputKeyType.Release => AnyReleased(binding.Keys),
-                    InputKeyType.Down => AnyDown(binding.Keys),
-                    _ => false
-                };
+                    bool clicked = AnyClicked(binding.Keys);
+                    if (clicked)
+                    {
+                        _toggleStates.TryGetValue(binding.Id, out bool current);
+                        _toggleStates[binding.Id] = !current;
+                    }
+
+                    // Explicit lookup with a fallback — don't reuse result as out param
+                    result = _toggleStates.TryGetValue(binding.Id, out bool toggleState) && toggleState;
+                }
+                else
+                {
+                    result = binding.Type switch
+                    {
+                        InputKeyType.Click => AnyClicked(binding.Keys),
+                        InputKeyType.Release => AnyReleased(binding.Keys),
+                        InputKeyType.Down => AnyDown(binding.Keys),
+                        _ => false
+                    };
+                }
 
                 InputStateStore.Set(binding.Id, result);
             }

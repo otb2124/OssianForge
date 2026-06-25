@@ -1,4 +1,41 @@
 ﻿[
+
+  {
+    "id": "action.transform.sprintForward",
+    "call": "node.addValueCameraDirection",
+    "args": [ "$child.playerBodyMesh", "TransformProperty", "Transform.Position", "0,0,10", "playerCamera", "$delta" ]
+  },
+  {
+    "id": "action.transform.sprintBackward",
+    "call": "node.addValueCameraDirection",
+    "args": [ "$child.playerBodyMesh", "TransformProperty", "Transform.Position", "0,0,-10", "playerCamera", "$delta" ]
+  },
+
+  {
+    "id": "action.transform.runForward",
+    "call": "node.addValueCameraDirection",
+    "args": [ "$child.playerBodyMesh", "TransformProperty", "Transform.Position", "0,0,5.5", "playerCamera", "$delta" ]
+  },
+  {
+    "id": "action.transform.runBackward",
+    "call": "node.addValueCameraDirection",
+    "args": [ "$child.playerBodyMesh", "TransformProperty", "Transform.Position", "0,0,-5.5", "playerCamera", "$delta" ]
+  },
+
+
+  {
+    "id": "action.transform.walkForward",
+    "call": "node.addValueCameraDirection",
+    "args": [ "$child.playerBodyMesh", "TransformProperty", "Transform.Position", "0,0,2", "playerCamera", "$delta" ]
+  },
+  {
+    "id": "action.transform.walkBackward",
+    "call": "node.addValueCameraDirection",
+    "args": [ "$child.playerBodyMesh", "TransformProperty", "Transform.Position", "0,0,-2", "playerCamera", "$delta" ]
+  },
+
+
+
   {
     "id": "action.transform.transformBodyPositionCameraDirForward",
     "call": "node.addValueCameraDirection",
@@ -9,6 +46,9 @@
     "call": "node.addValueCameraDirection",
     "args": [ "$child.playerBodyMesh", "TransformProperty", "Transform.Position", "0,0,-2", "playerCamera", "$delta" ]
   },
+
+
+
   {
     "id": "action.transform.transformRotationMouseYawX",
     "call": "node.addValue",

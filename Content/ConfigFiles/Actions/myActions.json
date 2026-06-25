@@ -10,26 +10,6 @@
     "args": [ "[ACTION] Hi" ]
   },
   {
-    "id": "action.myActions.playAnimIdle",
-    "call": "node.callMethod",
-    "args": [ "$child.playerBodyMesh", "AnimationProperty", "Play", "remy.idle", true, 1.0 ]
-  },
-  {
-    "id": "action.myActions.playAnimBackflip",
-    "call": "node.callMethod",
-    "args": [ "$self", "AnimationProperty", "Play", "remy.backflip", false, 1.0 ]
-  },
-  {
-    "id": "action.myActions.playAnimWalking",
-    "call": "node.callMethod",
-    "args": [ "$child.playerBodyMesh", "AnimationProperty", "Play", "remy.walking", true, 1.0 ]
-  },
-  {
-    "id": "action.myActions.playAnimFalling",
-    "call": "node.callMethod",
-    "args": [ "$child.playerBodyMesh", "AnimationProperty", "Play", "remy.falling", true, 1.0 ]
-  },
-  {
     "id": "action.myActions.walkUp",
     "call": "node.setValue",
     "args": [ "$self", "PhysicsProperty", "ManualVelocity", "1,0,0" ]

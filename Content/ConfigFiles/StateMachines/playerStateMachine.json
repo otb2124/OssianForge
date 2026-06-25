@@ -4,26 +4,51 @@
   "states": [
     {
       "id": "Idle",
-      "onEnter": [ "action.myActions.playAnimIdle" ]
+      "onEnter": [ "action.animationActions.playAnimIdle" ]
     },
     {
       "id": "Falling",
-      "onEnter": [ "action.myActions.playAnimFalling" ]
+      "onEnter": [ "action.animationActions.playAnimFalling" ]
     },
     {
       "id": "WalkForward",
-      "onEnter": [ "action.myActions.playAnimWalking" ],
-      "onUpdate": [ "action.transform.transformBodyPositionCameraDirForward", "action.transform.setBodyYawForward" ]
+      "onEnter": [ "action.animationActions.playAnimWalking" ],
+      "onUpdate": [ "action.transform.walkForward", "action.transform.setBodyYawForward" ]
     },
     {
       "id": "WalkBackward",
-      "onEnter": [ "action.myActions.playAnimWalking" ],
-      "onUpdate": [ "action.transform.transformBodyPositionCameraDirBackward", "action.transform.setBodyYawBackward" ]
+      "onEnter": [ "action.animationActions.playAnimWalking" ],
+      "onUpdate": [ "action.transform.walkBackward", "action.transform.setBodyYawBackward" ]
     },
     { "id": "WalkLeft" },
-    { "id": "WalkRight" }
+    { "id": "WalkRight" },
+    {
+      "id": "RunForward",
+      "onEnter": [ "action.animationActions.playAnimRun" ],
+      "onUpdate": [ "action.transform.runForward", "action.transform.setBodyYawForward" ]
+    },
+    {
+      "id": "RunBackward",
+      "onEnter": [ "action.animationActions.playAnimRun" ],
+      "onUpdate": [ "action.transform.runBackward", "action.transform.setBodyYawBackward" ]
+    },
+    { "id": "RunLeft" },
+    { "id": "RunRight" },
+    {
+      "id": "SprintForward",
+      "onEnter": [ "action.animationActions.playAnimSprint" ],
+      "onUpdate": [ "action.transform.sprintForward", "action.transform.setBodyYawForward" ]
+    },
+    {
+      "id": "SprintBackward",
+      "onEnter": [ "action.animationActions.playAnimSprint" ],
+      "onUpdate": [ "action.transform.sprintBackward", "action.transform.setBodyYawBackward" ]
+    },
+    { "id": "SprintLeft" },
+    { "id": "SprintRight" }
   ],
   "transitions": [
+
     {
       "from": "Idle",
       "to": "Falling",
@@ -42,13 +67,14 @@
         "args": [ "$child.playerBodyMesh" ]
       }
     },
+
     {
       "from": "WalkForward",
       "to": "Falling",
       "condition": {
-        "not": {
-          "call": "OssianForge.Engine.Physics.PhysicsReflection.IsGrounded",
-          "args": [ "$child.playerBodyMesh" ]
+        "copy": {
+          "from": "Idle",
+          "to": "Falling"
         }
       }
     },
@@ -56,9 +82,9 @@
       "from": "WalkBackward",
       "to": "Falling",
       "condition": {
-        "not": {
-          "call": "OssianForge.Engine.Physics.PhysicsReflection.IsGrounded",
-          "args": [ "$child.playerBodyMesh" ]
+        "copy": {
+          "from": "Idle",
+          "to": "Falling"
         }
       }
     },
@@ -66,9 +92,9 @@
       "from": "WalkLeft",
       "to": "Falling",
       "condition": {
-        "not": {
-          "call": "OssianForge.Engine.Physics.PhysicsReflection.IsGrounded",
-          "args": [ "$child.playerBodyMesh" ]
+        "copy": {
+          "from": "Idle",
+          "to": "Falling"
         }
       }
     },
@@ -76,12 +102,93 @@
       "from": "WalkRight",
       "to": "Falling",
       "condition": {
-        "not": {
-          "call": "OssianForge.Engine.Physics.PhysicsReflection.IsGrounded",
-          "args": [ "$child.playerBodyMesh" ]
+        "copy": {
+          "from": "Idle",
+          "to": "Falling"
         }
       }
     },
+    {
+      "from": "RunForward",
+      "to": "Falling",
+      "condition": {
+        "copy": {
+          "from": "Idle",
+          "to": "Falling"
+        }
+      }
+    },
+    {
+      "from": "RunBackward",
+      "to": "Falling",
+      "condition": {
+        "copy": {
+          "from": "Idle",
+          "to": "Falling"
+        }
+      }
+    },
+    {
+      "from": "RunLeft",
+      "to": "Falling",
+      "condition": {
+        "copy": {
+          "from": "Idle",
+          "to": "Falling"
+        }
+      }
+    },
+    {
+      "from": "RunRight",
+      "to": "Falling",
+      "condition": {
+        "copy": {
+          "from": "Idle",
+          "to": "Falling"
+        }
+      }
+    },
+    {
+      "from": "SprintForward",
+      "to": "Falling",
+      "condition": {
+        "copy": {
+          "from": "Idle",
+          "to": "Falling"
+        }
+      }
+    },
+    {
+      "from": "SprintBackward",
+      "to": "Falling",
+      "condition": {
+        "copy": {
+          "from": "Idle",
+          "to": "Falling"
+        }
+      }
+    },
+    {
+      "from": "SprintLeft",
+      "to": "Falling",
+      "condition": {
+        "copy": {
+          "from": "Idle",
+          "to": "Falling"
+        }
+      }
+    },
+    {
+      "from": "SprintRight",
+      "to": "Falling",
+      "condition": {
+        "copy": {
+          "from": "Idle",
+          "to": "Falling"
+        }
+      }
+    },
+
     {
       "from": "Idle",
       "to": "WalkForward",
@@ -94,6 +201,18 @@
           {
             "call": "OssianForge.Engine.Physics.PhysicsReflection.IsGrounded",
             "args": [ "$child.playerBodyMesh" ]
+          },
+          {
+            "not": {
+              "call": "OssianForge.Engine.Inputs.KeyHandler.IsStateActive",
+              "args": [ "walkRunToggle" ]
+            }
+          },
+          {
+            "not": {
+              "call": "OssianForge.Engine.Inputs.KeyHandler.IsStateActive",
+              "args": [ "sprint" ]
+            }
           }
         ]
       }
@@ -110,6 +229,18 @@
           {
             "call": "OssianForge.Engine.Physics.PhysicsReflection.IsGrounded",
             "args": [ "$child.playerBodyMesh" ]
+          },
+          {
+            "not": {
+              "call": "OssianForge.Engine.Inputs.KeyHandler.IsStateActive",
+              "args": [ "walkRunToggle" ]
+            }
+          },
+          {
+            "not": {
+              "call": "OssianForge.Engine.Inputs.KeyHandler.IsStateActive",
+              "args": [ "sprint" ]
+            }
           }
         ]
       }
@@ -126,6 +257,18 @@
           {
             "call": "OssianForge.Engine.Physics.PhysicsReflection.IsGrounded",
             "args": [ "$child.playerBodyMesh" ]
+          },
+          {
+            "not": {
+              "call": "OssianForge.Engine.Inputs.KeyHandler.IsStateActive",
+              "args": [ "walkRunToggle" ]
+            }
+          },
+          {
+            "not": {
+              "call": "OssianForge.Engine.Inputs.KeyHandler.IsStateActive",
+              "args": [ "sprint" ]
+            }
           }
         ]
       }
@@ -142,10 +285,388 @@
           {
             "call": "OssianForge.Engine.Physics.PhysicsReflection.IsGrounded",
             "args": [ "$child.playerBodyMesh" ]
+          },
+          {
+            "not": {
+              "call": "OssianForge.Engine.Inputs.KeyHandler.IsStateActive",
+              "args": [ "walkRunToggle" ]
+            }
+          },
+          {
+            "not": {
+              "call": "OssianForge.Engine.Inputs.KeyHandler.IsStateActive",
+              "args": [ "sprint" ]
+            }
           }
         ]
       }
     },
+
+    {
+      "from": "Idle",
+      "to": "RunForward",
+      "condition": {
+        "and": [
+          {
+            "call": "OssianForge.Engine.Inputs.KeyHandler.IsStateActive",
+            "args": [ "walk_up" ]
+          },
+          {
+            "call": "OssianForge.Engine.Physics.PhysicsReflection.IsGrounded",
+            "args": [ "$child.playerBodyMesh" ]
+          },
+          {
+            "call": "OssianForge.Engine.Inputs.KeyHandler.IsStateActive",
+            "args": [ "walkRunToggle" ]
+          },
+          {
+            "not": {
+              "call": "OssianForge.Engine.Inputs.KeyHandler.IsStateActive",
+              "args": [ "sprint" ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "from": "Idle",
+      "to": "RunBackward",
+      "condition": {
+        "and": [
+          {
+            "call": "OssianForge.Engine.Inputs.KeyHandler.IsStateActive",
+            "args": [ "walk_down" ]
+          },
+          {
+            "call": "OssianForge.Engine.Physics.PhysicsReflection.IsGrounded",
+            "args": [ "$child.playerBodyMesh" ]
+          },
+          {
+            "call": "OssianForge.Engine.Inputs.KeyHandler.IsStateActive",
+            "args": [ "walkRunToggle" ]
+          },
+          {
+            "not": {
+              "call": "OssianForge.Engine.Inputs.KeyHandler.IsStateActive",
+              "args": [ "sprint" ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "from": "Idle",
+      "to": "RunLeft",
+      "condition": {
+        "and": [
+          {
+            "call": "OssianForge.Engine.Inputs.KeyHandler.IsStateActive",
+            "args": [ "walk_left" ]
+          },
+          {
+            "call": "OssianForge.Engine.Physics.PhysicsReflection.IsGrounded",
+            "args": [ "$child.playerBodyMesh" ]
+          },
+          {
+            "call": "OssianForge.Engine.Inputs.KeyHandler.IsStateActive",
+            "args": [ "walkRunToggle" ]
+          },
+          {
+            "not": {
+              "call": "OssianForge.Engine.Inputs.KeyHandler.IsStateActive",
+              "args": [ "sprint" ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "from": "Idle",
+      "to": "RunRight",
+      "condition": {
+        "and": [
+          {
+            "call": "OssianForge.Engine.Inputs.KeyHandler.IsStateActive",
+            "args": [ "walk_right" ]
+          },
+          {
+            "call": "OssianForge.Engine.Physics.PhysicsReflection.IsGrounded",
+            "args": [ "$child.playerBodyMesh" ]
+          },
+          {
+            "call": "OssianForge.Engine.Inputs.KeyHandler.IsStateActive",
+            "args": [ "walkRunToggle" ]
+          },
+          {
+            "not": {
+              "call": "OssianForge.Engine.Inputs.KeyHandler.IsStateActive",
+              "args": [ "sprint" ]
+            }
+          }
+        ]
+      }
+    },
+
+    {
+      "from": "Idle",
+      "to": "SprintForward",
+      "condition": {
+        "and": [
+          {
+            "call": "OssianForge.Engine.Inputs.KeyHandler.IsStateActive",
+            "args": [ "walk_up" ]
+          },
+          {
+            "call": "OssianForge.Engine.Physics.PhysicsReflection.IsGrounded",
+            "args": [ "$child.playerBodyMesh" ]
+          },
+          {
+            "call": "OssianForge.Engine.Inputs.KeyHandler.IsStateActive",
+            "args": [ "sprint" ]
+          }
+        ]
+      }
+    },
+    {
+      "from": "Idle",
+      "to": "SprintBackward",
+      "condition": {
+        "and": [
+          {
+            "call": "OssianForge.Engine.Inputs.KeyHandler.IsStateActive",
+            "args": [ "walk_down" ]
+          },
+          {
+            "call": "OssianForge.Engine.Physics.PhysicsReflection.IsGrounded",
+            "args": [ "$child.playerBodyMesh" ]
+          },
+          {
+            "call": "OssianForge.Engine.Inputs.KeyHandler.IsStateActive",
+            "args": [ "sprint" ]
+          }
+        ]
+      }
+    },
+    {
+      "from": "Idle",
+      "to": "SprintLeft",
+      "condition": {
+        "and": [
+          {
+            "call": "OssianForge.Engine.Inputs.KeyHandler.IsStateActive",
+            "args": [ "walk_left" ]
+          },
+          {
+            "call": "OssianForge.Engine.Physics.PhysicsReflection.IsGrounded",
+            "args": [ "$child.playerBodyMesh" ]
+          },
+          {
+            "call": "OssianForge.Engine.Inputs.KeyHandler.IsStateActive",
+            "args": [ "sprint" ]
+          }
+        ]
+      }
+    },
+    {
+      "from": "Idle",
+      "to": "SprintRight",
+      "condition": {
+        "and": [
+          {
+            "call": "OssianForge.Engine.Inputs.KeyHandler.IsStateActive",
+            "args": [ "walk_right" ]
+          },
+          {
+            "call": "OssianForge.Engine.Physics.PhysicsReflection.IsGrounded",
+            "args": [ "$child.playerBodyMesh" ]
+          },
+          {
+            "call": "OssianForge.Engine.Inputs.KeyHandler.IsStateActive",
+            "args": [ "sprint" ]
+          }
+        ]
+      }
+    },
+
+    {
+      "from": "WalkForward",
+      "to": "SprintForward",
+      "condition": {
+        "call": "OssianForge.Engine.Inputs.KeyHandler.IsStateActive",
+        "args": [ "sprint" ]
+      }
+    },
+    {
+      "from": "WalkBackward",
+      "to": "SprintBackward",
+      "condition": {
+        "copy": {
+          "from": "WalkForward",
+          "to": "SprintForward"
+        }
+      }
+    },
+    {
+      "from": "WalkLeft",
+      "to": "SprintLeft",
+      "condition": {
+        "copy": {
+          "from": "WalkForward",
+          "to": "SprintForward"
+        }
+      }
+    },
+    {
+      "from": "WalkRight",
+      "to": "SprintRight",
+      "condition": {
+        "copy": {
+          "from": "WalkForward",
+          "to": "SprintForward"
+        }
+      }
+    },
+    {
+      "from": "RunForward",
+      "to": "SprintForward",
+      "condition": {
+        "copy": {
+          "from": "WalkForward",
+          "to": "SprintForward"
+        }
+      }
+    },
+    {
+      "from": "RunBackward",
+      "to": "SprintBackward",
+      "condition": {
+        "copy": {
+          "from": "WalkForward",
+          "to": "SprintForward"
+        }
+      }
+    },
+    {
+      "from": "RunLeft",
+      "to": "SprintLeft",
+      "condition": {
+        "copy": {
+          "from": "WalkForward",
+          "to": "SprintForward"
+        }
+      }
+    },
+    {
+      "from": "RunRight",
+      "to": "SprintRight",
+      "condition": {
+        "copy": {
+          "from": "WalkForward",
+          "to": "SprintForward"
+        }
+      }
+    },
+
+    {
+      "from": "SprintForward",
+      "to": "WalkForward",
+      "condition": {
+        "and": [
+          {
+            "not": {
+              "call": "OssianForge.Engine.Inputs.KeyHandler.IsStateActive",
+              "args": [ "sprint" ]
+            }
+          },
+          {
+            "not": {
+              "call": "OssianForge.Engine.Inputs.KeyHandler.IsStateActive",
+              "args": [ "walkRunToggle" ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "from": "SprintBackward",
+      "to": "WalkBackward",
+      "condition": {
+        "copy": {
+          "from": "SprintForward",
+          "to": "WalkForward"
+        }
+      }
+    },
+    {
+      "from": "SprintLeft",
+      "to": "WalkLeft",
+      "condition": {
+        "copy": {
+          "from": "SprintForward",
+          "to": "WalkForward"
+        }
+      }
+    },
+    {
+      "from": "SprintRight",
+      "to": "WalkRight",
+      "condition": {
+        "copy": {
+          "from": "SprintForward",
+          "to": "WalkForward"
+        }
+      }
+    },
+
+    {
+      "from": "SprintForward",
+      "to": "RunForward",
+      "condition": {
+        "and": [
+          {
+            "not": {
+              "call": "OssianForge.Engine.Inputs.KeyHandler.IsStateActive",
+              "args": [ "sprint" ]
+            }
+          },
+          {
+            "call": "OssianForge.Engine.Inputs.KeyHandler.IsStateActive",
+            "args": [ "walkRunToggle" ]
+          }
+        ]
+      }
+    },
+    {
+      "from": "SprintBackward",
+      "to": "RunBackward",
+      "condition": {
+        "copy": {
+          "from": "SprintForward",
+          "to": "RunForward"
+        }
+      }
+    },
+    {
+      "from": "SprintLeft",
+      "to": "RunLeft",
+      "condition": {
+        "copy": {
+          "from": "SprintForward",
+          "to": "RunForward"
+        }
+      }
+    },
+    {
+      "from": "SprintRight",
+      "to": "RunRight",
+      "condition": {
+        "copy": {
+          "from": "SprintForward",
+          "to": "RunForward"
+        }
+      }
+    },
+
     {
       "from": "WalkForward",
       "to": "Idle",
@@ -183,6 +704,166 @@
         "not": {
           "call": "OssianForge.Engine.Inputs.KeyHandler.IsStateActive",
           "args": [ "walk_right" ]
+        }
+      }
+    },
+    {
+      "from": "RunForward",
+      "to": "Idle",
+      "condition": {
+        "copy": {
+          "from": "WalkForward",
+          "to": "Idle"
+        }
+      }
+    },
+    {
+      "from": "RunBackward",
+      "to": "Idle",
+      "condition": {
+        "copy": {
+          "from": "WalkBackward",
+          "to": "Idle"
+        }
+      }
+    },
+    {
+      "from": "RunLeft",
+      "to": "Idle",
+      "condition": {
+        "copy": {
+          "from": "WalkLeft",
+          "to": "Idle"
+        }
+      }
+    },
+    {
+      "from": "RunRight",
+      "to": "Idle",
+      "condition": {
+        "copy": {
+          "from": "WalkRight",
+          "to": "Idle"
+        }
+      }
+    },
+    {
+      "from": "SprintForward",
+      "to": "Idle",
+      "condition": {
+        "copy": {
+          "from": "WalkForward",
+          "to": "Idle"
+        }
+      }
+    },
+    {
+      "from": "SprintBackward",
+      "to": "Idle",
+      "condition": {
+        "copy": {
+          "from": "WalkBackward",
+          "to": "Idle"
+        }
+      }
+    },
+    {
+      "from": "SprintLeft",
+      "to": "Idle",
+      "condition": {
+        "copy": {
+          "from": "WalkLeft",
+          "to": "Idle"
+        }
+      }
+    },
+    {
+      "from": "SprintRight",
+      "to": "Idle",
+      "condition": {
+        "copy": {
+          "from": "WalkRight",
+          "to": "Idle"
+        }
+      }
+    },
+
+    {
+      "from": "WalkForward",
+      "to": "RunForward",
+      "condition": {
+        "call": "OssianForge.Engine.Inputs.KeyHandler.IsStateActive",
+        "args": [ "walkRunToggle" ]
+      }
+    },
+    {
+      "from": "WalkBackward",
+      "to": "RunBackward",
+      "condition": {
+        "copy": {
+          "from": "WalkForward",
+          "to": "RunForward"
+        }
+      }
+    },
+    {
+      "from": "WalkLeft",
+      "to": "RunLeft",
+      "condition": {
+        "copy": {
+          "from": "WalkForward",
+          "to": "RunForward"
+        }
+      }
+    },
+    {
+      "from": "WalkRight",
+      "to": "RunRight",
+      "condition": {
+        "copy": {
+          "from": "WalkForward",
+          "to": "RunForward"
+        }
+      }
+    },
+
+    {
+      "from": "RunForward",
+      "to": "WalkForward",
+      "condition": {
+        "not": {
+          "call": "OssianForge.Engine.Inputs.KeyHandler.IsStateActive",
+          "args": [ "walkRunToggle" ]
+        }
+      }
+    },
+    {
+      "from": "RunBackward",
+      "to": "WalkBackward",
+      "condition": {
+        "copy": {
+          "from": "RunForward",
+          "to": "WalkForward"
+        }
+      }
+    },
+    {
+      "from": "RunLeft",
+      "to": "WalkLeft",
+      "condition": {
+        "copy": {
+          "from": "RunForward",
+          "to": "WalkForward"
+        }
+      }
+    },
+    {
+      "from": "RunRight",
+      "to": "WalkRight",
+      "condition": {
+        "copy": {
+          "from": "RunForward",
+          "to": "WalkForward"
         }
       }
     }

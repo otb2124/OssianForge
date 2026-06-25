@@ -25,6 +25,16 @@
     "keys": [ "Space" ]
   },
   {
+    "id": "walkRunToggle",
+    "type": "toggle",
+    "keys": [ "capsLock" ]
+  },
+  {
+    "id": "sprint",
+    "type": "down",
+    "keys": [ "ShiftLeft" ]
+  },
+  {
     "id": "mouseleft_click",
     "type": "click",
     "keys": [ "mouseleft" ]

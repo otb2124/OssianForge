@@ -30,26 +30,57 @@ namespace OssianForge.Engine.Resources.Config
             foreach (var stateEl in root.GetProperty("states").EnumerateArray())
             {
                 string id = stateEl.GetProperty("id").GetString()!;
-
                 var onEnter = ParseActionList(stateEl, "onEnter");
                 var onExit = ParseActionList(stateEl, "onExit");
                 var onUpdate = ParseActionList(stateEl, "onUpdate");
-
                 sm.AddState(new ActionState(id, onEnter, onExit, onUpdate));
             }
+
+            // First pass: collect raw condition JSON keyed by (from, to)
+            var conditionCache = new Dictionary<(string, string), string>();
 
             foreach (var transEl in root.GetProperty("transitions").EnumerateArray())
             {
                 string from = transEl.GetProperty("from").GetString()!;
                 string to = transEl.GetProperty("to").GetString()!;
-                var condition = ConditionNodeParser.Parse(transEl.GetProperty("condition"));
 
+                if (transEl.TryGetProperty("condition", out var condEl)
+                    && condEl.ValueKind != JsonValueKind.Undefined)
+                {
+                    conditionCache[(from, to)] = condEl.GetRawText();
+                }
+            }
+
+            // Second pass: resolve copies, parse, register
+            foreach (var transEl in root.GetProperty("transitions").EnumerateArray())
+            {
+                string from = transEl.GetProperty("from").GetString()!;
+                string to = transEl.GetProperty("to").GetString()!;
+
+                string conditionJson;
+
+                if (transEl.TryGetProperty("condition", out var condEl)
+                    && condEl.TryGetProperty("copy", out var copyEl))
+                {
+                    string refFrom = copyEl.GetProperty("from").GetString()!;
+                    string refTo = copyEl.GetProperty("to").GetString()!;
+
+                    if (!conditionCache.TryGetValue((refFrom, refTo), out conditionJson!))
+                        throw new InvalidOperationException(
+                            $"Transition copy reference not found: \"{refFrom}\" -> \"{refTo}\"");
+                }
+                else
+                {
+                    conditionJson = condEl.GetRawText();
+                }
+
+                using var condDoc = JsonDocument.Parse(conditionJson);
+                var condition = ConditionNodeParser.Parse(condDoc.RootElement);
                 sm.AddTransition(from, to, condition);
             }
 
             string initial = root.GetProperty("initial").GetString()!;
             sm.SetInitial(initial);
-
             return sm;
         }
 

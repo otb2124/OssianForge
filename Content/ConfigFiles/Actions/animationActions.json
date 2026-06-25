@@ -1,0 +1,32 @@
+﻿[
+  {
+    "id": "action.animationActions.playAnimIdle",
+    "call": "node.callMethod",
+    "args": [ "$child.playerBodyMesh", "AnimationProperty", "Play", "remy.idle", true, 1.0 ]
+  },
+  {
+    "id": "action.animationActions.playAnimBackflip",
+    "call": "node.callMethod",
+    "args": [ "$self", "AnimationProperty", "Play", "remy.backflip", false, 1.0 ]
+  },
+  {
+    "id": "action.animationActions.playAnimFalling",
+    "call": "node.callMethod",
+    "args": [ "$child.playerBodyMesh", "AnimationProperty", "Play", "remy.falling", true, 1.0 ]
+  },
+  {
+    "id": "action.animationActions.playAnimWalking",
+    "call": "node.callMethod",
+    "args": [ "$child.playerBodyMesh", "AnimationProperty", "Play", "remy.walking", true, 1.0 ]
+  },
+  {
+    "id": "action.animationActions.playAnimRun",
+    "call": "node.callMethod",
+    "args": [ "$child.playerBodyMesh", "AnimationProperty", "Play", "remy.run", true, 1.0 ]
+  },
+  {
+    "id": "action.animationActions.playAnimSprint",
+    "call": "node.callMethod",
+    "args": [ "$child.playerBodyMesh", "AnimationProperty", "Play", "remy.sprint", true, 1.0 ]
+  }
+]
