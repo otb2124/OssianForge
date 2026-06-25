@@ -37,6 +37,7 @@ namespace OssianForge.Engine.Nodes.Props
         public int WorldIndex = 0;
 
         public Vector3 ManualVelocity;
+        public Vector3 ManualImpulse;
 
         public PhysicsLock Lock = PhysicsLock.None;
 

@@ -47,7 +47,7 @@ namespace OssianForge.Engine.Nodes.Props
 
     public class TransformProperty : NodeProperty
     {
-        public bool TransformDirty = false;
+        public bool TransformDirty { get; set; } = false;
 
         public Transform InitialTransform;
         public Transform _transform;
@@ -67,7 +67,7 @@ namespace OssianForge.Engine.Nodes.Props
         public Vector3 Rotation
         {
             get => _transform.Rotation;
-            set { _transform.Rotation = value; SetDirty(); }
+            set { _transform.Rotation = value; }
         }
 
         public Vector3 Scale
@@ -279,7 +279,7 @@ namespace OssianForge.Engine.Nodes.Props
             TransformDirty = true;
             var node = Engine.Nodes.NodeManager.GetNode(NodeId);
             if (node == null) return;
-            foreach (var child in node.Children)
+            foreach (var child in node.Children) 
                 child.GetProperty<TransformProperty>()?.SetDirtyRecursive();
         }
 

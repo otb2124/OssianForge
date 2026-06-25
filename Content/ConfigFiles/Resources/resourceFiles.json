@@ -65,11 +65,6 @@
     "type": "animationfile"
   },
   {
-    "id": "animationfile.remy.jumping",
-    "path": "AnimationFiles/remy.jumping.fbx",
-    "type": "animationfile"
-  },
-  {
     "id": "animationfile.remy.jumping_jacks",
     "path": "AnimationFiles/remy.jumping_jacks.fbx",
     "type": "animationfile"
@@ -97,6 +92,16 @@
   {
     "id": "animationfile.remy.sprint",
     "path": "AnimationFiles/remy.sprint.fbx",
+    "type": "animationfile"
+  },
+  {
+    "id": "animationfile.remy.jump",
+    "path": "AnimationFiles/remy.jump.fbx",
+    "type": "animationfile"
+  },
+  {
+    "id": "animationfile.remy.jump_landing",
+    "path": "AnimationFiles/remy.jump_landing.fbx",
     "type": "animationfile"
   },
   {

@@ -78,14 +78,17 @@ namespace OssianForge.Engine.Nodes
 
 
         /// <summary>
-        /// Like AddValueCurrentDirection but derives the forward/right axes from a
-        /// sibling or child node's Transform.Rotation.Y (camera yaw) rather than
-        /// from this node's own world matrix. Used so WASD movement on the player
-        /// root is relative to the camera's facing, not the root's facing (which
-        /// is always zero in the Skyrim-style hierarchy).
+        /// Adds a camera-relative directional delta to any Vector3 member on any property type.
+        /// The world-space delta is rotated into the node's local space before being applied,
+        /// so it works correctly regardless of parent rotation.
         ///
-        /// directionSourceNodeId: the id of the node whose Transform.Rotation.Y
+        /// directionSourceNodeId: the id of the node whose TransformProperty.Transform.Rotation.Y
         /// is the camera yaw — e.g. "playerCamera".
+        /// </summary>
+        /// <summary>
+        /// Same as AddValueCameraDirection but applies the delta in world space —
+        /// no parent-space rotation correction. Use this for world-space members
+        /// like ManualVelocity on PhysicsProperty.
         /// </summary>
         public static void AddValueCameraDirection(
             Node node, string propertyTypeName, string memberPath,
@@ -97,42 +100,44 @@ namespace OssianForge.Engine.Nodes
 
             float yawRad = float.DegreesToRadians(cameraSelfTransform.Transform.Rotation.Y);
 
-            Vector3 forward = new Vector3(-MathF.Sin(yawRad), 0f, -MathF.Cos(yawRad));
-            Vector3 right = new Vector3(-MathF.Cos(yawRad), 0f, MathF.Sin(yawRad));
+            Vector3 forward = new Vector3(MathF.Sin(yawRad), 0f, MathF.Cos(yawRad));
+            Vector3 right = new Vector3(MathF.Cos(yawRad), 0f, -MathF.Sin(yawRad));
             Vector3 dir = ParseVector3(rawDirection);
+
             Vector3 worldDelta = right * dir.X + Vector3.UnitY * dir.Y + forward * dir.Z;
 
-            // ── transform world delta into the node's local space ────────────────────
-            // The player root may have a non-zero parent rotation. Applying a world-space
-            // offset to a local position produces orbiting. We need to undo the parent's
-            // world rotation so the delta lands correctly in local space.
-            var tp = FindNodeProperty(node, propertyTypeName) as TransformProperty;
-            if (tp != null)
-            {
-                var parentTransform = node.Parent?.GetProperty<TransformProperty>();
-                if (parentTransform != null)
-                {
-                    // Invert the parent's world rotation to convert world → local
-                    if (Matrix4x4.Invert(parentTransform.WorldTransform.ToMatrix(), out var invParent))
-                    {
-                        // Only rotate, don't translate — strip the translation column
-                        var rotOnly = invParent;
-                        rotOnly.M41 = 0; rotOnly.M42 = 0; rotOnly.M43 = 0;
-                        worldDelta = Vector3.Transform(worldDelta, rotOnly);
-                    }
-                }
-
-                tp.Position += worldDelta * (float)delta;
-                return;
-            }
-
-            // fallback
             ApplyScaled(node, propertyTypeName, memberPath,
                 $"{worldDelta.X.ToString(CultureInfo.InvariantCulture)}," +
                 $"{worldDelta.Y.ToString(CultureInfo.InvariantCulture)}," +
-                $"{worldDelta.Z.ToString(CultureInfo.InvariantCulture)}", delta);
+                $"{worldDelta.Z.ToString(CultureInfo.InvariantCulture)}",
+                delta);
         }
 
+        public static void SetValueCameraDirection(
+            Node node, string propertyTypeName, string memberPath,
+            string rawDirection, string directionSourceNodeId, double delta)
+        {
+            var cameraNode = Engine.Nodes.NodeManager.GetNode(directionSourceNodeId);
+            var cameraSelfTransform = cameraNode?.GetProperty<TransformProperty>();
+            if (cameraSelfTransform == null)
+            {
+                return;
+            }
+
+            float yawRad = float.DegreesToRadians(cameraSelfTransform.Transform.Rotation.Y);
+            Vector3 forward = new Vector3(MathF.Sin(yawRad), 0f, MathF.Cos(yawRad));
+            Vector3 right = new Vector3(MathF.Cos(yawRad), 0f, -MathF.Sin(yawRad));
+            Vector3 dir = ParseVector3(rawDirection);
+            Vector3 worldDelta = right * dir.X + Vector3.UnitY * dir.Y + forward * dir.Z;
+
+            var prop = FindNodeProperty(node, propertyTypeName);
+
+            var chain = WalkChain(prop, memberPath.Split('.'));
+            var (finalOwner, finalMember, _) = chain[^1];
+
+            SetMember(finalOwner, finalMember, worldDelta);
+            WriteBackChain(chain);
+        }
 
         /// <summary>
         /// Sets Transform.Rotation.Y on the target node to match the camera node's yaw + an offset.
@@ -295,6 +300,17 @@ namespace OssianForge.Engine.Nodes
 
             return prop ?? throw new Exception(
                 $"[NODE REFLECTION] Node '{node.Id}' has no property of type '{propertyTypeName}'.");
+        }
+
+        public static bool IsAnimationFinished(Node node, string clipName)
+        {
+            var anim = node.GetProperty<AnimationProperty>();
+            if (anim == null) return false;
+
+            var clip = anim.CurrentClip;
+            if (clip == null) return false;
+
+            return clip.Name == clipName && !anim.IsPlaying;
         }
 
         // ── member path walking ───────────────────────────────────────────────────

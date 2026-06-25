@@ -212,10 +212,13 @@
     <None Update="Content\AnimationFiles\remy.idle.fbx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Content\AnimationFiles\remy.jumping.fbx">
+    <None Update="Content\AnimationFiles\remy.jump.fbx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Content\AnimationFiles\remy.jumping_jacks.fbx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Content\AnimationFiles\remy.jump_landing.fbx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Content\AnimationFiles\remy.run.fbx">

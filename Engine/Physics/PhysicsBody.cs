@@ -251,16 +251,30 @@ namespace OssianForge.Engine.Physics
                 JitterBody.AngularVelocity = JVector.Zero;
 
                 TransformProperty.TransformDirty = false;
+                PhysicsProperty.ManualVelocity = Vector3.Zero;
+                PhysicsProperty.ManualImpulse = Vector3.Zero;
                 return;
             }
 
-            if (PhysicsProperty.ManualVelocity == Vector3.Zero) return;
+            // XZ: always override from ManualVelocity (zero = stop, non-zero = move)
+            // Y:  always preserve Jitter's Y so gravity and jump work
+            float currentY = JitterBody.Velocity.Y;
+            var mv = PhysicsProperty.ManualVelocity;
+            JitterBody.Velocity = new JVector(mv.X, currentY, mv.Z);
 
-            JitterBody.Velocity = new JVector(
-                PhysicsProperty.ManualVelocity.X,
-                PhysicsProperty.ManualVelocity.Y,
-                PhysicsProperty.ManualVelocity.Z);
+            // Impulse: one-shot addition (jump), applied on top of current Y, then zeroed
+            if (PhysicsProperty.ManualImpulse != Vector3.Zero)
+            {
+                var v = JitterBody.Velocity;
+                JitterBody.Velocity = new JVector(
+                    v.X + PhysicsProperty.ManualImpulse.X,
+                    v.Y + PhysicsProperty.ManualImpulse.Y,
+                    v.Z + PhysicsProperty.ManualImpulse.Z);
 
+                PhysicsProperty.ManualImpulse = Vector3.Zero;
+            }
+
+            // ManualVelocity resets every frame — actions must set it again next frame
             PhysicsProperty.ManualVelocity = Vector3.Zero;
         }
 

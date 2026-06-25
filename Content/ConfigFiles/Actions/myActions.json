@@ -8,10 +8,5 @@
     "id": "action.myActions.printHi",
     "call": "System.Console.WriteLine",
     "args": [ "[ACTION] Hi" ]
-  },
-  {
-    "id": "action.myActions.walkUp",
-    "call": "node.setValue",
-    "args": [ "$self", "PhysicsProperty", "ManualVelocity", "1,0,0" ]
   }
 ]

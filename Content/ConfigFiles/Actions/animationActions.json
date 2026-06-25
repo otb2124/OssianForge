@@ -15,6 +15,16 @@
     "args": [ "$child.playerBodyMesh", "AnimationProperty", "Play", "remy.falling", true, 1.0 ]
   },
   {
+    "id": "action.animationActions.playAnimJump",
+    "call": "node.callMethod",
+    "args": [ "$child.playerBodyMesh", "AnimationProperty", "Play", "remy.jump", true, 1.0 ]
+  },
+  {
+    "id": "action.animationActions.playAnimJumpLanding",
+    "call": "node.callMethod",
+    "args": [ "$child.playerBodyMesh", "AnimationProperty", "Play", "remy.jump_landing", true, 1.0 ]
+  },
+  {
     "id": "action.animationActions.playAnimWalking",
     "call": "node.callMethod",
     "args": [ "$child.playerBodyMesh", "AnimationProperty", "Play", "remy.walking", true, 1.0 ]

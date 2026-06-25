@@ -45,7 +45,15 @@
       "onUpdate": [ "action.transform.sprintBackward", "action.transform.setBodyYawBackward" ]
     },
     { "id": "SprintLeft" },
-    { "id": "SprintRight" }
+    { "id": "SprintRight" },
+    {
+      "id": "Jumping",
+      "onEnter": [ "action.transform.jump", "action.animationActions.playAnimJump" ]
+    },
+    {
+      "id": "Landing",
+      "onEnter": [ "action.animationActions.playAnimJumpLanding" ]
+    }
   ],
   "transitions": [
 
@@ -865,6 +873,166 @@
           "from": "RunForward",
           "to": "WalkForward"
         }
+      }
+    },
+    {
+      "from": "Idle",
+      "to": "Jumping",
+      "condition": {
+        "and": [
+          {
+            "call": "OssianForge.Engine.Inputs.KeyHandler.IsStateActive",
+            "args": [ "jump" ]
+          },
+          {
+            "call": "OssianForge.Engine.Physics.PhysicsReflection.IsGrounded",
+            "args": [ "$child.playerBodyMesh" ]
+          }
+        ]
+      }
+    },
+    {
+      "from": "WalkForward",
+      "to": "Jumping",
+      "condition": {
+        "copy": {
+          "from": "Idle",
+          "to": "Jumping"
+        }
+      }
+    },
+    {
+      "from": "WalkBackward",
+      "to": "Jumping",
+      "condition": {
+        "copy": {
+          "from": "Idle",
+          "to": "Jumping"
+        }
+      }
+    },
+    {
+      "from": "WalkLeft",
+      "to": "Jumping",
+      "condition": {
+        "copy": {
+          "from": "Idle",
+          "to": "Jumping"
+        }
+      }
+    },
+    {
+      "from": "WalkRight",
+      "to": "Jumping",
+      "condition": {
+        "copy": {
+          "from": "Idle",
+          "to": "Jumping"
+        }
+      }
+    },
+    {
+      "from": "RunForward",
+      "to": "Jumping",
+      "condition": {
+        "copy": {
+          "from": "Idle",
+          "to": "Jumping"
+        }
+      }
+    },
+    {
+      "from": "RunBackward",
+      "to": "Jumping",
+      "condition": {
+        "copy": {
+          "from": "Idle",
+          "to": "Jumping"
+        }
+      }
+    },
+    {
+      "from": "RunLeft",
+      "to": "Jumping",
+      "condition": {
+        "copy": {
+          "from": "Idle",
+          "to": "Jumping"
+        }
+      }
+    },
+    {
+      "from": "RunRight",
+      "to": "Jumping",
+      "condition": {
+        "copy": {
+          "from": "Idle",
+          "to": "Jumping"
+        }
+      }
+    },
+    {
+      "from": "SprintForward",
+      "to": "Jumping",
+      "condition": {
+        "copy": {
+          "from": "Idle",
+          "to": "Jumping"
+        }
+      }
+    },
+    {
+      "from": "SprintBackward",
+      "to": "Jumping",
+      "condition": {
+        "copy": {
+          "from": "Idle",
+          "to": "Jumping"
+        }
+      }
+    },
+    {
+      "from": "SprintLeft",
+      "to": "Jumping",
+      "condition": {
+        "copy": {
+          "from": "Idle",
+          "to": "Jumping"
+        }
+      }
+    },
+    {
+      "from": "SprintRight",
+      "to": "Jumping",
+      "condition": {
+        "copy": {
+          "from": "Idle",
+          "to": "Jumping"
+        }
+      }
+    },
+    {
+      "from": "Jumping",
+      "to": "Falling",
+      "condition": {
+        "call": "OssianForge.Engine.Physics.PhysicsReflection.IsFalling",
+        "args": [ "$child.playerBodyMesh" ]
+      }
+    },
+    {
+      "from": "Falling",
+      "to": "Landing",
+      "condition": {
+        "call": "OssianForge.Engine.Physics.PhysicsReflection.IsGrounded",
+        "args": [ "$child.playerBodyMesh" ]
+      }
+    },
+    {
+      "from": "Landing",
+      "to": "Idle",
+      "condition": {
+        "call": "OssianForge.Engine.Nodes.NodeReflection.IsAnimationFinished",
+        "args": [ "$child.playerBodyMesh", "remy.jump_landing" ]
       }
     }
   ]
