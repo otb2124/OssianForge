@@ -16,6 +16,7 @@ namespace OssianForge.Engine.Physics
         private JQuaternion _initialOrientation;
         private JVector _colliderCentroidOffset;
 
+
         public PhysicsRigidBody() : base()
         {
             
@@ -143,11 +144,17 @@ namespace OssianForge.Engine.Physics
                 return;
             }
 
-            float currentY = JitterBody.Velocity.Y;
+            
             var mv = physicsProperty.ManualVelocity;
-            JitterBody.Velocity = new JVector(mv.X, currentY, mv.Z);
 
-            if(colliderProperty.ColliderResource is CapsuleColliderResource)
+            if (mv != Vector3.Zero)
+            {
+                float currentY = JitterBody.Velocity.Y;
+                float preservedY = currentY > 0.5f ? currentY : 0f;
+                JitterBody.Velocity = new JVector(mv.X, preservedY, mv.Z);
+            }
+
+            if (colliderProperty.ColliderResource is CapsuleColliderResource)
             {
                 JitterBody.SetActivationState(true);
             }
@@ -289,5 +296,7 @@ namespace OssianForge.Engine.Physics
                 pLock.HasFlag(PhysicsLock.LinearDamping) ? 0f : physicsProperty.LinearDamping,
                 pLock.HasFlag(PhysicsLock.AngularDamping) ? 0f : physicsProperty.AngularDamping);
         }
+
+        
     }
 }

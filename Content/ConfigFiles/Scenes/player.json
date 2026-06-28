@@ -108,7 +108,7 @@
             },
             {
               "type": "OrbitalCameraProperty",
-              "data": [ "playerBodyMesh", 6.0, -30.0, 60.0 ]
+              "data": [ "playerBodyMesh", 10.0, -30.0, 60.0 ]
             }
           ]
         }
