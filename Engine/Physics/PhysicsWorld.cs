@@ -43,7 +43,6 @@ namespace OssianForge.Engine.Physics
             var nodes = Engine.Nodes.NodeManager.GetNodesWithProperty<PhysicsProperty>();
             foreach (var node in nodes)
             {
-                // only register nodes that belong to this world
                 if (node.GetProperty<PhysicsProperty>().WorldIndex == WorldIndex)
                     Register(node);
             }
@@ -55,7 +54,9 @@ namespace OssianForge.Engine.Physics
             if (_bodies.Any(b => b.NodeId == node.Id))
                 return _bodies.First(b => b.NodeId == node.Id);
 
-            var body = new PhysicsBody(node, JitterWorld);
+            PhysicsBody body = node.GetProperty<PhysicsProperty>().IsStatic
+                ? new PhysicsStaticBody(node, JitterWorld)
+                : new PhysicsRigidBody(node, JitterWorld);
             _bodies.Add(body);
             return body;
         }
@@ -65,12 +66,11 @@ namespace OssianForge.Engine.Physics
             var body = _bodies.FirstOrDefault(b => b.NodeId == node.Id);
             if (body == null) return;
 
-            // Remove constraints first, before removing the body
             foreach (var c in body.Constraints)
                 JitterWorld.Remove(c);
 
-            if (body.JitterBody != null)
-                JitterWorld.Remove(body.JitterBody);
+            if (body is PhysicsRigidBody rigid)
+                JitterWorld.Remove(rigid.JitterBody);
             else
                 foreach (var shape in body.OwnedShapes)
                     JitterWorld.NullBody.RemoveShape(shape);
@@ -85,29 +85,21 @@ namespace OssianForge.Engine.Physics
             foreach (var key in _coyoteTimers.Keys.ToList())
                 _coyoteTimers[key] -= dt;
 
-            foreach (var body in _bodies)
+            foreach (var body in _bodies.OfType<PhysicsRigidBody>())
                 body.SyncToJitter();
 
             JitterWorld.Step(dt, multiThread: false);
 
-            foreach (var body in _bodies)
-            {
-                if (WorldIndex == 1)
-                {
-                    var pos = body.JitterBody?.Position ?? default;
-                    var vel = body.JitterBody?.Velocity ?? default;
-                }
+            foreach (var body in _bodies.OfType<PhysicsRigidBody>())
                 body.SyncFromJitter(LockPosition, LockRotation);
-            }
         }
 
-        public PhysicsBody? GetBody(string nodeId) =>
-            _bodies.FirstOrDefault(b => b.NodeId == nodeId);
-
+        public T? GetBody<T>(string nodeId) where T : PhysicsBody =>
+            _bodies.OfType<T>().FirstOrDefault(b => b.NodeId == nodeId);
 
         public bool IsGrounded(Node node, float maxGroundAngle = 90f)
         {
-            var body = GetBody(node.Id);
+            var body = GetBody<PhysicsRigidBody>(node.Id);
             if (body?.JitterBody == null) return false;
 
             float cosThreshold = MathF.Cos(maxGroundAngle * MathF.PI / 180f);

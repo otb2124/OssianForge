@@ -66,7 +66,7 @@ namespace OssianForge.Engine.Nodes.Props
             LocalTransform.Position.Y += yAnchorOffset;
         }
 
-        /*
+        
         public override void OnRender(Node node, double delta)
         {
             var transform = node.GetProperty<TransformProperty>();
@@ -87,6 +87,6 @@ namespace OssianForge.Engine.Nodes.Props
                 transform.GetCameraProjection(),
                 null);
         }
-        */
+        
     }
 }
