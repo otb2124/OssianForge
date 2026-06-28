@@ -68,15 +68,6 @@
       }
     },
     {
-      "from": "Falling",
-      "to": "Idle",
-      "condition": {
-        "call": "OssianForge.Engine.Physics.PhysicsReflection.IsGrounded",
-        "args": [ "$child.playerBodyMesh" ]
-      }
-    },
-
-    {
       "from": "WalkForward",
       "to": "Falling",
       "condition": {
@@ -1012,11 +1003,13 @@
       }
     },
     {
-      "from": "Jumping",
+      "from": "Idle",
       "to": "Falling",
       "condition": {
-        "call": "OssianForge.Engine.Physics.PhysicsReflection.IsFalling",
-        "args": [ "$child.playerBodyMesh" ]
+        "not": {
+          "call": "OssianForge.Engine.Physics.PhysicsReflection.IsGrounded",
+          "args": [ "$child.playerBodyMesh" ]
+        }
       }
     },
     {
@@ -1033,6 +1026,14 @@
       "condition": {
         "call": "OssianForge.Engine.Nodes.NodeReflection.IsAnimationFinished",
         "args": [ "$child.playerBodyMesh", "remy.jump_landing" ]
+      }
+    },
+    {
+      "from": "Jumping",
+      "to": "Falling",
+      "condition": {
+        "call": "OssianForge.Engine.Physics.PhysicsReflection.IsFalling",
+        "args": [ "$child.playerBodyMesh" ]
       }
     }
   ]

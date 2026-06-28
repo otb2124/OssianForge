@@ -306,11 +306,10 @@ namespace OssianForge.Engine.Nodes
         {
             var anim = node.GetProperty<AnimationProperty>();
             if (anim == null) return false;
-
             var clip = anim.CurrentClip;
-            if (clip == null) return false;
+            if (clip == null || clip.Name != clipName) return false;
 
-            return clip.Name == clipName && !anim.IsPlaying;
+            return anim.CurrentTime >= clip.DurationTicks - 1.0;
         }
 
         // ── member path walking ───────────────────────────────────────────────────

@@ -22,7 +22,7 @@
   {
     "id": "action.animationActions.playAnimJumpLanding",
     "call": "node.callMethod",
-    "args": [ "$child.playerBodyMesh", "AnimationProperty", "Play", "remy.jump_landing", true, 1.0 ]
+    "args": [ "$child.playerBodyMesh", "AnimationProperty", "Play", "remy.jump_landing", false, 1.8 ]
   },
   {
     "id": "action.animationActions.playAnimWalking",

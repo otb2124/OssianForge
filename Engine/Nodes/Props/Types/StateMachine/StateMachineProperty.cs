@@ -97,6 +97,8 @@ namespace OssianForge.Engine.Nodes.Props
             }
 
             Current?.OnUpdate(node, delta);
+
+            Console.WriteLine(Current.Name);
         }
 
         public override void OnRender(Node node, double delta)

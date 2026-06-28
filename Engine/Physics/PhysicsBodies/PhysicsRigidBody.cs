@@ -16,6 +16,7 @@ namespace OssianForge.Engine.Physics
         private JQuaternion _initialOrientation;
         private JVector _colliderCentroidOffset;
 
+        private bool _isGrounded;
 
         public PhysicsRigidBody() : base()
         {
@@ -147,6 +148,7 @@ namespace OssianForge.Engine.Physics
             
             var mv = physicsProperty.ManualVelocity;
 
+            //add check if is grounded to pass
             if (mv != Vector3.Zero)
             {
                 float currentY = JitterBody.Velocity.Y;
@@ -179,6 +181,8 @@ namespace OssianForge.Engine.Physics
 
             EnforcePhysicsLocks(node);
             EnforceAxisLocks(lockPosition, lockRotation);
+
+            _isGrounded = JitterBody.Velocity.Y is > -0.5f and < 0.5f;
 
             var p = JitterBody.Position;
             var o = JitterBody.Orientation;
