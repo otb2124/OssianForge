@@ -1,5 +1,4 @@
-﻿using Jitter2;
-using Jitter2.Collision.Shapes;
+﻿using Jitter2.Collision.Shapes;
 using Jitter2.Dynamics;
 using Jitter2.LinearMath;
 using OssianForge.Engine.Nodes;
@@ -22,7 +21,6 @@ namespace OssianForge.Engine.Physics
             
         }
 
-
         public override void Init(Node node)
         {
             base.Init(node);
@@ -33,32 +31,19 @@ namespace OssianForge.Engine.Physics
 
             var t = transformProperty.WorldTransform;
             var nodeScale = t.Scale;
-            var localMatrix = colliderProperty.LocalTransform.ToMatrix();
+            var collider = colliderProperty.ColliderResource;
 
-            var transformedPoints = colliderProperty.ColliderResource.Points
-                .Select(p =>
-                {
-                    var scaled = new Vector3(p.X * nodeScale.X, p.Y * nodeScale.Y, p.Z * nodeScale.Z);
-                    var local = Vector3.Transform(scaled, localMatrix);
-                    return new JVector(local.X, local.Y, local.Z);
-                })
-                .ToList();
+            var shape = collider.CreateDynamicShape(nodeScale);
 
-            var centroid = new JVector(
-                transformedPoints.Average(p => p.X),
-                transformedPoints.Average(p => p.Y),
-                transformedPoints.Average(p => p.Z));
-
-            _colliderCentroidOffset = centroid;
-
-            var centeredPoints = transformedPoints
-                .Select(p => new JVector(
-                    p.X - centroid.X,
-                    p.Y - centroid.Y,
-                    p.Z - centroid.Z))
-                .ToList();
-
-            var shape = new PointCloudShape(centeredPoints);
+            // CapsuleShape (and any future native shape) is centered at origin — offset is zero.
+            // MeshColliderResource centers its PointCloudShape at the AABB midpoint and
+            // returns that shape already centered, so we read the offset from the AABB.
+            _colliderCentroidOffset = collider is CapsuleColliderResource
+                ? JVector.Zero
+                : new JVector(
+                    (collider.AabbMin.X + collider.AabbMax.X) * 0.5f * nodeScale.X,
+                    (collider.AabbMin.Y + collider.AabbMax.Y) * 0.5f * nodeScale.Y,
+                    (collider.AabbMin.Z + collider.AabbMax.Z) * 0.5f * nodeScale.Z);
 
             JitterBody = Engine.Physics.GetWorld(physicsProperty.WorldIndex).JitterWorld.CreateRigidBody();
             JitterBody.AddShape(shape);
@@ -66,13 +51,13 @@ namespace OssianForge.Engine.Physics
             var pLock = physicsProperty.Lock;
 
             JitterBody.Position = new JVector(
-                t.Position.X + centroid.X,
-                t.Position.Y + centroid.Y,
-                t.Position.Z + centroid.Z);
+                t.Position.X + _colliderCentroidOffset.X,
+                t.Position.Y + _colliderCentroidOffset.Y,
+                t.Position.Z + _colliderCentroidOffset.Z);
 
             JitterBody.AffectedByGravity = !pLock.HasFlag(PhysicsLock.Gravity);
             JitterBody.Friction = pLock.HasFlag(PhysicsLock.Friction) ? 0f : physicsProperty.Friction;
-            JitterBody.Restitution = physicsProperty.Bounciness;
+            JitterBody.Restitution = physicsProperty.Restitution;
             JitterBody.Damping = (
                 pLock.HasFlag(PhysicsLock.LinearDamping) ? 0f : physicsProperty.LinearDamping,
                 pLock.HasFlag(PhysicsLock.AngularDamping) ? 0f : physicsProperty.AngularDamping);
@@ -132,61 +117,11 @@ namespace OssianForge.Engine.Physics
         }
 
         // ── Sync ─────────────────────────────────────────────────────────────
-
-        public void SyncFrom(Node node, AxisLock lockPosition = AxisLock.None, AxisLock lockRotation = AxisLock.None)
-        {
-            var transformProperty = node.GetProperty<TransformProperty>();
-            var physicsProperty = node.GetProperty<RigidPhysicsProperty>();
-
-            EnforcePhysicsLocks(node);
-            EnforceAxisLocks(lockPosition, lockRotation);
-
-            var p = JitterBody.Position;
-            var o = JitterBody.Orientation;
-            var v = JitterBody.Velocity;
-
-            var worldPos = new Vector3(
-                p.X - _colliderCentroidOffset.X,
-                p.Y - _colliderCentroidOffset.Y,
-                p.Z - _colliderCentroidOffset.Z);
-
-            var worldRot = Vector3.Zero;
-            if (!physicsProperty.Lock.HasFlag(PhysicsLock.Rotation))
-                worldRot = ToEuler(o);
-
-            var parentTp = node?.Parent?.GetProperty<TransformProperty>();
-
-            if (parentTp != null)
-            {
-                if (Matrix4x4.Invert(parentTp.WorldTransform.ToMatrix(), out var invParent))
-                    transformProperty._transform.Position = Vector3.Transform(worldPos, invParent);
-                else
-                    transformProperty._transform.Position = worldPos;
-
-                if (!physicsProperty.Lock.HasFlag(PhysicsLock.Rotation))
-                    transformProperty._transform.Rotation = worldRot - parentTp.WorldTransform.Rotation;
-            }
-            else
-            {
-                transformProperty._transform.Position = worldPos;
-
-                if (!physicsProperty.Lock.HasFlag(PhysicsLock.Rotation))
-                    transformProperty._transform.Rotation = worldRot;
-            }
-
-            transformProperty.WorldTransform.Position = worldPos;
-
-            if (!physicsProperty.Lock.HasFlag(PhysicsLock.Rotation))
-                transformProperty.WorldTransform.Rotation = worldRot;
-
-            physicsProperty.Velocity = new Vector3(v.X, v.Y, v.Z);
-        }
-
         public void SyncTo(Node node)
         {
             var transformProperty = node.GetProperty<TransformProperty>();
             var physicsProperty = node.GetProperty<RigidPhysicsProperty>();
-
+            var colliderProperty = node.GetProperty<ColliderProperty>();
 
             if (transformProperty.TransformDirty)
             {
@@ -212,6 +147,11 @@ namespace OssianForge.Engine.Physics
             var mv = physicsProperty.ManualVelocity;
             JitterBody.Velocity = new JVector(mv.X, currentY, mv.Z);
 
+            if(colliderProperty.ColliderResource is CapsuleColliderResource)
+            {
+                JitterBody.SetActivationState(true);
+            }
+
             if (physicsProperty.ManualImpulse != Vector3.Zero)
             {
                 var v = JitterBody.Velocity;
@@ -225,7 +165,53 @@ namespace OssianForge.Engine.Physics
 
             physicsProperty.ManualVelocity = Vector3.Zero;
         }
+        public void SyncFrom(Node node, AxisLock lockPosition = AxisLock.None, AxisLock lockRotation = AxisLock.None)
+        {
+            var transformProperty = node.GetProperty<TransformProperty>();
+            var physicsProperty = node.GetProperty<RigidPhysicsProperty>();
 
+            EnforcePhysicsLocks(node);
+            EnforceAxisLocks(lockPosition, lockRotation);
+
+            var p = JitterBody.Position;
+            var o = JitterBody.Orientation;
+            var v = JitterBody.Velocity;
+
+            var worldPos = new Vector3(
+                p.X - _colliderCentroidOffset.X,
+                p.Y - _colliderCentroidOffset.Y,
+                p.Z - _colliderCentroidOffset.Z);
+
+            var worldRot = Vector3.Zero;
+            if (!physicsProperty.Lock.HasFlag(PhysicsLock.Rotation))
+                worldRot = ToEuler(o);
+
+
+            var parentTp = node?.Parent?.GetProperty<TransformProperty>();
+
+            if (parentTp != null)
+            {
+                if (Matrix4x4.Invert(parentTp.WorldTransform.ToMatrix(), out var invParent))
+                    transformProperty._transform.Position = Vector3.Transform(worldPos, invParent);
+                else
+                    transformProperty._transform.Position = worldPos;
+
+                if (!physicsProperty.Lock.HasFlag(PhysicsLock.Rotation))
+                    transformProperty._transform.Rotation = worldRot - parentTp.WorldTransform.Rotation;
+            }
+            else
+            {
+                transformProperty._transform.Position = worldPos;
+
+                if (!physicsProperty.Lock.HasFlag(PhysicsLock.Rotation))
+                    transformProperty._transform.Rotation = worldRot;
+            }
+
+            transformProperty.WorldTransform.Position = worldPos;
+
+            if (!physicsProperty.Lock.HasFlag(PhysicsLock.Rotation))
+                transformProperty.WorldTransform.Rotation = worldRot;
+        }
         // ── Forces ───────────────────────────────────────────────────────────
 
         public void AddForce(Vector3 force)

@@ -11,11 +11,10 @@ namespace OssianForge.Engine.Nodes.Props.Types.Physics
 
     public class RigidPhysicsProperty : PhysicsProperty
     {
-        public Vector3 Velocity;
         public Vector3 ManualVelocity;
         public Vector3 ManualImpulse;
         public float Mass = 1f;
-        public float Bounciness = 0f;
+        public float Restitution = 0f;
         public float LinearDamping = 0.02f;
         public float AngularDamping = 0.05f;
         public float Friction = 0.6f;
@@ -38,7 +37,7 @@ namespace OssianForge.Engine.Nodes.Props.Types.Physics
             : base(worldIndex)
         {
             Mass = mass;
-            Bounciness = bounciness;
+            Restitution = bounciness;
             LinearDamping = linearDamping;
             AngularDamping = angularDamping;
             Friction = friction;
@@ -55,7 +54,7 @@ namespace OssianForge.Engine.Nodes.Props.Types.Physics
             world.OnPostStep += _postStep;
         }
 
-        public void AddForce(Vector3 force) => Velocity += force / Mass;
-        public void AddImpulse(Vector3 impulse) => Velocity += impulse;
+        public void AddForce(Vector3 force) { } //=> Velocity += force / Mass;
+        public void AddImpulse(Vector3 impulse) { } //=> Velocity += impulse;
     }
 }

@@ -212,32 +212,37 @@
   {
     "id": "collider.ball",
     "data": [ "mesh.ball" ],
-    "type": "collider"
+    "type": "meshcollider"
   },
   {
     "id": "collider.plane",
     "data": [ "mesh.plane" ],
-    "type": "collider"
+    "type": "meshcollider"
   },
   {
     "id": "collider.cube",
     "data": [ "mesh.cube" ],
-    "type": "collider"
+    "type": "meshcollider"
   },
   {
     "id": "collider.thickquad",
     "data": [ "mesh.thickquad" ],
-    "type": "collider"
+    "type": "meshcollider"
   },
   {
     "id": "collider.remy",
     "data": [ "mesh.remy" ],
-    "type": "collider"
+    "type": "meshcollider"
   },
   {
     "id": "collider.pyramid",
     "data": [ "mesh.pyramid" ],
-    "type": "collider"
+    "type": "meshcollider"
+  },
+  {
+    "id": "collider.capsule",
+    "data": [ "mesh.capsule" ],
+    "type": "meshcollider"
   },
   {
     "id": "collider.capsule.player",

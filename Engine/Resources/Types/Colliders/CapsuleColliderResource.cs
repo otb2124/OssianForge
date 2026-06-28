@@ -2,53 +2,65 @@
 using Jitter2.LinearMath;
 using OssianForge.Engine.Resources.Colliders;
 using OssianForge.Engine.Resources.Meshes;
-using OssianForge.Engine;
+using System.Numerics;
+using static OssianForge.Engine.Utils.MathUtils;
 
 public class CapsuleColliderResource : ColliderResource
 {
     public float Radius { get; private set; }
     public float Height { get; private set; }
 
-    public CapsuleColliderResource(string id, float radius, float height) : base(id, "mesh.capsule")
+    public CapsuleColliderResource(string id, float radius, float height)
+        : base(id)
     {
-        Id = id;
         Radius = radius;
         Height = height;
-        //
+        float halfH = height * 0.5f;
+        AabbMin = new JVector(-radius, -halfH, -radius);
+        AabbMax = new JVector(radius, halfH, radius);
     }
 
-    public override void Load()
+    public override void Load() { }
+
+    public override RigidBodyShape CreateDynamicShape(Vector3 nodeScale)
     {
-        Points.Clear();
+        float scaledRadius = Radius * MathF.Max(nodeScale.X, nodeScale.Z);
+        float scaledHeight = Height * nodeScale.Y;
+        float cylinderLength = MathF.Max(0f, scaledHeight - 2f * scaledRadius);
+        return new CapsuleShape(scaledRadius, cylinderLength);
+    }
 
-        float halfH = Height * 0.5f;
+    public override IEnumerable<RigidBodyShape> CreateStaticShapes(Transform worldTransform)
+        => Enumerable.Empty<RigidBodyShape>();
+
+    public override SubMeshResource GetDebugMesh()
+    {
         float r = Radius;
+        float halfH = Height / 2f - r;
+        if (halfH < 0f) halfH = 0f;
 
-        // Generate capsule triangles for Jitter TriangleMesh + Points
-        var triangles = new List<JTriangle>();
         const int slices = 16;
         const int stacks = 8;
 
-        // Hemisphere points helper
-        JVector CapVertex(float phi, float theta, bool top)
+        var verts = new List<float>();
+
+        (Vector3 pos, Vector3 normal) CapsuleVertex(float phi, float theta, bool top)
         {
-            float x = MathF.Sin(phi) * MathF.Cos(theta);
-            float y = MathF.Cos(phi);
-            float z = MathF.Sin(phi) * MathF.Sin(theta);
-
-            float yPos = top
-                ? y * r + (Height - r)   // top: equator at Height-r, tip at Height
-                : y * r + r;              // bottom: equator at r, tip at 0
-
-            return new JVector(x * r, yPos, z * r);
+            var n = new Vector3(
+                MathF.Sin(phi) * MathF.Cos(theta),
+                MathF.Cos(phi),
+                MathF.Sin(phi) * MathF.Sin(theta));
+            float yOffset = top ? halfH : -halfH;
+            return (
+                new Vector3(n.X * r, (top ? n.Y : -n.Y) * r + yOffset, n.Z * r),
+                new Vector3(n.X, top ? n.Y : -n.Y, n.Z));
         }
 
-        void AddTri(JVector a, JVector b, JVector c)
+        void Add(Vector3 p, Vector3 n, float u, float v)
         {
-            triangles.Add(new JTriangle(a, b, c));
-            Points.Add(a);
-            Points.Add(b);
-            Points.Add(c);
+            verts.Add(p.X); verts.Add(p.Y); verts.Add(p.Z);
+            verts.Add(n.X); verts.Add(n.Y); verts.Add(n.Z);
+            verts.Add(u); verts.Add(v);
         }
 
         // Top hemisphere
@@ -58,14 +70,16 @@ public class CapsuleColliderResource : ColliderResource
             float phi1 = MathF.PI * (i + 1) / stacks;
             for (int j = 0; j < slices; j++)
             {
-                float t0 = 2 * MathF.PI * j / slices;
-                float t1 = 2 * MathF.PI * (j + 1) / slices;
-                var p00 = CapVertex(phi0, t0, true);
-                var p10 = CapVertex(phi1, t0, true);
-                var p01 = CapVertex(phi0, t1, true);
-                var p11 = CapVertex(phi1, t1, true);
-                AddTri(p00, p10, p11);
-                AddTri(p00, p11, p01);
+                float t0 = 2f * MathF.PI * j / slices;
+                float t1 = 2f * MathF.PI * (j + 1) / slices;
+                var (p00, n00) = CapsuleVertex(phi0, t0, true);
+                var (p10, n10) = CapsuleVertex(phi1, t0, true);
+                var (p01, n01) = CapsuleVertex(phi0, t1, true);
+                var (p11, n11) = CapsuleVertex(phi1, t1, true);
+                float u0 = (float)j / slices, v0 = (float)i / stacks;
+                float u1 = (float)(j + 1) / slices, v1 = (float)(i + 1) / stacks;
+                Add(p00, n00, u0, v0); Add(p10, n10, u0, v1); Add(p11, n11, u1, v1);
+                Add(p00, n00, u0, v0); Add(p11, n11, u1, v1); Add(p01, n01, u1, v0);
             }
         }
 
@@ -76,38 +90,35 @@ public class CapsuleColliderResource : ColliderResource
             float phi1 = MathF.PI * (i + 1) / stacks;
             for (int j = 0; j < slices; j++)
             {
-                float t0 = 2 * MathF.PI * j / slices;
-                float t1 = 2 * MathF.PI * (j + 1) / slices;
-                var p00 = CapVertex(phi0, t0, false);
-                var p10 = CapVertex(phi1, t0, false);
-                var p01 = CapVertex(phi0, t1, false);
-                var p11 = CapVertex(phi1, t1, false);
-                AddTri(p00, p10, p11);
-                AddTri(p00, p11, p01);
+                float t0 = 2f * MathF.PI * j / slices;
+                float t1 = 2f * MathF.PI * (j + 1) / slices;
+                var (p00, n00) = CapsuleVertex(phi0, t0, false);
+                var (p10, n10) = CapsuleVertex(phi1, t0, false);
+                var (p01, n01) = CapsuleVertex(phi0, t1, false);
+                var (p11, n11) = CapsuleVertex(phi1, t1, false);
+                float u0 = (float)j / slices, v0 = (float)i / stacks;
+                float u1 = (float)(j + 1) / slices, v1 = (float)(i + 1) / stacks;
+                Add(p00, n00, u0, v0); Add(p10, n10, u0, v1); Add(p11, n11, u1, v1);
+                Add(p00, n00, u0, v0); Add(p11, n11, u1, v1); Add(p01, n01, u1, v0);
             }
         }
 
         // Cylinder body
         for (int j = 0; j < slices; j++)
         {
-            float t0 = 2 * MathF.PI * j / slices;
-            float t1 = 2 * MathF.PI * (j + 1) / slices;
+            float t0 = 2f * MathF.PI * j / slices;
+            float t1 = 2f * MathF.PI * (j + 1) / slices;
             float x0 = MathF.Cos(t0), z0 = MathF.Sin(t0);
             float x1 = MathF.Cos(t1), z1 = MathF.Sin(t1);
-            float yB = 0 + r;
-            float yT = Height - r;
-
-            var bl = new JVector(x0 * r, yB, z0 * r);
-            var br = new JVector(x1 * r, yB, z1 * r);
-            var tl = new JVector(x0 * r, yT, z0 * r);
-            var tr = new JVector(x1 * r, yT, z1 * r);
-
-            AddTri(bl, br, tr);
-            AddTri(bl, tr, tl);
+            float u0 = (float)j / slices, u1 = (float)(j + 1) / slices;
+            Add(new Vector3(x0 * r, -halfH, z0 * r), new Vector3(x0, 0, z0), u0, 0f);
+            Add(new Vector3(x1 * r, -halfH, z1 * r), new Vector3(x1, 0, z1), u1, 0f);
+            Add(new Vector3(x1 * r, halfH, z1 * r), new Vector3(x1, 0, z1), u1, 1f);
+            Add(new Vector3(x0 * r, -halfH, z0 * r), new Vector3(x0, 0, z0), u0, 0f);
+            Add(new Vector3(x1 * r, halfH, z1 * r), new Vector3(x1, 0, z1), u1, 1f);
+            Add(new Vector3(x0 * r, halfH, z0 * r), new Vector3(x0, 0, z0), u0, 1f);
         }
 
-        AabbMin = new JVector(-r, 0f, -r);
-        AabbMax = new JVector(r, Height, r);
-        TriangleMesh = new TriangleMesh(triangles, ignoreDegenerated: true);
+        return new SubMeshResource(verts.ToArray(), 0);
     }
 }

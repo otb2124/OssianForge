@@ -74,7 +74,7 @@ namespace OssianForge.Engine.Nodes.Props
 
             if (transform == null) return;
 
-            _debugMesh ??= ColliderResource.GetMesh();
+            _debugMesh ??= ColliderResource.GetDebugMesh();
             if (_debugMesh == null) return;
 
             var model = LocalTransform.ToMatrix() * transform.GetCameraModel();
