@@ -2,15 +2,27 @@
 using Jitter2.Collision.Shapes;
 using Jitter2.LinearMath;
 using OssianForge.Engine.Nodes;
+using OssianForge.Engine.Nodes.Props;
 
 namespace OssianForge.Engine.Physics
 {
     public class PhysicsStaticBody : PhysicsBody
     {
-        public PhysicsStaticBody(Node node, World jitterWorld) : base(node)
+        public PhysicsStaticBody() : base()
         {
-            var t = TransformProperty.WorldTransform;
-            var sourceMesh = ColliderProperty.ColliderResource.TriangleMesh!;
+            
+        }
+
+        public override void Init(Node node)
+        {
+            base.Init(node);
+
+            var transformProperty = node.GetProperty<TransformProperty>();
+            var colliderProperty = node.GetProperty<ColliderProperty>();
+            var physicsProperty = node.GetProperty<PhysicsProperty>();
+
+            var t = transformProperty.WorldTransform;
+            var sourceMesh = colliderProperty.ColliderResource.TriangleMesh!;
             var transformed = new List<JTriangle>();
 
             for (int i = 0; i < sourceMesh.Indices.Length; i++)
@@ -31,7 +43,7 @@ namespace OssianForge.Engine.Physics
 
             foreach (var shape in TriangleShape.CreateAllShapes(positionedMesh))
             {
-                jitterWorld.NullBody.AddShape(shape, setMassInertia: false);
+                Engine.Physics.GetWorld(physicsProperty.WorldIndex).JitterWorld.NullBody.AddShape(shape, setMassInertia: false);
                 OwnedShapes.Add(shape);
             }
         }

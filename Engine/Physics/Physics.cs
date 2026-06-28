@@ -23,8 +23,8 @@ namespace OssianForge.Engine.Physics
 
         public void OnLoad()
         {
-            foreach (var world in PhysicsWorlds)
-                world.RegisterAll();
+            //foreach (var world in PhysicsWorlds)
+                //world.RegisterAll();
         }
 
         public void OnUpdate(double delta)

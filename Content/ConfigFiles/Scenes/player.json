@@ -72,11 +72,9 @@
               "data": [ "collider.capsule.player", "Bottom" ]
             },
             {
-              "type": "PhysicsProperty",
+              "type": "RigidPhysicsProperty",
               "data": [
                 0,
-                false,
-                true, 
                 1,
                 0,
                 0.6,

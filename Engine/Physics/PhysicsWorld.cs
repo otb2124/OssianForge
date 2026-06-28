@@ -6,6 +6,7 @@ using Jitter2.LinearMath;
 using OssianForge.Engine.Nodes;
 using OssianForge.Engine.Nodes.Props;
 using System.Numerics;
+using OssianForge.Engine.Nodes.Props.Types.Physics;
 
 namespace OssianForge.Engine.Physics
 {
@@ -22,7 +23,6 @@ namespace OssianForge.Engine.Physics
     {
         public readonly World JitterWorld;
         public int WorldIndex;
-        private readonly List<PhysicsBody> _bodies = new();
 
         public AxisLock LockPosition = AxisLock.None;
         public AxisLock LockRotation = AxisLock.None;
@@ -30,52 +30,14 @@ namespace OssianForge.Engine.Physics
         private readonly Dictionary<string, float> _coyoteTimers = new();
         private const float CoyoteTime = 0.15f;
 
+        public event Action? OnPreStep;
+        public event Action? OnPostStep;
+
         public PhysicsWorld(int worldIndex, Vector3 gravity)
         {
             WorldIndex = worldIndex;
             JitterWorld = new World();
             JitterWorld.Gravity = new JVector(gravity.X, gravity.Y, gravity.Z);
-        }
-
-        public void RegisterAll()
-        {
-            _bodies.Clear();
-            var nodes = Engine.Nodes.NodeManager.GetNodesWithProperty<PhysicsProperty>();
-            foreach (var node in nodes)
-            {
-                if (node.GetProperty<PhysicsProperty>().WorldIndex == WorldIndex)
-                    Register(node);
-            }
-        }
-
-        public PhysicsBody Register(Node node)
-        {
-            if (node == null) return null;
-            if (_bodies.Any(b => b.NodeId == node.Id))
-                return _bodies.First(b => b.NodeId == node.Id);
-
-            PhysicsBody body = node.GetProperty<PhysicsProperty>().IsStatic
-                ? new PhysicsStaticBody(node, JitterWorld)
-                : new PhysicsRigidBody(node, JitterWorld);
-            _bodies.Add(body);
-            return body;
-        }
-
-        public void Unregister(Node node)
-        {
-            var body = _bodies.FirstOrDefault(b => b.NodeId == node.Id);
-            if (body == null) return;
-
-            foreach (var c in body.Constraints)
-                JitterWorld.Remove(c);
-
-            if (body is PhysicsRigidBody rigid)
-                JitterWorld.Remove(rigid.JitterBody);
-            else
-                foreach (var shape in body.OwnedShapes)
-                    JitterWorld.NullBody.RemoveShape(shape);
-
-            _bodies.RemoveAll(b => b.NodeId == node.Id);
         }
 
         public void OnUpdate(double delta)
@@ -85,21 +47,20 @@ namespace OssianForge.Engine.Physics
             foreach (var key in _coyoteTimers.Keys.ToList())
                 _coyoteTimers[key] -= dt;
 
-            foreach (var body in _bodies.OfType<PhysicsRigidBody>())
-                body.SyncToJitter();
-
+            OnPreStep?.Invoke();
             JitterWorld.Step(dt, multiThread: false);
-
-            foreach (var body in _bodies.OfType<PhysicsRigidBody>())
-                body.SyncFromJitter(LockPosition, LockRotation);
+            OnPostStep?.Invoke();
         }
 
-        public T? GetBody<T>(string nodeId) where T : PhysicsBody =>
-            _bodies.OfType<T>().FirstOrDefault(b => b.NodeId == nodeId);
+        public PhysicsRigidBody? GetRigidBody(string nodeId) =>
+            Engine.Nodes.NodeManager.GetNode(nodeId)?.GetProperty<RigidPhysicsProperty>()?.RigidBody;
+
+        public PhysicsStaticBody? GetStaticBody(string nodeId) =>
+            Engine.Nodes.NodeManager.GetNode(nodeId)?.GetProperty<StaticPhysicsProperty>()?.StaticBody;
 
         public bool IsGrounded(Node node, float maxGroundAngle = 90f)
         {
-            var body = GetBody<PhysicsRigidBody>(node.Id);
+            var body = GetRigidBody(node.Id);
             if (body?.JitterBody == null) return false;
 
             float cosThreshold = MathF.Cos(maxGroundAngle * MathF.PI / 180f);

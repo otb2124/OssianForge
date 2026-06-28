@@ -48,8 +48,8 @@
           "data": [ "collider.cube" ]
         },
         {
-          "type": "PhysicsProperty",
-          "data": [ 0, true, false ]
+          "type": "StaticPhysicsProperty",
+          "data": [ 0 ]
         }
       ]
     },
@@ -133,8 +133,8 @@
           "data": [ "collider.ball" ]
         },
         {
-          "type": "PhysicsProperty",
-          "data": [ 0, false, true, 1, 1 ]
+          "type": "RigidPhysicsProperty",
+          "data": [ 0, 1, 1 ]
         }
       ]
     },
@@ -161,8 +161,8 @@
           "data": [ "collider.cube" ]
         },
         {
-          "type": "PhysicsProperty",
-          "data": [ 0, false, true, 1, 1 ]
+          "type": "RigidPhysicsProperty",
+          "data": [ 0, 1, 1 ]
         }
       ]
     },
@@ -189,8 +189,8 @@
           "data": [ "collider.ball" ]
         },
         {
-          "type": "PhysicsProperty",
-          "data": [ 0, false, true, 1, 1 ]
+          "type": "RigidPhysicsProperty",
+          "data": [ 0, 1, 1 ]
         }
       ]
     },
@@ -217,8 +217,8 @@
           "data": [ "collider.cube" ]
         },
         {
-          "type": "PhysicsProperty",
-          "data": [ 0, false, true, 1, 1 ]
+          "type": "RigidPhysicsProperty",
+          "data": [ 0, 1, 1 ]
         }
       ]
     },
@@ -245,8 +245,8 @@
           "data": [ "collider.pyramid" ]
         },
         {
-          "type": "PhysicsProperty",
-          "data": [ 0, false, true, 1, 1 ]
+          "type": "RigidPhysicsProperty",
+          "data": [ 0, 1, 1 ]
         }
       ]
     },
@@ -271,8 +271,8 @@
           "data": [ "collider.cube" ]
         },
         {
-          "type": "PhysicsProperty",
-          "data": [ 0, true, false ]
+          "type": "StaticPhysicsProperty",
+          "data": [ 0 ]
         }
       ]
     },
@@ -297,8 +297,8 @@
           "data": [ "collider.cube" ]
         },
         {
-          "type": "PhysicsProperty",
-          "data": [ 0, true, false ]
+          "type": "StaticPhysicsProperty",
+          "data": [ 0 ]
         }
       ]
     },
@@ -323,8 +323,8 @@
           "data": [ "collider.cube" ]
         },
         {
-          "type": "PhysicsProperty",
-          "data": [ 0, true, false ]
+          "type": "StaticPhysicsProperty",
+          "data": [ 0 ]
         }
       ]
     },
@@ -349,8 +349,8 @@
           "data": [ "collider.cube" ]
         },
         {
-          "type": "PhysicsProperty",
-          "data": [ 0, true, false ]
+          "type": "StaticPhysicsProperty",
+          "data": [ 0 ]
         }
       ]
     },
@@ -375,8 +375,8 @@
           "data": [ "collider.cube" ]
         },
         {
-          "type": "PhysicsProperty",
-          "data": [ 0, true, false ]
+          "type": "StaticPhysicsProperty",
+          "data": [ 0 ]
         }
       ]
     },
@@ -414,8 +414,8 @@
           "data": [ "collider.thickquad" ]
         },
         {
-          "type": "PhysicsProperty",
-          "data": [ 0, false, true, 1, 1 ]
+          "type": "RigidPhysicsProperty",
+          "data": [ 0, 1, 1 ]
         }
       ]
     },
@@ -443,8 +443,8 @@
           "data": [ "collider.thickquad" ]
         },
         {
-          "type": "PhysicsProperty",
-          "data": [ 0, false, true, 1, 1 ]
+          "type": "RigidPhysicsProperty",
+          "data": [ 0, 1, 1 ]
         }
       ]
     },
@@ -472,8 +472,8 @@
           "data": [ "collider.thickquad" ]
         },
         {
-          "type": "PhysicsProperty",
-          "data": [ 0, false, true, 1, 1 ]
+          "type": "RigidPhysicsProperty",
+          "data": [ 0, 1, 1 ]
         }
       ]
     },

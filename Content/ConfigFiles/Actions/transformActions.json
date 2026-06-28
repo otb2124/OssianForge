@@ -2,42 +2,42 @@
   {
     "id": "action.transform.jump",
     "call": "node.setValue",
-    "args": [ "$child.playerBodyMesh", "PhysicsProperty", "ManualImpulse", "0,5,0" ]
+    "args": [ "$child.playerBodyMesh", "RigidPhysicsProperty", "ManualImpulse", "0,5,0" ]
   },
 
 
   {
     "id": "action.transform.sprintForward",
     "call": "node.setValueCameraDirection",
-    "args": [ "$child.playerBodyMesh", "PhysicsProperty", "ManualVelocity", "0,0,-10", "playerCamera", "$delta" ]
+    "args": [ "$child.playerBodyMesh", "RigidPhysicsProperty", "ManualVelocity", "0,0,-10", "playerCamera", "$delta" ]
   },
   {
     "id": "action.transform.sprintBackward",
     "call": "node.setValueCameraDirection",
-    "args": [ "$child.playerBodyMesh", "PhysicsProperty", "ManualVelocity", "0,0,10", "playerCamera", "$delta" ]
+    "args": [ "$child.playerBodyMesh", "RigidPhysicsProperty", "ManualVelocity", "0,0,10", "playerCamera", "$delta" ]
   },
 
   {
     "id": "action.transform.runForward",
     "call": "node.setValueCameraDirection",
-    "args": [ "$child.playerBodyMesh", "PhysicsProperty", "ManualVelocity", "0,0,-5.5", "playerCamera", "$delta" ]
+    "args": [ "$child.playerBodyMesh", "RigidPhysicsProperty", "ManualVelocity", "0,0,-5.5", "playerCamera", "$delta" ]
   },
   {
     "id": "action.transform.runBackward",
     "call": "node.setValueCameraDirection",
-    "args": [ "$child.playerBodyMesh", "PhysicsProperty", "ManualVelocity", "0,0,5.5", "playerCamera", "$delta" ]
+    "args": [ "$child.playerBodyMesh", "RigidPhysicsProperty", "ManualVelocity", "0,0,5.5", "playerCamera", "$delta" ]
   },
 
 
   {
     "id": "action.transform.walkForward",
     "call": "node.setValueCameraDirection",
-    "args": [ "$child.playerBodyMesh", "PhysicsProperty", "ManualVelocity", "0,0,-2", "playerCamera", "$delta" ]
+    "args": [ "$child.playerBodyMesh", "RigidPhysicsProperty", "ManualVelocity", "0,0,-2", "playerCamera", "$delta" ]
   },
   {
     "id": "action.transform.walkBackward",
     "call": "node.setValueCameraDirection",
-    "args": [ "$child.playerBodyMesh", "PhysicsProperty", "ManualVelocity", "0,0,2", "playerCamera", "$delta" ]
+    "args": [ "$child.playerBodyMesh", "RigidPhysicsProperty", "ManualVelocity", "0,0,2", "playerCamera", "$delta" ]
   },
 
 

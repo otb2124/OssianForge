@@ -12,20 +12,16 @@ namespace OssianForge.Engine.Physics
 {
     public abstract class PhysicsBody
     {
-        public string NodeId;
-        public PhysicsProperty PhysicsProperty;
-        public ColliderProperty ColliderProperty;
-        public TransformProperty TransformProperty;
-
         public List<RigidBodyShape> OwnedShapes = new();
         public readonly List<Constraint> Constraints = new();
 
-        protected PhysicsBody(Node node)
+        protected PhysicsBody()
         {
-            NodeId = node.Id;
-            PhysicsProperty = node.GetProperty<PhysicsProperty>();
-            ColliderProperty = node.GetProperty<ColliderProperty>();
-            TransformProperty = node.GetProperty<TransformProperty>();
+        }
+
+        public virtual void Init(Node node)
+        {
+
         }
 
         // ── Shared static helpers ────────────────────────────────────────────

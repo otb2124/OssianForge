@@ -1,6 +1,7 @@
 ﻿using OssianForge.Engine.Nodes;
 using OssianForge.Engine.Nodes.Props;
 using OssianForge.Engine.Nodes.Props.Types.Camera;
+using OssianForge.Engine.Nodes.Props.Types.Physics;
 using OssianForge.Engine.Nodes.Props.Types.Scene;
 using System.Numerics;
 using System.Text.Json;
@@ -137,7 +138,8 @@ namespace OssianForge.Engine.Resources.Config
                 "SpotEmissionProperty" => ParseSpotEmissionProperty(data),
                 "EmissionProperty" => ParsePointEmissionProperty(data),
                 "ColliderProperty" => ParseColliderProperty(data),
-                "PhysicsProperty" => ParsePhysicsProperty(el, data),
+                "RigidPhysicsProperty" => ParseRigidPhysicsProperty(el, data),
+                "StaticPhysicsProperty" => ParseStaticPhysicsProperty(el, data),
                 "AnimationProperty" => ParseAnimationProperty(el, data),
                 "ControlProperty" => ParseControlProperty(data),
                 "ActionProperty" => ParseActionProperty(data),
@@ -252,27 +254,32 @@ namespace OssianForge.Engine.Resources.Config
             return new SpotEmissionProperty(direction, color, intensity, radius, inner, outer);
         }
 
-        private static PhysicsProperty ParsePhysicsProperty(JsonElement el, JsonElement? data)
+        private static RigidPhysicsProperty ParseRigidPhysicsProperty(JsonElement el, JsonElement? data)
         {
             var arr = data!.Value;
             int len = arr.GetArrayLength();
 
             int world = arr[0].GetInt32();
-            bool isStatic = arr[1].GetBoolean();
-            bool isDynamic = arr[2].GetBoolean();
-            float mass = len > 3 ? arr[3].GetSingle() : 1f;
-            float bounciness = len > 4 ? arr[4].GetSingle() : 0f;
-            float friction = len > 5 ? arr[5].GetSingle() : 0.6f;
-            float linearDamping = len > 6 ? arr[6].GetSingle() : 0.02f;
-            float angularDamping = len > 7 ? arr[7].GetSingle() : 0.05f;
+            float mass = len > 1 ? arr[1].GetSingle() : 1f;
+            float bounciness = len > 2 ? arr[2].GetSingle() : 0f;
+            float friction = len > 3 ? arr[3].GetSingle() : 0.6f;
+            float linearDamping = len > 4 ? arr[4].GetSingle() : 0.02f;
+            float angularDamping = len > 5 ? arr[5].GetSingle() : 0.05f;
             PhysicsLock pLock = PhysicsLock.None;
-            if (len > 8 && arr[8].ValueKind == JsonValueKind.Array)
+            if (len > 6 && arr[6].ValueKind == JsonValueKind.Array)
             {
-                foreach (var flag in arr[8].EnumerateArray())
+                foreach (var flag in arr[6].EnumerateArray())
                     pLock |= Enum.Parse<PhysicsLock>(flag.GetString()!, true);
             }
 
-            return new PhysicsProperty(world, isStatic, isDynamic, mass, bounciness, friction, linearDamping, angularDamping, pLock);
+            return new RigidPhysicsProperty(world, mass, bounciness, friction, linearDamping, angularDamping, pLock);
+        }
+
+        private static StaticPhysicsProperty ParseStaticPhysicsProperty(JsonElement el, JsonElement? data)
+        {
+            var arr = data!.Value;
+            int world = arr[0].GetInt32();
+            return new StaticPhysicsProperty(world);
         }
 
         private static AnimationProperty ParseAnimationProperty(JsonElement el, JsonElement? data)

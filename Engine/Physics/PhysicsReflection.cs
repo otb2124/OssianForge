@@ -30,7 +30,7 @@ namespace OssianForge.Engine.Physics
 
             var world = Engine.Physics.GetWorld(physProp.WorldIndex);
 
-            var body = world.GetBody<PhysicsRigidBody>(node.Id);
+            var body = world.GetRigidBody(node.Id);
             return body.JitterBody.Velocity.Y < -0.1f;
         }
     }
