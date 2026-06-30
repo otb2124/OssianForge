@@ -4,7 +4,11 @@
     "call": "node.setValue",
     "args": [ "$child.playerBodyMesh", "RigidPhysicsProperty", "ManualImpulse", "0,5,0" ]
   },
-
+  {
+    "id": "action.transform.resetVelocity",
+    "call": "node.callMethod",
+    "args": [ "$child.playerBodyMesh", "RigidPhysicsProperty", "ResetVelocity"]
+  },
 
   {
     "id": "action.transform.sprintForward",

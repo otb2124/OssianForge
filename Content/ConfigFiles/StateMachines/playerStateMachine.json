@@ -4,7 +4,7 @@
   "states": [
     {
       "id": "Idle",
-      "onEnter": [ "action.animationActions.playAnimIdle" ]
+      "onEnter": [ "action.animationActions.playAnimIdle", "action.transform.resetVelocity" ]
     },
     {
       "id": "Falling",

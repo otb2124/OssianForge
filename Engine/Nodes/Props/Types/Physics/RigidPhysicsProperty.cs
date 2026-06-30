@@ -54,7 +54,10 @@ namespace OssianForge.Engine.Nodes.Props.Types.Physics
             world.OnPostStep += _postStep;
         }
 
-        public void AddForce(Vector3 force) { } //=> Velocity += force / Mass;
-        public void AddImpulse(Vector3 impulse) { } //=> Velocity += impulse;
+        public void ResetVelocity()
+        {
+            if(RigidBody.JitterBody == null) return;
+            RigidBody.JitterBody.Velocity = new Jitter2.LinearMath.JVector(0,0,0);
+        }
     }
 }
