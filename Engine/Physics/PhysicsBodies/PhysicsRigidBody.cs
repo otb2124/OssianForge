@@ -14,7 +14,6 @@ namespace OssianForge.Engine.Physics
 
         private JVector _initialPosition;
         private JQuaternion _initialOrientation;
-        private JVector _colliderCentroidOffset;
 
         private bool _isGrounded;
 
@@ -40,22 +39,14 @@ namespace OssianForge.Engine.Physics
             // CapsuleShape (and any future native shape) is centered at origin — offset is zero.
             // MeshColliderResource centers its PointCloudShape at the AABB midpoint and
             // returns that shape already centered, so we read the offset from the AABB.
-            _colliderCentroidOffset = collider is CapsuleColliderResource
-                ? JVector.Zero
-                : new JVector(
-                    (collider.AabbMin.X + collider.AabbMax.X) * 0.5f * nodeScale.X,
-                    (collider.AabbMin.Y + collider.AabbMax.Y) * 0.5f * nodeScale.Y,
-                    (collider.AabbMin.Z + collider.AabbMax.Z) * 0.5f * nodeScale.Z);
+
 
             JitterBody = Engine.Physics.GetWorld(physicsProperty.WorldIndex).JitterWorld.CreateRigidBody();
             JitterBody.AddShape(shape);
 
             var pLock = physicsProperty.Lock;
 
-            JitterBody.Position = new JVector(
-                t.Position.X + _colliderCentroidOffset.X,
-                t.Position.Y + _colliderCentroidOffset.Y,
-                t.Position.Z + _colliderCentroidOffset.Z);
+            JitterBody.Position = new JVector(t.Position.X, t.Position.Y, t.Position.Z);
 
             JitterBody.AffectedByGravity = !pLock.HasFlag(PhysicsLock.Gravity);
             JitterBody.Friction = pLock.HasFlag(PhysicsLock.Friction) ? 0f : physicsProperty.Friction;
@@ -131,9 +122,9 @@ namespace OssianForge.Engine.Physics
                 var worldRot = GetCurrentWorldRotation(node);
 
                 JitterBody.Position = new JVector(
-                    worldPos.X + _colliderCentroidOffset.X,
-                    worldPos.Y + _colliderCentroidOffset.Y,
-                    worldPos.Z + _colliderCentroidOffset.Z);
+                    worldPos.X,
+                    worldPos.Y,
+                    worldPos.Z);
 
                 JitterBody.Orientation = new JQuaternion(worldRot.X, worldRot.Y, worldRot.Z, worldRot.W);
                 JitterBody.Velocity = JVector.Zero;
@@ -154,11 +145,8 @@ namespace OssianForge.Engine.Physics
                 float currentY = JitterBody.Velocity.Y;
                 float preservedY = currentY > 0.5f ? currentY : 0f;
                 JitterBody.Velocity = new JVector(mv.X, preservedY, mv.Z);
-            }
 
-            if (colliderProperty.ColliderResource is CapsuleColliderResource)
-            {
-                JitterBody.SetActivationState(true);
+                physicsProperty.ManualVelocity = Vector3.Zero;
             }
 
             if (physicsProperty.ManualImpulse != Vector3.Zero)
@@ -172,7 +160,6 @@ namespace OssianForge.Engine.Physics
                 physicsProperty.ManualImpulse = Vector3.Zero;
             }
 
-            physicsProperty.ManualVelocity = Vector3.Zero;
         }
         public void SyncFrom(Node node, AxisLock lockPosition = AxisLock.None, AxisLock lockRotation = AxisLock.None)
         {
@@ -186,12 +173,11 @@ namespace OssianForge.Engine.Physics
 
             var p = JitterBody.Position;
             var o = JitterBody.Orientation;
-            var v = JitterBody.Velocity;
 
             var worldPos = new Vector3(
-                p.X - _colliderCentroidOffset.X,
-                p.Y - _colliderCentroidOffset.Y,
-                p.Z - _colliderCentroidOffset.Z);
+                p.X,
+                p.Y,
+                p.Z);
 
             var worldRot = Vector3.Zero;
             if (!physicsProperty.Lock.HasFlag(PhysicsLock.Rotation))
@@ -223,6 +209,11 @@ namespace OssianForge.Engine.Physics
             if (!physicsProperty.Lock.HasFlag(PhysicsLock.Rotation))
                 transformProperty.WorldTransform.Rotation = worldRot;
         }
+
+
+
+
+
         // ── Forces ───────────────────────────────────────────────────────────
 
         public void AddForce(Vector3 force)
@@ -271,7 +262,6 @@ namespace OssianForge.Engine.Physics
         private void EnforcePhysicsLocks(Node node)
         {
             var physicsProperty = node.GetProperty<RigidPhysicsProperty>();
-
             var pLock = physicsProperty.Lock;
             if (pLock == PhysicsLock.None) return;
 
@@ -281,13 +271,14 @@ namespace OssianForge.Engine.Physics
             if (pLock.HasFlag(PhysicsLock.LinearZ)) vel.Z = 0f;
             JitterBody.Velocity = vel;
 
-            var angVel = JitterBody.AngularVelocity;
             if (pLock.HasFlag(PhysicsLock.Rotation) || pLock.HasFlag(PhysicsLock.AllAngular))
             {
                 JitterBody.AngularVelocity = JVector.Zero;
+                JitterBody.Orientation = _initialOrientation;
             }
             else
             {
+                var angVel = JitterBody.AngularVelocity;
                 if (pLock.HasFlag(PhysicsLock.AngularX)) angVel.X = 0f;
                 if (pLock.HasFlag(PhysicsLock.AngularY)) angVel.Y = 0f;
                 if (pLock.HasFlag(PhysicsLock.AngularZ)) angVel.Z = 0f;
@@ -301,6 +292,6 @@ namespace OssianForge.Engine.Physics
                 pLock.HasFlag(PhysicsLock.AngularDamping) ? 0f : physicsProperty.AngularDamping);
         }
 
-        
+
     }
 }

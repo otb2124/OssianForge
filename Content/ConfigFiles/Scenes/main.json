@@ -4,7 +4,7 @@
   "properties": [
     {
       "type": "TransformProperty",
-      "data": [ [ "0,-10,0", "0,0,0", "1,1,1" ] ]
+      "data": [ [ "0,10,0", "0,0,0", "1,1,1" ] ]
     }
   ],
   "children": [
@@ -113,6 +113,7 @@
     {
       "id": "ball",
       "name": "ball",
+      "enabled": false,
       "properties": [
         {
           "type": "TransformProperty",
@@ -141,6 +142,7 @@
     {
       "id": "cube",
       "name": "cube",
+      "enabled": false,
       "properties": [
         {
           "type": "TransformProperty",
@@ -169,6 +171,7 @@
     {
       "id": "ball1",
       "name": "ball1",
+      "enabled": false,
       "properties": [
         {
           "type": "TransformProperty",
@@ -197,6 +200,7 @@
     {
       "id": "cube1",
       "name": "cube1",
+      "enabled": false,
       "properties": [
         {
           "type": "TransformProperty",
@@ -225,6 +229,7 @@
     {
       "id": "pyramid",
       "name": "pyramid",
+      "enabled": false,
       "properties": [
         {
           "type": "TransformProperty",
@@ -393,6 +398,7 @@
     {
       "id": "textBrick0",
       "name": "textBrick",
+      "enabled": false,
       "properties": [
         {
           "type": "TransformProperty",
@@ -422,6 +428,7 @@
     {
       "id": "textBrick1",
       "name": "textBrick1",
+      "enabled": false,
       "properties": [
         {
           "type": "TransformProperty",
@@ -451,6 +458,7 @@
     {
       "id": "textBrick2",
       "name": "textBrick2",
+      "enabled": false,
       "properties": [
         {
           "type": "TransformProperty",

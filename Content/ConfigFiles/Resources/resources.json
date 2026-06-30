@@ -250,6 +250,11 @@
     "type": "capsulecollider"
   },
   {
+    "id": "collider.box.player",
+    "data": [ 0.35, 3.8, 0.35 ],
+    "type": "boxcollider"
+  },
+  {
     "id": "font.roboto",
     "data": [ "texturefile.font.roboto", "configfile.font.roboto" ],
     "type": "font"

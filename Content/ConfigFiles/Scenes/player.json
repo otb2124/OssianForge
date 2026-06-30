@@ -20,6 +20,7 @@
       "children": [
         {
           "id": "playerBodyMesh",
+          "name": "playerBodyMesh",
           "properties": [
             {
               "type": "GroupProperty",
@@ -77,9 +78,9 @@
                 0,
                 1,
                 0,
-                0.6,
-                0.02,
-                0.05,
+                0,
+                0,
+                0,
                 [ "Rotation", "LinearDamping", "AngularDamping" ]
               ]
             }

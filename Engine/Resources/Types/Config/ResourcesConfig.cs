@@ -8,6 +8,7 @@ using OssianForge.Engine.Resources.Textures;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 
 namespace OssianForge.Engine.Resources.Config
 {
@@ -114,6 +115,7 @@ namespace OssianForge.Engine.Resources.Config
                 "cubemaptexture" => new CubemapTextureResource(record.Id, record.Data[0], record.Data[1], record.Data[2], record.Data[3], record.Data[4], record.Data[5]),
                 "meshcollider" => new MeshColliderResource(record.Id, record.Data[0]),
                 "capsulecollider" => new CapsuleColliderResource(record.Id, ToFloat(record.Data[0]), ToFloat(record.Data[1])),
+                "boxcollider" => new BoxColliderResource(record.Id, new Vector3(ToFloat(record.Data[0]), ToFloat(record.Data[1]), ToFloat(record.Data[2]))),
                 "font" => new FontResource(record.Id, record.Data[0], record.Data[1]),
                 "sound" => new SoundResource(record.Id, record.Data[0]),
                 _ => throw new Exception($"[RESOURCES CONFIG] Unknown type '{record.Type}' (id: '{record.Id}')")

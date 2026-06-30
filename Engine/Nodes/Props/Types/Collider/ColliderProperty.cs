@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Numerics;
+using OssianForge.Engine.Nodes.Props.Types.Physics;
+using OssianForge.Engine.Physics;
 using OssianForge.Engine.Resources.Colliders;
 using OssianForge.Engine.Resources.Meshes;
 using static OssianForge.Engine.Utils.MathUtils;
@@ -66,27 +68,49 @@ namespace OssianForge.Engine.Nodes.Props
             LocalTransform.Position.Y += yAnchorOffset;
         }
 
-        
+
         public override void OnRender(Node node, double delta)
         {
             var transform = node.GetProperty<TransformProperty>();
-            var mesh = node.GetProperty<MeshProperty>();
-
             if (transform == null) return;
+
+            var physicsProperty = node.GetProperty<PhysicsProperty>();
 
             _debugMesh ??= ColliderResource.GetDebugMesh();
             if (_debugMesh == null) return;
 
-            var model = LocalTransform.ToMatrix() * transform.GetCameraModel();
+            if (physicsProperty?.Body is PhysicsRigidBody rigidBody && rigidBody.JitterBody != null)
+            {
+                var p = rigidBody.JitterBody.Position;
+                var o = rigidBody.JitterBody.Orientation;
 
-            Engine.Graphics.Batch.DrawSubMesh(
-                _debugMesh,
-                Material,
-                model,
-                transform.GetCameraView(),
-                transform.GetCameraProjection(),
-                null);
+                var rotation = new Quaternion(o.X, o.Y, o.Z, o.W);
+                var position = new Vector3(p.X, p.Y, p.Z);
+
+                var model = Matrix4x4.CreateFromQuaternion(rotation) * Matrix4x4.CreateTranslation(position);
+
+                Engine.Graphics.Batch.DrawSubMesh(
+                    _debugMesh,
+                    Material,
+                    model,
+                    transform.GetCameraView(),
+                    transform.GetCameraProjection(),
+                    null);
+            }
+            else if (physicsProperty?.Body is PhysicsStaticBody)
+            {
+                // Static shapes are already baked into world space via CreateStaticShapes(worldTransform),
+                // but GetDebugMesh() returns LOCAL-space geometry, not the transformed static shapes.
+                // Use the node's own transform here instead.
+                Engine.Graphics.Batch.DrawSubMesh(
+                    _debugMesh,
+                    Material,
+                    transform.GetCameraModel(),
+                    transform.GetCameraView(),
+                    transform.GetCameraProjection(),
+                    null);
+            }
         }
-        
+
     }
 }
