@@ -41,7 +41,7 @@
         },
         {
           "type": "MeshProperty",
-          "data": [ "mesh.newTerrain" ]
+          "data": [ "mesh.highLands1" ]
         },
         {
           "type": "TextureMaterialProperty",
@@ -49,7 +49,7 @@
         },
         {
           "type": "ColliderProperty",
-          "data": [ "collider.terrain.newTerrain" ]
+          "data": [ "collider.terrain.highLands1" ]
         },
         {
           "type": "StaticPhysicsProperty",

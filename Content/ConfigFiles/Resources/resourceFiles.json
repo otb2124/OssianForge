@@ -245,6 +245,11 @@
     "type": "texturefile"
   },
   {
+    "id": "texturefile.heightMap.highLands1",
+    "path": "TextureFiles/HeightMaps/highLands1.png",
+    "type": "texturefile"
+  },
+  {
     "id": "configfile.font.roboto",
     "path": "ConfigFiles/Fonts/roboto.json",
     "type": "configfile"

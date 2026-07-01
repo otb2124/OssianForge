@@ -314,6 +314,9 @@
     <None Update="Content\TextureFiles\HeightMaps\highLands.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="Content\TextureFiles\HeightMaps\highLands1.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
   <ItemGroup>

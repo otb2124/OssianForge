@@ -13,6 +13,9 @@ namespace OssianForge.Engine.Graphics.Camera
         private float _yaw = -90f;
         private float _pitch = 0f;
 
+        public float NearPlane { get; set; } = 0.1f;
+        public float FarPlane { get; set; } = 2000f;
+
         //private Vector2 _lastMousePos;
         //private bool _firstMouse = true;
 
@@ -105,7 +108,7 @@ namespace OssianForge.Engine.Graphics.Camera
             return Matrix4x4.CreatePerspectiveFieldOfView(
                 float.DegreesToRadians(Fov),
                 AspectRatio,
-                0.1f, 100f);
+                NearPlane, FarPlane);
         }
 
         // ──────────────────────────────────────────────────────────────────────────

@@ -30,6 +30,8 @@ namespace OssianForge.Engine.Physics
         private readonly Dictionary<string, float> _coyoteTimers = new();
         private const float CoyoteTime = 0.15f;
 
+        private readonly Dictionary<string, bool> _wasGrounded = new();
+
         public event Action? OnPreStep;
         public event Action? OnPostStep;
 
@@ -58,7 +60,7 @@ namespace OssianForge.Engine.Physics
         public PhysicsStaticBody? GetStaticBody(string nodeId) =>
             Engine.Nodes.NodeManager.GetNode(nodeId)?.GetProperty<StaticPhysicsProperty>()?.StaticBody;
 
-        public bool IsGrounded(Node node, float maxGroundAngle = 90f)
+        public bool IsGrounded(Node node, float maxGroundAngle = 45f, float groundedExitDistance = 3f)
         {
             var body = GetRigidBody(node.Id);
             if (body?.JitterBody == null) return false;
@@ -70,19 +72,15 @@ namespace OssianForge.Engine.Physics
             foreach (Arbiter arbiter in body.JitterBody.Contacts)
             {
                 ref ContactData cd = ref arbiter.Handle.Data;
-
                 JVector n0 = cd.Contact0.Normal;
                 if (n0.LengthSquared() > 0.5f && MathF.Abs((float)JVector.Dot(n0, up)) >= cosThreshold)
                 { contacted = true; break; }
-
                 JVector n1 = cd.Contact1.Normal;
                 if (n1.LengthSquared() > 0.5f && MathF.Abs((float)JVector.Dot(n1, up)) >= cosThreshold)
                 { contacted = true; break; }
-
                 JVector n2 = cd.Contact2.Normal;
                 if (n2.LengthSquared() > 0.5f && MathF.Abs((float)JVector.Dot(n2, up)) >= cosThreshold)
                 { contacted = true; break; }
-
                 JVector n3 = cd.Contact3.Normal;
                 if (n3.LengthSquared() > 0.5f && MathF.Abs((float)JVector.Dot(n3, up)) >= cosThreshold)
                 { contacted = true; break; }
@@ -93,7 +91,34 @@ namespace OssianForge.Engine.Physics
             if (contacted)
             {
                 _coyoteTimers[id] = CoyoteTime;
+                _wasGrounded[id] = true;
                 return true;
+            }
+
+            // Distance threshold — only applies on exit (was previously grounded)
+            if (_wasGrounded.TryGetValue(id, out bool wasGrounded) && wasGrounded)
+            {
+                var rayOrigin = body.JitterBody.Position;
+                var rayDir = new JVector(0, -1, 0);
+
+                // Pre-filter: skip the body's own shapes to avoid self-hit
+                bool hit = JitterWorld.DynamicTree.RayCast(
+                    rayOrigin,
+                    rayDir,
+                    groundedExitDistance,
+                    pre: proxy => proxy is RigidBodyShape rbs && rbs.RigidBody != body.JitterBody,
+                    post: null,
+                    out _,
+                    out _,
+                    out float lambda);
+
+                if (hit && lambda <= groundedExitDistance)
+                {
+                    _coyoteTimers[id] = CoyoteTime;
+                    return true;
+                }
+
+                _wasGrounded[id] = false;
             }
 
             if (_coyoteTimers.TryGetValue(id, out float remaining) && remaining > 0f)

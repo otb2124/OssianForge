@@ -40,8 +40,13 @@
     "type": "mesh"
   },
   {
-    "id": "mesh.newTerrain",
+    "id": "mesh.highLands",
     "data": [ "texturefile.heightMap.highLands" ],
+    "type": "terrainmesh"
+  },
+  {
+    "id": "mesh.highLands1",
+    "data": [ "texturefile.heightMap.highLands1" ],
     "type": "terrainmesh"
   },
   {
@@ -260,8 +265,13 @@
     "type": "boxcollider"
   },
   {
-    "id": "collider.terrain.newTerrain",
-    "data": [ "mesh.newTerrain" ],
+    "id": "collider.terrain.highLands",
+    "data": [ "mesh.highLands" ],
+    "type": "terraincollider"
+  },
+  {
+    "id": "collider.terrain.highLands1",
+    "data": [ "mesh.highLands1" ],
     "type": "terraincollider"
   },
   {

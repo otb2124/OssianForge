@@ -15,7 +15,7 @@ namespace OssianForge.Engine.Physics
         private JVector _initialPosition;
         private JQuaternion _initialOrientation;
 
-        private bool _isGrounded;
+        public bool IsGrounded;
 
         public PhysicsRigidBody() : base()
         {
@@ -169,7 +169,7 @@ namespace OssianForge.Engine.Physics
             EnforcePhysicsLocks(node);
             EnforceAxisLocks(lockPosition, lockRotation);
 
-            _isGrounded = JitterBody.Velocity.Y is > -0.5f and < 0.5f;
+            IsGrounded = JitterBody.Velocity.Y is > -0.5f and < 0.5f;
 
             var p = JitterBody.Position;
             var o = JitterBody.Orientation;
