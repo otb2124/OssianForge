@@ -125,6 +125,11 @@
     "type": "texture"
   },
   {
+    "id": "texture.desert",
+    "data": [ "texturefile.desert" ],
+    "type": "texture"
+  },
+  {
     "id": "texture.empty",
     "data": [ "texturefile.empty" ],
     "type": "texture"
@@ -253,6 +258,11 @@
     "id": "collider.box.player",
     "data": [ 0.35, 3.8, 0.35 ],
     "type": "boxcollider"
+  },
+  {
+    "id": "collider.terrain.newTerrain",
+    "data": [ "mesh.newTerrain" ],
+    "type": "terraincollider"
   },
   {
     "id": "font.roboto",

@@ -69,6 +69,7 @@ namespace OssianForge.Engine.Nodes.Props
         }
 
 
+        /*
         public override void OnRender(Node node, double delta)
         {
             var transform = node.GetProperty<TransformProperty>();
@@ -111,6 +112,7 @@ namespace OssianForge.Engine.Nodes.Props
                     null);
             }
         }
+        */
 
     }
 }

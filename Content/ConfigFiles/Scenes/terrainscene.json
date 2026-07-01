@@ -1,0 +1,85 @@
+{
+  "id": "terrainscene",
+  "name": "terrainscene",
+  "children": [
+    {
+      "id": "sky",
+      "name": "Skybox",
+      "properties": [
+        {
+          "type": "TransformProperty"
+        },
+        {
+          "type": "MeshProperty",
+          "data": [ "mesh.cube" ]
+        },
+        {
+          "type": "CubemapMaterialProperty",
+          "data": [ "cubemap.skybox.sky", "shader.skybox" ]
+        }
+      ]
+    },
+    {
+      "id": "sunNode",
+      "name": "sun",
+      "properties": [
+        {
+          "type": "SunEmissionProperty",
+          "data": [ "0.3,-1.0,0.4", "1,0.95,0.8", 0.5 ]
+        }
+      ]
+    },
+    {
+      "id": "terrain",
+      "name": "terrain",
+      "properties": [
+        {
+          "type": "TransformProperty",
+          "data": [
+            [ "0,-35,0", "0,0,0", "1,1,1" ]
+          ]
+        },
+        {
+          "type": "MeshProperty",
+          "data": [ "mesh.newTerrain" ]
+        },
+        {
+          "type": "TextureMaterialProperty",
+          "data": [ "texture.desert", "shader.basic" ]
+        },
+        {
+          "type": "ColliderProperty",
+          "data": [ "collider.terrain.newTerrain" ]
+        },
+        {
+          "type": "StaticPhysicsProperty",
+          "data": [ 0 ]
+        }
+      ]
+    },
+    {
+      "id": "playerSceneRef",
+      "name": "PlayerSceneRef",
+      "properties": [
+        {
+          "type": "SceneReferenceProperty",
+          "data": [ "configfile.scene.player" ]
+        },
+        {
+          "type": "TransformProperty",
+          "data": [ [ "0,0,0", "0,0,0", "1,1,1" ] ]
+        }
+      ]
+    },
+    {
+      "id": "debugUiref",
+      "name": "debugUiref",
+      "properties": [
+        {
+          "type": "SceneReferenceProperty",
+          "data": [ "configfile.scene.debugui" ]
+        }
+      ]
+    }
+  ]
+}

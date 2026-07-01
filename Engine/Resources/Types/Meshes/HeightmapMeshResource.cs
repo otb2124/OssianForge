@@ -10,7 +10,7 @@ using OssianForge.Engine;
 
 namespace OssianForge.Engine.Resources.Meshes
 {
-    public class TerrainMeshResource : MeshResource
+    public class HeightmapMeshResource : MeshResource
     {
         private readonly string _heightmapId;
         private float _maxHeight;
@@ -24,7 +24,7 @@ namespace OssianForge.Engine.Resources.Meshes
         public int GridResX => _resX + 1;
         public int GridResZ => _resZ + 1;
 
-        public TerrainMeshResource(
+        public HeightmapMeshResource(
             string id,
             string heightmapFileId,
             float maxHeight = -1f)
@@ -38,7 +38,7 @@ namespace OssianForge.Engine.Resources.Meshes
         {
             base.Load();
             var texFile = Engine.Resources.GetResourceFile<TextureFile>(_heightmapId)
-                ?? throw new Exception($"TerrainMeshResource: heightmap TextureFile not found: '{_heightmapId}'");
+                ?? throw new Exception($"HeightmapMeshResource: heightmap TextureFile not found: '{_heightmapId}'");
 
             string globalPath = ResourceFile.CONTENT_FOLDER_PATH + "/" + texFile.Path;
 
