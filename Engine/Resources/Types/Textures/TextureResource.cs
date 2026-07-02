@@ -19,7 +19,7 @@ public class TextureResource : Resource
         TextureFiles.Clear();
         foreach (var textureId in TextureIds)
         {
-            var file = Engine.Resources.GetResourceFile<TextureFile>(textureId)
+            var file = Engine.Resources.GetResource<TextureFile>(textureId)
                 ?? throw new Exception($"Texture not found: '{textureId}'");
             TextureFiles.Add(file);
         }

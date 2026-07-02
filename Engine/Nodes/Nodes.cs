@@ -23,9 +23,9 @@ namespace OssianForge.Engine.Nodes
 
         public void OnLoad()
         {
-            var treeConfig = Engine.Resources.GetResourceFile<TreeConfig>("configfile.tree");
+            var treeConfig = Engine.Resources.GetResource<TreeConfig>("configfile.tree");
             var tree = treeConfig.GetTreeNode();
-            tree.AddChild(Engine.Resources.GetResourceFile<SceneConfig>(treeConfig.MainScene).GetScene());
+            tree.AddChild(Engine.Resources.GetResource<SceneConfig>(treeConfig.MainScene).GetScene());
 
             //script packs test
             /*

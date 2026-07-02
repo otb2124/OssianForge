@@ -35,7 +35,7 @@ namespace OssianForge.Engine.Nodes.Props
 
         private void Initialize()
         {
-            var scriptFile = Engine.Resources.GetResourceFile<ScriptFile>(_scriptFileId)
+            var scriptFile = Engine.Resources.GetResource<ScriptFile>(_scriptFileId)
                 ?? throw new Exception($"[SCRIPT] ScriptFile not found: '{_scriptFileId}'");
 
             _instance = Activator.CreateInstance(scriptFile.ScriptType)

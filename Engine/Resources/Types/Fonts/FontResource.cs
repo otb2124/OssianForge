@@ -47,9 +47,9 @@ namespace OssianForge.Engine.Resources.Fonts
         public override void Load()
         {
             base.Load();
-            AtlasTextureFile = Engine.Resources.GetResourceFile<TextureFile>(_atlasTextureFileId)
+            AtlasTextureFile = Engine.Resources.GetResource<TextureFile>(_atlasTextureFileId)
                 ?? throw new Exception($"Atlas texture not found: '{_atlasTextureFileId}'");
-            AtlasConfigFile = Engine.Resources.GetResourceFile<ConfigFile>(_atlasConfigFileId)
+            AtlasConfigFile = Engine.Resources.GetResource<ConfigFile>(_atlasConfigFileId)
                 ?? throw new Exception($"Atlas config not found: '{_atlasConfigFileId}'");
 
             AtlasData = ParseAtlasData(AtlasConfigFile);

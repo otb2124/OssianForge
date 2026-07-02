@@ -1,5 +1,345 @@
 [
   {
+    "id": "shaderfile.basic.vert",
+    "data": [ "ShaderFiles/basic.vert" ],
+    "type": "shaderfile"
+  },
+  {
+    "id": "shaderfile.basic.frag",
+    "data": [ "ShaderFiles/basic.frag" ],
+    "type": "shaderfile"
+  },
+  {
+    "id": "shaderfile.unlit.frag",
+    "data": [ "ShaderFiles/unlit.frag" ],
+    "type": "shaderfile"
+  },
+  {
+    "id": "shaderfile.wireframe.frag",
+    "data": [ "ShaderFiles/wireframe.frag" ],
+    "type": "shaderfile"
+  },
+  {
+    "id": "shaderfile.skybox.vert",
+    "data": [ "ShaderFiles/skybox.vert" ],
+    "type": "shaderfile"
+  },
+  {
+    "id": "shaderfile.skybox.frag",
+    "data": [ "ShaderFiles/skybox.frag" ],
+    "type": "shaderfile"
+  },
+  {
+    "id": "shaderfile.post.vert",
+    "data": [ "ShaderFiles/post.vert" ],
+    "type": "shaderfile"
+  },
+  {
+    "id": "shaderfile.post.frag",
+    "data": [ "ShaderFiles/post.frag" ],
+    "type": "shaderfile"
+  },
+  {
+    "id": "shaderfile.sdf.frag",
+    "data": [ "ShaderFiles/sdf.frag" ],
+    "type": "shaderfile"
+  },
+  {
+    "id": "shaderfile.sdf.vert",
+    "data": [ "ShaderFiles/sdf.vert" ],
+    "type": "shaderfile"
+  },
+  {
+    "id": "meshfile.remy",
+    "data": [ "MeshFiles/remy.fbx" ],
+    "type": "meshfile"
+  },
+  {
+    "id": "animationfile.remy.idle",
+    "data": [ "AnimationFiles/remy.idle.fbx" ],
+    "type": "animationfile"
+  },
+  {
+    "id": "animationfile.remy.walking",
+    "data": [ "AnimationFiles/remy.walking.fbx" ],
+    "type": "animationfile"
+  },
+  {
+    "id": "animationfile.remy.jumping_jacks",
+    "data": [ "AnimationFiles/remy.jumping_jacks.fbx" ],
+    "type": "animationfile"
+  },
+  {
+    "id": "animationfile.remy.backflip",
+    "data": [ "AnimationFiles/remy.backflip.fbx" ],
+    "type": "animationfile"
+  },
+  {
+    "id": "animationfile.remy.waving",
+    "data": [ "AnimationFiles/remy.waving.fbx" ],
+    "type": "animationfile"
+  },
+  {
+    "id": "animationfile.remy.falling",
+    "data": [ "AnimationFiles/remy.falling.fbx" ],
+    "type": "animationfile"
+  },
+  {
+    "id": "animationfile.remy.run",
+    "data": [ "AnimationFiles/remy.run.fbx" ],
+    "type": "animationfile"
+  },
+  {
+    "id": "animationfile.remy.sprint",
+    "data": [ "AnimationFiles/remy.sprint.fbx" ],
+    "type": "animationfile"
+  },
+  {
+    "id": "animationfile.remy.jump",
+    "data": [ "AnimationFiles/remy.jump.fbx" ],
+    "type": "animationfile"
+  },
+  {
+    "id": "animationfile.remy.jump_landing",
+    "data": [ "AnimationFiles/remy.jump_landing.fbx" ],
+    "type": "animationfile"
+  },
+  {
+    "id": "texturefile.IcingBaseColor",
+    "data": [ "TextureFiles/3d/IcingBaseColor.jpg" ],
+    "type": "texturefile"
+  },
+  {
+    "id": "texturefile.DonutBaseColor",
+    "data": [ "TextureFiles/3d/DonutBaseColor.jpg" ],
+    "type": "texturefile"
+  },
+  {
+    "id": "texturefile.house.barrel",
+    "data": [ "TextureFiles/3d/barrel.jpg" ],
+    "type": "texturefile"
+  },
+  {
+    "id": "texturefile.house.brick",
+    "data": [ "TextureFiles/3d/house_brick.jpg" ],
+    "type": "texturefile"
+  },
+  {
+    "id": "texturefile.house.windows",
+    "data": [ "TextureFiles/3d/house_windows.jpg" ],
+    "type": "texturefile"
+  },
+  {
+    "id": "texturefile.house.wood",
+    "data": [ "TextureFiles/3d/house_wood.jpg" ],
+    "type": "texturefile"
+  },
+  {
+    "id": "texturefile.brick.d",
+    "data": [ "TextureFiles/3d/brick_d.jpg" ],
+    "type": "texturefile"
+  },
+  {
+    "id": "texturefile.brick.n",
+    "data": [ "TextureFiles/3d/brick_n.jpg" ],
+    "type": "texturefile"
+  },
+  {
+    "id": "texturefile.light",
+    "data": [ "TextureFiles/3d/point_light_sprite.png" ],
+    "type": "texturefile"
+  },
+  {
+    "id": "texturefile.dices",
+    "data": [ "TextureFiles/3d/dices.png" ],
+    "type": "texturefile"
+  },
+  {
+    "id": "texturefile.desert",
+    "data": [ "TextureFiles/3d/desert.jpg" ],
+    "type": "texturefile"
+  },
+  {
+    "id": "texturefile.empty",
+    "data": [ "TextureFiles/3d/empty.png" ],
+    "type": "texturefile"
+  },
+  {
+    "id": "texturefile.frame",
+    "data": [ "TextureFiles/3d/frame.png" ],
+    "type": "texturefile"
+  },
+  {
+    "id": "texturefile.green",
+    "data": [ "TextureFiles/3d/green.png" ],
+    "type": "texturefile"
+  },
+  {
+    "id": "texturefile.cubemap.skybox.sea.right",
+    "data": [ "TextureFiles/3d/panoramic-sea-right.png" ],
+    "type": "texturefile"
+  },
+  {
+    "id": "texturefile.cubemap.skybox.sea.left",
+    "data": [ "TextureFiles/3d/panoramic-sea-left.png" ],
+    "type": "texturefile"
+  },
+  {
+    "id": "texturefile.cubemap.skybox.sea.top",
+    "data": [ "TextureFiles/3d/panoramic-sea-top.png" ],
+    "type": "texturefile"
+  },
+  {
+    "id": "texturefile.cubemap.skybox.sea.bottom",
+    "data": [ "TextureFiles/3d/panoramic-sea-bottom.png" ],
+    "type": "texturefile"
+  },
+  {
+    "id": "texturefile.cubemap.skybox.sea.front",
+    "data": [ "TextureFiles/3d/panoramic-sea-front.png" ],
+    "type": "texturefile"
+  },
+  {
+    "id": "texturefile.cubemap.skybox.sea.back",
+    "data": [ "TextureFiles/3d/panoramic-sea-back.png" ],
+    "type": "texturefile"
+  },
+  {
+    "id": "texturefile.cubemap.skybox.sky.right",
+    "data": [ "TextureFiles/3d/panoramic-sky-right.png" ],
+    "type": "texturefile"
+  },
+  {
+    "id": "texturefile.cubemap.skybox.sky.left",
+    "data": [ "TextureFiles/3d/panoramic-sky-left.png" ],
+    "type": "texturefile"
+  },
+  {
+    "id": "texturefile.cubemap.skybox.sky.top",
+    "data": [ "TextureFiles/3d/panoramic-sky-top.png" ],
+    "type": "texturefile"
+  },
+  {
+    "id": "texturefile.cubemap.skybox.sky.bottom",
+    "data": [ "TextureFiles/3d/panoramic-sky-bottom.png" ],
+    "type": "texturefile"
+  },
+  {
+    "id": "texturefile.cubemap.skybox.sky.front",
+    "data": [ "TextureFiles/3d/panoramic-sky-front.png" ],
+    "type": "texturefile"
+  },
+  {
+    "id": "texturefile.cubemap.skybox.sky.back",
+    "data": [ "TextureFiles/3d/panoramic-sky-back.png" ],
+    "type": "texturefile"
+  },
+  {
+    "id": "texturefile.font.roboto",
+    "data": [ "TextureFiles/Fonts/roboto.png" ],
+    "type": "texturefile"
+  },
+  {
+    "id": "texturefile.heightMap.highLands",
+    "data": [ "TextureFiles/HeightMaps/highLands.png" ],
+    "type": "texturefile"
+  },
+  {
+    "id": "texturefile.heightMap.highLands1",
+    "data": [ "TextureFiles/HeightMaps/highLands1.png" ],
+    "type": "texturefile"
+  },
+  {
+    "id": "configfile.font.roboto",
+    "data": [ "ConfigFiles/Fonts/roboto.json" ],
+    "type": "configfile.font"
+  },
+  {
+    "id": "configfile.scene.main",
+    "data": [ "ConfigFiles/Scenes/main.json" ],
+    "type": "configfile.scene"
+  },
+  {
+    "id": "configfile.scene.uiscene",
+    "data": [ "ConfigFiles/Scenes/uiscene.json" ],
+    "type": "configfile.scene"
+  },
+  {
+    "id": "configfile.scene.lightTest",
+    "data": [ "ConfigFiles/Scenes/lightTest.json" ],
+    "type": "configfile.scene"
+  },
+  {
+    "id": "configfile.scene.terrainscene",
+    "data": [ "ConfigFiles/Scenes/terrainscene.json" ],
+    "type": "configfile.scene"
+  },
+  {
+    "id": "configfile.scene.player",
+    "data": [ "ConfigFiles/Scenes/player.json" ],
+    "type": "configfile.scene"
+  },
+  {
+    "id": "configfile.scene.debugui",
+    "data": [ "ConfigFiles/Scenes/debugui.json" ],
+    "type": "configfile.scene"
+  },
+  {
+    "id": "configfile.tree",
+    "data": [ "ConfigFiles/Core/tree.json" ],
+    "type": "configfile.tree"
+  },
+  {
+    "id": "configfile.actions.myActions",
+    "data": [ "ConfigFiles/Actions/myActions.json" ],
+    "type": "configfile.actions"
+  },
+  {
+    "id": "configfile.actions.debug",
+    "data": [ "ConfigFiles/Actions/debugActions.json" ],
+    "type": "configfile.actions"
+  },
+  {
+    "id": "configfile.actions.transform",
+    "data": [ "ConfigFiles/Actions/transformActions.json" ],
+    "type": "configfile.actions"
+  },
+  {
+    "id": "configfile.actions.animations",
+    "data": [ "ConfigFiles/Actions/animationActions.json" ],
+    "type": "configfile.actions"
+  },
+  {
+    "id": "configfile.inputKeys.myInputKeys",
+    "data": [ "ConfigFiles/InputKeys/myInputKeys.json" ],
+    "type": "configfile.inputKeys"
+  },
+  {
+    "id": "configfile.pronouns.myPronouns",
+    "data": [ "ConfigFiles/Pronouns/myPronouns.json" ],
+    "type": "configfile.pronouns"
+  },
+  {
+    "id": "configfile.statemachine.player",
+    "data": [ "ConfigFiles/StateMachines/playerStateMachine.json" ],
+    "type": "configfile.statemachine"
+  },
+  {
+    "id": "configfile.inputAxis.myInputAxis",
+    "data": [ "ConfigFiles/InputAxis/myInputAxis.json" ],
+    "type": "configfile.inputAxes"
+  },
+  {
+    "id": "soundfile.est-drink",
+    "data": [ "SoundFiles/est-drink.ogg" ],
+    "type": "soundfile"
+  },
+  {
+    "id": "script.scripts.PlayerControllerScript",
+    "data": [ "ScriptFiles/Scripts/PlayerControllerScript.cs" ],
+    "type": "scriptfile"
+  },
+  {
     "id": "mesh.cube",
     "data": [ "fastmesh.cube" ],
     "type": "mesh"

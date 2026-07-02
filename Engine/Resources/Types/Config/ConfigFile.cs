@@ -12,10 +12,12 @@ namespace OssianForge.Engine.Resources.Config
         Ini,
         Xml
     }
-    public class ConfigFile : ResourceFile
+    public class ConfigFile : Resource
     {
         public ConfigFormat Format { get; private set; }
         private Dictionary<string, string> _data = new();
+        public string Path;
+
         public ConfigFile(string id, string path)
         {
             Id = id;
@@ -31,7 +33,7 @@ namespace OssianForge.Engine.Resources.Config
         public override void Load()
         {
             base.Load();
-            string globalPath = ResourceFile.CONTENT_FOLDER_PATH + "/" + Path;
+            string globalPath = CONTENT_FOLDER_PATH + "/" + Path;
             if (!File.Exists(globalPath))
                 throw new Exception($"ConfigFile not found: '{globalPath}'");
             string raw = File.ReadAllText(globalPath);
@@ -70,7 +72,7 @@ namespace OssianForge.Engine.Resources.Config
         // --- save ---
         public void Save()
         {
-            string globalPath = ResourceFile.CONTENT_FOLDER_PATH + "/" + Path;
+            string globalPath = CONTENT_FOLDER_PATH + "/" + Path;
             string content = Format switch
             {
                 ConfigFormat.Json => SerializeJson(),

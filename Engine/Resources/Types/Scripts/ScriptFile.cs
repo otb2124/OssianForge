@@ -9,11 +9,12 @@ using System.Runtime.Loader;
 
 namespace OssianForge.Engine.Resources.Scripts
 {
-    public class ScriptFile : ResourceFile
+    public class ScriptFile : Resource
     {
 
         public Type ScriptType { get; private set; }
         public Assembly CompiledAssembly { get; private set; }
+        public string Path;
 
         public ScriptFile(string id, string path)
         {

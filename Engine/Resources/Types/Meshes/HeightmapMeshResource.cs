@@ -37,10 +37,10 @@ namespace OssianForge.Engine.Resources.Meshes
         public override void Load()
         {
             base.Load();
-            var texFile = Engine.Resources.GetResourceFile<TextureFile>(_heightmapId)
+            var texFile = Engine.Resources.GetResource<TextureFile>(_heightmapId)
                 ?? throw new Exception($"HeightmapMeshResource: heightmap TextureFile not found: '{_heightmapId}'");
 
-            string globalPath = ResourceFile.CONTENT_FOLDER_PATH + "/" + texFile.Path;
+            string globalPath = Resource.CONTENT_FOLDER_PATH + "/" + texFile.Path;
 
             StbImage.stbi_set_flip_vertically_on_load(1);
             ImageResult image;

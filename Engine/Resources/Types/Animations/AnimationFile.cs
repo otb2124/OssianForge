@@ -39,9 +39,11 @@ namespace OssianForge.Engine.Resources.Animations
         public double DurationSeconds => DurationTicks / (TicksPerSecond > 0 ? TicksPerSecond : 30.0);
     }
 
-    public class AnimationFile : ResourceFile
+    public class AnimationFile : Resource
     {
         public List<AnimationClip> Clips = new();
+
+        public string Path;
 
         private static readonly string[] PivotSuffixes = {
             "_$AssimpFbx$_Translation",
@@ -63,7 +65,7 @@ namespace OssianForge.Engine.Resources.Animations
         public override void Load()
         {
             base.Load();
-            string globalPath = ResourceFile.CONTENT_FOLDER_PATH + "/" + Path;
+            string globalPath = CONTENT_FOLDER_PATH + "/" + Path;
 
             // Derive the expected clip name from the filename.
             // e.g. "AnimationFiles/remy_jump.fbx" → stem "remy_jump" → after last '_' → "jump"

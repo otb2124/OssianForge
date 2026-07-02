@@ -10,9 +10,15 @@ namespace OssianForge.Engine.Resources
     {
         public static readonly HashSet<string> Prefixes = new()
         {
+            "shaderfile.", "meshfile.", "animationfile.", "texturefile.",
+            "configfile.", "filepack.", "soundfile.", "script.",
+
             "mesh.", "shader.", "texture.", "cubemap.",
             "collider.", "font.", "sound.", "animation."
         };
+
+        public static readonly string CONTENT_FOLDER_PATH = "Content";
+
 
         public string Id;
         public bool IsLoaded { get; private set; }

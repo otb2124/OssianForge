@@ -4,9 +4,10 @@ using System.IO;
 
 namespace OssianForge.Engine.Resources.TextureFiles
 {
-    public class TextureFile : ResourceFile
+    public class TextureFile : Resource
     {
         public uint Handle;
+        public string Path;
 
         public TextureFile(string id, string path)
         {
@@ -17,7 +18,7 @@ namespace OssianForge.Engine.Resources.TextureFiles
         public override void Load()
         {
             base.Load();
-            string globalPath = ResourceFile.CONTENT_FOLDER_PATH + "/" + Path;
+            string globalPath = CONTENT_FOLDER_PATH + "/" + Path;
 
             StbImage.stbi_set_flip_vertically_on_load(1);
             using var stream = File.OpenRead(globalPath);

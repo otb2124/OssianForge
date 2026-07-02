@@ -251,9 +251,6 @@
     <None Update="Content\ConfigFiles\InputAxis\myInputAxis.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Content\ConfigFiles\Resources\resourceFiles.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Update="Content\ConfigFiles\Resources\resources.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -321,6 +318,7 @@
 
   <ItemGroup>
     <Folder Include="Content\TextureFiles\HeightMaps\" />
+    <Folder Include="Engine\Resources\Types\FrameSequence\" />
   </ItemGroup>
 
 </Project>

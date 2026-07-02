@@ -30,10 +30,11 @@ namespace OssianForge.Engine.Resources.MeshFiles
         public List<SkeletonNode> Children = new();
     }
 
-    public class MeshFile : ResourceFile
+    public class MeshFile : Resource
     {
         public List<(float[] Vertices, int MaterialIndex, List<BoneData> Bones)> SubMeshes = new();
         public SkeletonNode RootNode;
+        public string Path;
 
         private static readonly string[] PivotSuffixes = {
             "_$AssimpFbx$_Translation",
@@ -55,7 +56,7 @@ namespace OssianForge.Engine.Resources.MeshFiles
         public override void Load()
         {
             base.Load();
-            string globalPath = ResourceFile.CONTENT_FOLDER_PATH + "/" + Path;
+            string globalPath = CONTENT_FOLDER_PATH + "/" + Path;
 
             using var assimp = Assimp.GetApi();
 

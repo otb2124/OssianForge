@@ -80,7 +80,7 @@ namespace OssianForge.Engine.Resources.Config
 
         private static Node ResolveSceneReference(SceneReferenceProperty sceneRef, Node overrides, JsonElement el, Node parent)
         {
-            var sceneConfig = Engine.Resources.GetResourceFile<SceneConfig>(sceneRef.SceneId)
+            var sceneConfig = Engine.Resources.GetResource<SceneConfig>(sceneRef.SceneId)
                 ?? throw new Exception($"[SCENE REFERENCE] SceneConfig '{sceneRef.SceneId}' not found.");
 
             var root = sceneConfig.GetScene();
@@ -410,7 +410,7 @@ namespace OssianForge.Engine.Resources.Config
         private static StateMachineProperty ParseStateMachineProperty(JsonElement? data)
         {
             string smConfigId = Str(data, 0); // e.g. "configfile.statemachine.player"
-            var config = Engine.Resources.GetResourceFile<StateMachineConfig>(smConfigId);
+            var config = Engine.Resources.GetResource<StateMachineConfig>(smConfigId);
             return config.BuildProperty();
         }
 

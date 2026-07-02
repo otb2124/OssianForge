@@ -31,7 +31,7 @@ namespace OssianForge.Engine.Resources.Sounds
         public override void Load()
         {
             base.Load();
-            SoundFile = Engine.Resources.GetResourceFile<SoundFile>(SoundFileId)
+            SoundFile = Engine.Resources.GetResource<SoundFile>(SoundFileId)
                 ?? throw new Exception($"[SOUND] SoundFile not found: '{SoundFileId}'");
 
             _source = _al.GenSource();

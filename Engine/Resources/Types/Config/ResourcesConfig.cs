@@ -2,8 +2,12 @@
 using OssianForge.Engine.Resources.Colliders;
 using OssianForge.Engine.Resources.Fonts;
 using OssianForge.Engine.Resources.Meshes;
+using OssianForge.Engine.Resources.MeshFiles;
+using OssianForge.Engine.Resources.Scripts;
+using OssianForge.Engine.Resources.ShaderFiles;
 using OssianForge.Engine.Resources.Shaders;
 using OssianForge.Engine.Resources.Sounds;
+using OssianForge.Engine.Resources.TextureFiles;
 using OssianForge.Engine.Resources.Textures;
 using System;
 using System.Collections.Generic;
@@ -103,6 +107,21 @@ namespace OssianForge.Engine.Resources.Config
         private static Resource InstantiateResource(ResourceRecord record) =>
             record.Type switch
             {
+                "meshfile" => new MeshFile(record.Id, record.Data[0]),
+                "texturefile" => new TextureFile(record.Id, record.Data[0]),
+                "shaderfile" => new ShaderFile(record.Id, record.Data[0]),
+                "animationfile" => new AnimationFile(record.Id, record.Data[0]),
+                "configfile.font" => new ConfigFile(record.Id, record.Data[0]),
+                "configfile.scene" => new SceneConfig(record.Id, record.Data[0]),
+                "configfile.tree" => new TreeConfig(record.Id, record.Data[0]),
+                "configfile.actions" => new ActionsConfig(record.Id, record.Data[0]),
+                "configfile.pronouns" => new PronounsConfig(record.Id, record.Data[0]),
+                "configfile.inputKeys" => new InputKeysConfig(record.Id, record.Data[0]),
+                "configfile.inputAxes" => new InputAxesConfig(record.Id, record.Data[0]),
+                "configfile.statemachine" => new StateMachineConfig(record.Id, record.Data[0]),
+                "scriptfile" => new ScriptFile(record.Id, record.Data[0]),
+                "soundfile" => new SoundFile(record.Id, record.Data[0]),
+
                 "mesh" => new MeshResource(record.Id, record.Data[0]),
                 "terrainmesh" => new HeightmapMeshResource(record.Id, record.Data[0]),
                 "animation" => new AnimationResource(record.Id, record.Data.ToArray()),
@@ -124,6 +143,24 @@ namespace OssianForge.Engine.Resources.Config
 
         // ── build ────────────────────────────────────────────────────────────────
 
+        public ScriptFile FindScriptFile(string packOrFileId, string typeName)
+        {
+            // direct script file
+            var direct = GetInstanceById<ScriptFile>(packOrFileId);
+            if (direct != null) return direct;
+
+            // search inside pack by filename stem
+            var pack = GetInstanceById<ResourceFilePack<ScriptFile>>(packOrFileId);
+            if (pack != null)
+            {
+                var script = pack.Files.FirstOrDefault(f =>
+                    System.IO.Path.GetFileNameWithoutExtension(f.Path) == typeName);
+                if (script != null) return script;
+            }
+
+            throw new Exception($"Could not find script '{typeName}' in '{packOrFileId}'");
+        }
+
         public void BuildInstances()
         {
             _resources.Clear();
@@ -133,6 +170,23 @@ namespace OssianForge.Engine.Resources.Config
             }
 
             Console.WriteLine($"[RESOURCES CONFIG] Built {_resources.Count} Resource instance(s).");
+        }
+
+        public void BuildInstances<T>() where T : Resource
+        {
+            int count = 0;
+            foreach (var record in GetAllRecords())
+            {
+                var instance = InstantiateResource(record);
+                if (instance is not T) continue;
+
+                int idx = _resources.FindIndex(r => r.Id == record.Id);
+                if (idx >= 0) _resources[idx] = instance;
+                else _resources.Add(instance);
+
+                count++;
+            }
+            Console.WriteLine($"[RESOURCES CONFIG] Built {count} {typeof(T).Name} instance(s).");
         }
 
         public void BuildInstances(params string[] ids)

@@ -61,7 +61,7 @@ namespace OssianForge.Engine.Inputs
             _bindings.Clear();
             _axisBindings.Clear();
 
-            var keyConfigs = Engine.Resources.GetResourceFiles<InputKeysConfig>();
+            var keyConfigs = Engine.Resources.GetResources<InputKeysConfig>();
             foreach (var config in keyConfigs)
             {
                 foreach (var record in config.GetAllRecords())
@@ -75,7 +75,7 @@ namespace OssianForge.Engine.Inputs
                 }
             }
 
-            var axisConfigs = Engine.Resources.GetResourceFiles<InputAxesConfig>();
+            var axisConfigs = Engine.Resources.GetResources<InputAxesConfig>();
             foreach (var config in axisConfigs)
             {
                 foreach (var record in config.GetAllRecords())

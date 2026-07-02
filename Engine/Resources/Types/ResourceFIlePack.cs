@@ -5,9 +5,10 @@ using System.Linq;
 
 namespace OssianForge.Engine.Resources
 {
-    public class ResourceFilePack<T> : ResourceFile where T : ResourceFile, new()
+    public class ResourceFilePack<T> : Resource where T : Resource, new()
     {
         public List<T> Files { get; private set; } = new();
+        public string Path;
 
         public ResourceFilePack(string id, string path)
         {
@@ -34,18 +35,18 @@ namespace OssianForge.Engine.Resources
                 var file = new T
                 {
                     Id = this.Id,
-                    Path = relativePath
+                    //Path = relativePath
                 };
 
                 file.Load();
                 Files.Add(file);
-                Console.WriteLine($"[ResourceFilePack] loaded file with id {file.Id}, path {file.Path}");
+                //Console.WriteLine($"[ResourceFilePack] loaded file with id {file.Id}, path {file.Path}");
             }
         }
 
         public T GetById(string id) => Files.FirstOrDefault(f => f.Id == id);
 
-        public ResourceFile GetByIdBase(string id) => GetById(id);
-        public IEnumerable<ResourceFile> GetAllFiles() => Files;
+        public Resource GetByIdBase(string id) => GetById(id);
+        public IEnumerable<Resource> GetAllFiles() => Files;
     }
 }

@@ -4,10 +4,11 @@ using OssianForge.Engine.Utils;
 
 namespace OssianForge.Engine.Resources.ShaderFiles
 {
-    public class ShaderFile : ResourceFile
+    public class ShaderFile : Resource
     {
 
         public uint Compiled;
+        public string Path;
 
         public ShaderFile(string id, string path)
         {
@@ -19,7 +20,7 @@ namespace OssianForge.Engine.Resources.ShaderFiles
         {
             base.Load();
 
-            string globalPath = ResourceFile.CONTENT_FOLDER_PATH + "/" + Path;
+            string globalPath = CONTENT_FOLDER_PATH + "/" + Path;
             if (!File.Exists(globalPath))
                 throw new Exception($"ShaderFile not found: '{globalPath}'");
             string raw = File.ReadAllText(globalPath);
@@ -35,6 +36,9 @@ namespace OssianForge.Engine.Resources.ShaderFiles
             Compiled = shader;
         }
 
-        
+        public string GetExtension()
+        {
+            return System.IO.Path.GetExtension(Path);
+        }
     }
 }

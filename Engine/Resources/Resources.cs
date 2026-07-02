@@ -35,11 +35,6 @@ namespace OssianForge.Engine.Resources
             SystemStats.Update();
         }
 
-        public T GetResourceFile<T>(string id) where T : ResourceFile
-        {
-            return ResourceLoader.ResourceFilesConfig.GetInstanceById<T>(id);
-        }
-
         public T GetResource<T>(string id) where T : Resource
         {
             return ResourceLoader.ResourcesConfig.GetInstanceById<T>(id);
@@ -48,18 +43,15 @@ namespace OssianForge.Engine.Resources
         public List<T> GetResources<T>() where T : Resource
             => ResourceLoader.ResourcesConfig.GetInstances<T>();
 
-        public List<T> GetResourceFiles<T>() where T : ResourceFile
-            => ResourceLoader.ResourceFilesConfig.GetInstances<T>();
-
         public object CreateScriptResourceInstance(string packOrFileId, string typeName, params object[] args)
-            => ResourceLoader.ResourceFilesConfig.FindScriptFile(packOrFileId, typeName).CreateInstance(typeName, args);
+            => ResourceLoader.ResourcesConfig.FindScriptFile(packOrFileId, typeName).CreateInstance(typeName, args);
 
         public T CreateScriptResourceInstance<T>(string packOrFileId, string typeName, params object[] args) where T : class
-            => ResourceLoader.ResourceFilesConfig.FindScriptFile(packOrFileId, typeName).CreateInstance<T>(typeName, args);
+            => ResourceLoader.ResourcesConfig.FindScriptFile(packOrFileId, typeName).CreateInstance<T>(typeName, args);
 
         public Type GetScriptType(string packOrFileId, string typeName)
         {
-            var scriptFile = ResourceLoader.ResourceFilesConfig.FindScriptFile(packOrFileId, typeName);
+            var scriptFile = ResourceLoader.ResourcesConfig.FindScriptFile(packOrFileId, typeName);
             return scriptFile.CompiledAssembly.GetExportedTypes()
                 .FirstOrDefault(t => t.Name == typeName)
                 ?? throw new Exception($"Type '{typeName}' not found in '{packOrFileId}'");
@@ -67,7 +59,7 @@ namespace OssianForge.Engine.Resources
 
         public void InvokeAction(string actionId, object context = null, double? delta = null)
         {
-            foreach (var config in GetResourceFiles<ActionsConfig>())
+            foreach (var config in GetResources<ActionsConfig>())
             {
                 if (config.GetById(actionId) != null)
                 {

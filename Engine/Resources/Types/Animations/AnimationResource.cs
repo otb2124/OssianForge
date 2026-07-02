@@ -28,7 +28,7 @@ namespace OssianForge.Engine.Resources.Animations
             base.Load();
             foreach (var fileId in _animationFileIds)
             {
-                var animFile = Engine.Resources.GetResourceFile<AnimationFile>(fileId)
+                var animFile = Engine.Resources.GetResource<AnimationFile>(fileId)
                     ?? throw new Exception($"AnimationFile not found: '{fileId}'");
                 Clips.AddRange(animFile.Clips);
             }

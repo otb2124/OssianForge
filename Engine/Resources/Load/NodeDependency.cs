@@ -5,7 +5,6 @@ namespace OssianForge.Engine.Resources
 {
     public class NodeDependency
     {
-
         public static readonly HashSet<string> AlwaysInclude = new()
         {
             //for now
@@ -17,50 +16,42 @@ namespace OssianForge.Engine.Resources
             "shader.wireframe"
         };
 
-        public HashSet<string> ResourceFileIds { get; } = new();
         public HashSet<string> ResourceIds { get; } = new();
 
         public NodeDependency()
         {
-            
+
         }
 
         public void ExtractTree(string treeConfigId)
         {
             ResolveAlwaysInclude();
-            var treeConfig = Engine.Resources.GetResourceFile<TreeConfig>(treeConfigId);
+            var treeConfig = Engine.Resources.GetResource<TreeConfig>(treeConfigId);
             ExtractDocument(treeConfig.Document);
         }
 
         public void ExtractScene(string sceneConfigId)
         {
-            var sceneConfig = Engine.Resources.GetResourceFile<SceneConfig>(sceneConfigId);
+            var sceneConfig = Engine.Resources.GetResource<SceneConfig>(sceneConfigId);
             ExtractDocument(sceneConfig.Document);
         }
 
         public void ExtractDocument(JsonDocument document)
         {
             ExtractFromNode(document.RootElement);
-            ResolveResourceFileDependencies();
+            ResolveDependencies();
 
-            Console.WriteLine($"[NODE DEPENDENCY] Extracted {ResourceFileIds.Count} resourceFiles, {ResourceIds.Count} resources");
+            Console.WriteLine($"[NODE DEPENDENCY] Extracted {ResourceIds.Count} resource(s)");
         }
 
         private void ResolveAlwaysInclude()
         {
-            var allResourceFileRecords = Engine.Resources.ResourceLoader.ResourceFilesConfig.GetAllRecords();
-            var allResourceRecords = Engine.Resources.ResourceLoader.ResourcesConfig.GetAllRecords();
+            var allRecords = Engine.Resources.ResourceLoader.ResourcesConfig.GetAllRecords();
 
             foreach (var pattern in AlwaysInclude)
-            {
-                foreach (var record in allResourceFileRecords)
-                    if (record.Id.Contains(pattern, StringComparison.OrdinalIgnoreCase))
-                        ResourceFileIds.Add(record.Id);
-
-                foreach (var record in allResourceRecords)
+                foreach (var record in allRecords)
                     if (record.Id.Contains(pattern, StringComparison.OrdinalIgnoreCase))
                         ResourceIds.Add(record.Id);
-            }
         }
 
         private void ExtractFromNode(JsonElement el)
@@ -76,13 +67,11 @@ namespace OssianForge.Engine.Resources
 
         private void ExtractFromProperty(JsonElement el)
         {
-            var data = el.TryGetProperty("data", out var d) ? d : (JsonElement?)null;
-            if (data == null) return;
+            if (!el.TryGetProperty("data", out var data)) return;
 
-            string raw = data.Value.GetRawText();
-            ExtractByPrefixes(raw, ResourceFile.Prefixes, ResourceFileIds);
+            string raw = data.GetRawText();
             ExtractByPrefixes(raw, Resource.Prefixes, ResourceIds);
-        } 
+        }
 
         private static void ExtractByPrefixes(string raw, HashSet<string> prefixes, HashSet<string> ids)
         {
@@ -102,7 +91,7 @@ namespace OssianForge.Engine.Resources
             }
         }
 
-        private void ResolveResourceFileDependencies()
+        private void ResolveDependencies()
         {
             var allRecords = Engine.Resources.ResourceLoader.ResourcesConfig.GetAllRecords();
             bool changed;
@@ -117,15 +106,9 @@ namespace OssianForge.Engine.Resources
                     foreach (var dataId in record.Data)
                     {
                         string prefix = dataId.Split('.')[0] + ".";
+                        if (!Resource.Prefixes.Contains(prefix)) continue;
 
-                        if (ResourceFile.Prefixes.Contains(prefix))
-                        {
-                            if (ResourceFileIds.Add(dataId)) changed = true;
-                        }
-                        else if (Resource.Prefixes.Contains(prefix))
-                        {
-                            if (ResourceIds.Add(dataId)) changed = true;
-                        }
+                        if (ResourceIds.Add(dataId)) changed = true;
                     }
                 }
             }
@@ -133,10 +116,7 @@ namespace OssianForge.Engine.Resources
 
             Console.WriteLine("[NODE DEPENDENCY] Resolved resource ids:");
             foreach (var id in ResourceIds) Console.WriteLine($"  {id}");
-            Console.WriteLine("[NODE DEPENDENCY] Resolved resource file ids:");
-            foreach (var id in ResourceFileIds) Console.WriteLine($"  {id}");
         }
-
 
         public List<string> GetSortedResourceIds()
         {
@@ -165,5 +145,4 @@ namespace OssianForge.Engine.Resources
             return sorted;
         }
     }
-
 }

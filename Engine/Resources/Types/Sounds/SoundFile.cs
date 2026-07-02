@@ -6,7 +6,7 @@ using System.Buffers.Binary;
 
 namespace OssianForge.Engine.Resources.Sounds
 {
-    public class SoundFile : ResourceFile, IDisposable
+    public class SoundFile : Resource, IDisposable
     {
         // The OpenAL buffer handle — analogous to a VBO id.
         public uint BufferId { get; private set; }
@@ -15,6 +15,8 @@ namespace OssianForge.Engine.Resources.Sounds
         public int SampleRate { get; private set; }
         public int Channels { get; private set; }
         public double DurationSecs { get; private set; }
+
+        public string Path;
 
         public SoundFile(string id, string path)
         {
@@ -25,7 +27,7 @@ namespace OssianForge.Engine.Resources.Sounds
         public override void Load()
         {
             base.Load();
-            string fullPath = ResourceFile.CONTENT_FOLDER_PATH + "/" + Path;
+            string fullPath = CONTENT_FOLDER_PATH + "/" + Path;
             string ext = System.IO.Path.GetExtension(fullPath).ToLowerInvariant();
 
             byte[] pcmData;
