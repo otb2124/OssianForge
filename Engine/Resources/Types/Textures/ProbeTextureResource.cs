@@ -126,7 +126,7 @@ namespace OssianForge.Engine.Resources.Textures
 
                     camera.SetLookDirection(directions[i]);
 
-                    Engine.Nodes.NodeManager.OnRender(delta);
+                    //Engine.Nodes.NodeManager.OnRender(delta);
                 }
             }
             finally

@@ -37,28 +37,28 @@
               "data": [ "mesh.remy" ]
             },
             {
-              "type": "TextureMaterialProperty",
-              "data": [ "texture.house.barrel", "shader.basic" ]
+              "type": "ProbeMaterialProperty",
+              "data": [ "texture.empty", "probe.mirror", "shader.basic" ]
             },
             {
-              "type": "TextureMaterialProperty",
-              "data": [ "texture.brick", "shader.basic" ]
+              "type": "ProbeMaterialProperty",
+              "data": [ "texture.empty", "probe.mirror", "shader.basic" ]
             },
             {
-              "type": "TextureMaterialProperty",
-              "data": [ "texture.house.windows", "shader.basic" ]
+              "type": "ProbeMaterialProperty",
+              "data": [ "texture.empty", "probe.mirror", "shader.basic" ]
             },
             {
-              "type": "TextureMaterialProperty",
-              "data": [ "texture.house.wood", "shader.basic" ]
+              "type": "ProbeMaterialProperty",
+              "data": [ "texture.empty", "probe.mirror", "shader.basic" ]
             },
             {
-              "type": "TextureMaterialProperty",
-              "data": [ "texture.house.wood", "shader.basic" ]
+              "type": "ProbeMaterialProperty",
+              "data": [ "texture.empty", "probe.mirror", "shader.basic" ]
             },
             {
-              "type": "TextureMaterialProperty",
-              "data": [ "texture.house.wood", "shader.basic" ]
+              "type": "ProbeMaterialProperty",
+              "data": [ "texture.empty", "probe.mirror", "shader.basic" ]
             },
             {
               "type": "AnimationProperty",
