@@ -155,6 +155,66 @@
     "type": "texturefile"
   },
   {
+    "id": "texturefile.cotton.d",
+    "data": [ "TextureFiles/3d/cotton.png" ],
+    "type": "texturefile"
+  },
+  {
+    "id": "texturefile.cotton.n",
+    "data": [ "TextureFiles/3d/cotton_n.png" ],
+    "type": "texturefile"
+  },
+  {
+    "id": "texturefile.fabric.d",
+    "data": [ "TextureFiles/3d/fabric.jpg" ],
+    "type": "texturefile"
+  },
+  {
+    "id": "texturefile.fabric.n",
+    "data": [ "TextureFiles/3d/fabric_n.png" ],
+    "type": "texturefile"
+  },
+  {
+    "id": "texturefile.fur.d",
+    "data": [ "TextureFiles/3d/fur.jpg" ],
+    "type": "texturefile"
+  },
+  {
+    "id": "texturefile.fur.n",
+    "data": [ "TextureFiles/3d/fur_n.png" ],
+    "type": "texturefile"
+  },
+  {
+    "id": "texturefile.skin.d",
+    "data": [ "TextureFiles/3d/skin.jpg" ],
+    "type": "texturefile"
+  },
+  {
+    "id": "texturefile.skin.n",
+    "data": [ "TextureFiles/3d/skin_n.png" ],
+    "type": "texturefile"
+  },
+  {
+    "id": "texturefile.desert.d",
+    "data": [ "TextureFiles/3d/desert.jpg" ],
+    "type": "texturefile"
+  },
+  {
+    "id": "texturefile.desert.n",
+    "data": [ "TextureFiles/3d/desert_n.jpg" ],
+    "type": "texturefile"
+  },
+  {
+    "id": "texturefile.leather.d",
+    "data": [ "TextureFiles/3d/leather.png" ],
+    "type": "texturefile"
+  },
+  {
+    "id": "texturefile.leather.n",
+    "data": [ "TextureFiles/3d/leather_n.png" ],
+    "type": "texturefile"
+  },
+  {
     "id": "texturefile.light",
     "data": [ "TextureFiles/3d/point_light_sprite.png" ],
     "type": "texturefile"
@@ -162,11 +222,6 @@
   {
     "id": "texturefile.dices",
     "data": [ "TextureFiles/3d/dices.png" ],
-    "type": "texturefile"
-  },
-  {
-    "id": "texturefile.desert",
-    "data": [ "TextureFiles/3d/desert.jpg" ],
     "type": "texturefile"
   },
   {
@@ -486,7 +541,32 @@
   },
   {
     "id": "texture.desert",
-    "data": [ "texturefile.desert" ],
+    "data": [ "texturefile.desert.d", "texturefile.desert.n" ],
+    "type": "texture"
+  },
+  {
+    "id": "texture.cotton",
+    "data": [ "texturefile.cotton.d", "texturefile.cotton.n" ],
+    "type": "texture"
+  },
+  {
+    "id": "texture.fabric",
+    "data": [ "texturefile.fabric.d", "texturefile.fabric.n" ],
+    "type": "texture"
+  },
+  {
+    "id": "texture.fur",
+    "data": [ "texturefile.fur.d", "texturefile.fur.n" ],
+    "type": "texture"
+  },
+  {
+    "id": "texture.skin",
+    "data": [ "texturefile.skin.d", "texturefile.skin.n" ],
+    "type": "texture"
+  },
+  {
+    "id": "texture.leather",
+    "data": [ "texturefile.leather.d", "texturefile.leather.n" ],
     "type": "texture"
   },
   {

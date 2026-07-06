@@ -31,8 +31,8 @@ namespace OssianForge.Engine.Resources.Meshes
             string id,
             string heightmapFileId,
             float maxHeight = -1f,
-            float uvTilesX = 50f,
-            float uvTilesZ = 50f)
+            float uvTilesX = 100,
+            float uvTilesZ = 100)
             : base(id, "fastmesh.quad")
         {
             _heightmapId = heightmapFileId;

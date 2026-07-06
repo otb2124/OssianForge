@@ -38,27 +38,23 @@
             },
             {
               "type": "TextureMaterialProperty",
-              "data": [ "texture.house.barrel", "shader.basic" ]
+              "data": [ "texture.leather", "shader.basic" ]
             },
             {
               "type": "TextureMaterialProperty",
-              "data": [ "texture.brick", "shader.basic" ]
+              "data": [ "texture.cotton", "shader.basic" ]
             },
             {
               "type": "TextureMaterialProperty",
-              "data": [ "texture.house.windows", "shader.basic" ]
+              "data": [ "texture.fabric", "shader.basic" ]
             },
             {
               "type": "TextureMaterialProperty",
-              "data": [ "texture.house.wood", "shader.basic" ]
+              "data": [ "texture.fur", "shader.basic" ]
             },
             {
               "type": "TextureMaterialProperty",
-              "data": [ "texture.house.wood", "shader.basic" ]
-            },
-            {
-              "type": "TextureMaterialProperty",
-              "data": [ "texture.house.wood", "shader.basic" ]
+              "data": [ "texture.skin", "shader.basic" ]
             },
             {
               "type": "AnimationProperty",
