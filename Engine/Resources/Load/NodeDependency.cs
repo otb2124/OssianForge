@@ -13,9 +13,7 @@ namespace OssianForge.Engine.Resources
             "configfile.inputKeys",
             "configfile.inputAxis",
             "configfile.statemachine",
-            "shader.wireframe",
-
-            "probe.mirror"
+            "shader.wireframe"
         };
 
         public HashSet<string> ResourceIds { get; } = new();
