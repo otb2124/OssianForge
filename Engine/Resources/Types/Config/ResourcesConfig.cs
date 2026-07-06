@@ -132,6 +132,7 @@ namespace OssianForge.Engine.Resources.Config
                 "sdfshader" => new SdfShaderResource(record.Id, record.Data[0], record.Data[1]),
                 "texture" => new TextureResource(record.Id, record.Data.ToArray()),
                 "cubemaptexture" => new CubemapTextureResource(record.Id, record.Data[0], record.Data[1], record.Data[2], record.Data[3], record.Data[4], record.Data[5]),
+                "probetexture" => new ProbeTextureResource(record.Id),
                 "meshcollider" => new MeshColliderResource(record.Id, record.Data[0]),
                 "capsulecollider" => new CapsuleColliderResource(record.Id, ToFloat(record.Data[0]), ToFloat(record.Data[1])),
                 "boxcollider" => new BoxColliderResource(record.Id, new Vector3(ToFloat(record.Data[0]), ToFloat(record.Data[1]), ToFloat(record.Data[2]))),

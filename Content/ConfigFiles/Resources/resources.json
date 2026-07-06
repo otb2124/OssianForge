@@ -560,6 +560,11 @@
     "type": "cubemaptexture"
   },
   {
+    "id": "probe.mirror",
+    "data": [ "probe.mirror" ],
+    "type": "probetexture"
+  },
+  {
     "id": "collider.ball",
     "data": [ "mesh.ball" ],
     "type": "meshcollider"

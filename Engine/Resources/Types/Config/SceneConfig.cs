@@ -133,6 +133,7 @@ namespace OssianForge.Engine.Resources.Config
                 "CubemapMaterialProperty" => ParseCubemapMaterialProperty(data),
                 "TextureMaterialProperty" => ParseTextureMaterialProperty(data),
                 "TextMaterialProperty" => ParseTextMaterialProperty(data),
+                "ProbeMaterialProperty" => ParseProbeMaterialProperty(data),
                 "PointEmissionProperty" => ParsePointEmissionProperty(data),
                 "SunEmissionProperty" => ParseSunEmissionProperty(data),
                 "SpotEmissionProperty" => ParseSpotEmissionProperty(data),
@@ -222,6 +223,17 @@ namespace OssianForge.Engine.Resources.Config
             string shad = arr[4].GetString();
             var actions = ParseRenderActions(arr, 5);
             return new TextMaterialProperty(text, size, color, font, shad, actions);
+        }
+
+        private static ProbeMaterialProperty ParseProbeMaterialProperty(JsonElement? data)
+        {
+            var arr = data!.Value;
+            string tex = arr[0].GetString();
+            string probe = arr[1].GetString();
+            string shad = arr[2].GetString();
+            
+            var actions = ParseRenderActions(arr, 3);
+            return new ProbeMaterialProperty(tex, probe, shad, ProbeMaterialProperty.ProbeUpdateMode.Always, 0.5f, actions);
         }
 
         private static PointEmissionProperty ParsePointEmissionProperty(JsonElement? data)
