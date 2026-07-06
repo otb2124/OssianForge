@@ -251,7 +251,7 @@
     <None Update="Content\ConfigFiles\InputAxis\myInputAxis.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Content\ConfigFiles\Resources\resources.json">
+    <None Update="Content\ConfigFiles\Core\resources.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Content\ConfigFiles\Core\scriptPacks.json">
@@ -300,6 +300,12 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Content\TextureFiles\3d\frame.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Content\TextureFiles\3d\grass.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Content\TextureFiles\3d\grass_n.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Content\TextureFiles\3d\green.png">

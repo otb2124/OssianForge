@@ -118,9 +118,31 @@ namespace OssianForge.Engine.Resources.Shaders
         public List<LightData> Lights;  // replaces the four LightPos/Color/etc fields
         public uint? CubemapTextureSlot;
         public Matrix4x4[] Palette;
+
+        // Matches uRimIntensity in lit.frag. Nullable so BasicShaderResource
+        // can distinguish "not set by caller" from "explicitly set to 0" and
+        // fall back to the old hardcoded 0.15 default — a non-nullable float
+        // here would silently default every unset call site to 0f (rim
+        // disappears) instead of matching prior behavior.
+        public float? RimIntensity;
+
+        // Matches uWrapLighting in lit.frag. 0.0 = hard diffuse falloff
+        // (correct default for existing hard-surface materials). Nullable
+        // for the same reason as RimIntensity, though here the fallback
+        // value (0.0) happens to match a bare default anyway — kept
+        // nullable for consistency and in case that changes later.
+        public float? WrapLighting;
+
+        // Matches uTonemapMode in lit.frag.
+        public TonemapMode? TonemapMode;
     }
 
     public enum LightType { Point = 0, Sun = 1, Spot = 2 }
+
+    // Matches the uTonemapMode branch in lit.frag: 0 = ACES, 1 = Uncharted2.
+    // Keep this numbering in sync with the shader's (uTonemapMode == 1)
+    // check if either side changes.
+    public enum TonemapMode { ACES = 0, Uncharted2 = 1 }
 
     public struct LightData
     {

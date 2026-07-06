@@ -510,6 +510,12 @@
       "name": "PlayerSceneRef",
       "properties": [
         {
+          "type": "TransformProperty",
+          "data": [
+            [ "0,10,0", "0,0,0", "1,1,1" ]
+          ]
+        },
+        {
           "type": "SceneReferenceProperty",
           "data": [ "configfile.scene.player" ]
         }

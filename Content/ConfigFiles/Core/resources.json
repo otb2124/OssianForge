@@ -145,6 +145,16 @@
     "type": "texturefile"
   },
   {
+    "id": "texturefile.grass.d",
+    "data": [ "TextureFiles/3d/grass.jpg" ],
+    "type": "texturefile"
+  },
+  {
+    "id": "texturefile.grass.n",
+    "data": [ "TextureFiles/3d/grass_n.jpg" ],
+    "type": "texturefile"
+  },
+  {
     "id": "texturefile.light",
     "data": [ "TextureFiles/3d/point_light_sprite.png" ],
     "type": "texturefile"
@@ -442,6 +452,11 @@
   {
     "id": "texture.brick",
     "data": [ "texturefile.brick.d", "texturefile.brick.n" ],
+    "type": "texture"
+  },
+  {
+    "id": "texture.grass",
+    "data": [ "texturefile.grass.d", "texturefile.grass.n" ],
     "type": "texture"
   },
   {

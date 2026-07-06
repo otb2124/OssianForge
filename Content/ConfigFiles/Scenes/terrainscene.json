@@ -32,6 +32,7 @@
     {
       "id": "terrain",
       "name": "terrain",
+      "enabled": false,
       "properties": [
         {
           "type": "TransformProperty",
