@@ -51,7 +51,7 @@ namespace OssianForge.Engine
         {
             try
             {
-                Graphics.Window.Run();
+                Graphics.OnRun();
             }
             catch (Exception ex)
             {
@@ -76,8 +76,8 @@ namespace OssianForge.Engine
 
         public static void OnUpdate(double delta)
         {
-            Nodes.OnUpdate(delta);
             Inputs.OnUpdate(delta);
+            Nodes.OnUpdate(delta);
             Physics.OnUpdate(delta);
             UI.OnUpdate(delta);
         }

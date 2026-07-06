@@ -33,7 +33,7 @@ namespace OssianForge.Engine.Graphics
         public int RenderedVertices => Batch.VertexCount;
         public Vector2D<int> ViewportSize => WindowSize;
         public double FrameTimeMs => CurrentDelta * 1000.0;
-
+        public bool IsFullscreen { get; private set; } = false;
 
         public Vector2D<int> WindowSize;
         public string WindowTitle;
@@ -66,6 +66,8 @@ namespace OssianForge.Engine.Graphics
             Window = Silk.NET.Windowing.Window.Create(options);
             ConsoleUtils.SetPosition(200, 800);
 
+            //ToggleFullscreen();
+
             Batch = new Batch.Batch();
         }
 
@@ -75,6 +77,10 @@ namespace OssianForge.Engine.Graphics
             SystemStats.Initialize();
         }
 
+        public void OnRun()
+        {
+            Window.Run();
+        }
 
         public void OnLoad()
         {
@@ -110,7 +116,7 @@ namespace OssianForge.Engine.Graphics
         public void OnResize(Vector2D<int> size)
         {
             Batch.OnResize(size);
-            PostProcess.Resize(size.X, size.Y);
+            PostProcess?.Resize(size.X, size.Y);
         }
 
         public Camera.Camera GetCurrentCamera()
@@ -130,6 +136,31 @@ namespace OssianForge.Engine.Graphics
                 return cameraNode.GetProperty<CameraProperty>().Camera;
             }
 
+        }
+
+
+        public void ToggleFullscreen()
+        {
+            if (!IsFullscreen)
+            {
+                WindowSize = Window.Size;
+
+                var monitor = Window.Monitor ?? Silk.NET.Windowing.Monitor.GetMainMonitor(Window);
+                var monitorSize = monitor.Bounds.Size;
+
+                Window.WindowState = Silk.NET.Windowing.WindowState.Fullscreen;
+                Window.Size = monitorSize;
+                Window.Position = new Vector2D<int>(0, 0);
+
+                IsFullscreen = true;
+            }
+            else
+            {
+                Window.WindowState = Silk.NET.Windowing.WindowState.Normal;
+                Window.Size = WindowSize;
+
+                IsFullscreen = false;
+            }
         }
     }
 
