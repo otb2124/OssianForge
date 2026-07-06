@@ -35,7 +35,7 @@ namespace OssianForge.Engine.Nodes.Props
                 ?? throw new Exception($"ProbeTextureResource not found: '{probeResourceId}'");
             Reflectivity = reflectivity;
 
-            UpdateMode = updateMode;
+            UpdateMode = ProbeUpdateMode.Once;
         }
 
 
