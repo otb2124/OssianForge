@@ -20,6 +20,9 @@ namespace OssianForge.Engine.Resources.Meshes
         private int _resX;
         private int _resZ;
 
+        private float _uvTilesX;
+        private float _uvTilesZ;
+
         public float[] HeightGrid { get; private set; }
         public int GridResX => _resX + 1;
         public int GridResZ => _resZ + 1;
@@ -27,11 +30,15 @@ namespace OssianForge.Engine.Resources.Meshes
         public HeightmapMeshResource(
             string id,
             string heightmapFileId,
-            float maxHeight = -1f)
+            float maxHeight = -1f,
+            float uvTilesX = 50f,
+            float uvTilesZ = 50f)
             : base(id, "fastmesh.quad")
         {
             _heightmapId = heightmapFileId;
             _maxHeight = maxHeight;
+            _uvTilesX = uvTilesX;
+            _uvTilesZ = uvTilesZ;
         }
 
         public override void Load()
@@ -130,10 +137,10 @@ namespace OssianForge.Engine.Resources.Meshes
                     Vector3 p01 = positions[i01];
                     Vector3 p11 = positions[i11];
 
-                    float u0 = (float)qx / _resX;
-                    float u1 = (float)(qx + 1) / _resX;
-                    float v0 = (float)qz / _resZ;
-                    float v1 = (float)(qz + 1) / _resZ;
+                    float u0 = (float)qx / _resX * _uvTilesX;
+                    float u1 = (float)(qx + 1) / _resX * _uvTilesX;
+                    float v0 = (float)qz / _resZ * _uvTilesZ;
+                    float v1 = (float)(qz + 1) / _resZ * _uvTilesZ;
 
                     Vector3 n00 = SmoothNormal(positions, cols, rows, qx, qz);
                     Vector3 n10 = SmoothNormal(positions, cols, rows, qx + 1, qz);

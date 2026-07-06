@@ -13,6 +13,6 @@
       }
     ]
   },
-  "mainScene": "configfile.scene.main",
+  "mainScene": "configfile.scene.terrainscene",
   "version": "1.0.0"
 }
