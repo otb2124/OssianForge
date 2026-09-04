@@ -259,10 +259,16 @@ namespace OssianForge.Engine.Resources.Config
             }).ToArray();
 
         private static string UnboxToString(JsonElement el)
-            => ReflectionDispatcher.UnboxJsonElementToString(el);
+            => UnboxJsonElementToString(el);
 
         private static string? NullIfEmpty(string s)
             => string.IsNullOrEmpty(s) ? null : s;
+
+        public static string UnboxJsonElementToString(JsonElement el) => el.ValueKind switch
+        {
+            JsonValueKind.String => el.GetString()!,
+            _ => el.GetRawText()
+        };
     }
 
     // ── value store ───────────────────────────────────────────────────────────────

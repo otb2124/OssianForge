@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.ExceptionServices;
 using System.Text.Json;
@@ -10,28 +13,43 @@ namespace OssianForge.Engine.Resources.Config
     {
         private static readonly HashSet<Type> NumericTypes = new()
         {
-            typeof(int), typeof(float), typeof(double), typeof(long), typeof(short), typeof(byte), typeof(decimal)
+            typeof(int), typeof(float), typeof(double), typeof(long),
+            typeof(short), typeof(byte), typeof(decimal), typeof(sbyte),
+            typeof(ushort), typeof(uint), typeof(ulong)
         };
 
-        private static readonly Dictionary<string, (object? target, Type type)> _memberPathCache = new();
-        private static readonly Dictionary<(string call, int argCount), MethodInfo?> _methodCache = new();
+        // Cache resolved member paths
+        private static readonly ConcurrentDictionary<string, (object? target, Type type)> _memberPathCache = new();
+
+        // Cached Delegate Invoker to avoid MethodInfo.Invoke performance cost
+        private delegate object? FastInvoker(object? target, object?[]? args);
+
+        private record MethodCacheKey(string Call, string ArgTypeSignature);
+        private static readonly ConcurrentDictionary<MethodCacheKey, (MethodInfo Method, FastInvoker Invoker)?> _methodCache = new();
 
         // ── primary entry points ──────────────────────────────────────────────────
 
         public static void Invoke(string call, params string[] args)
-            => InvokeWithResult(call, args.Select(ParseString).ToArray());
+            => InvokeWithResult(call, ParseArgs(args));
 
         public static void Invoke(string call, params object?[] args)
             => InvokeWithResult(call, args);
 
         public static T Invoke<T>(string call, params string[] args)
-            => (T)InvokeWithResult(call, args.Select(ParseString).ToArray())!;
+            => (T)InvokeWithResult(call, ParseArgs(args))!;
 
         public static T Invoke<T>(string call, params object?[] args)
             => (T)InvokeWithResult(call, args)!;
 
-        public static void InvokeJson(string call, System.Collections.Generic.List<JsonElement> args)
-            => InvokeWithResult(call, args.Select(UnboxJsonElement).ToArray()!);
+        public static void InvokeJson(string call, List<JsonElement> args)
+        {
+            object?[] unboxed = new object?[args.Count];
+            for (int i = 0; i < args.Count; i++)
+            {
+                unboxed[i] = UnboxJsonElement(args[i]);
+            }
+            InvokeWithResult(call, unboxed);
+        }
 
         public static object? InvokeWithResult(string call, object?[] args)
         {
@@ -50,77 +68,187 @@ namespace OssianForge.Engine.Resources.Config
                 resolved = ResolveMemberPath(memberPath);
                 _memberPathCache[memberPath] = resolved;
             }
+
             var (target, targetType) = resolved;
-
-            Type[] argTypes = args.Select(a => a?.GetType() ?? typeof(object)).ToArray();
             var lookupType = target?.GetType() ?? targetType;
-            var bindingFlags = BindingFlags.Public |
-                               (target == null ? BindingFlags.Static : BindingFlags.Instance);
 
-            // ── cached method lookup ───────────────────────────────────────────────
-            var methodKey = (call, args.Length);
-            if (!_methodCache.TryGetValue(methodKey, out var method))
+            // Generate cache key using types to handle overloads properly
+            string sig = GetArgSignature(args);
+            var methodKey = new MethodCacheKey(call, sig);
+
+            if (!_methodCache.TryGetValue(methodKey, out var cacheEntry))
             {
-                method = lookupType.GetMethods(bindingFlags)
-                .Where(m => m.Name == methodName)
-                .Where(m => m.GetParameters().Length == args.Length)
-                .FirstOrDefault(m =>
-                {
-                    var ps = m.GetParameters();
-                    for (int i = 0; i < ps.Length; i++)
-                    {
-                        if (args[i] == null) continue;
-                        if (ps[i].ParameterType.IsAssignableFrom(argTypes[i])) continue;
-                        if (IsNumericConvertible(ps[i].ParameterType, argTypes[i])) continue;
-                        if (CanCoerce(ps[i].ParameterType, args[i])) continue; // <--- Add coercion check
-                        return false;
-                    }
-                    return true;
-                });
-                _methodCache[methodKey] = method;
+                cacheEntry = FindAndCompileMethod(lookupType, target != null, methodName, args);
+                _methodCache[methodKey] = cacheEntry;
             }
 
-            if (method == null)
-                throw new Exception($"[DISPATCHER] Method '{methodName}' not found on '{lookupType.FullName}' "
-                    + $"with args ({string.Join(", ", argTypes.Select(t => t.Name))}).");
+            if (cacheEntry == null)
+                throw new Exception($"[DISPATCHER] Method '{methodName}' not found on '{lookupType.FullName}' with args signature ({sig}).");
 
+            var (method, invoker) = cacheEntry.Value;
             object?[] coercedArgs = CoerceArgs(method, args);
 
             try
             {
-                return method.Invoke(target, coercedArgs);
+                return invoker(target, coercedArgs);
             }
             catch (TargetInvocationException tie) when (tie.InnerException != null)
             {
-                // Unwrap so the crash log shows the REAL exception (type, message,
-                // original stack trace) instead of the generic reflection wrapper.
                 ExceptionDispatchInfo.Capture(tie.InnerException).Throw();
-                throw; // unreachable, satisfies the compiler
+                throw;
             }
             catch (Exception ex)
             {
-                // Helpful context: which "call" string actually failed, and with what args.
-                throw new Exception(
-                    $"[DISPATCHER] Invoke failed for '{call}' with args " +
-                    $"({string.Join(", ", coercedArgs.Select(a => a?.ToString() ?? "null"))}).", ex);
+                throw new Exception($"[DISPATCHER] Invoke failed for '{call}'.", ex);
             }
         }
 
-        // ── numeric coercion ──────────────────────────────────────────────────────
+        // ── method compilation & resolution ─────────────────────────────────────
 
-        /// <summary>
-        /// Reflection's GetMethod/Invoke does NOT perform the implicit numeric
-        /// widening (float→double, int→float, etc.) that a normal C# call site
-        /// gets for free. Without this, a method expecting `double` will fail to
-        /// match (and fail to invoke) when called with a boxed `float` argument —
-        /// e.g. from $delta (double) vs. an axis value stored as float.
-        /// This relaxes BOTH the match check and the actual invoke args so any
-        /// numeric type can bind to any other numeric parameter type.
-        /// </summary>
+        private static (MethodInfo Method, FastInvoker Invoker)? FindAndCompileMethod(Type lookupType, bool isInstance, string methodName, object?[] args)
+        {
+            var flags = BindingFlags.Public | (isInstance ? BindingFlags.Instance : BindingFlags.Static);
+            var methods = lookupType.GetMethods(flags);
+
+            foreach (var m in methods)
+            {
+                if (m.Name != methodName) continue;
+
+                var ps = m.GetParameters();
+                if (ps.Length != args.Length) continue;
+
+                bool match = true;
+                for (int i = 0; i < ps.Length; i++)
+                {
+                    if (args[i] == null) continue;
+
+                    Type argType = args[i]!.GetType();
+                    Type paramType = ps[i].ParameterType;
+
+                    if (paramType.IsAssignableFrom(argType)) continue;
+                    if (IsNumericConvertible(paramType, argType)) continue;
+                    if (CanCoerceFast(paramType, args[i])) continue;
+
+                    match = false;
+                    break;
+                }
+
+                if (match)
+                {
+                    return (m, CompileMethod(m));
+                }
+            }
+
+            return null;
+        }
+
+        private static FastInvoker CompileMethod(MethodInfo method)
+        {
+            var targetParam = Expression.Parameter(typeof(object), "target");
+            var argsParam = Expression.Parameter(typeof(object?[]), "args");
+
+            var argExpressions = new List<Expression>();
+            var paramInfos = method.GetParameters();
+
+            for (int i = 0; i < paramInfos.Length; i++)
+            {
+                var argArrayAccess = Expression.ArrayIndex(argsParam, Expression.Constant(i));
+                var castArg = Expression.Convert(argArrayAccess, paramInfos[i].ParameterType);
+                argExpressions.Add(castArg);
+            }
+
+            Expression instance = method.IsStatic ? null! : Expression.Convert(targetParam, method.DeclaringType!);
+            Expression callExpr = Expression.Call(instance, method, argExpressions);
+
+            if (method.ReturnType == typeof(void))
+            {
+                var lambda = Expression.Lambda<Action<object?, object?[]?>>(callExpr, targetParam, argsParam).Compile();
+                return (target, args) =>
+                {
+                    lambda(target, args);
+                    return null;
+                };
+            }
+            else
+            {
+                var castResult = Expression.Convert(callExpr, typeof(object));
+                return Expression.Lambda<FastInvoker>(castResult, targetParam, argsParam).Compile();
+            }
+        }
+
+        // ── fast coercion checks ──────────────────────────────────────────────────
+
+        private static bool CanCoerceFast(Type targetType, object? value)
+        {
+            if (value == null) return false;
+
+            Type valType = value.GetType();
+            if (targetType == typeof(bool))
+                return value is bool || (value is string s && bool.TryParse(s, out _));
+
+            if (NumericTypes.Contains(targetType))
+            {
+                if (NumericTypes.Contains(valType)) return true;
+                if (value is string numStr)
+                    return double.TryParse(numStr, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out _);
+                return false;
+            }
+
+            return targetType == typeof(string) || targetType.IsAssignableFrom(valType);
+        }
+
+        private static object?[] CoerceArgs(MethodInfo method, object?[] args)
+        {
+            var ps = method.GetParameters();
+            var result = new object?[args.Length];
+
+            for (int i = 0; i < args.Length; i++)
+            {
+                if (args[i] == null) { result[i] = null; continue; }
+
+                Type paramType = ps[i].ParameterType;
+                Type argType = args[i]!.GetType();
+
+                if (paramType == argType || paramType.IsAssignableFrom(argType))
+                {
+                    result[i] = args[i];
+                }
+                else if (paramType == typeof(bool) && args[i] is string strBool && bool.TryParse(strBool, out bool parsedBool))
+                {
+                    result[i] = parsedBool;
+                }
+                else
+                {
+                    try
+                    {
+                        result[i] = Convert.ChangeType(args[i], paramType, System.Globalization.CultureInfo.InvariantCulture);
+                    }
+                    catch
+                    {
+                        // Fallback to original value if conversion fails
+                        result[i] = args[i];
+                    }
+                }
+            }
+
+            return result;
+        }
+
         private static bool IsNumericConvertible(Type target, Type source)
             => NumericTypes.Contains(target) && NumericTypes.Contains(source);
 
-        
+        private static string GetArgSignature(object?[] args)
+        {
+            if (args.Length == 0) return "empty";
+            return string.Join("_", args.Select(a => a?.GetType().Name ?? "null"));
+        }
+
+        private static object[] ParseArgs(string[] args)
+        {
+            var result = new object[args.Length];
+            for (int i = 0; i < args.Length; i++) result[i] = ParseString(args[i]);
+            return result;
+        }
 
         // ── member path resolution ────────────────────────────────────────────────
 
@@ -198,21 +326,18 @@ namespace OssianForge.Engine.Resources.Config
                        .FirstOrDefault(x => x != null);
         }
 
-        // ── string parsing ────────────────────────────────────────────────────────
+        // ── string parsing & unboxing ─────────────────────────────────────────────
 
         public static object ParseString(string s)
         {
             if (bool.TryParse(s, out bool b)) return b;
             if (int.TryParse(s, out int i)) return i;
-            if (float.TryParse(s, System.Globalization.NumberStyles.Float,
-                System.Globalization.CultureInfo.InvariantCulture, out float f)) return f;
+            if (float.TryParse(s, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out float f)) return f;
             return s;
         }
 
-        // ── json unboxing ─────────────────────────────────────────────────────────
-
         public static object? UnboxJsonElement(JsonElement el) => el.ValueKind switch
-        { 
+        {
             JsonValueKind.String => el.GetString(),
             JsonValueKind.Number => el.TryGetInt32(out int i) ? i
                                  : el.TryGetSingle(out float f) ? f
@@ -222,68 +347,5 @@ namespace OssianForge.Engine.Resources.Config
             JsonValueKind.Null => null,
             _ => el.GetRawText()
         };
-
-        public static string UnboxJsonElementToString(JsonElement el) => el.ValueKind switch
-        {
-            JsonValueKind.String => el.GetString()!,
-            _ => el.GetRawText()
-        };
-
-        private static bool CanCoerce(Type targetType, object? value)
-        {
-            if (value == null) return false;
-            if (targetType == typeof(bool))
-                return value is bool || (value is string s && bool.TryParse(s, out _));
-
-            try
-            {
-                Convert.ChangeType(value, targetType);
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
-        }
-
-        private static object?[] CoerceArgs(MethodInfo method, object?[] args)
-        {
-            var ps = method.GetParameters();
-            var result = new object?[args.Length];
-
-            for (int i = 0; i < args.Length; i++)
-            {
-                if (args[i] == null) { result[i] = null; continue; }
-
-                Type paramType = ps[i].ParameterType;
-                Type argType = args[i]!.GetType();
-
-                if (paramType == argType)
-                {
-                    result[i] = args[i];
-                }
-                else if (paramType == typeof(bool) && args[i] is string strBool && bool.TryParse(strBool, out bool parsedBool))
-                {
-                    result[i] = parsedBool;
-                }
-                else if (NumericTypes.Contains(paramType) && NumericTypes.Contains(argType))
-                {
-                    result[i] = Convert.ChangeType(args[i], paramType);
-                }
-                else
-                {
-                    try
-                    {
-                        result[i] = Convert.ChangeType(args[i], paramType);
-                    }
-                    catch
-                    {
-                        result[i] = args[i];
-                    }
-                }
-            }
-
-            return result;
-        }
     }
 }
