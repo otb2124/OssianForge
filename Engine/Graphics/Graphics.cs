@@ -90,8 +90,6 @@ namespace OssianForge.Engine.Graphics
             //var mainPass = new PostProcessPass("shader.post");
             //mainPass.ChromaStrength = 0.01f;
             //PostProcess.Passes.Add(mainPass);
-
-            Window.IsVisible = true;
         }
 
 

@@ -109,30 +109,31 @@ namespace OssianForge.Engine.Resources.Config
 
         // ── flat-store I/O ────────────────────────────────────────────────────────
 
-        private ActionRecord? ReadActionRecord(int index)
+        private ActionRecord ReadActionRecord(string prefix)
         {
-            string prefix = $"[{index}]";
-            string id = GetString($"{prefix}.id");
-            if (string.IsNullOrEmpty(id)) return null;
-
             var record = new ActionRecord
             {
-                Id = id,
+                Id = GetString($"{prefix}.id"),
                 Call = GetString($"{prefix}.call"),
                 StoreValue = NullIfEmpty(GetString($"{prefix}.storeValue"))
             };
 
-            var args = new List<string>();
-            int i = 0;
+            var argsList = new List<object>();
+            int j = 0;
             while (true)
             {
-                string val = GetString($"{prefix}.args[{i}]");
-                if (string.IsNullOrEmpty(val)) break;
-                args.Add(val);
-                i++;
-            }
-            record.ArgsJson = JsonSerializer.Serialize(args);
+                string val = GetString($"{prefix}.args[{j}]");
+                if (string.IsNullOrEmpty(val))
+                {
+                    break;
+                }
 
+                // Parse primitive types (bool, int, double) to avoid storing them as pure strings
+                argsList.Add(ReflectionDispatcher.ParseString(val));
+                j++;
+            }
+
+            record.ArgsJson = JsonSerializer.Serialize(argsList);
             return record;
         }
 

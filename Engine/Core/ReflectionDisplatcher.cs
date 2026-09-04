@@ -62,20 +62,21 @@ namespace OssianForge.Engine.Resources.Config
             if (!_methodCache.TryGetValue(methodKey, out var method))
             {
                 method = lookupType.GetMethods(bindingFlags)
-                    .Where(m => m.Name == methodName)
-                    .Where(m => m.GetParameters().Length == args.Length)
-                    .FirstOrDefault(m =>
+                .Where(m => m.Name == methodName)
+                .Where(m => m.GetParameters().Length == args.Length)
+                .FirstOrDefault(m =>
+                {
+                    var ps = m.GetParameters();
+                    for (int i = 0; i < ps.Length; i++)
                     {
-                        var ps = m.GetParameters();
-                        for (int i = 0; i < ps.Length; i++)
-                        {
-                            if (args[i] == null) continue;
-                            if (ps[i].ParameterType.IsAssignableFrom(argTypes[i])) continue;
-                            if (IsNumericConvertible(ps[i].ParameterType, argTypes[i])) continue;
-                            return false;
-                        }
-                        return true;
-                    });
+                        if (args[i] == null) continue;
+                        if (ps[i].ParameterType.IsAssignableFrom(argTypes[i])) continue;
+                        if (IsNumericConvertible(ps[i].ParameterType, argTypes[i])) continue;
+                        if (CanCoerce(ps[i].ParameterType, args[i])) continue; // <--- Add coercion check
+                        return false;
+                    }
+                    return true;
+                });
                 _methodCache[methodKey] = method;
             }
 
@@ -119,25 +120,7 @@ namespace OssianForge.Engine.Resources.Config
         private static bool IsNumericConvertible(Type target, Type source)
             => NumericTypes.Contains(target) && NumericTypes.Contains(source);
 
-        private static object?[] CoerceArgs(MethodInfo method, object?[] args)
-        {
-            var ps = method.GetParameters();
-            var result = new object?[args.Length];
-
-            for (int i = 0; i < args.Length; i++)
-            {
-                if (args[i] == null) { result[i] = null; continue; }
-
-                Type paramType = ps[i].ParameterType;
-                Type argType = args[i]!.GetType();
-
-                result[i] = (paramType != argType && NumericTypes.Contains(paramType) && NumericTypes.Contains(argType))
-                    ? Convert.ChangeType(args[i], paramType)
-                    : args[i];
-            }
-
-            return result;
-        }
+        
 
         // ── member path resolution ────────────────────────────────────────────────
 
@@ -245,5 +228,62 @@ namespace OssianForge.Engine.Resources.Config
             JsonValueKind.String => el.GetString()!,
             _ => el.GetRawText()
         };
+
+        private static bool CanCoerce(Type targetType, object? value)
+        {
+            if (value == null) return false;
+            if (targetType == typeof(bool))
+                return value is bool || (value is string s && bool.TryParse(s, out _));
+
+            try
+            {
+                Convert.ChangeType(value, targetType);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        private static object?[] CoerceArgs(MethodInfo method, object?[] args)
+        {
+            var ps = method.GetParameters();
+            var result = new object?[args.Length];
+
+            for (int i = 0; i < args.Length; i++)
+            {
+                if (args[i] == null) { result[i] = null; continue; }
+
+                Type paramType = ps[i].ParameterType;
+                Type argType = args[i]!.GetType();
+
+                if (paramType == argType)
+                {
+                    result[i] = args[i];
+                }
+                else if (paramType == typeof(bool) && args[i] is string strBool && bool.TryParse(strBool, out bool parsedBool))
+                {
+                    result[i] = parsedBool;
+                }
+                else if (NumericTypes.Contains(paramType) && NumericTypes.Contains(argType))
+                {
+                    result[i] = Convert.ChangeType(args[i], paramType);
+                }
+                else
+                {
+                    try
+                    {
+                        result[i] = Convert.ChangeType(args[i], paramType);
+                    }
+                    catch
+                    {
+                        result[i] = args[i];
+                    }
+                }
+            }
+
+            return result;
+        }
     }
 }

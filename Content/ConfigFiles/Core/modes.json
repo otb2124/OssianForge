@@ -1,5 +1,5 @@
 ﻿{
-  "currentMode": "edit",
+  "currentMode": "renderLimited",
   "modes": [
     {
       "id": "edit",
