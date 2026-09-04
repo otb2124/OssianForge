@@ -119,6 +119,7 @@ namespace OssianForge.Engine.Resources.Config
                 "configfile.inputKeys" => new InputKeysConfig(record.Id, record.Data[0]),
                 "configfile.inputAxes" => new InputAxesConfig(record.Id, record.Data[0]),
                 "configfile.statemachine" => new StateMachineConfig(record.Id, record.Data[0]),
+                "configfile.modes" => new ModesConfig(record.Id, record.Data[0]),
                 "scriptfile" => new ScriptFile(record.Id, record.Data[0]),
                 "soundfile" => new SoundFile(record.Id, record.Data[0]),
 

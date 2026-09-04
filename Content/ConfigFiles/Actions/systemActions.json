@@ -1,0 +1,12 @@
+﻿[
+  {
+    "id": "action.systemActions.setWindowVisibleFalse",
+    "call": "window.isVisible",
+    "args": [ false ]
+  },
+  {
+    "id": "action.systemActions.setWindowVisibleTrue", 
+    "call": "window.isVisible",
+    "args": [ true ]
+  }
+]

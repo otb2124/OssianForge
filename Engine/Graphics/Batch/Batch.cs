@@ -169,7 +169,10 @@ namespace OssianForge.Engine.Graphics.Batch
 
         public void OnResize(Vector2D<int> size)
         {
-            OpenGL.Viewport(size);
+            if (OpenGL == null || size.X <= 0 || size.Y <= 0) return;
+
+            // Explicitly set the OpenGL rendering bounds
+            OpenGL.Viewport(0, 0, (uint)size.X, (uint)size.Y);
         }
     }
 }

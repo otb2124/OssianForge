@@ -61,12 +61,14 @@ namespace OssianForge.Engine.Graphics
                 Title = WindowTitle,
                 FramesPerSecond = TargetFramesPerSecond,
                 UpdatesPerSecond = TargetUpdatesPerSecond,
+                IsVisible = false
             };
 
             Window = Silk.NET.Windowing.Window.Create(options);
             ConsoleUtils.SetPosition(200, 800);
 
-            //ToggleFullscreen();
+            // Subscribe to Silk.NET's native window resize event
+            Window.Resize += OnResize;
 
             Batch = new Batch.Batch();
         }
@@ -88,11 +90,18 @@ namespace OssianForge.Engine.Graphics
             //var mainPass = new PostProcessPass("shader.post");
             //mainPass.ChromaStrength = 0.01f;
             //PostProcess.Passes.Add(mainPass);
+
+            Window.IsVisible = true;
         }
 
 
         public void OnRender(double delta)
         {
+            if (!Window.IsVisible || Window.Size.X == 0 || Window.Size.Y == 0)
+            {
+                return;
+            }
+
             UpdateRenderData(delta);
 
             Batch.Clear();
@@ -115,7 +124,23 @@ namespace OssianForge.Engine.Graphics
 
         public void OnResize(Vector2D<int> size)
         {
-            Batch.OnResize(size);
+            // Ignore invalid minimized dimensions
+            if (size.X <= 0 || size.Y <= 0) return;
+
+            // 1. Keep track of the updated window dimensions
+            WindowSize = size;
+
+            // 2. Adjust OpenGL context viewport
+            Batch?.OnResize(size);
+
+            // 3. Update Camera aspect ratio (if active)
+            var camera = GetCurrentCamera();
+            if (camera != null)
+            {
+                camera.AspectRatio = (float)size.X / size.Y;
+            }
+
+            // (PostProcess left alone per your instruction)
             PostProcess?.Resize(size.X, size.Y);
         }
 
@@ -161,6 +186,12 @@ namespace OssianForge.Engine.Graphics
 
                 IsFullscreen = false;
             }
+        }
+
+
+        public void SetWindowIsVisible(bool isVisible)
+        {
+            Window.IsVisible = isVisible;
         }
     }
 

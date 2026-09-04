@@ -63,6 +63,11 @@ namespace OssianForge.Engine.Resources.Config
             var sceneRef = node.GetProperty<SceneReferenceProperty>();
             if (sceneRef != null)
             {
+                if (!node.Enabled)
+                {
+                    return node;
+                }
+
                 var resolved = ResolveSceneReference(sceneRef, node, el, parent);
                 return resolved;
             }

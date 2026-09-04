@@ -18,6 +18,7 @@ namespace OssianForge.Engine.Nodes
         public bool Enabled
         {
             set => StartEnabled = UpdateEnabled = RenderEnabled = value;
+            get => StartEnabled && UpdateEnabled && RenderEnabled;
         }
 
         public void AddChild(Node child)

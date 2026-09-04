@@ -1,0 +1,22 @@
+﻿{
+  "currentMode": "edit",
+  "modes": [
+    {
+      "id": "edit",
+      "actions": {
+        "OnEnter": [
+          "action.systemActions.setWindowVisibleFalse"
+        ]
+      }
+    },
+    {
+      "id": "renderLimited",
+      "actions": {
+        "OnEnter": [
+          "action.systemActions.setWindowVisibleTrue"
+        ]
+      }
+    }
+  ]
+
+}

@@ -19,7 +19,7 @@ namespace OssianForge.Engine.Inputs
         public Vector2 Delta { get; private set; }   // ← new: frame-to-frame movement
         private double _lastDeltaTime;
         public float ScrollDelta { get; private set; }
-        public bool LockCursorToCenter { get; set; } = true;
+        public bool LockCursorToCenter { get; set; } = false;
         public bool IsFocused { get; set; } = true;
 
         private MouseInput() { }

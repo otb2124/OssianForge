@@ -5,6 +5,11 @@
     "pronouns": [ "console" ]
   },
   {
+    "id": "pronoun.graphics.SetWindowIsVisible",
+    "target": "OssianForge.Engine.Graphics.SetWindowIsVisible",
+    "pronouns": [ "window.isVisible" ]
+  },
+  {
     "id": "pronoun.node.addValue",
     "target": "OssianForge.Engine.Nodes.NodeReflection.AddNodePropertyValueScaled",
     "pronouns": [ "node.addValue" ]
@@ -15,9 +20,9 @@
     "pronouns": [ "node.setValue" ]
   },
   {
-    "id": "pronoun.node.getValue", 
+    "id": "pronoun.node.getValue",
     "target": "OssianForge.Engine.Nodes.NodeReflection.GetNodePropertyValue",
-    "pronouns": ["nodes.getValue"]
+    "pronouns": [ "nodes.getValue" ]
   },
   {
     "id": "pronoun.node.callPropertyMethod",
@@ -32,7 +37,7 @@
   {
     "id": "pronoun.node.setValueCameraDirection",
     "target": "OssianForge.Engine.Nodes.NodeReflection.SetValueCameraDirection",
-    "pronouns": ["node.setValueCameraDirection"]
+    "pronouns": [ "node.setValueCameraDirection" ]
   },
   {
     "id": "pronoun.node.setYawFromCamera",

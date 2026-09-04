@@ -315,6 +315,11 @@
     "type": "texturefile"
   },
   {
+    "id": "configfile.modes",
+    "data": [ "ConfigFiles/Core/modes.json" ],
+    "type": "configfile.modes"
+  },
+  {
     "id": "configfile.font.roboto",
     "data": [ "ConfigFiles/Fonts/roboto.json" ],
     "type": "configfile.font"
@@ -353,6 +358,11 @@
     "id": "configfile.tree",
     "data": [ "ConfigFiles/Core/tree.json" ],
     "type": "configfile.tree"
+  },
+  {
+    "id": "configfile.actions.systemActions",
+    "data": [ "ConfigFiles/Actions/systemActions.json" ],
+    "type": "configfile.actions"
   },
   {
     "id": "configfile.actions.myActions",

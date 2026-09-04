@@ -75,6 +75,7 @@
     {
       "id": "debugUiref",
       "name": "debugUiref",
+      "enabled": true,
       "properties": [
         {
           "type": "SceneReferenceProperty",
