@@ -32,7 +32,7 @@
     {
       "id": "terrain",
       "name": "terrain",
-      "enabled": true,
+      "enabled": false,
       "properties": [
         {
           "type": "TransformProperty",
@@ -65,6 +65,20 @@
         {
           "type": "SceneReferenceProperty",
           "data": [ "configfile.scene.player" ]
+        },
+        {
+          "type": "TransformProperty",
+          "data": [ [ "-60,20,30", "0,0,0", "1,1,1" ] ]
+        }
+      ]
+    },
+    {
+      "id": "gizmoSceneRef",
+      "name": "gizmoSceneRef",
+      "properties": [
+        {
+          "type": "SceneReferenceProperty",
+          "data": [ "configfile.scene.gizmo" ]
         },
         {
           "type": "TransformProperty",

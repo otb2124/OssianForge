@@ -19,6 +19,9 @@ namespace OssianForge.Engine.Resources
 
         public HashSet<string> ResourceIds { get; } = new();
 
+        // Keeps track of visited scene config IDs to avoid infinite loops with circular scene references
+        private readonly HashSet<string> _visitedScenes = new(StringComparer.OrdinalIgnoreCase);
+
         public NodeDependency()
         {
 
@@ -33,7 +36,10 @@ namespace OssianForge.Engine.Resources
 
         public void ExtractScene(string sceneConfigId)
         {
+            if (!_visitedScenes.Add(sceneConfigId)) return;
+
             var sceneConfig = Engine.Resources.GetResource<SceneConfig>(sceneConfigId);
+            ResourceIds.Add(sceneConfigId);
             ExtractDocument(sceneConfig.Document);
         }
 
@@ -68,10 +74,35 @@ namespace OssianForge.Engine.Resources
 
         private void ExtractFromProperty(JsonElement el)
         {
+            // Check if this property is a SceneReferenceProperty
+            if (el.TryGetProperty("type", out var typeProp) &&
+                typeProp.GetString() == "SceneReferenceProperty")
+            {
+                ExtractSceneReference(el);
+            }
+
             if (!el.TryGetProperty("data", out var data)) return;
 
             string raw = data.GetRawText();
             ExtractByPrefixes(raw, Resource.Prefixes, ResourceIds);
+        }
+
+        private void ExtractSceneReference(JsonElement propElement)
+        {
+            if (!propElement.TryGetProperty("data", out var data) ||
+                data.ValueKind != JsonValueKind.Array)
+                return;
+
+            foreach (var item in data.EnumerateArray())
+            {
+                if (item.ValueKind != JsonValueKind.String) continue;
+
+                string sceneConfigId = item.GetString();
+                if (string.IsNullOrEmpty(sceneConfigId)) continue;
+
+                // Recursively extract dependencies from the referenced scene
+                ExtractScene(sceneConfigId);
+            }
         }
 
         private static void ExtractByPrefixes(string raw, HashSet<string> prefixes, HashSet<string> ids)

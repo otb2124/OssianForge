@@ -22,8 +22,6 @@ namespace OssianForge.Engine.Resources
         {
             NodeDependency.ExtractTree("configfile.tree");
             NodeDependency.ExtractScene(Engine.Resources.GetResource<TreeConfig>("configfile.tree").MainScene);
-            NodeDependency.ExtractScene("configfile.scene.player");
-            NodeDependency.ExtractScene("configfile.scene.debugui");
         }
     }
 }

@@ -1,0 +1,84 @@
+﻿{
+  "id": "gizmo_scene",
+  "name": "Gizmo Scene",
+  "children": [
+    {
+      "id": "transform_gizmo",
+      "name": "Transform Gizmo",
+      "properties": [
+        {
+          "type": "TransformProperty",
+          "data": [ [ "0,0,0", "0,0,0", "1,1,1" ] ]
+        },
+        {
+          "type": "MeshProperty",
+          "data": [ "mesh.transform" ]
+        },
+        {
+          "type": "TextureMaterialProperty",
+          "data": [ "texture.leather", "shader.basic" ]
+        },
+        {
+          "type": "TextureMaterialProperty",
+          "data": [ "texture.leather", "shader.basic" ]
+        },
+        {
+          "type": "TextureMaterialProperty",
+          "data": [ "texture.leather", "shader.basic" ]
+        }
+      ]
+    },
+    {
+      "id": "rotate_gizmo",
+      "name": "Rotate Gizmo",
+      "properties": [
+        {
+          "type": "TransformProperty",
+          "data": [ [ "0,0,0", "0,0,0", "1,1,1" ] ]
+        },
+        {
+          "type": "MeshProperty",
+          "data": [ "mesh.rotate" ]
+        },
+        {
+          "type": "TextureMaterialProperty",
+          "data": [ "texture.leather", "shader.basic" ]
+        },
+        {
+          "type": "TextureMaterialProperty",
+          "data": [ "texture.leather", "shader.basic" ]
+        },
+        {
+          "type": "TextureMaterialProperty",
+          "data": [ "texture.leather", "shader.basic" ]
+        }
+      ]
+    },
+    {
+      "id": "scale_gizmo",
+      "name": "Scale Gizmo",
+      "properties": [
+        {
+          "type": "TransformProperty",
+          "data": [ [ "0,0,0", "0,0,0", "1,1,1" ] ]
+        },
+        {
+          "type": "MeshProperty",
+          "data": [ "mesh.scale" ]
+        },
+        {
+          "type": "TextureMaterialProperty",
+          "data": [ "texture.leather", "shader.basic" ]
+        },
+        {
+          "type": "TextureMaterialProperty",
+          "data": [ "texture.leather", "shader.basic" ]
+        },
+        {
+          "type": "TextureMaterialProperty",
+          "data": [ "texture.leather", "shader.basic" ]
+        }
+      ]
+    }
+  ]
+}

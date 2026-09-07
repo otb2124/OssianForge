@@ -25,6 +25,8 @@ namespace OssianForge.Engine.Nodes.Props
         private string _lastContent;
         private float _lastFontSize;
         private Vector4 _lastColor;
+
+        //TODO: on window resize set all renderspace screenspace elemets needs redraw to true if needs
         private bool NeedsRedraw =>
             _lastContent != Content ||
             _lastFontSize != FontSize ||

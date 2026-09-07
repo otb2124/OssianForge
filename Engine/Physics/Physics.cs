@@ -7,6 +7,9 @@ namespace OssianForge.Engine.Physics
 {
     public class Physics
     {
+
+
+        //TODO: MOVE ALL TO SEPARATE CONFIG
         public List<PhysicsWorld> PhysicsWorlds = new();
 
         // Convenience accessors

@@ -55,6 +55,21 @@
     "type": "meshfile"
   },
   {
+    "id": "meshfile.transform",
+    "data": [ "MeshFiles/transform.fbx" ],
+    "type": "meshfile"
+  },
+  {
+    "id": "meshfile.rotate",
+    "data": [ "MeshFiles/rotate.fbx" ],
+    "type": "meshfile"
+  },
+  {
+    "id": "meshfile.scale",
+    "data": [ "MeshFiles/scale.fbx" ],
+    "type": "meshfile"
+  },
+  {
     "id": "animationfile.remy.idle",
     "data": [ "AnimationFiles/remy.idle.fbx" ],
     "type": "animationfile"
@@ -355,6 +370,11 @@
     "type": "configfile.scene"
   },
   {
+    "id": "configfile.scene.gizmo",
+    "data": [ "ConfigFiles/Scenes/gizmo.json" ],
+    "type": "configfile.scene"
+  },
+  {
     "id": "configfile.tree",
     "data": [ "ConfigFiles/Core/tree.json" ],
     "type": "configfile.tree"
@@ -452,6 +472,21 @@
   {
     "id": "mesh.remy",
     "data": [ "meshfile.remy" ],
+    "type": "mesh"
+  },
+  {
+    "id": "mesh.transform",
+    "data": [ "meshfile.transform" ],
+    "type": "mesh"
+  },
+  {
+    "id": "mesh.rotate",
+    "data": [ "meshfile.rotate" ],
+    "type": "mesh"
+  },
+  {
+    "id": "mesh.scale",
+    "data": [ "meshfile.scale" ],
     "type": "mesh"
   },
   {
