@@ -3,6 +3,7 @@ using OssianForge.Engine.Nodes.Props;
 using OssianForge.Engine.Nodes.Props.Types.Camera;
 using OssianForge.Engine.Nodes.Props.Types.Physics;
 using OssianForge.Engine.Nodes.Props.Types.Scene;
+using System.Globalization;
 using System.Numerics;
 using System.Text.Json;
 using static OssianForge.Engine.Utils.MathUtils;
@@ -63,6 +64,7 @@ namespace OssianForge.Engine.Resources.Config
             var sceneRef = node.GetProperty<SceneReferenceProperty>();
             if (sceneRef != null)
             {
+                // Skip scene reference resolution if either the node or the SceneReferenceProperty itself is disabled
                 if (!node.Enabled)
                 {
                     return node;
@@ -138,6 +140,7 @@ namespace OssianForge.Engine.Resources.Config
                 "CubemapMaterialProperty" => ParseCubemapMaterialProperty(data),
                 "TextureMaterialProperty" => ParseTextureMaterialProperty(data),
                 "TextMaterialProperty" => ParseTextMaterialProperty(data),
+                "ColorMaterialProperty" => ParseColorMaterialProperty(data),
                 "PointEmissionProperty" => ParsePointEmissionProperty(data),
                 "SunEmissionProperty" => ParseSunEmissionProperty(data),
                 "SpotEmissionProperty" => ParseSpotEmissionProperty(data),
@@ -202,6 +205,18 @@ namespace OssianForge.Engine.Resources.Config
             string shad = arr[1].GetString();
             var actions = ParseRenderActions(arr, 2);
             return new TextureMaterialProperty(tex, shad, actions);
+        }
+
+        private static ColorMaterialProperty ParseColorMaterialProperty(JsonElement? data)
+        {
+            var arr = data!.Value;
+            string rawColor = arr[0].GetString()!;
+            string shaderId = arr[1].GetString()!;
+            var actions = ParseRenderActions(arr, 2);
+
+            Vector4 colorVector = ParseColorVector(rawColor);
+
+            return new ColorMaterialProperty(colorVector, shaderId, actions);
         }
 
         // "data": [ "cubemap.id", "shader.id" ]
@@ -476,6 +491,25 @@ namespace OssianForge.Engine.Resources.Config
                 float.Parse(parts[1], System.Globalization.CultureInfo.InvariantCulture),
                 float.Parse(parts[2], System.Globalization.CultureInfo.InvariantCulture),
                 float.Parse(parts[3], System.Globalization.CultureInfo.InvariantCulture));
+        }
+
+        private static Vector4 ParseColorVector(string rawColor)
+        {
+            // Split "0, 10, 255, 10" or "0, 10, 255" by comma
+            var parts = rawColor.Split(',')
+                               .Select(p => float.Parse(p.Trim(), CultureInfo.InvariantCulture))
+                               .ToArray();
+
+            if (parts.Length < 3)
+                throw new FormatException($"Invalid color format: '{rawColor}'. Expected 3 (RGB) or 4 (RGBA) values.");
+
+            // Convert 0-255 range to normalized 0.0f - 1.0f range for OpenGL
+            float r = parts[0] / 255f;
+            float g = parts[1] / 255f;
+            float b = parts[2] / 255f;
+            float a = parts.Length > 3 ? parts[3] / 255f : 1.0f; // Default alpha to 1.0 if omitted
+
+            return new Vector4(r, g, b, a);
         }
     }
 }

@@ -112,6 +112,9 @@ namespace OssianForge.Engine.Resources.Shaders
         public Matrix4x4 View;
         public Matrix4x4 Projection;
         public Matrix4x4 ViewNoTranslation;
+
+        public Vector4? BaseColor;
+
         public uint? DiffuseTextureSlot;
         public uint? NormalTextureSlot;
         public bool HasNormalTexture;

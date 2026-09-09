@@ -1,5 +1,6 @@
 ﻿using OssianForge.Engine.Core;
 using OssianForge.Engine.Nodes;
+using OssianForge.Engine.Nodes.Props;
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
@@ -212,6 +213,11 @@ namespace OssianForge.Engine.Resources.Config
                 {
                     if (s == "$self") return context;
                     if (s == "$delta") return delta ?? 0.0;
+                    if (s.StartsWith("$currentCamera"))
+                    {
+                        var node = Engine.Nodes.NodeManager.GetNodesWithProperty<CameraProperty>().FirstOrDefault(n => string.Equals(n.Id, Engine.Graphics.CurrentCameraNode, StringComparison.OrdinalIgnoreCase));
+                        return node;
+                    }
                     if (s.StartsWith("$child."))
                     {
                         string path = s["$child.".Length..];

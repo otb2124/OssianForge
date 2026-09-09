@@ -7,7 +7,7 @@
   {
     "id": "action.transform.resetVelocity",
     "call": "node.callMethod",
-    "args": [ "$child.playerBodyMesh", "RigidPhysicsProperty", "ResetVelocity"]
+    "args": [ "$child.playerBodyMesh", "RigidPhysicsProperty", "ResetVelocity" ]
   },
 
   {
@@ -78,5 +78,29 @@
     "id": "action.transform.setBodyYawBackward",
     "call": "node.setYawFromCamera",
     "args": [ "$child.playerBodyMesh", "TransformProperty", "Rotation", "playerCamera", 180.0 ]
+  },
+
+
+
+  {
+    "id": "action.transform.flyForward",
+    "call": "node.addValue",
+    "args": [ "$self", "TransformProperty", "Position", "0,0,-1", "$delta" ]
+  },
+  {
+    "id": "action.transform.flyBackward",
+    "call": "node.addValue",
+    "args": [ "$self", "TransformProperty", "Position", "0,0,1", "$delta" ]
+  },
+
+  {
+    "id": "action.transform.flyForwardCameraDir",
+    "call": "node.addValueCameraDirection",
+    "args": [ "$self", "TransformProperty", "Position", "0,0,10", "$currentCamera", "$delta" ]
+  },
+  {
+    "id": "action.transform.flyBackwardCameraDir",
+    "call": "node.addValueCameraDirection",
+    "args": [ "$self", "TransformProperty", "Position", "0,0,-10", "$currentCamera", "$delta" ]
   }
 ]

@@ -12,7 +12,6 @@ namespace OssianForge.Engine.Resources
             "configfile.actions",
             "configfile.inputKeys",
             "configfile.inputAxis",
-            "configfile.statemachine",
             "shader.wireframe",
             "configfile.modes",
         };
@@ -63,6 +62,10 @@ namespace OssianForge.Engine.Resources
 
         private void ExtractFromNode(JsonElement el)
         {
+            // Skip disabled nodes
+            if (el.TryGetProperty("enabled", out var enabledProp) && !enabledProp.GetBoolean())
+                return;
+
             if (el.TryGetProperty("properties", out var props))
                 foreach (var prop in props.EnumerateArray())
                     ExtractFromProperty(prop);
@@ -74,6 +77,10 @@ namespace OssianForge.Engine.Resources
 
         private void ExtractFromProperty(JsonElement el)
         {
+            // Skip disabled properties
+            if (el.TryGetProperty("enabled", out var enabledProp) && !enabledProp.GetBoolean())
+                return;
+
             // Check if this property is a SceneReferenceProperty
             if (el.TryGetProperty("type", out var typeProp) &&
                 typeProp.GetString() == "SceneReferenceProperty")

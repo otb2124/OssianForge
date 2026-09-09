@@ -55,18 +55,18 @@
     "type": "meshfile"
   },
   {
-    "id": "meshfile.transform",
-    "data": [ "MeshFiles/transform.fbx" ],
+    "id": "meshfile.gizmo.position",
+    "data": [ "MeshFiles/position_gizmo.fbx" ],
     "type": "meshfile"
   },
   {
-    "id": "meshfile.rotate",
-    "data": [ "MeshFiles/rotate.fbx" ],
+    "id": "meshfile.gizmo.rotate",
+    "data": [ "MeshFiles/rotate_gizmo.fbx" ],
     "type": "meshfile"
   },
   {
-    "id": "meshfile.scale",
-    "data": [ "MeshFiles/scale.fbx" ],
+    "id": "meshfile.gizmo.scale",
+    "data": [ "MeshFiles/scale_gizmo.fbx" ],
     "type": "meshfile"
   },
   {
@@ -375,6 +375,11 @@
     "type": "configfile.scene"
   },
   {
+    "id": "configfile.scene.freeCamera",
+    "data": [ "ConfigFiles/Scenes/freeCamera.json" ],
+    "type": "configfile.scene"
+  },
+  {
     "id": "configfile.tree",
     "data": [ "ConfigFiles/Core/tree.json" ],
     "type": "configfile.tree"
@@ -417,6 +422,11 @@
   {
     "id": "configfile.statemachine.player",
     "data": [ "ConfigFiles/StateMachines/playerStateMachine.json" ],
+    "type": "configfile.statemachine"
+  },
+  {
+    "id": "configfile.statemachine.freeCamera",
+    "data": [ "ConfigFiles/StateMachines/freeCameraStateMachine.json" ],
     "type": "configfile.statemachine"
   },
   {
@@ -475,18 +485,18 @@
     "type": "mesh"
   },
   {
-    "id": "mesh.transform",
-    "data": [ "meshfile.transform" ],
+    "id": "mesh.gizmo.position",
+    "data": [ "meshfile.gizmo.position" ],
     "type": "mesh"
   },
   {
-    "id": "mesh.rotate",
-    "data": [ "meshfile.rotate" ],
+    "id": "mesh.gizmo.rotate",
+    "data": [ "meshfile.gizmo.rotate" ],
     "type": "mesh"
   },
   {
-    "id": "mesh.scale",
-    "data": [ "meshfile.scale" ],
+    "id": "mesh.gizmo.scale",
+    "data": [ "meshfile.gizmo.scale" ],
     "type": "mesh"
   },
   {

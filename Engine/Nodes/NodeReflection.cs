@@ -92,25 +92,52 @@ namespace OssianForge.Engine.Nodes
         /// </summary>
         public static void AddValueCameraDirection(
             Node node, string propertyTypeName, string memberPath,
-            string rawDirection, string directionSourceNodeId, double delta)
+            string rawDirection, Node cameraNode, double delta)
         {
-            var cameraNode = Engine.Nodes.NodeManager.GetNode(directionSourceNodeId);
             var cameraSelfTransform = cameraNode?.GetProperty<TransformProperty>();
             if (cameraSelfTransform == null) return;
 
             float yawRad = float.DegreesToRadians(cameraSelfTransform.Transform.Rotation.Y);
+            float pitchRad = float.DegreesToRadians(cameraSelfTransform.Transform.Rotation.X);
 
-            Vector3 forward = new Vector3(MathF.Sin(yawRad), 0f, MathF.Cos(yawRad));
-            Vector3 right = new Vector3(MathF.Cos(yawRad), 0f, -MathF.Sin(yawRad));
+            float cp = MathF.Cos(pitchRad);
+            float sp = MathF.Sin(pitchRad);
+            float cy = MathF.Cos(yawRad);
+            float sy = MathF.Sin(yawRad);
+
+            // Minecraft-style 3D forward vector:
+            // - Uses -sp so looking down correctly moves you down (instead of floating up)
+            // - When pitch is 0 (looking straight ahead), Y is 0 so moving forward stays completely flat
+            Vector3 forward = new Vector3(sy * cp, -sp, cy * cp);
+
+            // Purely horizontal right vector for clean strafing
+            Vector3 right = new Vector3(cy, 0f, -sy);
+
+            // World-aligned vertical axis (like Minecraft creative flight)
+            Vector3 up = Vector3.UnitY;
+
             Vector3 dir = ParseVector3(rawDirection);
 
-            Vector3 worldDelta = right * dir.X + Vector3.UnitY * dir.Y + forward * dir.Z;
+            // Combine axes: Forward/backward follows full 3D look direction, strafing is horizontal, vertical is world-up
+            Vector3 worldDelta = right * dir.X + up * dir.Y + forward * dir.Z;
 
             ApplyScaled(node, propertyTypeName, memberPath,
                 $"{worldDelta.X.ToString(CultureInfo.InvariantCulture)}," +
                 $"{worldDelta.Y.ToString(CultureInfo.InvariantCulture)}," +
                 $"{worldDelta.Z.ToString(CultureInfo.InvariantCulture)}",
                 delta);
+        }
+
+        public static void AddValueCameraDirection(
+            Node node, string propertyTypeName, string memberPath,
+            string rawDirection, string directionSourceNodeId, double delta)
+        {
+            var cameraNode = string.Equals(directionSourceNodeId, "$currentCamera", StringComparison.OrdinalIgnoreCase)
+                ? Engine.Nodes.NodeManager.GetNodesWithProperty<CameraProperty>()
+                    .FirstOrDefault(n => string.Equals(n.Id, Engine.Graphics.CurrentCameraNode, StringComparison.OrdinalIgnoreCase))
+                : Engine.Nodes.NodeManager.GetNode(directionSourceNodeId);
+
+            AddValueCameraDirection(node, propertyTypeName, memberPath, rawDirection, cameraNode, delta);
         }
 
         public static void SetValueCameraDirection(

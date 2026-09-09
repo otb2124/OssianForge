@@ -1,0 +1,99 @@
+﻿{
+  "id": "statemachine.fpsCamera",
+  "initial": "Idle",
+  "states": [
+    {
+      "id": "Idle"
+    },
+    {
+      "id": "WalkForward",
+      "onUpdate": [ "action.transform.flyForwardCameraDir" ]
+    },
+    {
+      "id": "WalkBackward",
+      "onUpdate": [ "action.transform.flyBackwardCameraDir" ]
+    },
+    {
+      "id": "WalkLeft",
+      "onUpdate": [ "action.transform.strafeLeft" ]
+    },
+    {
+      "id": "WalkRight",
+      "onUpdate": [ "action.transform.strafeRight" ]
+    }
+  ],
+  "transitions": [
+    {
+      "from": "Idle",
+      "to": "WalkForward",
+      "condition": {
+        "call": "OssianForge.Engine.Inputs.KeyHandler.IsStateActive",
+        "args": [ "walk_up" ]
+      }
+    },
+    {
+      "from": "Idle",
+      "to": "WalkBackward",
+      "condition": {
+        "call": "OssianForge.Engine.Inputs.KeyHandler.IsStateActive",
+        "args": [ "walk_down" ]
+      }
+    },
+    {
+      "from": "Idle",
+      "to": "WalkLeft",
+      "condition": {
+        "call": "OssianForge.Engine.Inputs.KeyHandler.IsStateActive",
+        "args": [ "walk_left" ]
+      }
+    },
+    {
+      "from": "Idle",
+      "to": "WalkRight",
+      "condition": {
+        "call": "OssianForge.Engine.Inputs.KeyHandler.IsStateActive",
+        "args": [ "walk_right" ]
+      }
+    },
+    {
+      "from": "WalkForward",
+      "to": "Idle",
+      "condition": {
+        "not": {
+          "call": "OssianForge.Engine.Inputs.KeyHandler.IsStateActive",
+          "args": [ "walk_up" ]
+        }
+      }
+    },
+    {
+      "from": "WalkBackward",
+      "to": "Idle",
+      "condition": {
+        "not": {
+          "call": "OssianForge.Engine.Inputs.KeyHandler.IsStateActive",
+          "args": [ "walk_down" ]
+        }
+      }
+    },
+    {
+      "from": "WalkLeft",
+      "to": "Idle",
+      "condition": {
+        "not": {
+          "call": "OssianForge.Engine.Inputs.KeyHandler.IsStateActive",
+          "args": [ "walk_left" ]
+        }
+      }
+    },
+    {
+      "from": "WalkRight",
+      "to": "Idle",
+      "condition": {
+        "not": {
+          "call": "OssianForge.Engine.Inputs.KeyHandler.IsStateActive",
+          "args": [ "walk_right" ]
+        }
+      }
+    }
+  ]
+}

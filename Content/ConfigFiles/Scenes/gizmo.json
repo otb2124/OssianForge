@@ -3,8 +3,8 @@
   "name": "Gizmo Scene",
   "children": [
     {
-      "id": "transform_gizmo",
-      "name": "Transform Gizmo",
+      "id": "gizmo_position",
+      "name": "Position Gizmo",
       "properties": [
         {
           "type": "TransformProperty",
@@ -12,24 +12,24 @@
         },
         {
           "type": "MeshProperty",
-          "data": [ "mesh.transform" ]
+          "data": [ "mesh.gizmo.position" ]
         },
         {
-          "type": "TextureMaterialProperty",
-          "data": [ "texture.leather", "shader.basic" ]
+          "type": "ColorMaterialProperty",
+          "data": [ "255, 0, 0", "shader.unlit" ]
         },
         {
-          "type": "TextureMaterialProperty",
-          "data": [ "texture.leather", "shader.basic" ]
+          "type": "ColorMaterialProperty",
+          "data": [ "0, 255, 0", "shader.unlit" ]
         },
         {
-          "type": "TextureMaterialProperty",
-          "data": [ "texture.leather", "shader.basic" ]
+          "type": "ColorMaterialProperty",
+          "data": [ "0, 0, 255", "shader.unlit" ]
         }
       ]
     },
     {
-      "id": "rotate_gizmo",
+      "id": "gizmo_rotate",
       "name": "Rotate Gizmo",
       "properties": [
         {
@@ -38,24 +38,24 @@
         },
         {
           "type": "MeshProperty",
-          "data": [ "mesh.rotate" ]
+          "data": [ "mesh.gizmo.rotate" ]
         },
         {
-          "type": "TextureMaterialProperty",
-          "data": [ "texture.leather", "shader.basic" ]
+          "type": "ColorMaterialProperty",
+          "data": [ "255, 0, 0", "shader.unlit" ]
         },
         {
-          "type": "TextureMaterialProperty",
-          "data": [ "texture.leather", "shader.basic" ]
+          "type": "ColorMaterialProperty",
+          "data": [ "0, 255, 0", "shader.unlit" ]
         },
         {
-          "type": "TextureMaterialProperty",
-          "data": [ "texture.leather", "shader.basic" ]
+          "type": "ColorMaterialProperty",
+          "data": [ "0, 0, 255", "shader.unlit" ]
         }
       ]
     },
     {
-      "id": "scale_gizmo",
+      "id": "gizmo_scale",
       "name": "Scale Gizmo",
       "properties": [
         {
@@ -64,19 +64,19 @@
         },
         {
           "type": "MeshProperty",
-          "data": [ "mesh.scale" ]
+          "data": [ "mesh.gizmo.scale" ]
         },
         {
-          "type": "TextureMaterialProperty",
-          "data": [ "texture.leather", "shader.basic" ]
+          "type": "ColorMaterialProperty",
+          "data": [ "255, 0, 0", "shader.unlit" ]
         },
         {
-          "type": "TextureMaterialProperty",
-          "data": [ "texture.leather", "shader.basic" ]
+          "type": "ColorMaterialProperty",
+          "data": [ "0, 255, 0", "shader.unlit" ]
         },
         {
-          "type": "TextureMaterialProperty",
-          "data": [ "texture.leather", "shader.basic" ]
+          "type": "ColorMaterialProperty",
+          "data": [ "0, 0, 255", "shader.unlit" ]
         }
       ]
     }

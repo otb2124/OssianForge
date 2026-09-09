@@ -1,0 +1,37 @@
+﻿{
+  "id": "freeCameraScene",
+  "name": "Free Camera Scene",
+  "children": [
+    {
+      "id": "freeCamera",
+      "name": "Free Camera",
+      "properties": [
+        {
+          "type": "TransformProperty",
+          "data": [
+            [ "0,0,0", "0,0,0", "1,1,1" ]
+          ]
+        },
+        {
+          "type": "CameraProperty"
+        },
+        {
+          "type": "StateMachineProperty",
+          "data": [ "configfile.statemachine.freeCamera" ]
+        },
+        {
+          "type": "ActionProperty",
+          "data": [
+            {
+              "OnUpdate": [
+                "action.transform.transformRotationMouseYawX",
+                "action.transform.transformRotationMouseYawY"
+              ]
+            }
+          ]
+        }
+      ]
+    } 
+  ]
+}
+

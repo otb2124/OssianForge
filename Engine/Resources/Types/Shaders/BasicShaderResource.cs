@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 namespace OssianForge.Engine.Resources.Shaders
@@ -19,6 +20,8 @@ namespace OssianForge.Engine.Resources.Shaders
             SetMatrix4("uModel", ctx.Model);
             SetMatrix4("uView", ctx.View);
             SetMatrix4("uProjection", ctx.Projection);
+
+            SetVector4("uBaseColor", ctx.BaseColor ?? Vector4.One);
 
             // Matches uRimIntensity in lit.frag. Old shader hardcoded 0.15 as
             // the rim color constant; falls back to that value for any
