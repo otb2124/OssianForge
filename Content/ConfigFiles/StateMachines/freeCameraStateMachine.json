@@ -14,12 +14,10 @@
       "onUpdate": [ "action.transform.flyBackwardCameraDir" ]
     },
     {
-      "id": "WalkLeft",
-      "onUpdate": [ "action.transform.strafeLeft" ]
+      "id": "WalkLeft"
     },
     {
-      "id": "WalkRight",
-      "onUpdate": [ "action.transform.strafeRight" ]
+      "id": "WalkRight"
     }
   ],
   "transitions": [

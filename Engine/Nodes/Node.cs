@@ -21,6 +21,8 @@ namespace OssianForge.Engine.Nodes
             get => StartEnabled && UpdateEnabled && RenderEnabled;
         }
 
+        public bool Writable = true;
+
         public void AddChild(Node child)
         {
             child.Parent = this;

@@ -1,11 +1,12 @@
 ﻿{
-  "currentMode": "renderLimited",
+  "currentMode": "edit",
   "modes": [
     {
       "id": "edit",
       "actions": {
         "OnEnter": [
-          "action.systemActions.setWindowVisibleFalse"
+          "action.systemActions.setWindowVisibleTrue",
+          "action.nodeActions.addPointEmissionPropertyToAll"
         ]
       }
     },

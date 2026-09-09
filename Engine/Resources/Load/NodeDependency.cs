@@ -5,30 +5,35 @@ namespace OssianForge.Engine.Resources
 {
     public class NodeDependency
     {
-        public static readonly HashSet<string> AlwaysInclude = new()
+        public static readonly HashSet<string> PreNodeAlwaysInclude = new()
         {
-            //for now
             "configfile.pronouns",
             "configfile.actions",
             "configfile.inputKeys",
             "configfile.inputAxis",
             "shader.wireframe",
-            "configfile.modes",
+        };
+
+        public static readonly HashSet<string> PostNodeAlwaysInclude = new()
+        {
         };
 
         public HashSet<string> ResourceIds { get; } = new();
-
-        // Keeps track of visited scene config IDs to avoid infinite loops with circular scene references
         private readonly HashSet<string> _visitedScenes = new(StringComparer.OrdinalIgnoreCase);
 
-        public NodeDependency()
+        public void ExtractPreNodeResources()
         {
+            ResolvePatterns(PreNodeAlwaysInclude);
+        }
 
+        public void ExtractPostNodeResources()
+        {
+            ResolvePatterns(PostNodeAlwaysInclude);
+            ResolveDependencies();
         }
 
         public void ExtractTree(string treeConfigId)
         {
-            ResolveAlwaysInclude();
             var treeConfig = Engine.Resources.GetResource<TreeConfig>(treeConfigId);
             ExtractDocument(treeConfig.Document);
         }
@@ -45,19 +50,23 @@ namespace OssianForge.Engine.Resources
         public void ExtractDocument(JsonDocument document)
         {
             ExtractFromNode(document.RootElement);
-            ResolveDependencies();
-
-            Console.WriteLine($"[NODE DEPENDENCY] Extracted {ResourceIds.Count} resource(s)");
+            Console.WriteLine($"[NODE DEPENDENCY] Extracted nodes, current resource count: {ResourceIds.Count}");
         }
 
-        private void ResolveAlwaysInclude()
+        private void ResolvePatterns(HashSet<string> patterns)
         {
             var allRecords = Engine.Resources.ResourceLoader.ResourcesConfig.GetAllRecords();
 
-            foreach (var pattern in AlwaysInclude)
+            foreach (var pattern in patterns)
+            {
                 foreach (var record in allRecords)
+                {
                     if (record.Id.Contains(pattern, StringComparison.OrdinalIgnoreCase))
+                    {
                         ResourceIds.Add(record.Id);
+                    }
+                }
+            }
         }
 
         private void ExtractFromNode(JsonElement el)

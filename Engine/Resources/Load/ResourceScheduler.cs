@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace OssianForge.Engine.Resources
 {
+    //TODO: deprecate
     public class ResourceScheduler
     {
 
@@ -20,8 +21,6 @@ namespace OssianForge.Engine.Resources
 
         public void Initialize()
         {
-            NodeDependency.ExtractTree("configfile.tree");
-            NodeDependency.ExtractScene(Engine.Resources.GetResource<TreeConfig>("configfile.tree").MainScene);
         }
     }
 }

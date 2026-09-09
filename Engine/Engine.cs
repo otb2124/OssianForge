@@ -70,7 +70,7 @@ namespace OssianForge.Engine
             Nodes.OnLoad();
             Inputs.OnLoad();
             Physics.OnLoad();
-            UI.OnLoad();
+            Resources.PostLoad();
             DebugConsole.Start();
         }
 

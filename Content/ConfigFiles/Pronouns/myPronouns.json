@@ -43,5 +43,25 @@
     "id": "pronoun.node.setYawFromCamera",
     "target": "OssianForge.Engine.Nodes.NodeReflection.SetYawFromCamera",
     "pronouns": [ "node.setYawFromCamera" ]
+  },
+  {
+    "id": "pronoun.node.setWritable",
+    "target": "OssianForge.Engine.Nodes.NodeReflection.SetNodeWritable",
+    "pronouns": [ "node.setWritable" ]
+  },
+  {
+    "id": "pronoun.node.setPropertyWritable",
+    "target": "OssianForge.Engine.Nodes.NodeReflection.SetNodePropertyWritable",
+    "pronouns": [ "node.setPropertyWritable" ]
+  },
+  {
+    "id": "pronoun.node.addProperty",
+    "target": "OssianForge.Engine.Nodes.NodeReflection.AddNodeProperty",
+    "pronouns": [ "node.addProperty" ]
+  },
+  {
+    "id": "pronoun.node.addPropertyToAll",
+    "target": "OssianForge.Engine.Nodes.NodeReflection.AddNodePropertyToAll",
+    "pronouns": [ "node.addPropertyToAll" ]
   }
 ]

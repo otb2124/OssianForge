@@ -199,10 +199,108 @@ namespace OssianForge.Engine.Nodes
             var after = (Vector3)GetMember(finalOwner, finalMember)!;
         }
 
+        public static void AddNodeProperty(Node node, string propertyName, params string[] args)
+        {
+            Type propType = FindPropertyType(propertyName);
+            object propInstance = null;
+
+            var constructors = propType.GetConstructors(BindingFlags.Public | BindingFlags.Instance);
+            ConstructorInfo matchedCtor = null;
+            object[] coercedArgs = null;
+
+            
+
+            foreach (var ctor in constructors)
+            {
+                var ps = ctor.GetParameters();
+                if (ps.Length == args.Length)
+                {
+                    bool match = true;
+                    var parsedArgs = new object[args.Length];
+                    for (int i = 0; i < ps.Length; i++)
+                    {
+                        try
+                        {
+                            parsedArgs[i] = ParseValue(ps[i].ParameterType, args[i]);
+                        }
+                        catch
+                        {
+                            match = false;
+                            break;
+                        }
+                    }
+                    if (match)
+                    {
+                        matchedCtor = ctor;
+                        coercedArgs = parsedArgs;
+                        break;
+                    }
+                }
+            }
+
+            if (matchedCtor != null)
+            {
+                propInstance = matchedCtor.Invoke(coercedArgs);
+            }
+            else
+            {
+                propInstance = Activator.CreateInstance(propType);
+            }
+
+            Console.WriteLine($"node:{node.Name}, propInstance:{propInstance}");
+
+            node.AddProperty((NodeProperty) propInstance);
+        }
+
+
+        public static void AddNodePropertyToAll(string propertyName, string arg1, string arg2, string arg3)
+        {
+            AddNodePropertyToAll(propertyName, new[] { arg1, arg2, arg3 });
+        }
+
+        public static void AddNodePropertyToAll(string propertyName, params string[] args)
+        {
+            var nodes = Engine.Nodes.NodeManager.GetAllNodesFlat();
+
+            foreach (Node node in nodes)
+            {
+                if (node != null)
+                {
+                    AddNodeProperty(node, propertyName, args);
+                }
+            }
+        }
+
+        public static void SetNodeWritable(Node node, bool value)
+        {
+            node.Writable = value;
+        }
+
+        public static void SetNodePropertyWritable(Node node, string nodePropertyId, bool value)
+        {
+            NodeProperty prop = null;
+            try
+            {
+                prop = FindNodeProperty(node, nodePropertyId);
+            }
+            catch
+            {
+                prop = node.Properties.FirstOrDefault(p =>
+                    (p.GetType().GetProperty("Id")?.GetValue(p)?.ToString()?.Equals(nodePropertyId, StringComparison.OrdinalIgnoreCase) ?? false) ||
+                    (p.GetType().GetProperty("Name")?.GetValue(p)?.ToString()?.Equals(nodePropertyId, StringComparison.OrdinalIgnoreCase) ?? false));
+            }
+
+            if (prop == null)
+            {
+                throw new Exception($"[NODE REFLECTION] Node '{node.Id}' has no property matching '{nodePropertyId}'.");
+            }
+
+            prop.Writable = value;
+        }
 
 
         public static object? CallPropertyMethod(Node node, string propertyTypeName, string methodName)
-    => InvokePropertyMethod(node, propertyTypeName, methodName, Array.Empty<object?>());
+            => InvokePropertyMethod(node, propertyTypeName, methodName, Array.Empty<object?>());
 
         public static object? CallPropertyMethod(Node node, string propertyTypeName, string methodName, object? arg1)
             => InvokePropertyMethod(node, propertyTypeName, methodName, new[] { arg1 });
@@ -459,6 +557,19 @@ namespace OssianForge.Engine.Nodes
                 if (childWasValueType)
                     SetMember(owner, member, childOwner);
             }
+        }
+
+        private static Type FindPropertyType(string propertyName)
+        {
+            var type = AppDomain.CurrentDomain.GetAssemblies()
+                .SelectMany(a => {
+                    try { return a.GetTypes(); }
+                    catch { return Type.EmptyTypes; }
+                })
+                .FirstOrDefault(t => t.Name.Equals(propertyName, StringComparison.OrdinalIgnoreCase)
+                                  && typeof(NodeProperty).IsAssignableFrom(t));
+
+            return type ?? throw new Exception($"[NODE REFLECTION] Property type '{propertyName}' not found.");
         }
 
         // ── value parsing ─────────────────────────────────────────────────────────

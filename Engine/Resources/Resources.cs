@@ -21,13 +21,17 @@ namespace OssianForge.Engine.Resources
         public void Initialize()
         {
             ResourceLoader.InitializeCore();
-            ResourceScheduler.Initialize();
             ResourceLoader.InitializeResources();
         }
 
         public void OnLoad()
         {
             ResourceLoader.OnLoad();
+        }
+
+        public void PostLoad()
+        {
+            ResourceLoader.PostLoad();
         }
 
         public void OnUpdate() 

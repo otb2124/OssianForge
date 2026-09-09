@@ -88,6 +88,8 @@ namespace OssianForge.Engine.Nodes
                 yield return child;
         }
 
+        public List<Node> GetAllNodesFlat() => Flatten().ToList();
+
         // -----------------------------------------------------------------------
         // Query helpers — enumerate on demand, no stored flat list
         // -----------------------------------------------------------------------

@@ -5,8 +5,13 @@
     "args": [ false ]
   },
   {
-    "id": "action.systemActions.setWindowVisibleTrue", 
+    "id": "action.systemActions.setWindowVisibleTrue",
     "call": "window.isVisible",
     "args": [ true ]
+  },
+  {
+    "id": "action.nodeActions.addPointEmissionPropertyToAll",
+    "call": "node.addPropertyToAll",
+    "args": [ "PointEmissionProperty", "1,1,1", "1", "100" ]
   }
 ]
