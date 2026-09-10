@@ -317,6 +317,26 @@ namespace OssianForge.Engine.Resources.Config
             return prop;
         }
 
+
+        /*
+         * 
+         *         {
+          "type": "ControlProperty",
+          "data": [
+            true,
+            false,
+            false,
+            null,
+            {
+              "OnHover": [ "action.myActions.printHi" ]
+            }
+          ]
+        }
+         * 
+         * 
+         * 
+         * 
+         */
         private static ControlProperty ParseControlProperty(JsonElement? data)
         {
             bool isInteractable = true;

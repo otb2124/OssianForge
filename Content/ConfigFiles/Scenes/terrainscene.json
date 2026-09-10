@@ -49,6 +49,60 @@
       ]
     },
     {
+      "id": "ball",
+      "name": "ball",
+      "enabled": true,
+      "properties": [
+        {
+          "type": "TransformProperty",
+          "data": [ [ "-60,20,30", "0,0,0", "1,1,1" ] ]
+        },
+        {
+          "type": "MeshProperty",
+          "data": [ "mesh.ball" ]
+        },
+        {
+          "type": "TextureMaterialProperty",
+          "data": [ "texture.house.wood", "shader.basic" ]
+        },
+        {
+          "type": "ColliderProperty",
+          "data": [ "collider.ball" ]
+        },
+        {
+          "type": "RigidPhysicsProperty",
+          "data": [ 0, 1, 1 ]
+        }
+      ]
+    },
+    {
+      "id": "cube",
+      "name": "cube",
+      "enabled": true,
+      "properties": [
+        {
+          "type": "TransformProperty",
+          "data": [ [ "-60,20,30", "0,0,0", "1,1,1" ] ]
+        },
+        {
+          "type": "MeshProperty",
+          "data": [ "mesh.cube" ]
+        },
+        {
+          "type": "TextureMaterialProperty",
+          "data": [ "texture.house.wood", "shader.basic" ]
+        },
+        {
+          "type": "ColliderProperty",
+          "data": [ "collider.cube" ]
+        },
+        {
+          "type": "RigidPhysicsProperty",
+          "data": [ 0, 1, 1 ]
+        }
+      ]
+    },
+    {
       "id": "playerSceneRef",
       "enabled": false,
       "name": "PlayerSceneRef",

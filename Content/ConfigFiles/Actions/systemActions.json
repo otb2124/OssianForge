@@ -10,8 +10,13 @@
     "args": [ true ]
   },
   {
-    "id": "action.nodeActions.addPointEmissionPropertyToAll",
+    "id": "action.systemActions.addControlPropertyNoWriteToAll",
     "call": "node.addPropertyToAll",
-    "args": [ "PointEmissionProperty", "1,1,1", "1", "100" ]
+    "args": [ "ControlProperty", "OnClick:action.systemActions.setGizmoPositionAtNode" ]
+  },
+  {
+    "id": "action.systemActions.setGizmoPositionAtNode",
+    "call": "node.setValue",
+    "args": [ "$id.gizmo_scene", "TransformProperty", "Position", "$self.properties.TransformProperty.Position" ]
   }
 ]

@@ -3,6 +3,7 @@ using OssianForge.Engine.Nodes;
 using OssianForge.Engine.Nodes.Props;
 using System;
 using System.Collections.Generic;
+using System.Numerics;
 using System.Text.Json;
 using static System.Net.Mime.MediaTypeNames;
 
@@ -251,6 +252,71 @@ namespace OssianForge.Engine.Resources.Config
                             }
                         }
                         return null;
+                    }
+                    if (s.StartsWith("$id."))
+                    {
+                        string rest = s["$id.".Length..];
+                        var node = Engine.Nodes.NodeManager.GetNode(rest);
+                        return node;
+                    }
+                    if (s.StartsWith("$self."))
+                    {
+                        // Example format: $self.property.TransformProperty.Transform.Position
+                        string path = s["$self.".Length..];
+
+                        if (path.StartsWith("properties."))
+                        {
+                            string propPath = path["properties.".Length..];
+                            int dotIndex = propPath.IndexOf('.');
+
+                            string propertyTypeName;
+                            string memberPath;
+
+                            if (dotIndex >= 0)
+                            {
+                                propertyTypeName = propPath[..dotIndex];
+                                memberPath = propPath[(dotIndex + 1)..];
+                            }
+                            else
+                            {
+                                // If they only provided the property name without a member path
+                                propertyTypeName = propPath;
+                                memberPath = string.Empty;
+                            }
+
+                            if (context is Node node)
+                            {
+                                try
+                                {
+                                    if (string.IsNullOrEmpty(memberPath))
+                                    {
+                                        // Return the entire property instance if no sub-member is requested
+                                        return node.Properties.FirstOrDefault(p =>
+                                            p.GetType().Name.Equals(propertyTypeName, StringComparison.OrdinalIgnoreCase));
+                                    }
+                                    else
+                                    {
+                                        // Delegates to your NodeReflection utility to walk the member path
+                                        object? value = NodeReflection.GetNodePropertyValue(node, propertyTypeName, memberPath);
+
+                                        // If the reflection result is a delegate (getter function), invoke it to get the actual value
+                                        if (value is Delegate del)
+                                        {
+                                            value = del.DynamicInvoke();
+                                        }
+
+                                        Console.WriteLine($"node:{node.Id}, propertyTypeName:{propertyTypeName}, memberPath:{memberPath}, value:{value}");
+                                        return value;
+                                    }
+                                }
+                                catch
+                                {
+                                    return null;
+                                }
+                            }
+                        }
+
+                        return context; // Fallback for simple "$self"
                     }
                     //TODO: fix gap so it doesnt check if found before
                     if (s.StartsWith('$'))

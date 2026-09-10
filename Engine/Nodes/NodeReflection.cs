@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Numerics;
@@ -23,30 +24,110 @@ namespace OssianForge.Engine.Nodes
             var prop = FindNodeProperty(node, propertyTypeName);
             string[] segments = memberPath.Split('.');
 
-            object current = prop;
-            var chain = new System.Collections.Generic.List<(object owner, MemberInfo member, bool isValueType)>();
+            var chain = WalkChain(prop, segments);
+            var (finalOwner, finalMember, _) = chain[^1];
 
-            for (int i = 0; i < segments.Length; i++)
+            Type targetType = GetMemberType(finalMember);
+            object parsed = ParseValue(targetType, rawValue);
+
+            SetMember(finalOwner, finalMember, parsed);
+            WriteBackChain(chain);
+        }
+
+        public static void SetNodePropertyValue(Node node, string propertyTypeName, string memberPath, object? value)
+        {
+            var property = node.Properties.FirstOrDefault(p =>
+                p.GetType().Name.Equals(propertyTypeName, StringComparison.OrdinalIgnoreCase));
+
+            if (property == null) return;
+
+            // 1. Unwrap delegate if necessary
+            if (value is Delegate del)
             {
-                var member = GetFieldOrProperty(current.GetType(), segments[i]);
-                chain.Add((current, member, current.GetType().IsValueType));
-
-                if (i < segments.Length - 1)
-                    current = GetMember(current, member);
+                value = del.DynamicInvoke();
             }
 
-            // Set the final value
-            var (finalOwner, finalMember, _) = chain[^1];
-            object parsed = ParseValue(GetMemberType(finalMember), rawValue);
-            SetMember(finalOwner, finalMember, parsed);
+            // 2. Look up property or field at root scope
+            PropertyInfo? targetProp = property.GetType().GetProperty(memberPath, BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic);
+            FieldInfo? targetField = property.GetType().GetField(memberPath, BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic);
 
-            // Walk BACKWARD, writing each mutated struct copy back into its parent
-            for (int i = chain.Count - 2; i >= 0; i--)
+            Type? targetType = targetProp?.PropertyType ?? targetField?.FieldType;
+
+            // 3. Convert/coerce types if mismatched
+            if (value != null && targetType != null && !targetType.IsAssignableFrom(value.GetType()))
             {
-                var (owner, member, _) = chain[i];
-                var (childOwner, childMember, childWasValueType) = chain[i + 1];
-                if (childWasValueType)
-                    SetMember(owner, member, childOwner); // write the mutated struct back up
+                try
+                {
+                    if (targetType == typeof(Vector3) && value is string strVal)
+                    {
+                        value = ParseVector3(strVal);
+                    }
+                    else
+                    {
+                        value = Convert.ChangeType(value, targetType);
+                    }
+                }
+                catch
+                {
+                    // Fall back if coercion fails
+                }
+            }
+
+            // 4. Perform the assignment
+            if (targetProp != null && targetProp.CanWrite)
+            {
+                targetProp.SetValue(property, value);
+            }
+            else if (targetField != null)
+            {
+                targetField.SetValue(property, value);
+            }
+            else
+            {
+                // Walk nested paths (e.g. "Position.X")
+                SetNestedMemberValue(property, memberPath, value);
+            }
+        }
+
+        private static void SetNestedMemberValue(object target, string memberPath, object? value)
+        {
+            string[] parts = memberPath.Split('.');
+            object current = target;
+
+            for (int i = 0; i < parts.Length - 1; i++)
+            {
+                var type = current.GetType();
+                var prop = type.GetProperty(parts[i], BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic);
+                if (prop != null)
+                {
+                    current = prop.GetValue(current)!;
+                    continue;
+                }
+
+                var field = type.GetField(parts[i], BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic);
+                if (field != null)
+                {
+                    current = field.GetValue(current)!;
+                    continue;
+                }
+
+                return;
+            }
+
+            string finalMember = parts[^1];
+            var finalType = current.GetType();
+
+            var finalProp = finalType.GetProperty(finalMember, BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic);
+            if (finalProp != null && finalProp.CanWrite)
+            {
+                finalProp.SetValue(current, value);
+                return;
+            }
+
+            var finalField = finalType.GetField(finalMember, BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic);
+            if (finalField != null)
+            {
+                finalField.SetValue(current, value);
             }
         }
 
@@ -55,7 +136,6 @@ namespace OssianForge.Engine.Nodes
         /// Reads the current value, adds the delta component-wise, writes it back.
         /// Works for the same numeric/Vector2/Vector3/Vector4 types SetNodePropertyValue supports.
         /// </summary>
-        /// 
         public static void AddNodePropertyValueScaled(Node node, string propertyTypeName, string memberPath, string rawDelta)
         {
             ApplyScaled(node, propertyTypeName, memberPath, rawDelta, 1.0);
@@ -76,7 +156,6 @@ namespace OssianForge.Engine.Nodes
             ApplyScaled(node, propertyTypeName, memberPath, rawDelta, scale1 * scale2 * scale3);
         }
 
-
         /// <summary>
         /// Adds a camera-relative directional delta to any Vector3 member on any property type.
         /// The world-space delta is rotated into the node's local space before being applied,
@@ -84,11 +163,6 @@ namespace OssianForge.Engine.Nodes
         ///
         /// directionSourceNodeId: the id of the node whose TransformProperty.Transform.Rotation.Y
         /// is the camera yaw — e.g. "playerCamera".
-        /// </summary>
-        /// <summary>
-        /// Same as AddValueCameraDirection but applies the delta in world space —
-        /// no parent-space rotation correction. Use this for world-space members
-        /// like ManualVelocity on PhysicsProperty.
         /// </summary>
         public static void AddValueCameraDirection(
             Node node, string propertyTypeName, string memberPath,
@@ -195,63 +269,60 @@ namespace OssianForge.Engine.Nodes
 
             SetMember(finalOwner, finalMember, new Vector3(current.X, targetYaw, current.Z));
             WriteBackChain(chain);
-
-            var after = (Vector3)GetMember(finalOwner, finalMember)!;
         }
 
         public static void AddNodeProperty(Node node, string propertyName, params string[] args)
         {
             Type propType = FindPropertyType(propertyName);
-            object propInstance = null;
-
             var constructors = propType.GetConstructors(BindingFlags.Public | BindingFlags.Instance);
-            ConstructorInfo matchedCtor = null;
-            object[] coercedArgs = null;
 
-            
+            var ctor = constructors.OrderByDescending(c => c.GetParameters().Length).FirstOrDefault();
+            if (ctor == null) return;
 
-            foreach (var ctor in constructors)
+            var parameters = ctor.GetParameters();
+            object[] coercedArgs = new object[parameters.Length];
+
+            int positionalArgIndex = 0;
+
+            for (int i = 0; i < parameters.Length; i++)
             {
-                var ps = ctor.GetParameters();
-                if (ps.Length == args.Length)
+                Type paramType = parameters[i].ParameterType;
+
+                if (paramType == typeof(Dictionary<string, List<string>>))
                 {
-                    bool match = true;
-                    var parsedArgs = new object[args.Length];
-                    for (int i = 0; i < ps.Length; i++)
-                    {
-                        try
-                        {
-                            parsedArgs[i] = ParseValue(ps[i].ParameterType, args[i]);
-                        }
-                        catch
-                        {
-                            match = false;
-                            break;
-                        }
-                    }
-                    if (match)
-                    {
-                        matchedCtor = ctor;
-                        coercedArgs = parsedArgs;
-                        break;
-                    }
+                    coercedArgs[i] = ParseActionMap(args, positionalArgIndex);
+                    break;
+                }
+                else if (positionalArgIndex < args.Length && !args[positionalArgIndex].Contains(":"))
+                {
+                    coercedArgs[i] = ParseValue(paramType, args[positionalArgIndex]);
+                    positionalArgIndex++;
+                }
+                else if (parameters[i].HasDefaultValue)
+                {
+                    coercedArgs[i] = parameters[i].DefaultValue;
                 }
             }
 
-            if (matchedCtor != null)
-            {
-                propInstance = matchedCtor.Invoke(coercedArgs);
-            }
-            else
-            {
-                propInstance = Activator.CreateInstance(propType);
-            }
-
-            Console.WriteLine($"node:{node.Name}, propInstance:{propInstance}");
-
-            node.AddProperty((NodeProperty) propInstance);
+            NodeProperty propInstance = (NodeProperty)ctor.Invoke(coercedArgs);
+            node.AddProperty(propInstance);
+            propInstance.OnStart(node);
         }
 
+        public static void AddNodePropertyToAll(string propertyName)
+        {
+            AddNodePropertyToAll(propertyName, Array.Empty<string>());
+        }
+
+        public static void AddNodePropertyToAll(string propertyName, string arg1)
+        {
+            AddNodePropertyToAll(propertyName, new[] { arg1 });
+        }
+
+        public static void AddNodePropertyToAll(string propertyName, string arg1, string arg2)
+        {
+            AddNodePropertyToAll(propertyName, new[] { arg1, arg2 });
+        }
 
         public static void AddNodePropertyToAll(string propertyName, string arg1, string arg2, string arg3)
         {
@@ -278,7 +349,7 @@ namespace OssianForge.Engine.Nodes
 
         public static void SetNodePropertyWritable(Node node, string nodePropertyId, bool value)
         {
-            NodeProperty prop = null;
+            NodeProperty? prop = null;
             try
             {
                 prop = FindNodeProperty(node, nodePropertyId);
@@ -298,7 +369,6 @@ namespace OssianForge.Engine.Nodes
             prop.Writable = value;
         }
 
-
         public static object? CallPropertyMethod(Node node, string propertyTypeName, string methodName)
             => InvokePropertyMethod(node, propertyTypeName, methodName, Array.Empty<object?>());
 
@@ -310,6 +380,37 @@ namespace OssianForge.Engine.Nodes
 
         public static object? CallPropertyMethod(Node node, string propertyTypeName, string methodName, object? arg1, object? arg2, object? arg3)
             => InvokePropertyMethod(node, propertyTypeName, methodName, new[] { arg1, arg2, arg3 });
+
+        private static object? CoerceValue(object? value, Type targetType)
+        {
+            if (value == null) return null;
+            if (targetType.IsAssignableFrom(value.GetType())) return value;
+
+            if (targetType == typeof(Vector3))
+            {
+                if (value is string sVal)
+                {
+                    return ParseVector3(sVal);
+                }
+            }
+            else if (targetType == typeof(string))
+            {
+                if (value is Vector3 vVal)
+                {
+                    return $"{vVal.X.ToString(CultureInfo.InvariantCulture)},{vVal.Y.ToString(CultureInfo.InvariantCulture)},{vVal.Z.ToString(CultureInfo.InvariantCulture)}";
+                }
+                return value.ToString();
+            }
+
+            try
+            {
+                return Convert.ChangeType(value, targetType, CultureInfo.InvariantCulture);
+            }
+            catch
+            {
+                return value;
+            }
+        }
 
         private static object? InvokePropertyMethod(Node node, string propertyTypeName, string methodName, object?[] args)
         {
@@ -346,22 +447,26 @@ namespace OssianForge.Engine.Nodes
                     {
                         attemptedArgs[i] = args[i];
                     }
-                    else if (args[i] is string rawStr)
+                    else
                     {
                         try
                         {
-                            attemptedArgs[i] = ParseValue(ps[i].ParameterType, rawStr);
+                            object? coerced = CoerceValue(args[i], ps[i].ParameterType);
+                            if (coerced != null && ps[i].ParameterType.IsAssignableFrom(coerced.GetType()))
+                            {
+                                attemptedArgs[i] = coerced;
+                            }
+                            else
+                            {
+                                isMatch = false;
+                                break;
+                            }
                         }
                         catch
                         {
                             isMatch = false;
                             break;
                         }
-                    }
-                    else
-                    {
-                        isMatch = false;
-                        break;
                     }
                 }
 
@@ -404,16 +509,22 @@ namespace OssianForge.Engine.Nodes
             WriteBackChain(chain);
         }
 
-
         /// <summary>
         /// GetNodePropertyValue(node, "TransformProperty", "Transform.Position")
         /// Mirrors SetNodePropertyValue for reads — usable as a condition leaf's "call".
         /// </summary>
         public static object? GetNodePropertyValue(Node node, string propertyTypeName, string memberPath)
         {
-            var prop = FindNodeProperty(node, propertyTypeName);
-            var (owner, member) = WalkToFinalMember(prop, memberPath);
-            return GetMember(owner, member);
+            var property = node.Properties.FirstOrDefault(p =>
+                p.GetType().Name.Equals(propertyTypeName, StringComparison.OrdinalIgnoreCase));
+
+            if (property == null)
+                return null;
+
+            if (string.IsNullOrEmpty(memberPath))
+                return property;
+
+            return WalkMemberPath(property, memberPath);
         }
 
         // ── property lookup ────────────────────────────────────────────────────────
@@ -439,29 +550,26 @@ namespace OssianForge.Engine.Nodes
 
         // ── member path walking ───────────────────────────────────────────────────
 
-        /// <summary>
-        /// Walks a dotted path like "Transform.Position" starting from `root`,
-        /// returning the (owner object, final MemberInfo) so the caller can both
-        /// get and set the final field/property.
-        ///
-        /// Each intermediate segment is resolved as a field or property and its
-        /// VALUE becomes the owner for the next segment. The final segment is
-        /// NOT evaluated — its MemberInfo + owning object are returned instead,
-        /// so structs (like Vector3) can be set without boxing/copy issues.
-        /// </summary>
-        private static (object owner, MemberInfo member) WalkToFinalMember(object root, string memberPath)
+        private static List<(object owner, MemberInfo member, bool ownerIsValueType)> WalkChain(object root, string[] segments)
         {
-            string[] segments = memberPath.Split('.');
+            var chain = new List<(object owner, MemberInfo member, bool ownerIsValueType)>();
             object current = root;
 
-            for (int i = 0; i < segments.Length - 1; i++)
+            for (int i = 0; i < segments.Length; i++)
             {
-                var member = GetFieldOrProperty(current.GetType(), segments[i]);
-                current = GetMember(current, member);
+                Type currentType = current.GetType();
+                var member = GetFieldOrProperty(currentType, segments[i]);
+                bool isValueType = currentType.IsValueType;
+
+                chain.Add((current, member, isValueType));
+
+                if (i < segments.Length - 1)
+                {
+                    current = GetMember(current, member)!;
+                }
             }
 
-            var finalMember = GetFieldOrProperty(current.GetType(), segments[^1]);
-            return (current, finalMember);
+            return chain;
         }
 
         private static MemberInfo GetFieldOrProperty(Type type, string name)
@@ -487,16 +595,6 @@ namespace OssianForge.Engine.Nodes
             _ => throw new Exception("[NODE REFLECTION] Unsupported member type.")
         };
 
-        // Structs require special handling: setting a field on a boxed struct copy
-        // doesn't propagate back. We detect this and re-assign the parent chain.
-        // For the common case here (root is a class like TransformProperty, and we
-        // set ONE level deep e.g. "Transform.Position" where Transform is a struct
-        // field on a class), this works because `owner` (a Transform struct) is
-        // itself the VALUE of a field on the class — so we must write back through
-        // the original chain. To keep this simple and correct for your engine's
-        // actual shape (TransformProperty.Transform is a field of struct type
-        // Transform, and Transform.Position is a field of struct type Vector3),
-        // SetMember below re-walks and writes back at every struct boundary.
         private static void SetMember(object owner, MemberInfo member, object value)
         {
             switch (member)
@@ -531,24 +629,61 @@ namespace OssianForge.Engine.Nodes
             throw new Exception($"[NODE REFLECTION] Scale not supported for '{type.FullName}'.");
         }
 
-        private static System.Collections.Generic.List<(object owner, MemberInfo member, bool ownerIsValueType)> WalkChain(object root, string[] segments)
+        private static object? WalkMemberPath(object root, string path)
         {
-            var chain = new System.Collections.Generic.List<(object, MemberInfo, bool)>();
-            object current = root;
+            object? current = root;
+            Type currentType = root.GetType();
 
-            for (int i = 0; i < segments.Length; i++)
+            foreach (var segment in path.Split('.'))
             {
-                var member = GetFieldOrProperty(current.GetType(), segments[i]);
-                chain.Add((current, member, current.GetType().IsValueType));
+                if (current == null) return null;
 
-                if (i < segments.Length - 1)
-                    current = GetMember(current, member)!;
+                var prop = currentType.GetProperty(segment, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
+                if (prop != null)
+                {
+                    current = prop.GetValue(current);
+                    currentType = prop.PropertyType;
+                    continue;
+                }
+
+                var field = currentType.GetField(segment, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
+                if (field != null)
+                {
+                    current = field.GetValue(current);
+                    currentType = field.FieldType;
+                    continue;
+                }
+
+                throw new Exception($"Member '{segment}' not found on type '{currentType.FullName}'.");
             }
 
-            return chain;
+            return current;
         }
 
-        private static void WriteBackChain(System.Collections.Generic.List<(object owner, MemberInfo member, bool ownerIsValueType)> chain)
+        private static Dictionary<string, List<string>> ParseActionMap(string[] args, int startIndex)
+        {
+            var map = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
+
+            for (int i = startIndex; i < args.Length; i++)
+            {
+                int colonIdx = args[i].IndexOf(':');
+                if (colonIdx <= 0) continue;
+
+                string key = args[i][..colonIdx].Trim();
+                string val = args[i][(colonIdx + 1)..].Trim();
+
+                if (!map.TryGetValue(key, out var list))
+                {
+                    list = new List<string>();
+                    map[key] = list;
+                }
+                list.Add(val);
+            }
+
+            return map;
+        }
+
+        private static void WriteBackChain(List<(object owner, MemberInfo member, bool ownerIsValueType)> chain)
         {
             for (int i = chain.Count - 2; i >= 0; i--)
             {
@@ -567,7 +702,7 @@ namespace OssianForge.Engine.Nodes
                     catch { return Type.EmptyTypes; }
                 })
                 .FirstOrDefault(t => t.Name.Equals(propertyName, StringComparison.OrdinalIgnoreCase)
-                                  && typeof(NodeProperty).IsAssignableFrom(t));
+                                    && typeof(NodeProperty).IsAssignableFrom(t));
 
             return type ?? throw new Exception($"[NODE REFLECTION] Property type '{propertyName}' not found.");
         }
@@ -581,39 +716,32 @@ namespace OssianForge.Engine.Nodes
             if (targetType == typeof(int)) return int.Parse(raw, CultureInfo.InvariantCulture);
             if (targetType == typeof(float)) return float.Parse(raw, CultureInfo.InvariantCulture);
             if (targetType == typeof(double)) return double.Parse(raw, CultureInfo.InvariantCulture);
-
             if (targetType == typeof(Vector2)) return ParseVector2(raw);
             if (targetType == typeof(Vector3)) return ParseVector3(raw);
             if (targetType == typeof(Vector4)) return ParseVector4(raw);
 
-            if (targetType.IsEnum) return Enum.Parse(targetType, raw, ignoreCase: true);
+            if (targetType.IsEnum)
+                return Enum.Parse(targetType, raw, ignoreCase: true);
 
-            throw new Exception($"[NODE REFLECTION] No parser for target type '{targetType.FullName}' (raw='{raw}').");
+            throw new Exception($"[NODE REFLECTION] Parsing for type '{targetType.FullName}' is not implemented.");
         }
 
-        private static Vector2 ParseVector2(string s)
+        private static Vector2 ParseVector2(string raw)
         {
-            var p = s.Split(',');
-            return new Vector2(float.Parse(p[0], CultureInfo.InvariantCulture), float.Parse(p[1], CultureInfo.InvariantCulture));
+            var parts = raw.Split(',').Select(p => float.Parse(p.Trim(), CultureInfo.InvariantCulture)).ToArray();
+            return new Vector2(parts[0], parts[1]);
         }
 
-        private static Vector3 ParseVector3(string s)
+        private static Vector3 ParseVector3(string raw)
         {
-            var p = s.Split(',');
-            return new Vector3(
-                float.Parse(p[0], CultureInfo.InvariantCulture),
-                float.Parse(p[1], CultureInfo.InvariantCulture),
-                float.Parse(p[2], CultureInfo.InvariantCulture));
+            var parts = raw.Split(',').Select(p => float.Parse(p.Trim(), CultureInfo.InvariantCulture)).ToArray();
+            return new Vector3(parts[0], parts[1], parts[2]);
         }
 
-        private static Vector4 ParseVector4(string s)
+        private static Vector4 ParseVector4(string raw)
         {
-            var p = s.Split(',');
-            return new Vector4(
-                float.Parse(p[0], CultureInfo.InvariantCulture),
-                float.Parse(p[1], CultureInfo.InvariantCulture),
-                float.Parse(p[2], CultureInfo.InvariantCulture),
-                float.Parse(p[3], CultureInfo.InvariantCulture));
+            var parts = raw.Split(',').Select(p => float.Parse(p.Trim(), CultureInfo.InvariantCulture)).ToArray();
+            return new Vector4(parts[0], parts[1], parts[2], parts[3]);
         }
     }
 }

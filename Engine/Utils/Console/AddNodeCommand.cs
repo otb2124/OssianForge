@@ -260,7 +260,7 @@ namespace OssianForge.Engine.Utils.Console
             NodeManager.Enqueue(() =>
             {
                 var prop = TryConstructWithArgs(propType, paramArgs)
-                        ?? (NodeProperty)System.Runtime.Serialization.FormatterServices.GetUninitializedObject(propType);
+                        ?? (NodeProperty) System.Runtime.Serialization.FormatterServices.GetUninitializedObject(propType);
 
                 if (prop == null)
                 {

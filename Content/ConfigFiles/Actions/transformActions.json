@@ -85,10 +85,21 @@
   {
     "id": "action.transform.flyForward",
     "call": "node.addValue",
-    "args": [ "$self", "TransformProperty", "Position", "0,0,-1", "$delta" ]
+    "args": [ "$self", "TransformProperty", "Position", "0,0,-1" ]
   },
   {
     "id": "action.transform.flyBackward",
+    "call": "node.addValue",
+    "args": [ "$self", "TransformProperty", "Position", "0,0,1" ]
+  },
+
+  {
+    "id": "action.transform.flyForwardDelta",
+    "call": "node.addValue",
+    "args": [ "$self", "TransformProperty", "Position", "0,0,-1", "$delta" ]
+  },
+  {
+    "id": "action.transform.flyBackwardDelta",
     "call": "node.addValue",
     "args": [ "$self", "TransformProperty", "Position", "0,0,1", "$delta" ]
   },
