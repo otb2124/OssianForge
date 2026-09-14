@@ -1,11 +1,9 @@
 ﻿using OssianForge.Engine.Core;
-using OssianForge.Engine.Nodes;
-using OssianForge.Engine.Nodes.Props;
 using System;
 using System.Collections.Generic;
-using System.Numerics;
+using System.Linq;
 using System.Text.Json;
-using static System.Net.Mime.MediaTypeNames;
+using OssianForge.Engine.Reflection;
 
 namespace OssianForge.Engine.Resources.Config
 {
@@ -54,13 +52,16 @@ namespace OssianForge.Engine.Resources.Config
             => new ActionRecord { Id = id, Call = call, ArgsJson = JsonSerializer.Serialize(args), StoreValue = storeValue };
     }
 
-
     // ── config ───────────────────────────────────────────────────────────────────
 
+    /// <summary>
+    /// JSON-backed storage and record cache for ActionRecords. Token resolution
+    /// ("$self", "$child.", etc) lives in ArgResolver; dispatch lives in
+    /// ReflectionDispatcher. This class's job ends at "give me the record" and
+    /// "run the record" — it doesn't interpret args itself.
+    /// </summary>
     public class ActionsConfig : JsonSerialConfig<ActionRecord>
     {
-
-
         private Dictionary<string, ActionRecord>? _cache;
         private Dictionary<string, ActionRecord> Cache
         {
@@ -73,30 +74,8 @@ namespace OssianForge.Engine.Resources.Config
 
                     for (int i = 0; i <= last; i++)
                     {
-                        string prefix = $"[{i}]";
-                        string id = GetString($"{prefix}.id");
-                        if (string.IsNullOrEmpty(id)) continue;
-
-                        var record = new ActionRecord
-                        {
-                            Id = id,
-                            Call = GetString($"{prefix}.call"),
-                            StoreValue = NullIfEmpty(GetString($"{prefix}.storeValue"))
-                        };
-
-                        // Read args individually from flat store — args is a JSON array
-                        // flattened as [i].args[0], [i].args[1], etc.
-                        var argsList = new List<string>();
-                        int j = 0;
-                        while (true)
-                        {
-                            string val = GetString($"{prefix}.args[{j}]");
-                            if (string.IsNullOrEmpty(val)) break;
-                            argsList.Add(val);
-                            j++;
-                        }
-                        record.ArgsJson = JsonSerializer.Serialize(argsList);
-
+                        var record = ReadActionRecord($"[{i}]");
+                        if (string.IsNullOrEmpty(record.Id)) continue;
                         _cache[record.Id] = record;
                     }
 
@@ -105,7 +84,6 @@ namespace OssianForge.Engine.Resources.Config
                 return _cache;
             }
         }
-
 
         public ActionsConfig(string id, string path) : base(id, path) { }
 
@@ -125,10 +103,7 @@ namespace OssianForge.Engine.Resources.Config
             while (true)
             {
                 string val = GetString($"{prefix}.args[{j}]");
-                if (string.IsNullOrEmpty(val))
-                {
-                    break;
-                }
+                if (string.IsNullOrEmpty(val)) break;
 
                 // Parse primitive types (bool, int, double) to avoid storing them as pure strings
                 argsList.Add(ReflectionDispatcher.ParseString(val));
@@ -148,7 +123,7 @@ namespace OssianForge.Engine.Resources.Config
 
             var args = record.Args;
             for (int i = 0; i < args.Count; i++)
-                Set($"{prefix}.args[{i}]", UnboxToString(args[i]));
+                Set($"{prefix}.args[{i}]", UnboxJsonElementToString(args[i]));
         }
 
         // ── records ───────────────────────────────────────────────────────────────
@@ -156,31 +131,36 @@ namespace OssianForge.Engine.Resources.Config
         public new List<ActionRecord> GetAllRecords() => Cache.Values.ToList();
 
         public new ActionRecord? GetById(string id)
-        => Cache.TryGetValue(id, out var r) ? r : null;
+            => Cache.TryGetValue(id, out var r) ? r : null;
 
         public List<ActionRecord> GetByCall(string call)
             => GetAllRecords().Where(r => r.Call == call).ToList();
 
         // ── execution ─────────────────────────────────────────────────────────────
 
-        public void Execute(string id, object context = null, double? delta = null)
+        public void Execute(string id, object? context = null, double? delta = null)
         {
             var record = GetById(id)
                 ?? throw new Exception($"[ACTIONS CONFIG] Action '{id}' not found.");
             ExecuteRecord(record, context, delta);
         }
 
-        public object? ExecuteWithResult(string id, object context = null, double? delta = null)
+        public object? ExecuteWithResult(string id, object? context = null, double? delta = null)
         {
             var record = GetById(id)
                 ?? throw new Exception($"[ACTIONS CONFIG] Action '{id}' not found.");
             return ExecuteRecord(record, context, delta);
         }
 
-        private object? ExecuteRecord(ActionRecord record, object context, double? delta)
+        public void ExecuteAll(IEnumerable<string> ids, object? context = null, double? delta = null)
         {
-            var args = ResolveArgs(record.Args, context, delta);
+            foreach (var id in ids)
+                Execute(id, context, delta);
+        }
 
+        private object? ExecuteRecord(ActionRecord record, object? context, double? delta)
+        {
+            object?[] args = ArgResolver.Resolve(record.Args, context, delta);
             object? result = ReflectionDispatcher.InvokeWithResult(record.Call, args);
 
             if (record.StoreValue != null)
@@ -189,154 +169,12 @@ namespace OssianForge.Engine.Resources.Config
             return result;
         }
 
-        public void ExecuteAll(IEnumerable<string> ids, object context = null, double? delta = null)
-        {
-            foreach (var id in ids)
-                Execute(id, context, delta);
-        }
-
-
-        /// <summary>
-        /// Args starting with "$" are treated as value store lookups.
-        /// e.g. "$value.myActionOne.result" → ValueStore.Get("value.myActionOne.result")
-        /// </summary>
-        /// <summary>
-        /// Resolves special tokens in args:
-        ///   "$self"  → the context object (e.g. calling Node)
-        ///   "$delta" → the frame delta (double), if provided
-        ///   "$value.key" → ValueStore.Get("value.key")
-        /// </summary>
-        private static object?[] ResolveArgs(List<JsonElement> args, object context, double? delta)
-            => args.Select(el =>
-            {
-                var unboxed = ReflectionDispatcher.UnboxJsonElement(el);
-                if (unboxed is string s)
-                {
-                    if (s == "$self") return context;
-                    if (s == "$delta") return delta ?? 0.0;
-                    if (s.StartsWith("$currentCamera"))
-                    {
-                        var node = Engine.Nodes.NodeManager.GetNodesWithProperty<CameraProperty>().FirstOrDefault(n => string.Equals(n.Id, Engine.Graphics.CurrentCameraNode, StringComparison.OrdinalIgnoreCase));
-                        return node;
-                    }
-                    if (s.StartsWith("$child."))
-                    {
-                        string path = s["$child.".Length..];
-                        string[] ids = path.Split('.');
-                        Node current = context as Node;
-                        foreach (string childId in ids)
-                        {
-                            if (current == null) break;
-                            current = current.Children.FirstOrDefault(c => c.Id == childId);
-                        }
-                        return current;
-                    }
-                    if (s.StartsWith("$group."))
-                    {
-                        // $group.groupName.nodeId  or  $group.groupName.0
-                        string rest = s["$group.".Length..];
-                        int dot = rest.IndexOf('.');
-                        if (dot >= 0)
-                        {
-                            string groupName = rest[..dot];
-                            string nodeRef = rest[(dot + 1)..];
-
-                            var group = Engine.Nodes.NodeManager.GetNodesInGroup(groupName);
-                            if (group != null)
-                            {
-                                // Try numeric index first, then id matchs
-                                if (int.TryParse(nodeRef, out int idx) && idx >= 0 && idx < group.Count)
-                                    return group[idx];
-
-                                return group.FirstOrDefault(n => n.Id == nodeRef);
-                            }
-                        }
-                        return null;
-                    }
-                    if (s.StartsWith("$id."))
-                    {
-                        string rest = s["$id.".Length..];
-                        var node = Engine.Nodes.NodeManager.GetNode(rest);
-                        return node;
-                    }
-                    if (s.StartsWith("$self."))
-                    {
-                        // Example format: $self.property.TransformProperty.Transform.Position
-                        string path = s["$self.".Length..];
-
-                        if (path.StartsWith("properties."))
-                        {
-                            string propPath = path["properties.".Length..];
-                            int dotIndex = propPath.IndexOf('.');
-
-                            string propertyTypeName;
-                            string memberPath;
-
-                            if (dotIndex >= 0)
-                            {
-                                propertyTypeName = propPath[..dotIndex];
-                                memberPath = propPath[(dotIndex + 1)..];
-                            }
-                            else
-                            {
-                                // If they only provided the property name without a member path
-                                propertyTypeName = propPath;
-                                memberPath = string.Empty;
-                            }
-
-                            if (context is Node node)
-                            {
-                                try
-                                {
-                                    if (string.IsNullOrEmpty(memberPath))
-                                    {
-                                        // Return the entire property instance if no sub-member is requested
-                                        return node.Properties.FirstOrDefault(p =>
-                                            p.GetType().Name.Equals(propertyTypeName, StringComparison.OrdinalIgnoreCase));
-                                    }
-                                    else
-                                    {
-                                        // Delegates to your NodeReflection utility to walk the member path
-                                        object? value = NodeReflection.GetNodePropertyValue(node, propertyTypeName, memberPath);
-
-                                        // If the reflection result is a delegate (getter function), invoke it to get the actual value
-                                        if (value is Delegate del)
-                                        {
-                                            value = del.DynamicInvoke();
-                                        }
-
-                                        Console.WriteLine($"node:{node.Id}, propertyTypeName:{propertyTypeName}, memberPath:{memberPath}, value:{value}");
-                                        return value;
-                                    }
-                                }
-                                catch
-                                {
-                                    return null;
-                                }
-                            }
-                        }
-
-                        return context; // Fallback for simple "$self"
-                    }
-                    //TODO: fix gap so it doesnt check if found before
-                    if (s.StartsWith('$'))
-                    {
-                        string key = s[1..];
-                        var found = ValueStore.Get(key);
-                        return found;
-                    }
-                }
-
-                return unboxed;
-            }).ToArray();
-
-        private static string UnboxToString(JsonElement el)
-            => UnboxJsonElementToString(el);
+        // ── helpers ──────────────────────────────────────────────────────────────
 
         private static string? NullIfEmpty(string s)
             => string.IsNullOrEmpty(s) ? null : s;
 
-        public static string UnboxJsonElementToString(JsonElement el) => el.ValueKind switch
+        private static string UnboxJsonElementToString(JsonElement el) => el.ValueKind switch
         {
             JsonValueKind.String => el.GetString()!,
             _ => el.GetRawText()
