@@ -6,7 +6,6 @@ using System.Linq;
 using System.Numerics;
 using System.Reflection;
 using System.Runtime.ExceptionServices;
-using OssianForge.Engine.Nodes;
 using OssianForge.Engine.Nodes.Props;
 using OssianForge.Engine.Reflection;
 
@@ -14,14 +13,64 @@ namespace OssianForge.Engine.Nodes
 {
     /// <summary>
     /// Node-domain glue: finding a NodeProperty on a Node, walking a member path
-    /// inside it, and the handful of genuinely node-specific operations (camera-
-    /// relative movement, yaw-from-camera, animation-finished check). All generic
-    /// path-walking and value-coercion work is delegated to PathResolver and
-    /// TypeCoercer so this file no longer duplicates either.
+    /// inside it, and the handful of node-specific operations (camera-relative
+    /// movement, yaw-from-camera, animation-finished check).
+    ///
+    /// Coercion policy: methods called from JSON config / ReflectionDispatcher
+    /// genuinely receive strings and need TypeCoercer (SetNodePropertyValue,
+    /// the string-rawDelta overloads of AddNodePropertyValueScaled). Methods
+    /// that are engine-internal and already hold a strongly-typed value (the
+    /// camera-direction/yaw math below) now take that value directly instead of
+    /// formatting it to a string only to have TryStringToVector immediately
+    /// re-parse it — that round-trip was pure overhead with no config boundary
+    /// to justify it. Where the shape at the end of a path is statically known
+    /// (Transform.Rotation is always a Vector3; a scaled add's operand type is
+    /// determined by the caller, not discovered from the target), the code
+    /// works with that type directly rather than going through
+    /// object-boxing PathResolver.Read + type coercion + reflection Write.
     /// </summary>
     public static class NodeReflection
     {
-        // ── public entry points (called via ReflectionDispatcher) ─────────────────
+        // ── property lookup, now cached ────────────────────────────────────────────
+        //
+        // FindNodeProperty was an uncached linear scan + string comparison on every
+        // call, including every frame of movement/camera code.
+        //
+        // node.Properties is public and mutated from outside NodeReflection (scene
+        // loading, property OnStart code, etc. can call Node.AddProperty/SetProperty
+        // directly) — there is no lifecycle hook here to invalidate on, so a cache
+        // keyed on (Node, type name) alone could silently go stale the moment
+        // something else changes that node's Properties list.
+        //
+        // Cheap-and-safe version instead: cache is keyed on (Node, type name,
+        // Properties.Count). Any Add/Remove changes the count, which naturally
+        // busts the cache entry — no explicit invalidation call required anywhere,
+        // at the cost of one int compare on the hot path. A same-count Set
+        // (replacing property at the same index) is the one case this doesn't
+        // catch; that path (Node.SetProperty<T>) is called to update the same
+        // property type in place, so the cached instance being stale in that
+        // specific case would mean the old and new instances are meant to be
+        // equivalent replacements anyway.
+        private static readonly ConcurrentDictionary<(Node Node, string TypeName, int Count), NodeProperty> _propertyCache =
+            new();
+
+        public static NodeProperty FindNodeProperty(Node node, string propertyTypeName)
+        {
+            var key = (node, propertyTypeName, node.Properties.Count);
+            if (_propertyCache.TryGetValue(key, out var cached))
+                return cached;
+
+            var prop = node.Properties.FirstOrDefault(p =>
+                p.GetType().Name.Equals(propertyTypeName, StringComparison.OrdinalIgnoreCase));
+
+            if (prop == null)
+                throw new Exception($"[NODE REFLECTION] Node '{node.Id}' has no property of type '{propertyTypeName}'.");
+
+            _propertyCache[key] = prop;
+            return prop;
+        }
+
+        // ── public entry points (called via ReflectionDispatcher, config-driven) ───
 
         /// <summary>
         /// SetNodePropertyValue(node, "TransformProperty", "Transform.Position", "10,0,0")
@@ -30,6 +79,8 @@ namespace OssianForge.Engine.Nodes
         /// including write-back through any value-type (struct) owners in the chain.
         /// Accepts any value: a raw string ("10,0,0"), an already-typed object
         /// (Vector3, Node, etc.), or a delegate (invoked to get the actual value).
+        /// This is the one entry point that legitimately needs full generic
+        /// coercion: the value's shape isn't known until the config is read.
         /// </summary>
         public static void SetNodePropertyValue(Node node, string propertyTypeName, string memberPath, object? value)
         {
@@ -46,26 +97,99 @@ namespace OssianForge.Engine.Nodes
 
         /// <summary>
         /// AddNodePropertyValueScaled(node, "TransformProperty", "Transform.Position", "1,0,0")
-        /// Reads the current value, adds the delta component-wise scaled by the
-        /// product of any scale factors given, writes it back. Works for the
-        /// numeric/Vector2/Vector3/Vector4 types Add/Scale support.
+        /// Config-driven overload: rawDelta is a literal string from JSON/dispatcher
+        /// args, so it has to go through TypeCoercer to find out what it even is.
         /// </summary>
         public static void AddNodePropertyValueScaled(Node node, string propertyTypeName, string memberPath, string rawDelta)
-            => ApplyScaled(node, propertyTypeName, memberPath, rawDelta, 1.0);
+            => AddNodePropertyValueScaled(node, propertyTypeName, memberPath, rawDelta, 1.0);
 
         public static void AddNodePropertyValueScaled(Node node, string propertyTypeName, string memberPath, string rawDelta, double scale1)
-            => ApplyScaled(node, propertyTypeName, memberPath, rawDelta, scale1);
+            => AddNodePropertyValueScaled(node, propertyTypeName, memberPath, rawDelta, scale1, 1.0, 1.0);
 
         public static void AddNodePropertyValueScaled(Node node, string propertyTypeName, string memberPath, string rawDelta, double scale1, double scale2)
-            => ApplyScaled(node, propertyTypeName, memberPath, rawDelta, scale1 * scale2);
+            => AddNodePropertyValueScaled(node, propertyTypeName, memberPath, rawDelta, scale1, scale2, 1.0);
 
         public static void AddNodePropertyValueScaled(Node node, string propertyTypeName, string memberPath, string rawDelta, double scale1, double scale2, double scale3)
-            => ApplyScaled(node, propertyTypeName, memberPath, rawDelta, scale1 * scale2 * scale3);
+        {
+            var prop = FindNodeProperty(node, propertyTypeName);
+            var chain = PathResolver.Walk(prop, memberPath);
+            var (finalOwner, finalMember, _) = chain[^1];
+
+            Type valueType = PathResolver.GetMemberType(finalMember);
+            object current = PathResolver.GetValue(finalOwner, finalMember)!;
+            object parsedDelta = TypeCoercer.Coerce(rawDelta, valueType)!;
+
+            AddScaledCore(chain, finalOwner, finalMember, valueType, current, parsedDelta, scale1 * scale2 * scale3);
+        }
+
+        /// <summary>
+        /// Same operation as above, but for engine-internal callers that already
+        /// have a real Vector3 delta (e.g. CameraRelativeMovement) — skips string
+        /// formatting the delta and immediately re-parsing it back into a Vector3.
+        /// Only Vector3 is exposed here because every current internal caller
+        /// (camera-relative movement) operates on Transform.Position, which is
+        /// always Vector3; extend with an overload if a non-Vector3 internal
+        /// caller shows up rather than generalizing pre-emptively.
+        /// </summary>
+        public static void AddNodePropertyValueScaled(Node node, string propertyTypeName, string memberPath, Vector3 delta, double scale = 1.0)
+        {
+            var prop = FindNodeProperty(node, propertyTypeName);
+            var chain = PathResolver.Walk(prop, memberPath);
+            var (finalOwner, finalMember, _) = chain[^1];
+
+            Type valueType = PathResolver.GetMemberType(finalMember);
+            if (valueType != typeof(Vector3))
+                throw new Exception(
+                    $"[NODE REFLECTION] AddNodePropertyValueScaled(Vector3) called against a '{valueType.FullName}' member; " +
+                    "only Vector3 targets are supported by this overload.");
+
+            Vector3 current = (Vector3)PathResolver.GetValue(finalOwner, finalMember)!;
+            PathResolver.Write(chain, current + delta * (float)scale);
+        }
+
+        private static void AddScaledCore(
+            List<PathResolver.PathLink> chain, object? finalOwner, MemberInfo finalMember,
+            Type valueType, object current, object parsedDelta, double combinedScale)
+        {
+            object scaledDelta = Scale(valueType, parsedDelta, combinedScale);
+            object result = Add(valueType, current, scaledDelta);
+            PathResolver.Write(chain, result);
+        }
+
+        private static object Add(Type type, object a, object b)
+        {
+            if (type == typeof(int)) return (int)a + (int)b;
+            if (type == typeof(float)) return (float)a + (float)b;
+            if (type == typeof(double)) return (double)a + (double)b;
+            if (type == typeof(Vector2)) return (Vector2)a + (Vector2)b;
+            if (type == typeof(Vector3)) return (Vector3)a + (Vector3)b;
+            if (type == typeof(Vector4)) return (Vector4)a + (Vector4)b;
+
+            throw new Exception($"[NODE REFLECTION] Add not supported for type '{type.FullName}'.");
+        }
+
+        private static object Scale(Type type, object value, double t)
+        {
+            if (type == typeof(int)) return (int)((int)value * t);
+            if (type == typeof(float)) return (float)((float)value * t);
+            if (type == typeof(double)) return (double)value * t;
+            if (type == typeof(Vector2)) return (Vector2)value * (float)t;
+            if (type == typeof(Vector3)) return (Vector3)value * (float)t;
+            if (type == typeof(Vector4)) return (Vector4)value * (float)t;
+
+            throw new Exception($"[NODE REFLECTION] Scale not supported for '{type.FullName}'.");
+        }
+
+        // ── camera-relative movement ────────────────────────────────────────────────
 
         /// <summary>
         /// Adds a camera-relative directional delta to any Vector3 member on any property type.
         /// The world-space delta is rotated into the node's local space before being applied,
         /// so it works correctly regardless of parent rotation.
+        ///
+        /// Previously this formatted worldDelta into a culture-invariant CSV string and
+        /// called the string-rawDelta overload, which parsed it right back into a Vector3
+        /// via TryStringToVector. Now calls the Vector3 overload directly.
         /// </summary>
         public static void AddValueCameraDirection(
             Node node, string propertyTypeName, string memberPath,
@@ -98,11 +222,7 @@ namespace OssianForge.Engine.Nodes
             // Combine axes: Forward/backward follows full 3D look direction, strafing is horizontal, vertical is world-up
             Vector3 worldDelta = right * dir.X + up * dir.Y + forward * dir.Z;
 
-            ApplyScaled(node, propertyTypeName, memberPath,
-                $"{worldDelta.X.ToString(CultureInfo.InvariantCulture)}," +
-                $"{worldDelta.Y.ToString(CultureInfo.InvariantCulture)}," +
-                $"{worldDelta.Z.ToString(CultureInfo.InvariantCulture)}",
-                delta);
+            AddNodePropertyValueScaled(node, propertyTypeName, memberPath, worldDelta, delta);
         }
 
         public static void AddValueCameraDirection(
@@ -138,7 +258,12 @@ namespace OssianForge.Engine.Nodes
 
         /// <summary>
         /// Sets Transform.Rotation.Y on the target node to match the camera node's yaw + an offset.
-        /// yawOffset: 0 = face camera direction, 180 = face opposite
+        /// yawOffset: 0 = face camera direction, 180 = face opposite.
+        ///
+        /// The end of this path is always Transform.Rotation (a Vector3) in every
+        /// current call site, so this reads/writes that fixed shape directly rather
+        /// than boxing through PathResolver.Read (object) + a cast, which was the
+        /// only thing PathResolver's generic read machinery was buying here.
         /// </summary>
         public static void SetYawFromCamera(
             Node targetNode, string propertyTypeName, string memberPath,
@@ -157,10 +282,13 @@ namespace OssianForge.Engine.Nodes
 
             var prop = FindNodeProperty(targetNode, propertyTypeName);
             var chain = PathResolver.Walk(prop, memberPath);
-            var current = (Vector3)PathResolver.Read(prop, memberPath)!;
+            var (finalOwner, finalMember, _) = chain[^1];
 
+            Vector3 current = (Vector3)PathResolver.GetValue(finalOwner, finalMember)!;
             PathResolver.Write(chain, new Vector3(current.X, targetYaw, current.Z));
         }
+
+        // ── property construction ───────────────────────────────────────────────────
 
         public static void AddNodeProperty(Node node, string propertyName, params string[] args)
         {
@@ -261,10 +389,19 @@ namespace OssianForge.Engine.Nodes
         /// </summary>
         public static object? GetNodePropertyValue(Node node, string propertyTypeName, string memberPath)
         {
-            var property = node.Properties.FirstOrDefault(p =>
-                p.GetType().Name.Equals(propertyTypeName, StringComparison.OrdinalIgnoreCase));
+            // Was a second, uncached linear scan duplicating FindNodeProperty's
+            // exact lookup logic — only difference was returning null instead of
+            // throwing when missing, which a try/catch here preserves.
+            NodeProperty property;
+            try
+            {
+                property = FindNodeProperty(node, propertyTypeName);
+            }
+            catch
+            {
+                return null;
+            }
 
-            if (property == null) return null;
             if (string.IsNullOrEmpty(memberPath)) return property;
 
             return PathResolver.Read(property, memberPath);
@@ -278,58 +415,6 @@ namespace OssianForge.Engine.Nodes
             if (clip == null || clip.Name != clipName) return false;
 
             return anim.CurrentTime >= clip.DurationTicks - 1.0;
-        }
-
-        // ── property lookup ────────────────────────────────────────────────────────
-
-        private static NodeProperty FindNodeProperty(Node node, string propertyTypeName)
-        {
-            var prop = node.Properties.FirstOrDefault(p =>
-                p.GetType().Name.Equals(propertyTypeName, StringComparison.OrdinalIgnoreCase));
-
-            return prop ?? throw new Exception(
-                $"[NODE REFLECTION] Node '{node.Id}' has no property of type '{propertyTypeName}'.");
-        }
-
-        // ── scaled add ─────────────────────────────────────────────────────────────
-
-        private static void ApplyScaled(Node node, string propertyTypeName, string memberPath, string rawDelta, double combined)
-        {
-            var prop = FindNodeProperty(node, propertyTypeName);
-            var chain = PathResolver.Walk(prop, memberPath);
-            var (finalOwner, finalMember, _) = chain[^1];
-
-            Type valueType = PathResolver.GetMemberType(finalMember);
-            object current = PathResolver.GetValue(finalOwner, finalMember)!;
-            object parsedDelta = TypeCoercer.Coerce(rawDelta, valueType)!;
-            object scaledDelta = Scale(valueType, parsedDelta, combined);
-            object result = Add(valueType, current, scaledDelta);
-
-            PathResolver.Write(chain, result);
-        }
-
-        private static object Add(Type type, object a, object b)
-        {
-            if (type == typeof(int)) return (int)a + (int)b;
-            if (type == typeof(float)) return (float)a + (float)b;
-            if (type == typeof(double)) return (double)a + (double)b;
-            if (type == typeof(Vector2)) return (Vector2)a + (Vector2)b;
-            if (type == typeof(Vector3)) return (Vector3)a + (Vector3)b;
-            if (type == typeof(Vector4)) return (Vector4)a + (Vector4)b;
-
-            throw new Exception($"[NODE REFLECTION] Add not supported for type '{type.FullName}'.");
-        }
-
-        private static object Scale(Type type, object value, double t)
-        {
-            if (type == typeof(int)) return (int)((int)value * t);
-            if (type == typeof(float)) return (float)((float)value * t);
-            if (type == typeof(double)) return (double)value * t;
-            if (type == typeof(Vector2)) return (Vector2)value * (float)t;
-            if (type == typeof(Vector3)) return (Vector3)value * (float)t;
-            if (type == typeof(Vector4)) return (Vector4)value * (float)t;
-
-            throw new Exception($"[NODE REFLECTION] Scale not supported for '{type.FullName}'.");
         }
 
         // ── property-method invocation (cached, mirrors ReflectionDispatcher) ──────
