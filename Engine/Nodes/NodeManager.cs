@@ -10,6 +10,7 @@ namespace OssianForge.Engine.Nodes
         public List<Node> Roots = new();
 
         private static readonly ConcurrentQueue<Action> _pendingActions = new();
+        private readonly Dictionary<string, Node> _idCache = new();
 
         public NodeManager() { }
 
@@ -23,7 +24,40 @@ namespace OssianForge.Engine.Nodes
 
         public void AddNode(Node node) => Roots.Add(node);
 
+        public void AddChild(Node parent, Node child)
+        {
+            parent.Children.Add(child);
+            child.Parent = parent;
+            RegisterInCache(child); // child + all of child's existing descendants, if it arrives with a subtree attached
+        }
+
         public void RemoveNode(Node node) => Roots.Remove(node);
+
+        public void RemoveChild(Node parent, Node child)
+        {
+            parent.Children.Remove(child);
+            child.Parent = null;
+            UnregisterFromCache(child); // child + all descendants
+        }
+
+        internal void RekeyNode(string? oldId, string? newId, Node node)
+        {
+            if (!string.IsNullOrEmpty(oldId)) _idCache.Remove(oldId);
+            if (!string.IsNullOrEmpty(newId)) _idCache[newId] = node;
+        }
+
+        private void RegisterInCache(Node node)
+        {
+            if (!string.IsNullOrEmpty(node.Id)) _idCache[node.Id] = node;
+            foreach (var child in node.Children) RegisterInCache(child);
+        }
+
+        private void UnregisterFromCache(Node node)
+        {
+            if (!string.IsNullOrEmpty(node.Id)) _idCache.Remove(node.Id);
+            foreach (var child in node.Children) UnregisterFromCache(child);
+        }
+
 
         // -----------------------------------------------------------------------
         // Lifecycle — recursive tree walks, zero per-frame allocations
@@ -94,8 +128,7 @@ namespace OssianForge.Engine.Nodes
         // Query helpers — enumerate on demand, no stored flat list
         // -----------------------------------------------------------------------
 
-        public Node GetNode(string id)
-            => Flatten().FirstOrDefault(n => n.Id == id);
+        public Node GetNode(string id) => _idCache.TryGetValue(id, out var n) ? n : null;
 
         public List<Node> GetNodesOfType(Type type)
             => Flatten().Where(n => type.IsInstanceOfType(n)).ToList();

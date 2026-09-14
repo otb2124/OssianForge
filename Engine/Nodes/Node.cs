@@ -4,7 +4,16 @@ namespace OssianForge.Engine.Nodes
 {
     public class Node
     {
-        public string Id;
+        private string _id;
+        public string Id
+        {
+            get => _id;
+            set
+            {
+                Engine.Nodes.NodeManager?.RekeyNode(_id, value, this);
+                _id = value;
+            }
+        }
         public string Name;
         public Node Parent;
         public List<Node> Children = new();
@@ -25,14 +34,12 @@ namespace OssianForge.Engine.Nodes
 
         public void AddChild(Node child)
         {
-            child.Parent = this;
-            Children.Add(child);
+            Engine.Nodes.NodeManager.AddChild(this, child);
         }
 
         public void RemoveChild(Node child)
         {
-            child.Parent = null;
-            Children.Remove(child);
+            Engine.Nodes.NodeManager.RemoveChild(this, child);
         }
 
         public void AddProperty(NodeProperty prop)
