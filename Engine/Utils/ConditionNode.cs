@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text.Json;
 using OssianForge.Engine.Nodes;
+using OssianForge.Engine.Reflection;
 using OssianForge.Engine.Resources.Config;
 
 namespace OssianForge.Engine.Utils.ConditionNode

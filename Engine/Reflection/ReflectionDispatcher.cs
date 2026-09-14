@@ -6,18 +6,13 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.ExceptionServices;
 using System.Text.Json;
+using OssianForge.Engine.Reflection;
+using OssianForge.Engine.Resources.Config;
 
-namespace OssianForge.Engine.Resources.Config
+namespace OssianForge.Engine.Reflection
 {
     public static class ReflectionDispatcher
     {
-        private static readonly HashSet<Type> NumericTypes = new()
-        {
-            typeof(int), typeof(float), typeof(double), typeof(long),
-            typeof(short), typeof(byte), typeof(decimal), typeof(sbyte),
-            typeof(ushort), typeof(uint), typeof(ulong)
-        };
-
         // Cache resolved member paths
         private static readonly ConcurrentDictionary<string, (object? target, Type type)> _memberPathCache = new();
 
@@ -120,17 +115,11 @@ namespace OssianForge.Engine.Resources.Config
                 bool match = true;
                 for (int i = 0; i < ps.Length; i++)
                 {
-                    if (args[i] == null) continue;
-
-                    Type argType = args[i]!.GetType();
-                    Type paramType = ps[i].ParameterType;
-
-                    if (paramType.IsAssignableFrom(argType)) continue;
-                    if (IsNumericConvertible(paramType, argType)) continue;
-                    if (CanCoerceFast(paramType, args[i])) continue;
-
-                    match = false;
-                    break;
+                    if (!TypeCoercer.CanCoerce(args[i], ps[i].ParameterType))
+                    {
+                        match = false;
+                        break;
+                    }
                 }
 
                 if (match)
@@ -176,66 +165,24 @@ namespace OssianForge.Engine.Resources.Config
             }
         }
 
-        // ── fast coercion checks ──────────────────────────────────────────────────
+        // ── coercion (delegates to TypeCoercer — single shared implementation) ─────
 
-        private static bool CanCoerceFast(Type targetType, object? value)
-        {
-            if (value == null) return false;
-
-            Type valType = value.GetType();
-            if (targetType == typeof(bool))
-                return value is bool || (value is string s && bool.TryParse(s, out _));
-
-            if (NumericTypes.Contains(targetType))
-            {
-                if (NumericTypes.Contains(valType)) return true;
-                if (value is string numStr)
-                    return double.TryParse(numStr, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out _);
-                return false;
-            }
-
-            return targetType == typeof(string) || targetType.IsAssignableFrom(valType);
-        }
-
+        /// <summary>
+        /// Coerces args to the resolved method's actual parameter types before
+        /// invocation. The compiled invoker (CompileMethod) does a hard
+        /// Expression.Convert cast, not a coercion — every arg must already be
+        /// the exact runtime type the cast expects by the time it gets there.
+        /// </summary>
         private static object?[] CoerceArgs(MethodInfo method, object?[] args)
         {
             var ps = method.GetParameters();
             var result = new object?[args.Length];
 
             for (int i = 0; i < args.Length; i++)
-            {
-                if (args[i] == null) { result[i] = null; continue; }
-
-                Type paramType = ps[i].ParameterType;
-                Type argType = args[i]!.GetType();
-
-                if (paramType == argType || paramType.IsAssignableFrom(argType))
-                {
-                    result[i] = args[i];
-                }
-                else if (paramType == typeof(bool) && args[i] is string strBool && bool.TryParse(strBool, out bool parsedBool))
-                {
-                    result[i] = parsedBool;
-                }
-                else
-                {
-                    try
-                    {
-                        result[i] = Convert.ChangeType(args[i], paramType, System.Globalization.CultureInfo.InvariantCulture);
-                    }
-                    catch
-                    {
-                        // Fallback to original value if conversion fails
-                        result[i] = args[i];
-                    }
-                }
-            }
+                result[i] = TypeCoercer.Coerce(args[i], ps[i].ParameterType);
 
             return result;
         }
-
-        private static bool IsNumericConvertible(Type target, Type source)
-            => NumericTypes.Contains(target) && NumericTypes.Contains(source);
 
         private static string GetArgSignature(object?[] args)
         {
@@ -277,36 +224,16 @@ namespace OssianForge.Engine.Resources.Config
 
         private static (object? target, Type type) WalkMembers(Type rootType, string[] segments, int rootEnd)
         {
-            object? current = null;
-            Type currentType = rootType;
+            // The whole path was just the type name itself (e.g. calling a static
+            // method directly on rootType) — no members to walk.
+            if (rootEnd == segments.Length)
+                return (null, rootType);
 
-            for (int i = rootEnd; i < segments.Length; i++)
-            {
-                string member = segments[i];
-
-                var bindingFlags = BindingFlags.Public |
-                    (current == null ? BindingFlags.Static : BindingFlags.Instance);
-
-                var prop = currentType.GetProperty(member, bindingFlags);
-                if (prop != null)
-                {
-                    current = prop.GetValue(current);
-                    currentType = current?.GetType() ?? prop.PropertyType;
-                    continue;
-                }
-
-                var field = currentType.GetField(member, bindingFlags);
-                if (field != null)
-                {
-                    current = field.GetValue(current);
-                    currentType = current?.GetType() ?? field.FieldType;
-                    continue;
-                }
-
-                throw new Exception($"Member '{member}' not found on '{currentType.FullName}'.");
-            }
-
-            return (current, currentType);
+            var chain = PathResolver.Walk(rootType, segments[rootEnd..]);
+            var last = chain[^1];
+            var value = PathResolver.GetValue(last.Owner, last.Member);
+            var type = value?.GetType() ?? PathResolver.GetMemberType(last.Member);
+            return (value, type);
         }
 
         private static Type? TryResolveType(string candidate)

@@ -18,7 +18,7 @@ namespace OssianForge.Engine.Reflection
     /// </summary>
     public static class PathResolver
     {
-        public readonly record struct PathLink(object Owner, MemberInfo Member, bool OwnerIsValueType);
+        public readonly record struct PathLink(object? Owner, MemberInfo Member, bool OwnerIsValueType);
 
         /// <summary>
         /// Walk `segments` starting from `root`. Each link's Owner is the object
@@ -37,7 +37,7 @@ namespace OssianForge.Engine.Reflection
             for (int i = 0; i < segments.Length; i++)
             {
                 Type currentType = current.GetType();
-                var member = GetFieldOrProperty(currentType, segments[i]);
+                var member = GetFieldOrProperty(currentType, segments[i], BindingFlags.Instance);
                 chain.Add(new PathLink(current, member, currentType.IsValueType));
 
                 if (i < segments.Length - 1)
@@ -55,6 +55,43 @@ namespace OssianForge.Engine.Reflection
 
         public static List<PathLink> Walk(object root, string path) => Walk(root, path.Split('.'));
 
+        /// <summary>
+        /// Walk `segments` starting from a static root type, e.g. resolving
+        /// "SomeStaticClass.SomeStaticField.NestedMember" where SomeStaticClass has
+        /// no instance. The first segment is looked up as a static member on
+        /// `rootType`; every segment after that walks the resulting instance
+        /// exactly like the instance-rooted overload. A static-only path with a
+        /// single segment (the endpoint itself is static) yields a chain whose
+        /// sole PathLink has a null Owner — GetValue/SetValue both accept a null
+        /// owner for static members, matching normal reflection convention.
+        /// </summary>
+        public static List<PathLink> Walk(Type rootType, string[] segments)
+        {
+            if (rootType == null)
+                throw new ArgumentNullException(nameof(rootType));
+            if (segments.Length == 0)
+                throw new ArgumentException("[PATH RESOLVER] Path must have at least one segment.", nameof(segments));
+
+            var chain = new List<PathLink>(segments.Length);
+
+            var firstMember = GetFieldOrProperty(rootType, segments[0], BindingFlags.Static);
+            chain.Add(new PathLink(null!, firstMember, rootType.IsValueType));
+
+            if (segments.Length == 1)
+                return chain;
+
+            var value = GetValue(null!, firstMember);
+            if (value == null)
+                throw new Exception(
+                    $"[PATH RESOLVER] Static path segment '{segments[0]}' evaluated to null; cannot continue to '{segments[1]}'.");
+
+            var rest = Walk(value, segments[1..]);
+            chain.AddRange(rest);
+            return chain;
+        }
+
+        public static List<PathLink> Walk(Type rootType, string path) => Walk(rootType, path.Split('.'));
+
         /// <summary>Read the value at the end of a path.</summary>
         public static object? Read(object root, string path)
         {
@@ -66,6 +103,13 @@ namespace OssianForge.Engine.Reflection
         public static object? Read(object root, string[] segments)
         {
             var chain = Walk(root, segments);
+            var last = chain[^1];
+            return GetValue(last.Owner, last.Member);
+        }
+
+        public static object? Read(Type rootType, string path)
+        {
+            var chain = Walk(rootType, path);
             var last = chain[^1];
             return GetValue(last.Owner, last.Member);
         }
@@ -100,14 +144,14 @@ namespace OssianForge.Engine.Reflection
             _ => throw new Exception($"[PATH RESOLVER] Unsupported member type '{member.MemberType}'.")
         };
 
-        public static object? GetValue(object owner, MemberInfo member) => member switch
+        public static object? GetValue(object? owner, MemberInfo member) => member switch
         {
             FieldInfo f => f.GetValue(owner),
             PropertyInfo p => p.GetValue(owner),
             _ => throw new Exception($"[PATH RESOLVER] Unsupported member type '{member.MemberType}'.")
         };
 
-        public static void SetValue(object owner, MemberInfo member, object? value)
+        public static void SetValue(object? owner, MemberInfo member, object? value)
         {
             switch (member)
             {
@@ -138,9 +182,9 @@ namespace OssianForge.Engine.Reflection
             }
         }
 
-        private static MemberInfo GetFieldOrProperty(Type type, string name)
+        private static MemberInfo GetFieldOrProperty(Type type, string name, BindingFlags instanceOrStatic)
         {
-            const BindingFlags flags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static;
+            var flags = BindingFlags.Public | instanceOrStatic;
 
             MemberInfo? member = type.GetField(name, flags) ?? (MemberInfo?)type.GetProperty(name, flags);
 
