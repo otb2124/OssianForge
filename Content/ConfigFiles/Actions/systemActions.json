@@ -18,5 +18,11 @@
     "id": "action.systemActions.setGizmoPositionAtNode",
     "call": "node.setValue",
     "args": [ "$id.gizmo_scene", "TransformProperty", "Position", "$self.properties.TransformProperty.Position" ]
+  },
+  {
+    "id": "action.systemActions.storeCurrentEditNodeId",
+    "call": "nodes.getValue",
+    "args": [ "$self", "Id" ],
+    "storeValue": "value.currentEditNode.id"
   }
 ]

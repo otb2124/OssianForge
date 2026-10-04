@@ -45,3 +45,6 @@ desktop.ini
 
 #snapshots
 snapshots/
+
+#codebase export
+exports/
