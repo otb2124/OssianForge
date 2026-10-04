@@ -11,7 +11,7 @@ namespace OssianForge.Engine.Utils
         }
 
         /// <summary>
-        /// Unprojects the mouse position into a world-space ray from the current camera.
+        /// Unprojects the MouseInput position into a world-space ray from the current camera.
         /// </summary>
         public static Ray ScreenToRay(Vector2 mousePixels)
         {

@@ -138,9 +138,9 @@ namespace OssianForge.Engine.Inputs
 
         private static float ResolveAxisSource(string source) => source switch
         {
-            "MouseDeltaX" => Engine.Inputs.mouse.Delta.X,
-            "MouseDeltaY" => Engine.Inputs.mouse.Delta.Y,
-            "ScrollDelta" => Engine.Inputs.mouse.ScrollDelta,
+            "MouseDeltaX" => Engine.Inputs.MouseInput.Delta.X,
+            "MouseDeltaY" => Engine.Inputs.MouseInput.Delta.Y,
+            "ScrollDelta" => Engine.Inputs.MouseInput.ScrollDelta,
             _ => 0f
         };
 
@@ -149,8 +149,8 @@ namespace OssianForge.Engine.Inputs
             bool isPressed = false;
             foreach (var b in bindings)
                 isPressed |= b.IsMouseButton
-                    ? Engine.Inputs.mouse.IsMouseButtonDown(b.MouseButton!.Value)
-                    : Engine.Inputs.keyboard.IsKeyDown(b.KeyboardKey!.Value);
+                    ? Engine.Inputs.MouseInput.IsMouseButtonDown(b.MouseButton!.Value)
+                    : Engine.Inputs.KeyboardInput.IsKeyDown(b.KeyboardKey!.Value);
             return isPressed;
         }
 
@@ -159,8 +159,8 @@ namespace OssianForge.Engine.Inputs
             bool isClicked = false;
             foreach (var b in bindings)
                 isClicked |= b.IsMouseButton
-                    ? Engine.Inputs.mouse.IsMouseButtonPressed(b.MouseButton!.Value)
-                    : Engine.Inputs.keyboard.IsKeyClicked(b.KeyboardKey!.Value);
+                    ? Engine.Inputs.MouseInput.IsMouseButtonPressed(b.MouseButton!.Value)
+                    : Engine.Inputs.KeyboardInput.IsKeyClicked(b.KeyboardKey!.Value);
             return isClicked;
         }
 
@@ -169,8 +169,8 @@ namespace OssianForge.Engine.Inputs
             bool isReleased = false;
             foreach (var b in bindings)
                 isReleased |= b.IsMouseButton
-                    ? Engine.Inputs.mouse.IsMouseButtonReleased(b.MouseButton!.Value)
-                    : Engine.Inputs.keyboard.IsKeyReleased(b.KeyboardKey!.Value);
+                    ? Engine.Inputs.MouseInput.IsMouseButtonReleased(b.MouseButton!.Value)
+                    : Engine.Inputs.KeyboardInput.IsKeyReleased(b.KeyboardKey!.Value);
             return isReleased;
         }
 

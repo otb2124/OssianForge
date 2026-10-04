@@ -7,36 +7,54 @@ namespace OssianForge.Engine.Inputs
     {
         public IInputContext InputContext;
 
-        public KeyboardInput keyboard;
-        public MouseInput mouse;
+        public KeyboardInput KeyboardInput;
+        public MouseInput MouseInput;
+        public MicrophoneInput MicrophoneInput;
+        public CameraInput CameraInput;
+
         public KeyHandler KeyHandler;
 
         public void Initialize()
         {
-            keyboard = KeyboardInput.Instance;
-            mouse = MouseInput.Instance;
+            KeyboardInput = KeyboardInput.Instance;
+            MouseInput = MouseInput.Instance;
+            MicrophoneInput = MicrophoneInput.Instance;
+            CameraInput = CameraInput.Instance;
+
             KeyHandler = new KeyHandler();
         }
 
         public void OnLoad()
         {
             InputContext = Engine.Graphics.Window.CreateInput();
-            keyboard.Initialize(InputContext.Keyboards[0]);
-            mouse.Initialize(InputContext.Mice[0]);
-            //mouse.SetCursorMode(CursorMode.Disabled);
+            KeyboardInput.Initialize(InputContext.Keyboards[0]);
+            MouseInput.Initialize(InputContext.Mice[0]);
+            //MouseInput.SetCursorMode(CursorMode.Disabled);
+
+            CameraInput.Initialize(new CameraInputOptions());
+            MicrophoneInput.Initialize(new MicrophoneInputOptions());
             KeyHandler.OnLoad();
         }
 
         public void OnUpdate(double delta)
         {
-            keyboard.Update();
-            mouse.Update(delta);
+            KeyboardInput.Update();
+            MouseInput.Update(delta);
+            CameraInput.Update();
+            MicrophoneInput.Update(delta);
+
             KeyHandler.OnUpdate();
         }
 
         public void OnFocusChanged(bool focused)
         {
-            mouse.SetFocused(focused);
+            MouseInput.SetFocused(focused);
+        }
+
+        public void Shutdown()
+        {
+            CameraInput.Shutdown();
+            MicrophoneInput.Shutdown();
         }
     }
 }

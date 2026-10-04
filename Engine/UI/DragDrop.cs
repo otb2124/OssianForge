@@ -34,7 +34,7 @@ namespace OssianForge.Engine.UI
             _focused = null;
         }
 
-        /// <summary>Called by a ControlProperty when the mouse button is released
+        /// <summary>Called by a ControlProperty when the MouseInput button is released
         /// anywhere — clears focus if the release happened outside that control.</summary>
         public static void NotifyReleasedOutside(ControlProperty sender)
         {
@@ -65,7 +65,7 @@ namespace OssianForge.Engine.UI
         public static bool IsDragging => _dragging != null;
 
         /// <summary>
-        /// Called by a drop-target ControlProperty when the mouse button releases
+        /// Called by a drop-target ControlProperty when the MouseInput button releases
         /// while hovering it.
         /// </summary>
         public static void HandleDrop(ControlProperty target, Node targetOwner)

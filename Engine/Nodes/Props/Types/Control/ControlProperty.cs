@@ -165,7 +165,7 @@ namespace OssianForge.Engine.Nodes.Props
             var mesh = node.GetProperty<MeshProperty>();
             if (transform == null || mesh == null) return;
 
-            Vector2 mouse = Engine.Inputs.mouse.Position;
+            Vector2 mouse = Engine.Inputs.MouseInput.Position;
 
             bool inside = transform.RenderSpace == RenderSpace.ScreenSpace
                 ? HitTestScreen(transform, mouse)
@@ -177,7 +177,7 @@ namespace OssianForge.Engine.Nodes.Props
             // ── scroll ──────────────────────────────────────────────────────
             if (inside)
             {
-                float scroll = Engine.Inputs.mouse.ScrollDelta;
+                float scroll = Engine.Inputs.MouseInput.ScrollDelta;
                 if (scroll != 0f)
                     OnScroll.Emit(scroll);
             }

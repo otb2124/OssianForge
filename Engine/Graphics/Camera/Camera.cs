@@ -57,7 +57,7 @@ namespace OssianForge.Engine.Graphics.Camera
 
         private void ControlMouseRotation()
         {
-            Vector2 mousePos = Engine.Inputs.mouse.Position;
+            Vector2 mousePos = Engine.Inputs.MouseInput.Position;
 
             if (_firstMouse)
             {
