@@ -32,6 +32,13 @@ namespace OssianForge.Engine.Graphics
         private int _allocatedWidth;
         private int _allocatedHeight;
 
+        // ── Diagnostics (read by HeadTracker's debug log) ──
+        public bool Diagnostics = true;
+        public int LastRawCount { get; private set; }      // faces found with the normal settings
+        public int LastRelaxedCount { get; private set; }  // faces found with loose settings (only computed when the strict pass finds none)
+        public double LastMeanLuma { get; private set; }   // 0 = black frame, 255 = white
+        public int LastInputWidth { get; private set; }    // width of the image the cascade actually saw
+
         /// <param name="cascadePath">Path to haarcascade_frontalface_default.xml.</param>
         /// <param name="detectWidth">Frames are downscaled to this width before detection (speed).</param>
         /// <param name="minFaceFraction">Smallest face to accept, as a fraction of the frame width.</param>
@@ -73,11 +80,27 @@ namespace OssianForge.Engine.Graphics
 
             Cv2.EqualizeHist(input, _equalized!);
 
+            LastInputWidth = input.Width;
+            if (Diagnostics) LastMeanLuma = Cv2.Mean(_gray!).Val0;
+
             int minFace = Math.Max(24, (int)(input.Width * _minFaceFraction));
             Rect[] faces = _cascade.DetectMultiScale(
                 _equalized!, 1.1, 4, HaarDetectionTypes.ScaleImage, new Size(minFace, minFace));
 
-            if (faces.Length == 0) return false;
+            LastRawCount = faces.Length;
+            if (faces.Length == 0)
+            {
+                // If this loose pass finds something, the strict settings (minNeighbors / MinFaceFraction)
+                // are the problem. If it never does, look at the camera image or the cascade file instead.
+                if (Diagnostics)
+                {
+                    Rect[] loose = _cascade.DetectMultiScale(
+                        _equalized!, 1.1, 2, HaarDetectionTypes.ScaleImage, new Size(24, 24));
+                    LastRelaxedCount = loose.Length;
+                }
+                return false;
+            }
+            LastRelaxedCount = faces.Length;
 
             // Several people: track the largest face, i.e. the closest person.
             Rect best = faces[0];
@@ -86,6 +109,16 @@ namespace OssianForge.Engine.Graphics
 
             face = new FaceRect(best.X * scale, best.Y * scale, best.Width * scale, best.Height * scale);
             return true;
+        }
+
+        /// <summary>Writes the last frame (as the camera delivered it) and the image the cascade saw. Call from the detection thread.</summary>
+        public bool SaveDebugFrame(string pathWithoutExtension)
+        {
+            if (_bgr == null || _equalized == null) return false;
+            Directory.CreateDirectory(Path.GetDirectoryName(pathWithoutExtension)!);
+            bool a = Cv2.ImWrite(pathWithoutExtension + "_camera.png", _bgr);
+            bool b = Cv2.ImWrite(pathWithoutExtension + "_detector_input.png", _equalized);
+            return a && b;
         }
 
         private void EnsureMats(int width, int height)

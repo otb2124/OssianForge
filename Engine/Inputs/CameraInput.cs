@@ -88,6 +88,7 @@ namespace OssianForge.Engine.Inputs
         private long _sequence;
         private long _lastUpdateSequence;
         private long _droppedFrames;
+        private long _readFailures;
 
         private CameraInputOptions _options = new();
         private Thread? _thread;
@@ -106,6 +107,7 @@ namespace OssianForge.Engine.Inputs
         public double Fps => Volatile.Read(ref _fps);
         public long FrameSequence => Volatile.Read(ref _sequence);
         public long DroppedFrames => Interlocked.Read(ref _droppedFrames);
+        public long ReadFailures => Interlocked.Read(ref _readFailures);
         public string? LastError => _lastError;
         public int DeviceIndex => _options.DeviceIndex;
 
@@ -203,12 +205,20 @@ namespace OssianForge.Engine.Inputs
         {
             var options = _options;
 
+            // Debug overrides so you can try another camera/backend without recompiling:
+            //   set OSSIAN_CAM_DEVICE=1   set OSSIAN_CAM_BACKEND=DirectShow  (or MediaFoundation / Auto)
+            if (int.TryParse(Environment.GetEnvironmentVariable("OSSIAN_CAM_DEVICE"), out var envDevice))
+                options.DeviceIndex = envDevice;
+            if (Enum.TryParse<CameraBackend>(Environment.GetEnvironmentVariable("OSSIAN_CAM_BACKEND"), true, out var envBackend))
+                options.Backend = envBackend;
+
             using var bgr = new Mat();
 
             while (!_stop)
             {
                 try
                 {
+                    Console.WriteLine($"[INPUT] Opening camera device {options.DeviceIndex} via {options.Backend}...");
                     using var capture = new VideoCapture(options.DeviceIndex, MapBackend(options.Backend));
 
                     if (!capture.IsOpened())
@@ -227,7 +237,15 @@ namespace OssianForge.Engine.Inputs
 
                     _isOpen = true;
                     _lastError = null;
-                    Console.WriteLine($"[INPUT] Camera {options.DeviceIndex} opened at {Width}x{Height}.");
+                    int fourcc = (int)capture.Get(VideoCaptureProperties.FourCC);
+                    string fcc = fourcc == 0 ? "?" : new string(new[]
+                    {
+                        (char)(fourcc & 255), (char)((fourcc >> 8) & 255),
+                        (char)((fourcc >> 16) & 255), (char)((fourcc >> 24) & 255)
+                    });
+                    Console.WriteLine(
+                        $"[INPUT] Camera {options.DeviceIndex} opened at {Width}x{Height} " +
+                        $"(requested {options.Width}x{options.Height}@{options.Fps}) driverFps={capture.Get(VideoCaptureProperties.Fps):F0} fourcc={fcc}.");
 
                     ReadFrames(capture, bgr);
                 }
@@ -248,6 +266,7 @@ namespace OssianForge.Engine.Inputs
         {
             using var mat = new Mat();
             int consecutiveFailures = 0;
+            bool loggedFirstFrame = false;
             int framesInWindow = 0;
             long windowStart = Stopwatch.GetTimestamp();
 
@@ -256,6 +275,7 @@ namespace OssianForge.Engine.Inputs
                 if (!capture.Read(mat) || mat.Empty())
                 {
                     // Device unplugged or stalled: give up after ~30 misses and reopen.
+                    Interlocked.Increment(ref _readFailures);
                     if (++consecutiveFailures > 30)
                     {
                         Fail("Camera stopped delivering frames.");
@@ -267,6 +287,16 @@ namespace OssianForge.Engine.Inputs
 
                 consecutiveFailures = 0;
                 long timestamp = Stopwatch.GetTimestamp();
+
+                if (!loggedFirstFrame)
+                {
+                    loggedFirstFrame = true;
+                    var m = Cv2.Mean(mat);
+                    // mean near (0,0,0) = black frame (shutter, privacy setting, IR camera). Equal B,G,R = grayscale/IR image.
+                    Console.WriteLine(
+                        $"[INPUT] first frame: {mat.Width}x{mat.Height} channels={mat.Channels()} type={mat.Type()} " +
+                        $"meanBGR=({m.Val0:F0},{m.Val1:F0},{m.Val2:F0})");
+                }
 
                 Mat source = mat;
                 if (mat.Channels() == 1)
@@ -351,6 +381,50 @@ namespace OssianForge.Engine.Inputs
         }
 
         // ── Helpers ──────────────────────────────────────────────────────────
+
+        /// <summary>
+        /// Debug: tries camera indices 0..maxIndex on DirectShow and Media Foundation and prints what each delivers.
+        /// Only call while the camera is NOT running (the device is exclusive). HeadTracker calls this
+        /// when the environment variable OSSIAN_CAM_PROBE=1 is set.
+        /// </summary>
+        public static void ProbeDevices(int maxIndex = 3)
+        {
+            foreach (var api in new[] { VideoCaptureAPIs.DSHOW, VideoCaptureAPIs.MSMF })
+            {
+                for (int i = 0; i <= maxIndex; i++)
+                {
+                    try
+                    {
+                        using var capture = new VideoCapture(i, api);
+                        if (!capture.IsOpened())
+                        {
+                            Console.WriteLine($"[INPUT] probe {api} #{i}: not available");
+                            continue;
+                        }
+
+                        using var frame = new Mat();
+                        bool ok = false;
+                        for (int attempt = 0; attempt < 15 && !ok; attempt++)
+                            ok = capture.Read(frame) && !frame.Empty();
+
+                        if (!ok)
+                        {
+                            Console.WriteLine($"[INPUT] probe {api} #{i}: opened but delivered NO frames");
+                            continue;
+                        }
+
+                        var m = Cv2.Mean(frame);
+                        Console.WriteLine(
+                            $"[INPUT] probe {api} #{i}: {frame.Width}x{frame.Height} channels={frame.Channels()} " +
+                            $"meanBGR=({m.Val0:F0},{m.Val1:F0},{m.Val2:F0})");
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"[INPUT] probe {api} #{i}: {ex.GetType().Name}: {ex.Message}");
+                    }
+                }
+            }
+        }
 
         private void Fail(string message)
         {

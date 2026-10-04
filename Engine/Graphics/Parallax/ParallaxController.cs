@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Numerics;
+using OssianForge.Engine.Inputs;
 
 namespace OssianForge.Engine.Graphics
 {
@@ -72,6 +73,10 @@ namespace OssianForge.Engine.Graphics
         /// <summary>Master switch. When false the camera behaves exactly as before.</summary>
         public bool Enabled { get; set; }
 
+        /// <summary>Print a [PARALLAX] status line once per second.</summary>
+        public bool DebugLog = true;
+        private double _logTimer;
+
         /// <summary>True while a person is being tracked (as opposed to the eye resting at RestPosition).</summary>
         public bool IsTracking => Tracker.IsPersonPresent;
 
@@ -105,7 +110,11 @@ namespace OssianForge.Engine.Graphics
         {
             if (options != null) Options = options;
             _eyeInitialized = false;
-            return Tracker.Start(Options.Tracker);
+            bool started = Tracker.Start(Options.Tracker);
+            Console.WriteLine(
+                $"[PARALLAX] Start -> trackerStarted={started} err={Tracker.LastError ?? "none"} " +
+                $"configuredScreen={Options.ScreenSizeMeters.X:0.00}x{Options.ScreenSizeMeters.Y:0.00}m fitToWindow={Options.FitToWindow}");
+            return started;
         }
 
         public void Stop()
@@ -204,6 +213,22 @@ namespace OssianForge.Engine.Graphics
 
             _view = new ParallaxView(eyeInWindow, windowSize, Options.WorldUnitsPerMeter);
             _hasView = true;
+
+            if (DebugLog)
+            {
+                _logTimer += delta;
+                if (_logTimer >= 1.0)
+                {
+                    _logTimer = 0;
+                    float verticalFov = float.RadiansToDegrees(2f * MathF.Atan(windowSize.Y * 0.5f / MathF.Max(eyeInWindow.Z, 0.05f)));
+                    Console.WriteLine(
+                        $"[PARALLAX] tracking={IsTracking} eye=({eyeInWindow.X:+0.00;-0.00},{eyeInWindow.Y:+0.00;-0.00},{eyeInWindow.Z:0.00})m " +
+                        $"window={windowSize.X:0.00}x{windowSize.Y:0.00}m vfov={verticalFov:F0}deg " +
+                        $"| tracker[thread={Tracker.IsRunning} latestDetected={Tracker.Latest.Detected} " +
+                        $"lastFrameAge={Tracker.Latest.AgeMs:F0}ms err={Tracker.LastError ?? "none"}] " +
+                        $"cam[open={CameraInput.Instance.IsOpen} fps={CameraInput.Instance.Fps:F0}]");
+                }
+            }
         }
 
         /// <summary>

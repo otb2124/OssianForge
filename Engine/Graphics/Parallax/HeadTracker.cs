@@ -22,7 +22,8 @@ namespace OssianForge.Engine.Graphics
 
         /// <summary>Webcam images are not mirrored, so the user's right is the image's left.
         /// Leave true so +X means "the user's right".</summary>
-        public bool MirrorX = true;
+        public bool MirrorX = false;
+        public bool MirrorY = true;
 
         /// <summary>Where the eye line sits inside the face box, 0 = top, 1 = bottom.</summary>
         public float EyeLineFraction = 0.4f;
@@ -95,6 +96,9 @@ namespace OssianForge.Engine.Graphics
         private float _focalOverWidth = 0.866f; // recomputed from the FOV on Start()
         private double _detectMs;
         private double _detectionsPerSecond;
+        private HaarFaceDetector? _haar;
+        private int _dbgFrames;   // frames analysed since the last status line
+        private int _dbgFaces;    // of those, frames where a face was found
 
         public bool IsRunning => _thread is { IsAlive: true };
         public string? LastError { get; private set; }
@@ -144,13 +148,20 @@ namespace OssianForge.Engine.Graphics
                 ? _options.CascadePath
                 : Path.Combine(AppContext.BaseDirectory, _options.CascadePath);
 
+            Console.WriteLine($"[HEAD] cascade path: {path}");
+            LogCascadeFile(path);
+
             try
             {
                 _detector = new HaarFaceDetector(path, _options.DetectionWidth, _options.MinFaceFraction);
+                _haar = _detector as HaarFaceDetector;
             }
             catch (Exception ex)
             {
-                return Fail($"Head tracker could not start: {ex.Message}");
+                // Full exception on purpose: a missing OpenCV native DLL shows up here as
+                // DllNotFoundException / TypeInitializationException, not as a cascade problem.
+                Console.WriteLine($"[HEAD] detector creation failed:\n{ex}");
+                return Fail($"Head tracker could not start: {ex.GetType().Name}: {ex.Message}");
             }
 
             FocalOverWidth = 0.5f / MathF.Tan(float.DegreesToRadians(_options.HorizontalFovDegrees) * 0.5f);
@@ -158,6 +169,9 @@ namespace OssianForge.Engine.Graphics
 
             var camera = CameraInput.Instance;
             _startedCamera = false;
+
+            if (Environment.GetEnvironmentVariable("OSSIAN_CAM_PROBE") == "1" && !camera.IsRunning)
+                CameraInput.ProbeDevices();
             if (_options.AutoStartCamera && !camera.IsRunning)
             {
                 camera.Start();
@@ -174,7 +188,10 @@ namespace OssianForge.Engine.Graphics
             };
             _thread.Start();
 
-            Console.WriteLine("[HEAD] Head tracker started.");
+            Console.WriteLine(
+                $"[HEAD] Head tracker started. cameraRunning={camera.IsRunning} startedCameraMyself={_startedCamera} " +
+                $"fov={_options.HorizontalFovDegrees}deg faceWidth={_options.FaceWidthMeters}m detectWidth={_options.DetectionWidth} " +
+                $"minFaceFraction={_options.MinFaceFraction} focal/width={FocalOverWidth:F3}");
             return true;
         }
 
@@ -235,6 +252,12 @@ namespace OssianForge.Engine.Graphics
             long rateWindowStart = logTimer;
             int detectionsInWindow = 0;
 
+            var haar = detector as HaarFaceDetector;
+            int dumps = 0;
+            long lastDumpTicks = 0;
+            long lastFaceTicks = logTimer;
+            bool hadFace = false;
+
             while (!_stop)
             {
                 long now = Stopwatch.GetTimestamp();
@@ -270,6 +293,40 @@ namespace OssianForge.Engine.Graphics
                         lastSequence = frame.Sequence;
 
                         bool found = detector.TryDetect(frame.Pixels, frame.Width, frame.Height, out var face);
+
+                        _dbgFrames++;
+                        if (found)
+                        {
+                            _dbgFaces++;
+                            lastFaceTicks = started;
+                        }
+
+                        if (options.DebugLog && found != hadFace)
+                        {
+                            hadFace = found;
+                            Console.WriteLine(found
+                                ? $"[HEAD] FACE ACQUIRED rect=({face.X:F0},{face.Y:F0}) {face.Width:F0}x{face.Height:F0}px in {frame.Width}x{frame.Height}"
+                                : "[HEAD] FACE LOST");
+                        }
+
+                        // Save what the camera/detector actually see: the first frame, then every 5 s
+                        // while no face has been found for 3 s (max 6 files). Open the PNGs and look.
+                        if (options.DebugLog && haar != null && dumps < 6)
+                        {
+                            double noFaceSec = (started - lastFaceTicks) / (double)Stopwatch.Frequency;
+                            double sinceDump = lastDumpTicks == 0
+                                ? double.MaxValue
+                                : (started - lastDumpTicks) / (double)Stopwatch.Frequency;
+
+                            if (dumps == 0 || (!found && noFaceSec >= 3.0 && sinceDump >= 5.0))
+                            {
+                                string baseName = Path.Combine(AppContext.BaseDirectory, "headtracker-debug", $"frame{dumps:D2}");
+                                bool saved = haar.SaveDebugFrame(baseName);
+                                Console.WriteLine($"[HEAD] debug frame saved={saved}: {baseName}_camera.png / _detector_input.png (face={found})");
+                                dumps++;
+                                lastDumpTicks = started;
+                            }
+                        }
 
                         sample = found
                             ? BuildSample(face, frame.Width, frame.Height, frame.Sequence, frame.Timestamp, options)
@@ -321,6 +378,7 @@ namespace OssianForge.Engine.Graphics
             float x = (eyeX - width * 0.5f) * z / focalPx;
             float y = -(eyeY - height * 0.5f) * z / focalPx; // image Y grows downward
             if (options.MirrorX) x = -x;
+            if (options.MirrorY) y = -y;
 
             return new HeadSample
             {
@@ -335,24 +393,67 @@ namespace OssianForge.Engine.Graphics
             };
         }
 
+        private static void LogCascadeFile(string path)
+        {
+            try
+            {
+                var info = new FileInfo(path);
+                if (!info.Exists)
+                {
+                    Console.WriteLine("[HEAD] cascade file DOES NOT EXIST at that path (check CopyToOutputDirectory / file name).");
+                    return;
+                }
+
+                string text = File.ReadAllText(path);
+                string head = text.Substring(0, Math.Min(80, text.Length)).Replace('\r', ' ').Replace('\n', ' ');
+                bool hasStorage = text.Contains("<opencv_storage>");
+                bool hasCascade = text.Contains("<cascade") || text.Contains("<stages>");
+                bool looksHtml = text.TrimStart().StartsWith("<!DOCTYPE html", StringComparison.OrdinalIgnoreCase)
+                                 || text.Contains("<html");
+
+                Console.WriteLine(
+                    $"[HEAD] cascade file: {info.Length} bytes, opencv_storage={hasStorage}, cascadeNodes={hasCascade}, " +
+                    $"looksLikeHtml={looksHtml}, starts=\"{head}\"");
+
+                if (info.Length < 100_000 || !hasStorage || !hasCascade || looksHtml)
+                    Console.WriteLine("[HEAD] WARNING: this does not look like a real Haar cascade (real ones are several hundred KB). " +
+                                      "Re-download haarcascade_frontalface_default.xml from the opencv/data folder as a RAW file.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[HEAD] could not inspect cascade file: {ex.Message}");
+            }
+        }
+
         private void LogStatus(CameraInput camera)
         {
             string timing = $"detect={DetectMs:F1}ms rate={DetectionsPerSecond:F1}/s";
 
+            string cam =
+                $"cam[open={camera.IsOpen} running={camera.IsRunning} {camera.Width}x{camera.Height} fps={camera.Fps:F1} " +
+                $"seq={camera.FrameSequence} dropped={camera.DroppedFrames} readFail={camera.ReadFailures} err={camera.LastError ?? "none"}]";
+
+            string det = $"det[analyzed={_dbgFrames} withFace={_dbgFaces}";
+            if (_haar != null)
+                det += $" strict={_haar.LastRawCount} loose={_haar.LastRelaxedCount} luma={_haar.LastMeanLuma:F0} input={_haar.LastInputWidth}px";
+            det += "]";
+            _dbgFrames = 0;
+            _dbgFaces = 0;
+
             if (!camera.IsOpen)
             {
-                Console.WriteLine($"[HEAD] waiting for camera ({camera.LastError ?? "starting..."})");
+                Console.WriteLine($"[HEAD] waiting for camera ({camera.LastError ?? "starting..."}) {cam}");
             }
             else if (TryGetHead(out var head))
             {
                 var p = head.Position;
                 Console.WriteLine(
                     $"[HEAD] present=True distance={p.Z:F2}m pos=({p.X:+0.00;-0.00},{p.Y:+0.00;-0.00},{p.Z:0.00}) " +
-                    $"face={head.FacePixelWidth:F0}px {timing}");
+                    $"face={head.FacePixelWidth:F0}px {timing} {cam} {det}");
             }
             else
             {
-                Console.WriteLine($"[HEAD] present=False (no face in frame) {timing}");
+                Console.WriteLine($"[HEAD] present=False (no face in frame) {timing} {cam} {det}");
             }
         }
 

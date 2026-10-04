@@ -74,6 +74,8 @@ namespace OssianForge.Engine.Graphics
 
             Batch = new Batch.Batch();
             ParallaxController = new ParallaxController();
+
+            //ToggleFullscreen();
         }
 
         public void InitializeBatch()
