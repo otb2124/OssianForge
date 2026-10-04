@@ -57,7 +57,7 @@ namespace OssianForge.Engine.Graphics.Camera
 
         private void ControlMouseRotation()
         {
-            Vector2 mousePos = Engine.Inputs.MouseInput.Position;
+            Vector2 mousePos = Engine.Inputs.mouse.Position;
 
             if (_firstMouse)
             {
@@ -98,16 +98,64 @@ namespace OssianForge.Engine.Graphics.Camera
                 Fov = Math.Clamp(Fov + ZoomSpeed, MinFov, MaxFov);
         }*/
 
+        // ──────────────────────────────────────────────────────────────────────────
+        // Head-tracked parallax
+        // While parallax is active, Position is the centre of the "window" (the screen)
+        // the player looks through, and the real eye sits in front of it, wherever the
+        // player's head is. Everything else (view, projection, billboards) follows the eye.
+        // ──────────────────────────────────────────────────────────────────────────
+        public Vector3 EyePosition
+        {
+            get
+            {
+                if (!Engine.Graphics.ParallaxController.TryGetView(out var view))
+                    return Position;
+
+                Vector3 forward = GetForward();
+                Vector3 right = Vector3.Normalize(Vector3.Cross(forward, Vector3.UnitY));
+                Vector3 up = Vector3.Cross(right, forward);
+
+                // Eye Z points toward the viewer, which is opposite to the look direction.
+                return Position + (right * view.Eye.X + up * view.Eye.Y - forward * view.Eye.Z)
+                                  * view.WorldUnitsPerMeter;
+            }
+        }
+
         public Matrix4x4 GetView()
         {
-            return Matrix4x4.CreateLookAt(Position, Position + GetForward(), Vector3.UnitY);
+            Vector3 eye = EyePosition;
+            return Matrix4x4.CreateLookAt(eye, eye + GetForward(), Vector3.UnitY);
         }
 
         public Matrix4x4 GetProjection()
         {
+            if (Engine.Graphics.ParallaxController.TryGetView(out var view))
+                return GetOffAxisProjection(view);
+
             return Matrix4x4.CreatePerspectiveFieldOfView(
                 float.DegreesToRadians(Fov),
                 AspectRatio,
+                NearPlane, FarPlane);
+        }
+
+        // Asymmetric frustum through the window rectangle as seen from the real eye.
+        // Fov and AspectRatio are not used here: they come from the physical window and
+        // the eye distance instead.
+        private Matrix4x4 GetOffAxisProjection(ParallaxView view)
+        {
+            float scale = view.WorldUnitsPerMeter;
+            float distance = MathF.Max(view.Eye.Z, 0.05f) * scale;
+            float halfWidth = view.WindowSizeMeters.X * 0.5f * scale;
+            float halfHeight = view.WindowSizeMeters.Y * 0.5f * scale;
+            float eyeX = view.Eye.X * scale;
+            float eyeY = view.Eye.Y * scale;
+
+            // Project the window edges onto the near plane.
+            float k = NearPlane / distance;
+
+            return Matrix4x4.CreatePerspectiveOffCenter(
+                (-halfWidth - eyeX) * k, (halfWidth - eyeX) * k,
+                (-halfHeight - eyeY) * k, (halfHeight - eyeY) * k,
                 NearPlane, FarPlane);
         }
 
@@ -145,7 +193,7 @@ namespace OssianForge.Engine.Graphics.Camera
             // Face the camera from the object's position using the camera's full orientation.
             // Unlike the Y-locked version we do not force the up axis to Vector3.UnitY, so
             // the quad inherits whatever tilt the camera has.
-            Vector3 toCamera = Vector3.Normalize(Position - transform.Position);
+            Vector3 toCamera = Vector3.Normalize(EyePosition - transform.Position);
             Vector3 camUp = new Vector3(0, 1, 0); // world up as fallback
 
             Matrix4x4.Invert(GetView(), out var invView);

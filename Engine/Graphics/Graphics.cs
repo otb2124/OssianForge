@@ -43,6 +43,8 @@ namespace OssianForge.Engine.Graphics
 
         public string CurrentCameraNode;
 
+        public ParallaxController ParallaxController;
+
         public PostProcessStack PostProcess;
         
 
@@ -71,6 +73,7 @@ namespace OssianForge.Engine.Graphics
             Window.Resize += OnResize;
 
             Batch = new Batch.Batch();
+            ParallaxController = new ParallaxController();
         }
 
         public void InitializeBatch()
@@ -90,6 +93,8 @@ namespace OssianForge.Engine.Graphics
             //var mainPass = new PostProcessPass("shader.post");
             //mainPass.ChromaStrength = 0.01f;
             //PostProcess.Passes.Add(mainPass);
+            ParallaxController.Enabled = true;
+            ParallaxController.Start();
         }
 
 
@@ -118,6 +123,8 @@ namespace OssianForge.Engine.Graphics
                 _fpsAccum = 0;
                 _fpsFrameCount = 0;
             }
+
+            ParallaxController.Update(delta);
         }
 
         public void OnResize(Vector2D<int> size)
