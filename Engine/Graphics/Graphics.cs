@@ -46,7 +46,7 @@ namespace OssianForge.Engine.Graphics
         public ParallaxController ParallaxController;
 
         public PostProcessStack PostProcess;
-        
+
 
         public Graphics()
         {
@@ -74,8 +74,6 @@ namespace OssianForge.Engine.Graphics
 
             Batch = new Batch.Batch();
             ParallaxController = new ParallaxController();
-
-            //ToggleFullscreen();
         }
 
         public void InitializeBatch()
@@ -158,7 +156,7 @@ namespace OssianForge.Engine.Graphics
             if (cameraNode == null)
                 return null;
 
-            if(cameraNode.Id == CurrentCameraNode)
+            if (cameraNode.Id == CurrentCameraNode)
             {
                 return cameraNode.GetProperty<CameraProperty>().Camera;
             }
@@ -182,7 +180,7 @@ namespace OssianForge.Engine.Graphics
 
                 Window.WindowState = Silk.NET.Windowing.WindowState.Fullscreen;
                 Window.Size = monitorSize;
-                Window.Position = new Vector2D<int>(0, 0);
+                Window.Position = monitor.Bounds.Origin; // was (0,0), which always jumped to the main monitor
 
                 IsFullscreen = true;
             }

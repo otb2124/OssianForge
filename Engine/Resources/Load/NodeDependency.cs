@@ -11,6 +11,7 @@ namespace OssianForge.Engine.Resources
             "configfile.actions",
             "configfile.inputKeys",
             "configfile.inputAxis",
+            "configfile.devices",
             "shader.wireframe",
         };
 

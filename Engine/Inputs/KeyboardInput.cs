@@ -23,6 +23,8 @@ namespace OssianForge.Engine.Inputs
 
         public void Update()
         {
+            if (_keyboard == null) return; // no keyboard reported (see Inputs.OnLoad)
+
             _prev = new HashSet<Key>(_curr);
             _curr.Clear();
             foreach (Key key in Enum.GetValues<Key>())

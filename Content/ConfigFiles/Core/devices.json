@@ -1,0 +1,37 @@
+﻿{
+  "pollIntervalSeconds": 1.0,
+  "probeCamerasOnLoad": true,
+  "cameraProbeCount": 4,
+  "logChanges": true,
+
+  "devices": {
+    "monitor": {
+      "mode": "primary",
+      "current": "monitor:1"
+    },
+    "keyboard": {
+      "mode": "all",
+      "current": ""
+    },
+    "mouse": {
+      "mode": "all",
+      "current": ""
+    },
+    "gamepad": {
+      "mode": "all",
+      "current": ""
+    },
+    "camera": {
+      "mode": "primary",
+      "current": ""
+    },
+    "microphone": {
+      "mode": "primary",
+      "current": ""
+    },
+    "speaker": {
+      "mode": "primary",
+      "current": ""
+    }
+  }
+}

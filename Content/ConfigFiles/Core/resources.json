@@ -330,6 +330,11 @@
     "type": "texturefile"
   },
   {
+    "id": "configfile.devices",
+    "data": [ "ConfigFiles/Core/devices.json" ],
+    "type": "configfile.devices"
+  },
+  {
     "id": "configfile.modes",
     "data": [ "ConfigFiles/Core/modes.json" ],
     "type": "configfile.modes"

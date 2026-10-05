@@ -31,6 +31,8 @@ namespace OssianForge.Engine.Inputs
 
         public void Update(double deltaTime)
         {
+            if (_mouse == null) return; // no mouse reported (see Inputs.OnLoad)
+
             _prev = new HashSet<MouseButton>(_curr);
             _curr.Clear();
             foreach (MouseButton btn in Enum.GetValues<MouseButton>())

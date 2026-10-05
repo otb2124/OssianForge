@@ -22,8 +22,8 @@ namespace OssianForge.Engine.Graphics
 
         /// <summary>Webcam images are not mirrored, so the user's right is the image's left.
         /// Leave true so +X means "the user's right".</summary>
-        public bool MirrorX = false;
-        public bool MirrorY = true;
+        public bool MirrorX = true;
+        public bool MirrorY = false;
 
         /// <summary>Where the eye line sits inside the face box, 0 = top, 1 = bottom.</summary>
         public float EyeLineFraction = 0.4f;

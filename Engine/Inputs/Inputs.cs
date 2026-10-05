@@ -26,12 +26,21 @@ namespace OssianForge.Engine.Inputs
 
         public void OnLoad()
         {
-            InputContext = Engine.Graphics.Window.CreateInput();
-            KeyboardInput.Initialize(InputContext.Keyboards[0]);
-            MouseInput.Initialize(InputContext.Mice[0]);
+            // The context is owned by Engine.Devices so every module shares one.
+            InputContext = Engine.Devices.InputContext!;
+
+            if (InputContext.Keyboards.Count > 0)
+                KeyboardInput.Initialize(InputContext.Keyboards[0]);
+            else
+                Console.WriteLine("[INPUT] No keyboard reported by the windowing backend; keyboard input is disabled.");
+
+            if (InputContext.Mice.Count > 0)
+                MouseInput.Initialize(InputContext.Mice[0]);
+            else
+                Console.WriteLine("[INPUT] No mouse reported by the windowing backend; mouse input is disabled.");
             //MouseInput.SetCursorMode(CursorMode.Disabled);
 
-            CameraInput.Initialize(new CameraInputOptions());
+            CameraInput.Initialize(Engine.Devices.CreateCameraOptions());
             MicrophoneInput.Initialize(new MicrophoneInputOptions());
             KeyHandler.OnLoad();
         }
