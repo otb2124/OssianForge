@@ -49,6 +49,13 @@
         /// <summary>Camera indices 0..N-1 are tried when probing.</summary>
         public int CameraProbeCount = 4;
 
+        /// <summary>While probing, also find which capture resolutions each camera delivers.</summary>
+        public bool ProbeCameraModes = true;
+
+        /// <summary>Capture resolution to request from the primary camera. 0 = choose automatically from what it delivers.</summary>
+        public int CameraWidth = 0;
+        public int CameraHeight = 0;
+
         /// <summary>Print a line for every device that appears or disappears.</summary>
         public bool LogChanges = true;
 

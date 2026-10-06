@@ -4,6 +4,17 @@ using OssianForge.Engine.Inputs;
 
 namespace OssianForge.Engine.Graphics
 {
+    /// <summary>Which edges of the camera image a face was close to.</summary>
+    [Flags]
+    public enum FrameEdges
+    {
+        None = 0,
+        Left = 1,
+        Right = 2,
+        Top = 4,
+        Bottom = 8
+    }
+
     public sealed class HeadTrackerOptions
     {
         /// <summary>Face model, relative to the executable's folder unless rooted.</summary>
@@ -28,14 +39,19 @@ namespace OssianForge.Engine.Graphics
         /// <summary>Where the eye line sits inside the face box, 0 = top, 1 = bottom.</summary>
         public float EyeLineFraction = 0.4f;
 
-        /// <summary>Frames are downscaled to this width before detection.</summary>
-        public int DetectionWidth = 320;
+        /// <summary>Whole-frame searches are downscaled to this width. Tracking a known face runs at full camera resolution.</summary>
+        public int DetectionWidth = 480;
 
-        /// <summary>Smallest accepted face as a fraction of the frame width (limits max distance).</summary>
-        public float MinFaceFraction = 0.12f;
+        /// <summary>Farthest head distance to look for, in metres. Together with the camera's real resolution and
+        /// field of view this sets the smallest face the detector accepts, so low-resolution cameras are not
+        /// asked for faces too small to see.</summary>
+        public float MaxTrackDistanceMeters = 2.0f;
 
-        /// <summary>Cap on detections per second (0 = as fast as camera frames arrive).</summary>
-        public int MaxDetectionsPerSecond = 30;
+        /// <summary>A face this close to an image border (in face widths) counts as leaving through that border.</summary>
+        public float EdgeMarginFaces = 0.35f;
+
+        /// <summary>Cap on detections per second (0 = every camera frame, which is what you want).</summary>
+        public int MaxDetectionsPerSecond = 0;
 
         /// <summary>A person counts as present until no face has been seen for this long.</summary>
         public int PresenceTimeoutMs = 400;
@@ -45,6 +61,9 @@ namespace OssianForge.Engine.Graphics
 
         /// <summary>Print a status line once per second.</summary>
         public bool DebugLog = true;
+
+        /// <summary>Also save the camera image and the detector's input as PNGs when no face is found (max 6 files).</summary>
+        public bool DebugDumpFrames = false;
     }
 
     /// <summary>
@@ -63,6 +82,12 @@ namespace OssianForge.Engine.Graphics
         /// <summary>Eye point inside the frame, 0..1 with the origin top-left.</summary>
         public Vector2 FrameCenter { get; init; }
 
+        /// <summary>The face box in camera pixels.</summary>
+        public FaceRect Face { get; init; }
+
+        /// <summary>Borders of the camera image the face was close to. If it vanishes now, it most likely left that way.</summary>
+        public FrameEdges NearEdges { get; init; }
+
         public float FacePixelWidth { get; init; }
         public float FrameWidth { get; init; }
         public float FrameHeight { get; init; }
@@ -79,7 +104,8 @@ namespace OssianForge.Engine.Graphics
 
     /// <summary>
     /// Watches CameraInput and reports whether a person is in front of the screen and how far away
-    /// their head is. Detection runs on its own thread, so the render loop only ever reads the latest result.
+    /// their head is. Detection runs on its own thread, woken by each new camera frame, so the render
+    /// loop only ever reads the latest result.
     /// Distance comes from the face's apparent size (one camera, no depth sensor), so it is an estimate:
     /// call CalibrateAtDistance() once to tighten it.
     /// </summary>
@@ -137,6 +163,17 @@ namespace OssianForge.Engine.Graphics
             return false;
         }
 
+        /// <summary>
+        /// The last face that was seen, however long ago. ParallaxController uses it to decide what the eye
+        /// should do after the face is lost (see NearEdges). False until a face has been seen.
+        /// </summary>
+        public bool TryGetLastDetected(out HeadSample sample)
+        {
+            var last = Volatile.Read(ref _lastDetected);
+            sample = last ?? HeadSample.None;
+            return last != null;
+        }
+
         // ── Lifecycle ────────────────────────────────────────────────────────
 
         public bool Start(HeadTrackerOptions? options = null)
@@ -153,8 +190,8 @@ namespace OssianForge.Engine.Graphics
 
             try
             {
-                _detector = new HaarFaceDetector(path, _options.DetectionWidth, _options.MinFaceFraction);
-                _haar = _detector as HaarFaceDetector;
+                _haar = new HaarFaceDetector(path, _options.DetectionWidth) { Diagnostics = _options.DebugLog };
+                _detector = _haar;
             }
             catch (Exception ex)
             {
@@ -190,8 +227,8 @@ namespace OssianForge.Engine.Graphics
 
             Console.WriteLine(
                 $"[HEAD] Head tracker started. cameraRunning={camera.IsRunning} startedCameraMyself={_startedCamera} " +
-                $"fov={_options.HorizontalFovDegrees}deg faceWidth={_options.FaceWidthMeters}m detectWidth={_options.DetectionWidth} " +
-                $"minFaceFraction={_options.MinFaceFraction} focal/width={FocalOverWidth:F3}");
+                $"fov={_options.HorizontalFovDegrees}deg faceWidth={_options.FaceWidthMeters}m searchWidth={_options.DetectionWidth} " +
+                $"maxDistance={_options.MaxTrackDistanceMeters}m focal/width={FocalOverWidth:F3}");
             return true;
         }
 
@@ -206,6 +243,7 @@ namespace OssianForge.Engine.Graphics
             {
                 _detector?.Dispose();
                 _detector = null;
+                _haar = null;
             }
 
             if (_startedCamera)
@@ -242,21 +280,25 @@ namespace OssianForge.Engine.Graphics
         private void Run(IFaceDetector detector, HeadTrackerOptions options)
         {
             var camera = CameraInput.Instance;
-            long lastSequence = 0;
+            var haar = detector as HaarFaceDetector;
 
+            long lastSequence = 0;
             long minFrameTicks = options.MaxDetectionsPerSecond > 0
                 ? Stopwatch.Frequency / options.MaxDetectionsPerSecond
                 : 0;
+            long lastStarted = 0;
 
             long logTimer = Stopwatch.GetTimestamp();
             long rateWindowStart = logTimer;
             int detectionsInWindow = 0;
 
-            var haar = detector as HaarFaceDetector;
             int dumps = 0;
             long lastDumpTicks = 0;
             long lastFaceTicks = logTimer;
             bool hadFace = false;
+
+            int profiledWidth = 0;
+            int profiledHeight = 0;
 
             while (!_stop)
             {
@@ -276,11 +318,10 @@ namespace OssianForge.Engine.Graphics
                     LogStatus(camera);
                 }
 
-                if (!camera.TryAcquireLatest(lastSequence, out var lease))
-                {
-                    Thread.Sleep(2);
-                    continue;
-                }
+                // Sleep until the camera delivers a new frame. Polling here skipped about a third of the frames
+                // (Windows sleeps in ~15 ms steps) and added latency; waking on the camera's clock does neither.
+                if (!camera.WaitForFrame(lastSequence, 100)) continue;
+                if (!camera.TryAcquireLatest(lastSequence, out var lease)) continue;
 
                 long started = Stopwatch.GetTimestamp();
                 HeadSample sample;
@@ -291,6 +332,24 @@ namespace OssianForge.Engine.Graphics
                     {
                         var frame = lease.Frame;
                         lastSequence = frame.Sequence;
+
+                        if (minFrameTicks > 0 && lastStarted != 0 && started - lastStarted < minFrameTicks) continue;
+                        lastStarted = started;
+
+                        if (frame.Width != profiledWidth || frame.Height != profiledHeight)
+                        {
+                            profiledWidth = frame.Width;
+                            profiledHeight = frame.Height;
+                            LogCameraProfile(frame.Width, frame.Height, options);
+                        }
+
+                        // The smallest face worth finding depends on the camera: a 320 px wide camera sees a face at
+                        // 2 m only ~20 px wide, a 1280 px wide one ~110 px.
+                        if (haar != null)
+                        {
+                            float focalPx = FocalOverWidth * frame.Width;
+                            haar.MinFacePixels = MathF.Max(24f, focalPx * options.FaceWidthMeters / options.MaxTrackDistanceMeters);
+                        }
 
                         bool found = detector.TryDetect(frame.Pixels, frame.Width, frame.Height, out var face);
 
@@ -304,14 +363,20 @@ namespace OssianForge.Engine.Graphics
                         if (options.DebugLog && found != hadFace)
                         {
                             hadFace = found;
-                            Console.WriteLine(found
-                                ? $"[HEAD] FACE ACQUIRED rect=({face.X:F0},{face.Y:F0}) {face.Width:F0}x{face.Height:F0}px in {frame.Width}x{frame.Height}"
-                                : "[HEAD] FACE LOST");
+                            if (found)
+                            {
+                                Console.WriteLine($"[HEAD] FACE ACQUIRED rect=({face.X:F0},{face.Y:F0}) {face.Width:F0}x{face.Height:F0}px in {frame.Width}x{frame.Height}");
+                            }
+                            else
+                            {
+                                var edges = Volatile.Read(ref _lastDetected)?.NearEdges ?? FrameEdges.None;
+                                Console.WriteLine(edges == FrameEdges.None
+                                    ? "[HEAD] FACE LOST (in the middle of the frame: turned away, covered, or too dark)"
+                                    : $"[HEAD] FACE LOST (left through the {edges} edge of the camera image)");
+                            }
                         }
 
-                        // Save what the camera/detector actually see: the first frame, then every 5 s
-                        // while no face has been found for 3 s (max 6 files). Open the PNGs and look.
-                        if (options.DebugLog && haar != null && dumps < 6)
+                        if (options.DebugDumpFrames && haar != null && dumps < 6)
                         {
                             double noFaceSec = (started - lastFaceTicks) / (double)Stopwatch.Frequency;
                             double sinceDump = lastDumpTicks == 0
@@ -356,11 +421,6 @@ namespace OssianForge.Engine.Graphics
                 double previous = Volatile.Read(ref _detectMs);
                 Volatile.Write(ref _detectMs, previous == 0 ? ms : previous * 0.9 + ms * 0.1);
                 detectionsInWindow++;
-
-                // Don't spin faster than the configured rate; the camera is the limit anyway.
-                long elapsed = finished - started;
-                if (elapsed < minFrameTicks)
-                    Thread.Sleep((int)((minFrameTicks - elapsed) * 1000 / Stopwatch.Frequency));
             }
         }
 
@@ -380,17 +440,46 @@ namespace OssianForge.Engine.Graphics
             if (options.MirrorX) x = -x;
             if (options.MirrorY) y = -y;
 
+            // Close to an image border? Then losing the face next most likely means it left through that border.
+            float margin = options.EdgeMarginFaces * face.Width;
+            var edges = FrameEdges.None;
+            if (face.X < margin) edges |= FrameEdges.Left;
+            if (face.X + face.Width > width - margin) edges |= FrameEdges.Right;
+            if (face.Y < margin) edges |= FrameEdges.Top;
+            if (face.Y + face.Height > height - margin) edges |= FrameEdges.Bottom;
+
             return new HeadSample
             {
                 Detected = true,
                 Position = new Vector3(x + options.CameraOffsetMeters.X, y + options.CameraOffsetMeters.Y, z),
                 FrameCenter = new Vector2(eyeX / width, eyeY / height),
+                Face = face,
+                NearEdges = edges,
                 FacePixelWidth = face.Width,
                 FrameWidth = width,
                 FrameHeight = height,
                 FrameSequence = sequence,
                 FrameTimestamp = timestamp
             };
+        }
+
+        /// <summary>What this camera can resolve, so a low-resolution one is visible in the log instead of just "noisy".</summary>
+        private void LogCameraProfile(int width, int height, HeadTrackerOptions options)
+        {
+            float focalPx = FocalOverWidth * width;
+            float minFace = MathF.Max(24f, focalPx * options.FaceWidthMeters / options.MaxTrackDistanceMeters);
+            float faceAt06 = focalPx * options.FaceWidthMeters / 0.6f;
+            float depthStepMm = 0.6f / faceAt06 * 1000f;
+
+            Console.WriteLine(
+                $"[HEAD] camera frames are {width}x{height}: a face at 0.6 m is ~{faceAt06:F0}px wide, " +
+                $"tracking reaches {options.MaxTrackDistanceMeters:F1} m (smallest face {minFace:F0}px), " +
+                $"one pixel of face width is ~{depthStepMm:F1} mm of depth at 0.6 m");
+
+            if (width < 480)
+                Console.WriteLine(
+                    "[HEAD] low-resolution camera: depth moves in coarse steps. Raise 'devices.camera.width/height' " +
+                    "in the devices config if the camera supports more, or lower ParallaxOptions.FocusDepthGain.");
         }
 
         private static void LogCascadeFile(string path)
@@ -405,15 +494,13 @@ namespace OssianForge.Engine.Graphics
                 }
 
                 string text = File.ReadAllText(path);
-                string head = text.Substring(0, Math.Min(80, text.Length)).Replace('\r', ' ').Replace('\n', ' ');
                 bool hasStorage = text.Contains("<opencv_storage>");
                 bool hasCascade = text.Contains("<cascade") || text.Contains("<stages>");
                 bool looksHtml = text.TrimStart().StartsWith("<!DOCTYPE html", StringComparison.OrdinalIgnoreCase)
                                  || text.Contains("<html");
 
                 Console.WriteLine(
-                    $"[HEAD] cascade file: {info.Length} bytes, opencv_storage={hasStorage}, cascadeNodes={hasCascade}, " +
-                    $"looksLikeHtml={looksHtml}, starts=\"{head}\"");
+                    $"[HEAD] cascade file: {info.Length} bytes, opencv_storage={hasStorage}, cascadeNodes={hasCascade}, looksLikeHtml={looksHtml}");
 
                 if (info.Length < 100_000 || !hasStorage || !hasCascade || looksHtml)
                     Console.WriteLine("[HEAD] WARNING: this does not look like a real Haar cascade (real ones are several hundred KB). " +
@@ -425,17 +512,24 @@ namespace OssianForge.Engine.Graphics
             }
         }
 
+        // +0.05 / -0.05, and a clean +0.00 instead of "-+0.00" for tiny negative values.
+        private static string Signed(float value) =>
+            (MathF.Abs(value) < 0.005f ? 0f : value).ToString("+0.00;-0.00");
+
         private void LogStatus(CameraInput camera)
         {
             string timing = $"detect={DetectMs:F1}ms rate={DetectionsPerSecond:F1}/s";
 
             string cam =
-                $"cam[open={camera.IsOpen} running={camera.IsRunning} {camera.Width}x{camera.Height} fps={camera.Fps:F1} " +
-                $"seq={camera.FrameSequence} dropped={camera.DroppedFrames} readFail={camera.ReadFailures} err={camera.LastError ?? "none"}]";
+                $"cam[open={camera.IsOpen} {camera.Width}x{camera.Height} fps={camera.Fps:F1} " +
+                $"dropped={camera.DroppedFrames} readFail={camera.ReadFailures} err={camera.LastError ?? "none"}]";
 
             string det = $"det[analyzed={_dbgFrames} withFace={_dbgFaces}";
             if (_haar != null)
-                det += $" strict={_haar.LastRawCount} loose={_haar.LastRelaxedCount} luma={_haar.LastMeanLuma:F0} input={_haar.LastInputWidth}px";
+            {
+                det += $" tracking={_haar.IsTracking} roi={_haar.RoiHits} full={_haar.FullSearches} luma={_haar.LastMeanLuma:F0} input={_haar.LastInputWidth}px";
+                _haar.ResetCounters();
+            }
             det += "]";
             _dbgFrames = 0;
             _dbgFaces = 0;
@@ -447,13 +541,14 @@ namespace OssianForge.Engine.Graphics
             else if (TryGetHead(out var head))
             {
                 var p = head.Position;
+                float mmPerPixel = head.FacePixelWidth > 0 ? p.Z / head.FacePixelWidth * 1000f : 0f;
                 Console.WriteLine(
-                    $"[HEAD] present=True distance={p.Z:F2}m pos=({p.X:+0.00;-0.00},{p.Y:+0.00;-0.00},{p.Z:0.00}) " +
-                    $"face={head.FacePixelWidth:F0}px {timing} {cam} {det}");
+                    $"[HEAD] present=True distance={p.Z:F2}m pos=({Signed(p.X)},{Signed(p.Y)},{p.Z:0.00}) " +
+                    $"face={head.FacePixelWidth:F0}px depthStep={mmPerPixel:F1}mm/px {timing} {cam} {det}");
             }
             else
             {
-                Console.WriteLine($"[HEAD] present=False (no face in frame) {timing} {cam} {det}");
+                Console.WriteLine($"[HEAD] present=False {timing} {cam} {det}");
             }
         }
 

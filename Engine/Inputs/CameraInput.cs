@@ -16,6 +16,9 @@ namespace OssianForge.Engine.Inputs
         public int Fps = 30;
         public CameraBackend Backend = CameraBackend.Auto;
 
+        /// <summary>Ask for Motion-JPEG at 1280 wide and above. Uncompressed YUY2 tops out at 5-10 fps there on USB 2 cameras.</summary>
+        public bool PreferMjpeg = true;
+
         /// <summary>
         /// Opening a webcam turns its privacy light on, so by default nothing opens
         /// until someone calls CameraInput.Start().
@@ -157,7 +160,11 @@ namespace OssianForge.Engine.Inputs
             thread?.Join(3000);
             _isOpen = false;
 
-            lock (_lock) { _latest = null; }
+            lock (_lock)
+            {
+                _latest = null;
+                System.Threading.Monitor.PulseAll(_lock);   // wake anyone blocked in WaitForFrame so they can exit
+            }
         }
 
         /// <summary>Call when the window closes so the capture thread and device are released.</summary>
@@ -190,6 +197,29 @@ namespace OssianForge.Engine.Inputs
 
                 _latest.Readers++;
                 lease = new CameraFrameLease(this, _latest);
+                return true;
+            }
+        }
+
+        /// <summary>
+        /// Blocks until a frame newer than afterSequence exists (true) or the timeout passes (false).
+        /// Lets a consumer sleep on the camera's own clock instead of polling, which skips frames and adds latency.
+        /// </summary>
+        public bool WaitForFrame(long afterSequence, int timeoutMs)
+        {
+            long deadline = Stopwatch.GetTimestamp() + (long)(timeoutMs * (Stopwatch.Frequency / 1000.0));
+
+            lock (_lock)
+            {
+                while (_latest == null || _latest.Sequence <= afterSequence)
+                {
+                    long remainingTicks = deadline - Stopwatch.GetTimestamp();
+                    if (remainingTicks <= 0 || _stop) return false;
+
+                    int waitMs = (int)Math.Max(1, remainingTicks * 1000 / Stopwatch.Frequency);
+                    System.Threading.Monitor.Wait(_lock, waitMs);
+                }
+
                 return true;
             }
         }
@@ -227,6 +257,9 @@ namespace OssianForge.Engine.Inputs
                         SleepUnlessStopped(options.RetryDelayMs);
                         continue;
                     }
+
+                    if (options.PreferMjpeg && options.Width >= 1280)
+                        capture.Set(VideoCaptureProperties.FourCC, VideoWriter.FourCC('M', 'J', 'P', 'G'));
 
                     capture.Set(VideoCaptureProperties.FrameWidth, options.Width);
                     capture.Set(VideoCaptureProperties.FrameHeight, options.Height);
@@ -377,6 +410,7 @@ namespace OssianForge.Engine.Inputs
                 slot.Sequence = _sequence + 1;
                 _latest = slot;
                 Volatile.Write(ref _sequence, slot.Sequence);
+                System.Threading.Monitor.PulseAll(_lock);   // wake the head tracker: a new frame is ready
             }
         }
 

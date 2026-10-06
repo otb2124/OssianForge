@@ -1,13 +1,13 @@
 ﻿{
   "pollIntervalSeconds": 1.0,
-  "probeCamerasOnLoad": true,
+  "probeCamerasOnLoad": false,
   "cameraProbeCount": 4,
   "logChanges": true,
 
   "devices": {
     "monitor": {
       "mode": "primary",
-      "current": "monitor:1"
+      "current": "monitor:0"
     },
     "keyboard": {
       "mode": "all",
@@ -23,7 +23,7 @@
     },
     "camera": {
       "mode": "primary",
-      "current": "camera:0"
+      "current": "camera:1"
     },
     "microphone": {
       "mode": "primary",

@@ -136,8 +136,8 @@ namespace OssianForge.Engine.Graphics
             //var mainPass = new PostProcessPass("shader.post");
             //mainPass.ChromaStrength = 0.01f;
             //PostProcess.Passes.Add(mainPass);
-            ParallaxController.Enabled = true;
-            ParallaxController.Start();
+            ParallaxController.Enabled = false;
+            //ParallaxController.Start();
 
             if (StartupWindowMode != WindowMode.Windowed)
                 SetWindowMode(StartupWindowMode);
@@ -502,7 +502,7 @@ namespace OssianForge.Engine.Graphics
         {
             // The resize event also fires, but do it now so this frame already uses the new size.
             OnResize(Window.Size);
-            ParallaxController?.InvalidateWindowCache();
+            //ParallaxController?.InvalidateWindowCache();
         }
 
 

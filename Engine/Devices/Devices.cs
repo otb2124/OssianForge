@@ -82,7 +82,11 @@ namespace OssianForge.Engine.Devices
             if (_config != null)
             {
                 Options = _config.ToOptions();
-                if (_cameras != null) _cameras.ProbeCount = Options.CameraProbeCount;
+                if (_cameras != null)
+                {
+                    _cameras.ProbeCount = Options.CameraProbeCount;
+                    _cameras.ProbeModes = Options.ProbeCameraModes;
+                }
             }
             else
             {
@@ -180,13 +184,60 @@ namespace OssianForge.Engine.Devices
             if (_cameras.Probe()) Refresh(raiseEvents: true);
         }
 
-        /// <summary>CameraInput options pointing at the primary camera (index 0 when none was found).</summary>
+        /// <summary>
+        /// CameraInput options pointing at the primary camera (index 0 when none was found), with a capture
+        /// resolution chosen for head tracking from what that camera actually delivers.
+        /// </summary>
         public CameraInputOptions CreateCameraOptions()
         {
             var options = new CameraInputOptions();
             var camera = Primary(DeviceKind.Camera);
             if (camera != null) options.DeviceIndex = camera.Index;
+
+            var mode = ChooseCameraMode(camera, out string reason);
+            options.Width = mode.Width;
+            options.Height = mode.Height;
+
+            Console.WriteLine($"[DEVICES] Camera capture mode: {mode} ({reason})");
             return options;
+        }
+
+        /// <summary>
+        /// 640 wide is the sweet spot for head tracking: enough pixels for a steady face size (depth is computed
+        /// from it), cheap to analyse, and fast on every camera. Higher resolutions cost time and, on many USB 2
+        /// cameras, frame rate, for little gain. A camera that can't reach 640 gets the best it has, and the
+        /// head tracker adapts to that.
+        /// </summary>
+        private CameraMode ChooseCameraMode(DeviceInfo? camera, out string reason)
+        {
+            if (Options.CameraWidth > 0 && Options.CameraHeight > 0)
+            {
+                reason = "set in the devices config";
+                return new CameraMode(Options.CameraWidth, Options.CameraHeight);
+            }
+
+            var modes = camera?.Modes;
+            if (modes == null || modes.Count == 0)
+            {
+                reason = "camera modes unknown, using the default";
+                return new CameraMode(640, 480);
+            }
+
+            var suitable = modes
+                .Where(m => m.Width >= 640)
+                .OrderBy(m => m.Width)
+                .ThenBy(m => Math.Abs(m.Width * 3 - m.Height * 4))   // prefer 4:3 on a tie
+                .ToList();
+
+            if (suitable.Count > 0)
+            {
+                reason = $"smallest mode of at least 640 wide; the camera delivers {string.Join(", ", modes)}";
+                return suitable[0];
+            }
+
+            var best = modes.OrderByDescending(m => m.Width).First();
+            reason = $"low-resolution camera, this is the best it delivers ({string.Join(", ", modes)})";
+            return best;
         }
 
         private bool HasMonitorChoice => !string.IsNullOrWhiteSpace(Options.PolicyFor(DeviceKind.Monitor).PreferredName);

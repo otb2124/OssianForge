@@ -16,6 +16,11 @@ namespace OssianForge.Engine.Resources.Config
         public bool ProbeCamerasOnLoad => GetBool("probeCamerasOnLoad", true);
         public int CameraProbeCount => GetInt("cameraProbeCount", 4);
         public bool LogChanges => GetBool("logChanges", true);
+        public bool ProbeCameraModes => GetBool("probeCameraModes", true);
+
+        /// <summary>Capture resolution for the primary camera; 0 = automatic.</summary>
+        public int CameraWidth => GetInt("devices.camera.width", 0);
+        public int CameraHeight => GetInt("devices.camera.height", 0);
 
         public DevicesConfig(string id, string path) : base(id, path) { }
 
@@ -47,6 +52,9 @@ namespace OssianForge.Engine.Resources.Config
                 PollIntervalSeconds = PollIntervalSeconds,
                 ProbeCamerasOnLoad = ProbeCamerasOnLoad,
                 CameraProbeCount = CameraProbeCount,
+                ProbeCameraModes = ProbeCameraModes,
+                CameraWidth = CameraWidth,
+                CameraHeight = CameraHeight,
                 LogChanges = LogChanges
             };
 
