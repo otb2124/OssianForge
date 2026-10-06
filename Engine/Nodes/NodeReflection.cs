@@ -54,19 +54,43 @@ namespace OssianForge.Engine.Nodes
         private static readonly ConcurrentDictionary<(Node Node, string TypeName, int Count), NodeProperty> _propertyCache =
             new();
 
-        public static NodeProperty FindNodeProperty(Node node, string propertyTypeName)
+        /// <summary>
+        /// Non-throwing lookup. Use this wherever a missing property is an expected outcome: an exception
+        /// thrown and caught on a hot path still stops the debugger on every first-chance throw and is slow.
+        /// </summary>
+        public static bool TryFindNodeProperty(Node node, string propertyTypeName, out NodeProperty property)
         {
+            if (node == null)
+            {
+                property = null!;
+                return false;
+            }
+
             var key = (node, propertyTypeName, node.Properties.Count);
             if (_propertyCache.TryGetValue(key, out var cached))
-                return cached;
+            {
+                property = cached;
+                return true;
+            }
 
             var prop = node.Properties.FirstOrDefault(p =>
                 p.GetType().Name.Equals(propertyTypeName, StringComparison.OrdinalIgnoreCase));
 
             if (prop == null)
-                throw new Exception($"[NODE REFLECTION] Node '{node.Id}' has no property of type '{propertyTypeName}'.");
+            {
+                property = null!;
+                return false;
+            }
 
             _propertyCache[key] = prop;
+            property = prop;
+            return true;
+        }
+
+        public static NodeProperty FindNodeProperty(Node node, string propertyTypeName)
+        {
+            if (!TryFindNodeProperty(node, propertyTypeName, out var prop))
+                throw new Exception($"[NODE REFLECTION] Node '{node.Id}' has no property of type '{propertyTypeName}'.");
             return prop;
         }
 
@@ -389,18 +413,10 @@ namespace OssianForge.Engine.Nodes
         /// </summary>
         public static object? GetNodePropertyValue(Node node, string propertyTypeName, string memberPath)
         {
-            // Was a second, uncached linear scan duplicating FindNodeProperty's
-            // exact lookup logic — only difference was returning null instead of
-            // throwing when missing, which a try/catch here preserves.
-            NodeProperty property;
-            try
-            {
-                property = FindNodeProperty(node, propertyTypeName);
-            }
-            catch
-            {
+            // A node without the property reads as null (no exception: that would be thrown and caught
+            // on every call, e.g. every frame from an OnUpdate action).
+            if (!TryFindNodeProperty(node, propertyTypeName, out var property))
                 return null;
-            }
 
             if (string.IsNullOrEmpty(memberPath)) return property;
 

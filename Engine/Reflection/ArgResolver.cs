@@ -54,6 +54,30 @@ namespace OssianForge.Engine.Resources.Config
         public static object?[] Resolve(List<JsonElement> args, object? context, double? delta)
             => args.Select(el => ResolveOne(ReflectionDispatcher.UnboxJsonElement(el), context, delta)).ToArray();
 
+        /// <summary>
+        /// Resolves a single already-unboxed arg with the same grammar as action args. Used by conditions,
+        /// so "$value.x", "$id.x", "$currentCamera" etc. mean the same thing everywhere.
+        /// </summary>
+        public static object? ResolveValue(object? arg, object? context, double? delta = null)
+            => ResolveOne(arg, context, delta);
+
+        private static readonly HashSet<string> _warnedMissingKeys = new();
+
+        private static object? LookupStore(string key, string token)
+        {
+            if (!ValueStore.Has(key))
+            {
+                // A typo or an action that hasn't run yet; a silent null here surfaces later as a baffling
+                // "method not found with args (null)". Warn once per key.
+                bool first;
+                lock (_warnedMissingKeys) first = _warnedMissingKeys.Add(key);
+                if (first)
+                    Console.WriteLine($"[ARG RESOLVER] '{token}': nothing stored under '{key}' yet (resolving to null).");
+                return null;
+            }
+            return ValueStore.Get(key);
+        }
+
         private static object? ResolveOne(object? unboxed, object? context, double? delta)
         {
             if (unboxed is not string s || s.Length == 0 || s[0] != '$')
@@ -72,7 +96,7 @@ namespace OssianForge.Engine.Resources.Config
 
             // No dot at all: back-compat ValueStore lookup, e.g. "$myActionResult".
             if (dot < 0)
-                return ValueStore.Get(body);
+                return LookupStore(body, s);
 
             string prefix = body[..dot];
             string rest = body[(dot + 1)..];
@@ -87,7 +111,7 @@ namespace OssianForge.Engine.Resources.Config
                 return ResolveCurrentCamera();
 
             if (string.Equals(prefix, "value", StringComparison.OrdinalIgnoreCase))
-                return ValueStore.Get(rest);
+                return LookupStore(rest, s);
 
             throw new Exception(
                 $"[ARG RESOLVER] Unrecognized token prefix '${prefix}' in arg '{s}'. " +

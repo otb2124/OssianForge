@@ -66,59 +66,26 @@ namespace OssianForge.Engine.Utils.ConditionNode
             return Compare(actual, _expected, _comparator);
         }
 
+        // Same token grammar as action args ($self, $child., $group., $id., $value., $currentCamera, bare $key).
+        // This used to be a private copy that had drifted: "$value.x" came back null and "$id." was unsupported.
         private static object? ResolveArg(object? arg, Node context)
+            => ArgResolver.ResolveValue(arg, context, null);
+
+        private static bool IsNumeric(object? o) =>
+            o is sbyte or byte or short or ushort or int or uint or long or ulong or float or double or decimal;
+
+        private static bool ValuesEqual(object? a, object? b)
         {
-            if (arg is not string s) return arg;
-
-            if (s == "$self") return context;
-
-            if (s == "$delta") return 0.0; // delta not available in conditions
-
-            if (s.StartsWith("$child."))
-            {
-                string path = s["$child.".Length..];
-                string[] ids = path.Split('.');
-                Node? current = context;
-                foreach (string childId in ids)
-                {
-                    if (current == null) break;
-                    current = current.Children.FirstOrDefault(c => c.Id == childId);
-                }
-                return current;
-            }
-
-            if (s.StartsWith("$group."))
-            {
-                string rest = s["$group.".Length..];
-                int dot = rest.IndexOf('.');
-                if (dot >= 0)
-                {
-                    string groupName = rest[..dot];
-                    string nodeRef = rest[(dot + 1)..];
-                    var group = Engine.Nodes.NodeManager.GetNodesInGroup(groupName);
-                    if (group != null)
-                    {
-                        if (int.TryParse(nodeRef, out int idx) && idx >= 0 && idx < group.Count)
-                            return group[idx];
-                        return group.FirstOrDefault(n => n.Id == nodeRef);
-                    }
-                }
-                return null;
-            }
-
-            if (s.StartsWith('$'))
-            {
-                string key = s[1..];
-                return ValueStore.Get(key);
-            }
-
-            return arg;
+            if (IsNumeric(a) && IsNumeric(b))
+                return Math.Abs(Convert.ToDouble(a) - Convert.ToDouble(b)) < 1e-9;
+            return Equals(a, b);
         }
 
         private static bool Compare(object? actual, object? expected, Comparator cmp)
         {
-            if (cmp == Comparator.Equals) return Equals(actual, expected);
-            if (cmp == Comparator.NotEquals) return !Equals(actual, expected);
+            // Equals(1f, 1) is false in C#; a float result must equal an int literal from the config.
+            if (cmp == Comparator.Equals) return ValuesEqual(actual, expected);
+            if (cmp == Comparator.NotEquals) return !ValuesEqual(actual, expected);
 
             // numeric comparisons
             double a = Convert.ToDouble(actual);

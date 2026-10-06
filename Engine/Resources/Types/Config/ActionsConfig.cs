@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Collections.Concurrent;
 using System.Text.Json;
 using OssianForge.Engine.Reflection;
 
@@ -13,7 +14,15 @@ namespace OssianForge.Engine.Resources.Config
     {
         public override IEnumerable<string> FieldNames { get; } = ["call", "args", "storeValue"];
         public string Call { get; set; } = "";
-        public string ArgsJson { get; set; } = "[]";
+
+        private string _argsJson = "[]";
+        private List<JsonElement>? _args;
+
+        public string ArgsJson
+        {
+            get => _argsJson;
+            set { _argsJson = value; _args = null; }   // parsed args are cached until the JSON changes
+        }
         public string? StoreValue { get; set; } = null;   // key to store return value under, null = discard
 
         private static string EncodeArgs(string json)
@@ -26,8 +35,9 @@ namespace OssianForge.Engine.Resources.Config
             catch { return "[]"; }
         }
 
+        /// <summary>Parsed once and cached: actions on OnUpdate/OnRender run this every frame.</summary>
         public List<JsonElement> Args
-            => JsonSerializer.Deserialize<List<JsonElement>>(ArgsJson) ?? new();
+            => _args ??= JsonSerializer.Deserialize<List<JsonElement>>(_argsJson) ?? new();
 
         public override string GetField(string name) => name switch
         {
@@ -76,6 +86,8 @@ namespace OssianForge.Engine.Resources.Config
                     {
                         var record = ReadActionRecord($"[{i}]");
                         if (string.IsNullOrEmpty(record.Id)) continue;
+                        if (_cache.ContainsKey(record.Id))
+                            Console.WriteLine($"[ACTIONS CACHE] Duplicate action id '{record.Id}' in '{Id}': the later entry wins.");
                         _cache[record.Id] = record;
                     }
 
@@ -86,6 +98,17 @@ namespace OssianForge.Engine.Resources.Config
         }
 
         public ActionsConfig(string id, string path) : base(id, path) { }
+
+        // The record cache is built from the flat store, so it must be dropped whenever the store changes.
+        public override void Load()
+        {
+            base.Load();
+            _cache = null;
+        }
+
+        protected override void OnRecordReplaced(string oldId, ActionRecord newRecord) => _cache = null;
+        protected override void OnRecordAdded(ActionRecord record) => _cache = null;
+        protected override void OnRecordRemoved(string id) => _cache = null;
 
         // ── flat-store I/O ────────────────────────────────────────────────────────
 
@@ -99,15 +122,14 @@ namespace OssianForge.Engine.Resources.Config
             };
 
             var argsList = new List<object>();
-            int j = 0;
-            while (true)
+            // Walk by key existence, not by value: an empty-string (or null) arg used to end the list
+            // and silently drop every argument after it.
+            for (int j = 0; HasKey($"{prefix}.args[{j}]"); j++)
             {
                 string val = GetString($"{prefix}.args[{j}]");
-                if (string.IsNullOrEmpty(val)) break;
 
                 // Parse primitive types (bool, int, double) to avoid storing them as pure strings
                 argsList.Add(ReflectionDispatcher.ParseString(val));
-                j++;
             }
 
             record.ArgsJson = JsonSerializer.Serialize(argsList);
@@ -161,7 +183,17 @@ namespace OssianForge.Engine.Resources.Config
         private object? ExecuteRecord(ActionRecord record, object? context, double? delta)
         {
             object?[] args = ArgResolver.Resolve(record.Args, context, delta);
-            object? result = ReflectionDispatcher.InvokeWithResult(record.Call, args);
+
+            object? result;
+            try
+            {
+                result = ReflectionDispatcher.InvokeWithResult(record.Call, args);
+            }
+            catch (Exception ex)
+            {
+                // Say which action failed; the dispatcher only knows the call string.
+                throw new Exception($"[ACTIONS CONFIG] Action '{record.Id}' ({record.Call}) failed.", ex);
+            }
 
             if (record.StoreValue != null)
                 ValueStore.Set(record.StoreValue, result);
@@ -185,7 +217,8 @@ namespace OssianForge.Engine.Resources.Config
 
     public static class ValueStore
     {
-        private static readonly Dictionary<string, object?> _values = new();
+        // Written from the input/camera threads (axes) and read from the game thread, so it must be thread-safe.
+        private static readonly ConcurrentDictionary<string, object?> _values = new();
 
         public static void Set(string key, object? value) => _values[key] = value;
         public static object? Get(string key) => _values.TryGetValue(key, out var v) ? v : null;
