@@ -14,7 +14,7 @@ namespace OssianForge.Engine.Nodes.Props.Types.Camera
         public float MinPitch = -89f;
         public float MaxPitch = 89f;
 
-        public OrbitalCameraProperty(string targetNodeId, float orbitDistance = 5f, float minPitch = -89f, float maxPitch = 89) : base() 
+        public OrbitalCameraProperty(string targetNodeId, float orbitDistance = 5f, float minPitch = -89f, float maxPitch = 89) : base()
         {
             TargetNodeId = targetNodeId;
             OrbitDistance = orbitDistance;
@@ -46,6 +46,7 @@ namespace OssianForge.Engine.Nodes.Props.Types.Camera
                 Vector3 lookAt = target.WorldTransform.Position;
 
                 Camera.Position = lookAt + orbitOffset;
+                Camera.FocusDistance = OrbitDistance; // zero-parallax plane = the target
 
                 Vector3 toTarget = Vector3.Normalize(lookAt - Camera.Position);
                 Camera.SetLookDirection(toTarget);

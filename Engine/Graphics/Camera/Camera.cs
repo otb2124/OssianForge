@@ -13,6 +13,13 @@ namespace OssianForge.Engine.Graphics.Camera
         private float _yaw = -90f;
         private float _pitch = 0f;
 
+        /// <summary>
+        /// Distance (world units) from Position to the point the camera is looking at: the plane that stays
+        /// fixed on screen under head-tracked parallax. OrbitalCameraProperty sets it to its orbit distance.
+        /// 0 = unknown, and parallax falls back to the physical window model.
+        /// </summary>
+        public float FocusDistance = 0f;
+
         public float NearPlane { get; set; } = 0.1f;
         public float FarPlane { get; set; } = 2000f;
 
@@ -115,6 +122,9 @@ namespace OssianForge.Engine.Graphics.Camera
                 Vector3 right = Vector3.Normalize(Vector3.Cross(forward, Vector3.UnitY));
                 Vector3 up = Vector3.Cross(right, forward);
 
+                if (TryGetFocusRig(view, out var rig))
+                    return Position + right * rig.OffsetX + up * rig.OffsetY - forward * rig.OffsetZ;
+
                 // Eye Z points toward the viewer, which is opposite to the look direction.
                 return Position + (right * view.Eye.X + up * view.Eye.Y - forward * view.Eye.Z)
                                   * view.WorldUnitsPerMeter;
@@ -130,11 +140,60 @@ namespace OssianForge.Engine.Graphics.Camera
         public Matrix4x4 GetProjection()
         {
             if (Engine.Graphics.ParallaxController.TryGetView(out var view))
-                return GetOffAxisProjection(view);
+                return TryGetFocusRig(view, out var rig) ? GetFocusProjection(rig) : GetOffAxisProjection(view);
 
             return Matrix4x4.CreatePerspectiveFieldOfView(
                 float.DegreesToRadians(Fov),
                 AspectRatio,
+                NearPlane, FarPlane);
+        }
+
+        // ── Focus (orbital / fish-tank) rig ──────────────────────────────────────
+        // The screen becomes a window of fixed world size pinned at the focus point. At rest the eye sits
+        // exactly where the normal camera would, so framing and Fov are unchanged. Head movement is amplified
+        // (FocusGain) into eye movement around the focus point while the window stays put, so the focus
+        // stays fixed on screen and everything nearer or farther slides past it: motion parallax around
+        // the object of interest, which is where the zero-parallax plane belongs.
+        private readonly struct FocusRig
+        {
+            public readonly float OffsetX, OffsetY, OffsetZ;   // eye offset from Position; Z positive = away from the focus
+            public readonly float Distance;                     // eye to focus plane
+            public FocusRig(float x, float y, float z, float distance)
+            {
+                OffsetX = x; OffsetY = y; OffsetZ = z; Distance = distance;
+            }
+        }
+
+        private bool TryGetFocusRig(ParallaxView view, out FocusRig rig)
+        {
+            rig = default;
+            if (view.Mode != ParallaxMode.Focus || FocusDistance <= 0.01f) return false;
+
+            float r = FocusDistance;
+            float limit = MathF.Max(r * view.FocusMaxOffsetFraction, 0.001f);
+
+            // tanh eases toward the limit instead of clamping, so the view never snaps at the edge.
+            float x = limit * MathF.Tanh(view.HeadOffset.X * view.FocusGain / limit);
+            float y = limit * MathF.Tanh(view.HeadOffset.Y * view.FocusGain / limit);
+
+            float zLimit = r * 0.6f;
+            float z = zLimit * MathF.Tanh(view.HeadOffset.Z * view.FocusDepthGain / zLimit);
+
+            rig = new FocusRig(x, y, z, r + z);
+            return true;
+        }
+
+        private Matrix4x4 GetFocusProjection(FocusRig rig)
+        {
+            // Window size at the focus plane: what the normal camera would see there.
+            float halfHeight = FocusDistance * MathF.Tan(float.DegreesToRadians(Fov) * 0.5f);
+            float halfWidth = halfHeight * AspectRatio;
+
+            float k = NearPlane / rig.Distance;
+
+            return Matrix4x4.CreatePerspectiveOffCenter(
+                (-halfWidth - rig.OffsetX) * k, (halfWidth - rig.OffsetX) * k,
+                (-halfHeight - rig.OffsetY) * k, (halfHeight - rig.OffsetY) * k,
                 NearPlane, FarPlane);
         }
 

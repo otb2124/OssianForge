@@ -1,0 +1,6201 @@
+﻿{
+  "id": "parallaxtest",
+  "name": "ParallaxTest",
+  "properties": [
+    {
+      "type": "TransformProperty"
+    }
+  ],
+  "children": [
+    {
+      "id": "parallaxtest_focus",
+      "name": "FocusTarget",
+      "properties": [
+        {
+          "type": "TransformProperty",
+          "data": [
+            [
+              "0.000,0.200,0.000",
+              "0.000,0.000,0.000",
+              "1.000,1.000,1.000"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "parallaxtest_camera",
+      "name": "ParallaxTestCamera",
+      "properties": [
+        {
+          "type": "TransformProperty",
+          "data": [
+            [
+              "0.000,0.200,8.000",
+              "0.000,0.000,0.000",
+              "1.000,1.000,1.000"
+            ]
+          ]
+        },
+        {
+          "type": "OrbitalCameraProperty",
+          "data": [
+            "parallaxtest_focus",
+            8.0,
+            -89,
+            89
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Sun",
+      "properties": [
+        {
+          "type": "TransformProperty",
+          "data": [
+            [
+              "0.000,10.000,0.000",
+              "0.000,0.000,0.000",
+              "1.000,1.000,1.000"
+            ]
+          ]
+        },
+        {
+          "type": "SunEmissionProperty",
+          "data": [
+            "0.35,-0.8,-0.5",
+            "1.0,0.97,0.9",
+            1.1
+          ]
+        }
+      ]
+    },
+    {
+      "name": "WarmLight",
+      "properties": [
+        {
+          "type": "TransformProperty",
+          "data": [
+            [
+              "-3.000,3.000,4.000",
+              "0.000,0.000,0.000",
+              "1.000,1.000,1.000"
+            ]
+          ]
+        },
+        {
+          "type": "PointEmissionProperty",
+          "data": [
+            "1.0,0.65,0.35",
+            1.5,
+            22
+          ]
+        }
+      ]
+    },
+    {
+      "name": "CoolLight",
+      "properties": [
+        {
+          "type": "TransformProperty",
+          "data": [
+            [
+              "4.000,2.500,-5.000",
+              "0.000,0.000,0.000",
+              "1.000,1.000,1.000"
+            ]
+          ]
+        },
+        {
+          "type": "PointEmissionProperty",
+          "data": [
+            "0.55,0.7,1.0",
+            1.5,
+            22
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Backdrop",
+      "properties": [
+        {
+          "type": "TransformProperty",
+          "data": [
+            [
+              "0.000,6.000,-26.250",
+              "0.000,0.000,0.000",
+              "70.000,34.000,0.500"
+            ]
+          ]
+        },
+        {
+          "type": "MeshProperty",
+          "data": [
+            "mesh.cube"
+          ]
+        },
+        {
+          "type": "TextureMaterialProperty",
+          "data": [
+            "texture.brick",
+            "shader.basic"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Floor",
+      "properties": [
+        {
+          "type": "TransformProperty"
+        }
+      ],
+      "children": [
+        {
+          "name": "Tile_0_0",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "-9.000,-1.800,5.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.brick",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_1_0",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "-7.000,-1.800,5.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.grass",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_2_0",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "-5.000,-1.800,5.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.brick",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_3_0",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "-3.000,-1.800,5.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.grass",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_4_0",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "-1.000,-1.800,5.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.brick",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_5_0",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "1.000,-1.800,5.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.grass",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_6_0",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "3.000,-1.800,5.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.brick",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_7_0",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "5.000,-1.800,5.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.grass",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_8_0",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "7.000,-1.800,5.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.brick",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_9_0",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "9.000,-1.800,5.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.grass",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_0_1",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "-9.000,-1.800,3.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.grass",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_1_1",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "-7.000,-1.800,3.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.brick",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_2_1",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "-5.000,-1.800,3.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.grass",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_3_1",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "-3.000,-1.800,3.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.brick",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_4_1",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "-1.000,-1.800,3.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.grass",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_5_1",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "1.000,-1.800,3.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.brick",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_6_1",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "3.000,-1.800,3.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.grass",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_7_1",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "5.000,-1.800,3.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.brick",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_8_1",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "7.000,-1.800,3.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.grass",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_9_1",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "9.000,-1.800,3.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.brick",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_0_2",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "-9.000,-1.800,1.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.brick",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_1_2",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "-7.000,-1.800,1.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.grass",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_2_2",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "-5.000,-1.800,1.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.brick",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_3_2",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "-3.000,-1.800,1.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.grass",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_4_2",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "-1.000,-1.800,1.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.brick",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_5_2",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "1.000,-1.800,1.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.grass",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_6_2",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "3.000,-1.800,1.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.brick",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_7_2",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "5.000,-1.800,1.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.grass",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_8_2",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "7.000,-1.800,1.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.brick",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_9_2",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "9.000,-1.800,1.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.grass",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_0_3",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "-9.000,-1.800,-1.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.grass",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_1_3",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "-7.000,-1.800,-1.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.brick",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_2_3",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "-5.000,-1.800,-1.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.grass",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_3_3",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "-3.000,-1.800,-1.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.brick",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_4_3",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "-1.000,-1.800,-1.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.grass",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_5_3",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "1.000,-1.800,-1.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.brick",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_6_3",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "3.000,-1.800,-1.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.grass",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_7_3",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "5.000,-1.800,-1.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.brick",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_8_3",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "7.000,-1.800,-1.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.grass",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_9_3",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "9.000,-1.800,-1.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.brick",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_0_4",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "-9.000,-1.800,-3.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.brick",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_1_4",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "-7.000,-1.800,-3.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.grass",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_2_4",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "-5.000,-1.800,-3.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.brick",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_3_4",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "-3.000,-1.800,-3.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.grass",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_4_4",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "-1.000,-1.800,-3.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.brick",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_5_4",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "1.000,-1.800,-3.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.grass",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_6_4",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "3.000,-1.800,-3.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.brick",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_7_4",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "5.000,-1.800,-3.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.grass",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_8_4",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "7.000,-1.800,-3.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.brick",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_9_4",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "9.000,-1.800,-3.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.grass",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_0_5",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "-9.000,-1.800,-5.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.grass",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_1_5",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "-7.000,-1.800,-5.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.brick",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_2_5",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "-5.000,-1.800,-5.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.grass",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_3_5",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "-3.000,-1.800,-5.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.brick",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_4_5",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "-1.000,-1.800,-5.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.grass",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_5_5",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "1.000,-1.800,-5.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.brick",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_6_5",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "3.000,-1.800,-5.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.grass",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_7_5",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "5.000,-1.800,-5.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.brick",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_8_5",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "7.000,-1.800,-5.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.grass",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_9_5",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "9.000,-1.800,-5.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.brick",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_0_6",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "-9.000,-1.800,-7.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.brick",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_1_6",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "-7.000,-1.800,-7.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.grass",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_2_6",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "-5.000,-1.800,-7.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.brick",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_3_6",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "-3.000,-1.800,-7.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.grass",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_4_6",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "-1.000,-1.800,-7.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.brick",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_5_6",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "1.000,-1.800,-7.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.grass",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_6_6",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "3.000,-1.800,-7.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.brick",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_7_6",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "5.000,-1.800,-7.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.grass",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_8_6",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "7.000,-1.800,-7.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.brick",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_9_6",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "9.000,-1.800,-7.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.grass",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_0_7",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "-9.000,-1.800,-9.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.grass",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_1_7",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "-7.000,-1.800,-9.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.brick",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_2_7",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "-5.000,-1.800,-9.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.grass",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_3_7",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "-3.000,-1.800,-9.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.brick",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_4_7",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "-1.000,-1.800,-9.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.grass",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_5_7",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "1.000,-1.800,-9.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.brick",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_6_7",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "3.000,-1.800,-9.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.grass",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_7_7",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "5.000,-1.800,-9.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.brick",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_8_7",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "7.000,-1.800,-9.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.grass",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_9_7",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "9.000,-1.800,-9.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.brick",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_0_8",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "-9.000,-1.800,-11.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.brick",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_1_8",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "-7.000,-1.800,-11.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.grass",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_2_8",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "-5.000,-1.800,-11.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.brick",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_3_8",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "-3.000,-1.800,-11.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.grass",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_4_8",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "-1.000,-1.800,-11.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.brick",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_5_8",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "1.000,-1.800,-11.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.grass",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_6_8",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "3.000,-1.800,-11.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.brick",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_7_8",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "5.000,-1.800,-11.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.grass",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_8_8",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "7.000,-1.800,-11.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.brick",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_9_8",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "9.000,-1.800,-11.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.grass",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_0_9",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "-9.000,-1.800,-13.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.grass",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_1_9",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "-7.000,-1.800,-13.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.brick",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_2_9",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "-5.000,-1.800,-13.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.grass",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_3_9",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "-3.000,-1.800,-13.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.brick",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_4_9",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "-1.000,-1.800,-13.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.grass",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_5_9",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "1.000,-1.800,-13.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.brick",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_6_9",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "3.000,-1.800,-13.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.grass",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_7_9",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "5.000,-1.800,-13.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.brick",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_8_9",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "7.000,-1.800,-13.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.grass",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_9_9",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "9.000,-1.800,-13.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.brick",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_0_10",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "-9.000,-1.800,-15.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.brick",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_1_10",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "-7.000,-1.800,-15.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.grass",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_2_10",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "-5.000,-1.800,-15.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.brick",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_3_10",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "-3.000,-1.800,-15.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.grass",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_4_10",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "-1.000,-1.800,-15.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.brick",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_5_10",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "1.000,-1.800,-15.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.grass",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_6_10",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "3.000,-1.800,-15.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.brick",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_7_10",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "5.000,-1.800,-15.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.grass",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_8_10",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "7.000,-1.800,-15.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.brick",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_9_10",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "9.000,-1.800,-15.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.grass",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_0_11",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "-9.000,-1.800,-17.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.grass",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_1_11",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "-7.000,-1.800,-17.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.brick",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_2_11",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "-5.000,-1.800,-17.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.grass",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_3_11",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "-3.000,-1.800,-17.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.brick",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_4_11",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "-1.000,-1.800,-17.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.grass",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_5_11",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "1.000,-1.800,-17.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.brick",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_6_11",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "3.000,-1.800,-17.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.grass",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_7_11",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "5.000,-1.800,-17.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.brick",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_8_11",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "7.000,-1.800,-17.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.grass",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_9_11",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "9.000,-1.800,-17.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.brick",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_0_12",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "-9.000,-1.800,-19.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.brick",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_1_12",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "-7.000,-1.800,-19.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.grass",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_2_12",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "-5.000,-1.800,-19.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.brick",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_3_12",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "-3.000,-1.800,-19.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.grass",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_4_12",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "-1.000,-1.800,-19.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.brick",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_5_12",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "1.000,-1.800,-19.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.grass",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_6_12",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "3.000,-1.800,-19.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.brick",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_7_12",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "5.000,-1.800,-19.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.grass",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_8_12",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "7.000,-1.800,-19.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.brick",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_9_12",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "9.000,-1.800,-19.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.grass",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_0_13",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "-9.000,-1.800,-21.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.grass",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_1_13",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "-7.000,-1.800,-21.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.brick",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_2_13",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "-5.000,-1.800,-21.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.grass",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_3_13",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "-3.000,-1.800,-21.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.brick",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_4_13",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "-1.000,-1.800,-21.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.grass",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_5_13",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "1.000,-1.800,-21.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.brick",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_6_13",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "3.000,-1.800,-21.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.grass",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_7_13",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "5.000,-1.800,-21.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.brick",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_8_13",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "7.000,-1.800,-21.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.grass",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_9_13",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "9.000,-1.800,-21.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.brick",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_0_14",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "-9.000,-1.800,-23.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.brick",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_1_14",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "-7.000,-1.800,-23.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.grass",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_2_14",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "-5.000,-1.800,-23.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.brick",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_3_14",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "-3.000,-1.800,-23.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.grass",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_4_14",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "-1.000,-1.800,-23.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.brick",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_5_14",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "1.000,-1.800,-23.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.grass",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_6_14",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "3.000,-1.800,-23.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.brick",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_7_14",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "5.000,-1.800,-23.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.grass",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_8_14",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "7.000,-1.800,-23.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.brick",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_9_14",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "9.000,-1.800,-23.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.grass",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_0_15",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "-9.000,-1.800,-25.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.grass",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_1_15",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "-7.000,-1.800,-25.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.brick",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_2_15",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "-5.000,-1.800,-25.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.grass",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_3_15",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "-3.000,-1.800,-25.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.brick",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_4_15",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "-1.000,-1.800,-25.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.grass",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_5_15",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "1.000,-1.800,-25.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.brick",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_6_15",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "3.000,-1.800,-25.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.grass",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_7_15",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "5.000,-1.800,-25.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.brick",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_8_15",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "7.000,-1.800,-25.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.grass",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Tile_9_15",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "9.000,-1.800,-25.000",
+                  "0.000,0.000,0.000",
+                  "2.000,0.400,2.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.brick",
+                "shader.basic"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "FocusPlane",
+      "properties": [
+        {
+          "type": "TransformProperty"
+        }
+      ],
+      "children": [
+        {
+          "name": "Pedestal",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "0.000,-1.100,0.000",
+                  "0.000,0.000,0.000",
+                  "1.300,1.000,1.300"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.brick",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Hero",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "0.000,0.200,0.000",
+                  "0.000,25.000,0.000",
+                  "1.600,1.600,1.600"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.dices",
+                "shader.basic"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Pillars",
+      "properties": [
+        {
+          "type": "TransformProperty"
+        }
+      ],
+      "children": [
+        {
+          "name": "PillarL_0",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "-3.600,1.400,2.000",
+                  "0.000,0.000,0.000",
+                  "0.900,6.000,0.900"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.brick",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "PillarR_0",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "3.600,1.400,2.000",
+                  "0.000,0.000,0.000",
+                  "0.900,6.000,0.900"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.leather",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "PillarL_1",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "-3.600,1.400,-1.000",
+                  "0.000,0.000,0.000",
+                  "0.900,6.000,0.900"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.brick",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "PillarR_1",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "3.600,1.400,-1.000",
+                  "0.000,0.000,0.000",
+                  "0.900,6.000,0.900"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.leather",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "PillarL_2",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "-3.600,1.400,-4.000",
+                  "0.000,0.000,0.000",
+                  "0.900,6.000,0.900"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.brick",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "PillarR_2",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "3.600,1.400,-4.000",
+                  "0.000,0.000,0.000",
+                  "0.900,6.000,0.900"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.leather",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "PillarL_3",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "-3.600,1.400,-7.000",
+                  "0.000,0.000,0.000",
+                  "0.900,6.000,0.900"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.brick",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "PillarR_3",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "3.600,1.400,-7.000",
+                  "0.000,0.000,0.000",
+                  "0.900,6.000,0.900"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.leather",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "PillarL_4",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "-3.600,1.400,-10.000",
+                  "0.000,0.000,0.000",
+                  "0.900,6.000,0.900"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.brick",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "PillarR_4",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "3.600,1.400,-10.000",
+                  "0.000,0.000,0.000",
+                  "0.900,6.000,0.900"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.leather",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "PillarL_5",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "-3.600,1.400,-13.000",
+                  "0.000,0.000,0.000",
+                  "0.900,6.000,0.900"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.brick",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "PillarR_5",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "3.600,1.400,-13.000",
+                  "0.000,0.000,0.000",
+                  "0.900,6.000,0.900"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.leather",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "PillarL_6",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "-3.600,1.400,-16.000",
+                  "0.000,0.000,0.000",
+                  "0.900,6.000,0.900"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.brick",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "PillarR_6",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "3.600,1.400,-16.000",
+                  "0.000,0.000,0.000",
+                  "0.900,6.000,0.900"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.leather",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "PillarL_7",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "-3.600,1.400,-19.000",
+                  "0.000,0.000,0.000",
+                  "0.900,6.000,0.900"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.brick",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "PillarR_7",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "3.600,1.400,-19.000",
+                  "0.000,0.000,0.000",
+                  "0.900,6.000,0.900"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.leather",
+                "shader.basic"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Floaters",
+      "properties": [
+        {
+          "type": "TransformProperty"
+        }
+      ],
+      "children": [
+        {
+          "name": "NearBall",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "-2.200,0.600,3.500",
+                  "0.000,0.000,0.000",
+                  "0.900,0.900,0.900"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.ball"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.fur",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "NearBall2",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "2.000,-0.400,2.600",
+                  "0.000,0.000,0.000",
+                  "0.700,0.700,0.700"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.ball"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.skin",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "MidBall",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "-1.600,1.400,-3.000",
+                  "0.000,0.000,0.000",
+                  "1.100,1.100,1.100"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.ball"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.cotton",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "MidBall2",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "2.400,0.900,-5.500",
+                  "0.000,0.000,0.000",
+                  "1.400,1.400,1.400"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.ball"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.desert",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "FarBall",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "-3.000,-0.600,-8.000",
+                  "0.000,0.000,0.000",
+                  "1.600,1.600,1.600"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.ball"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.leather",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "FarBall2",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "1.200,1.800,-10.000",
+                  "0.000,0.000,0.000",
+                  "1.800,1.800,1.800"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.ball"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.fabric",
+                "shader.basic"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Foreground",
+      "properties": [
+        {
+          "type": "TransformProperty"
+        }
+      ],
+      "children": [
+        {
+          "name": "NearPyramid",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "-2.600,-1.600,5.200",
+                  "0.000,0.000,0.000",
+                  "1.000,1.600,1.000"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.pyramid"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.brick",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "NearCube",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "2.400,0.200,4.600",
+                  "30.000,35.000,0.000",
+                  "0.700,0.700,0.700"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.dices",
+                "shader.basic"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "DepthTunnel",
+      "properties": [
+        {
+          "type": "TransformProperty"
+        }
+      ],
+      "children": [
+        {
+          "name": "Frame0_Top",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "0.000,0.725,5.000",
+                  "0.000,0.000,0.000",
+                  "1.860,0.060,0.060"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.brick",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Frame0_Bottom",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "0.000,-0.325,5.000",
+                  "0.000,0.000,0.000",
+                  "1.860,0.060,0.060"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.brick",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Frame0_Left",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "-0.900,0.200,5.000",
+                  "0.000,0.000,0.000",
+                  "0.060,1.050,0.060"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.brick",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Frame0_Right",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "0.900,0.200,5.000",
+                  "0.000,0.000,0.000",
+                  "0.060,1.050,0.060"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.brick",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Frame1_Top",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "0.000,0.932,3.500",
+                  "0.000,0.000,0.000",
+                  "2.601,0.090,0.090"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.brick",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Frame1_Bottom",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "0.000,-0.532,3.500",
+                  "0.000,0.000,0.000",
+                  "2.601,0.090,0.090"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.brick",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Frame1_Left",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "-1.255,0.200,3.500",
+                  "0.000,0.000,0.000",
+                  "0.090,1.465,0.090"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.brick",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Frame1_Right",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "1.255,0.200,3.500",
+                  "0.000,0.000,0.000",
+                  "0.090,1.465,0.090"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.brick",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Frame2_Top",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "0.000,1.103,2.000",
+                  "0.000,0.000,0.000",
+                  "3.216,0.120,0.120"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.fabric",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Frame2_Bottom",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "0.000,-0.703,2.000",
+                  "0.000,0.000,0.000",
+                  "3.216,0.120,0.120"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.fabric",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Frame2_Left",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "-1.548,0.200,2.000",
+                  "0.000,0.000,0.000",
+                  "0.120,1.806,0.120"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.fabric",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Frame2_Right",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "1.548,0.200,2.000",
+                  "0.000,0.000,0.000",
+                  "0.120,1.806,0.120"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.fabric",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Frame3_Top",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "0.000,1.652,-2.500",
+                  "0.000,0.000,0.000",
+                  "5.187,0.210,0.210"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.leather",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Frame3_Bottom",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "0.000,-1.252,-2.500",
+                  "0.000,0.000,0.000",
+                  "5.187,0.210,0.210"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.leather",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Frame3_Left",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "-2.488,0.200,-2.500",
+                  "0.000,0.000,0.000",
+                  "0.210,2.903,0.210"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.leather",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Frame3_Right",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "2.488,0.200,-2.500",
+                  "0.000,0.000,0.000",
+                  "0.210,2.903,0.210"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.leather",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Frame4_Top",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "0.000,1.838,-5.000",
+                  "0.000,0.000,0.000",
+                  "5.876,0.260,0.260"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.cotton",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Frame4_Bottom",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "0.000,-1.438,-5.000",
+                  "0.000,0.000,0.000",
+                  "5.876,0.260,0.260"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.cotton",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Frame4_Left",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "-2.808,0.200,-5.000",
+                  "0.000,0.000,0.000",
+                  "0.260,3.276,0.260"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.cotton",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Frame4_Right",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "2.808,0.200,-5.000",
+                  "0.000,0.000,0.000",
+                  "0.260,3.276,0.260"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.cotton",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Frame5_Top",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "0.000,2.020,-8.000",
+                  "0.000,0.000,0.000",
+                  "6.560,0.320,0.320"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.fur",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Frame5_Bottom",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "0.000,-1.620,-8.000",
+                  "0.000,0.000,0.000",
+                  "6.560,0.320,0.320"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.fur",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Frame5_Left",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "-3.120,0.200,-8.000",
+                  "0.000,0.000,0.000",
+                  "0.320,3.640,0.320"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.fur",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Frame5_Right",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "3.120,0.200,-8.000",
+                  "0.000,0.000,0.000",
+                  "0.320,3.640,0.320"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.fur",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Frame6_Top",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "0.000,2.128,-11.000",
+                  "0.000,0.000,0.000",
+                  "6.992,0.380,0.380"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.skin",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Frame6_Bottom",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "0.000,-1.728,-11.000",
+                  "0.000,0.000,0.000",
+                  "6.992,0.380,0.380"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.skin",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Frame6_Left",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "-3.306,0.200,-11.000",
+                  "0.000,0.000,0.000",
+                  "0.380,3.857,0.380"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.skin",
+                "shader.basic"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Frame6_Right",
+          "properties": [
+            {
+              "type": "TransformProperty",
+              "data": [
+                [
+                  "3.306,0.200,-11.000",
+                  "0.000,0.000,0.000",
+                  "0.380,3.857,0.380"
+                ]
+              ]
+            },
+            {
+              "type": "MeshProperty",
+              "data": [
+                "mesh.cube"
+              ]
+            },
+            {
+              "type": "TextureMaterialProperty",
+              "data": [
+                "texture.skin",
+                "shader.basic"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

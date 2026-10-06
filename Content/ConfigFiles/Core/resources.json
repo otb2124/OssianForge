@@ -385,6 +385,11 @@
     "type": "configfile.scene"
   },
   {
+    "id": "configfile.scene.parallaxtest",
+    "data": [ "ConfigFiles/Scenes/parallaxtest.json" ],
+    "type": "configfile.scene"
+  },
+  {
     "id": "configfile.tree",
     "data": [ "ConfigFiles/Core/tree.json" ],
     "type": "configfile.tree"

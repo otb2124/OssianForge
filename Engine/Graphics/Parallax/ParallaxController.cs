@@ -4,8 +4,44 @@ using OssianForge.Engine.Inputs;
 
 namespace OssianForge.Engine.Graphics
 {
+    public enum ParallaxMode
+    {
+        /// <summary>
+        /// Real-world geometry: the monitor is a window of its true physical size at its true distance,
+        /// and one metre of head movement is one world unit. Correct for a diorama on your desk, but a
+        /// scene several metres deep barely changes when you move 10 cm, so it mostly looks like a pan.
+        /// </summary>
+        Physical,
+
+        /// <summary>
+        /// Fish-tank / orbital: the screen becomes a window pinned to the camera's focus point (the zero
+        /// parallax plane), and head movement is amplified into eye movement around that point. The focus
+        /// stays put on screen while everything nearer and farther slides past it.
+        /// Needs Camera.FocusDistance; cameras without one fall back to Physical.
+        /// </summary>
+        Focus
+    }
+
     public sealed class ParallaxOptions
     {
+        public ParallaxMode Mode = ParallaxMode.Focus;
+
+        /// <summary>Focus mode: world units of eye movement per metre of sideways/vertical head movement.</summary>
+        public float FocusGain = 6f;
+
+        /// <summary>Focus mode: world units of eye movement per metre of head movement toward/away from the screen.
+        /// Kept lower than FocusGain because depth changes feel stronger than sideways ones.</summary>
+        public float FocusDepthGain = 3f;
+
+        /// <summary>Focus mode: the eye never leaves the focus point by more than this fraction of the focus distance,
+        /// sideways or up/down. It eases toward the limit instead of stopping dead.
+        /// 0.35 is about 19 degrees around the focus point.</summary>
+        public float FocusMaxOffsetFraction = 0.35f;
+
+        /// <summary>Focus mode: the first tracked position becomes the neutral pose, so sitting off-centre
+        /// doesn't tilt the view. Off = neutral is always RestPosition.</summary>
+        public bool RecenterOnAcquire = true;
+
         /// <summary>Physical size of the display's visible area in metres (width, height).
         /// 0.60 x 0.34 is a 27" 16:9 monitor; a 15.6" laptop is about 0.34 x 0.19.</summary>
         public Vector2 ScreenSizeMeters = new(0.60f, 0.34f);
@@ -51,11 +87,27 @@ namespace OssianForge.Engine.Graphics
         public readonly Vector2 WindowSizeMeters;
         public readonly float WorldUnitsPerMeter;
 
-        public ParallaxView(Vector3 eye, Vector2 windowSizeMeters, float worldUnitsPerMeter)
+        // Focus mode data. HeadOffset is the head's displacement from its neutral pose in metres
+        // (+X right, +Y up, +Z away from the screen).
+        public readonly ParallaxMode Mode;
+        public readonly Vector3 HeadOffset;
+        public readonly float FocusGain;
+        public readonly float FocusDepthGain;
+        public readonly float FocusMaxOffsetFraction;
+
+        public ParallaxView(
+            Vector3 eye, Vector2 windowSizeMeters, float worldUnitsPerMeter,
+            ParallaxMode mode = ParallaxMode.Physical, Vector3 headOffset = default,
+            float focusGain = 0f, float focusDepthGain = 0f, float focusMaxOffsetFraction = 0.35f)
         {
             Eye = eye;
             WindowSizeMeters = windowSizeMeters;
             WorldUnitsPerMeter = worldUnitsPerMeter;
+            Mode = mode;
+            HeadOffset = headOffset;
+            FocusGain = focusGain;
+            FocusDepthGain = focusDepthGain;
+            FocusMaxOffsetFraction = focusMaxOffsetFraction;
         }
     }
 
@@ -87,6 +139,7 @@ namespace OssianForge.Engine.Graphics
         private bool _hasView;
 
         private Vector3 _eye;
+        private Vector3 _neutral;   // head pose that means "looking straight at the focus"
         private Vector3 _filtered;
         private bool _eyeInitialized;
         private bool _wasPresent;
@@ -110,12 +163,23 @@ namespace OssianForge.Engine.Graphics
         {
             if (options != null) Options = options;
             _eyeInitialized = false;
+            _neutral = Options.RestPosition;
             bool started = Tracker.Start(Options.Tracker);
             Console.WriteLine(
                 $"[PARALLAX] Start -> trackerStarted={started} err={Tracker.LastError ?? "none"} " +
                 $"configuredScreen={Options.ScreenSizeMeters.X:0.00}x{Options.ScreenSizeMeters.Y:0.00}m fitToWindow={Options.FitToWindow}");
             return started;
         }
+
+        /// <summary>Makes the current head position the neutral pose (view straight at the focus). Bind this to a key.</summary>
+        public void Recenter()
+        {
+            _neutral = IsTracking ? _eye : Options.RestPosition;
+            Console.WriteLine($"[PARALLAX] Recentered at ({_neutral.X:+0.00;-0.00},{_neutral.Y:+0.00;-0.00},{_neutral.Z:0.00})m");
+        }
+
+        /// <summary>Forget the cached monitor size. Call after the window changes mode or monitor.</summary>
+        public void InvalidateWindowCache() => _monitorTimer = double.MaxValue;
 
         public void Stop()
         {
@@ -172,6 +236,15 @@ namespace OssianForge.Engine.Graphics
                         _filterZ.Filter(head.Position.Z, sampleDt, o.MinCutoff, o.Beta, o.DerivativeCutoff));
                 }
 
+                if (!_wasPresent && Options.Mode == ParallaxMode.Focus && Options.RecenterOnAcquire)
+                {
+                    // Just found a person: their current pose becomes neutral, and the eye snaps there
+                    // instead of gliding in from the resting pose (which would look like a swing).
+                    _neutral = _filtered;
+                    _eye = _filtered;
+                    _eyeInitialized = true;
+                }
+
                 _wasPresent = true;
                 target = _filtered;
                 tau = Options.SmoothingSeconds;
@@ -188,7 +261,8 @@ namespace OssianForge.Engine.Graphics
                     _wasPresent = false;
                 }
 
-                target = Options.RestPosition;
+                // In focus mode "rest" means neutral, so the offset eases back to exactly zero.
+                target = Options.Mode == ParallaxMode.Focus ? _neutral : Options.RestPosition;
                 tau = Options.RestEaseSeconds;
             }
 
@@ -211,7 +285,10 @@ namespace OssianForge.Engine.Graphics
             // relative to the centre of the window, which differs when the window isn't fullscreen.
             Vector3 eyeInWindow = _eye - new Vector3(windowCenterOffset, 0f);
 
-            _view = new ParallaxView(eyeInWindow, windowSize, Options.WorldUnitsPerMeter);
+            _view = new ParallaxView(
+                eyeInWindow, windowSize, Options.WorldUnitsPerMeter,
+                Options.Mode, _eye - _neutral,
+                Options.FocusGain, Options.FocusDepthGain, Options.FocusMaxOffsetFraction);
             _hasView = true;
 
             if (DebugLog)
@@ -223,6 +300,7 @@ namespace OssianForge.Engine.Graphics
                     float verticalFov = float.RadiansToDegrees(2f * MathF.Atan(windowSize.Y * 0.5f / MathF.Max(eyeInWindow.Z, 0.05f)));
                     Console.WriteLine(
                         $"[PARALLAX] tracking={IsTracking} eye=({eyeInWindow.X:+0.00;-0.00},{eyeInWindow.Y:+0.00;-0.00},{eyeInWindow.Z:0.00})m " +
+                        $"mode={Options.Mode} head=({_eye.X - _neutral.X:+0.00;-0.00},{_eye.Y - _neutral.Y:+0.00;-0.00},{_eye.Z - _neutral.Z:+0.00;-0.00})m " +
                         $"window={windowSize.X:0.00}x{windowSize.Y:0.00}m vfov={verticalFov:F0}deg " +
                         $"| tracker[thread={Tracker.IsRunning} latestDetected={Tracker.Latest.Detected} " +
                         $"lastFrameAge={Tracker.Latest.AgeMs:F0}ms err={Tracker.LastError ?? "none"}] " +

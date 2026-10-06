@@ -111,35 +111,6 @@
       ]
     },
     {
-      "id": "ball",
-      "name": "ball",
-      "enabled": false,
-      "properties": [
-        {
-          "type": "TransformProperty",
-          "data": [
-            [ "0,32,-2", "0,0,0", "0.5,0.5,0.5" ]
-          ]
-        },
-        {
-          "type": "MeshProperty",
-          "data": [ "mesh.ball" ]
-        },
-        {
-          "type": "TextureMaterialProperty",
-          "data": [ "texture.house.wood", "shader.basic" ]
-        },
-        {
-          "type": "ColliderProperty",
-          "data": [ "collider.ball" ]
-        },
-        {
-          "type": "RigidPhysicsProperty",
-          "data": [ 0, 1, 1 ]
-        }
-      ]
-    },
-    {
       "id": "cube",
       "name": "cube",
       "enabled": false,
@@ -169,35 +140,6 @@
       ]
     },
     {
-      "id": "ball1",
-      "name": "ball1",
-      "enabled": false,
-      "properties": [
-        {
-          "type": "TransformProperty",
-          "data": [
-            [ "0.25,40,-2", "0,0,0", "0.5,0.5,0.5" ]
-          ]
-        },
-        {
-          "type": "MeshProperty",
-          "data": [ "mesh.ball" ]
-        },
-        {
-          "type": "TextureMaterialProperty",
-          "data": [ "texture.house.wood", "shader.basic" ]
-        },
-        {
-          "type": "ColliderProperty",
-          "data": [ "collider.ball" ]
-        },
-        {
-          "type": "RigidPhysicsProperty",
-          "data": [ 0, 1, 1 ]
-        }
-      ]
-    },
-    {
       "id": "cube1",
       "name": "cube1",
       "enabled": false,
@@ -219,35 +161,6 @@
         {
           "type": "ColliderProperty",
           "data": [ "collider.cube" ]
-        },
-        {
-          "type": "RigidPhysicsProperty",
-          "data": [ 0, 1, 1 ]
-        }
-      ]
-    },
-    {
-      "id": "pyramid",
-      "name": "pyramid",
-      "enabled": false,
-      "properties": [
-        {
-          "type": "TransformProperty",
-          "data": [
-            [ "0,41,-2", "10,0,0", "0.5,2,0.5" ]
-          ]
-        },
-        {
-          "type": "MeshProperty",
-          "data": [ "mesh.pyramid" ]
-        },
-        {
-          "type": "TextureMaterialProperty",
-          "data": [ "texture.house.wood", "shader.basic" ]
-        },
-        {
-          "type": "ColliderProperty",
-          "data": [ "collider.pyramid" ]
         },
         {
           "type": "RigidPhysicsProperty",

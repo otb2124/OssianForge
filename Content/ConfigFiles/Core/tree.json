@@ -13,6 +13,6 @@
       }
     ]
   },
-  "mainScene": "configfile.scene.terrainscene",
+  "mainScene": "configfile.scene.parallaxtest",
   "version": "1.0.0"
 }

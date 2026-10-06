@@ -23,7 +23,7 @@
     },
     "camera": {
       "mode": "primary",
-      "current": ""
+      "current": "camera:0"
     },
     "microphone": {
       "mode": "primary",

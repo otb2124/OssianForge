@@ -200,8 +200,8 @@ namespace OssianForge.Engine.Devices
         }
 
         /// <summary>
-        /// Puts the window on the active monitor: centered when windowed, covering it when fullscreen.
-        /// Does nothing if the window is already there.
+        /// Puts the window on the active monitor, keeping its window mode (centered when windowed, covering
+        /// it when borderless or fullscreen). Does nothing if the window is already there.
         /// </summary>
         public void MoveWindowToMonitor()
         {
@@ -213,20 +213,8 @@ namespace OssianForge.Engine.Devices
             {
                 if (monitor.Index != target.Index) continue;
 
-                var bounds = monitor.Bounds;
-
-                if (Engine.Graphics.IsFullscreen)
-                {
-                    window.Position = bounds.Origin;
-                    window.Size = bounds.Size;
-                }
-                else
-                {
-                    var size = window.Size;
-                    window.Position = new Vector2D<int>(
-                        bounds.Origin.X + (bounds.Size.X - size.X) / 2,
-                        bounds.Origin.Y + (bounds.Size.Y - size.Y) / 2);
-                }
+                // Graphics knows how each window mode is placed (centered, borderless, exclusive fullscreen).
+                Engine.Graphics.PlaceOnMonitor(monitor);
 
                 Console.WriteLine($"[DEVICES] Window placed on {target}");
                 return;
