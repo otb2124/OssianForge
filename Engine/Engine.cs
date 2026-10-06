@@ -20,7 +20,6 @@ namespace OssianForge.Engine
         public static Devices.Devices Devices;
         public static Inputs.Inputs Inputs;
         public static Physics.Physics Physics;
-        public static UI.UI UI;
         public static Audio.Audio Audio;
 
         public static Utils.Console.DebugConsole DebugConsole;
@@ -33,7 +32,6 @@ namespace OssianForge.Engine
             Devices = new Devices.Devices();
             Inputs = new Inputs.Inputs();
             Physics = new Physics.Physics();
-            UI = new UI.UI();
             Audio = new Audio.Audio();
 
             DebugConsole = new Utils.Console.DebugConsole();
@@ -46,7 +44,6 @@ namespace OssianForge.Engine
             Resources.Initialize();
             Nodes.Initialize();
             Inputs.Initialize();
-            UI.Initialize();
             Audio.Initialize();
         }
 
@@ -86,13 +83,11 @@ namespace OssianForge.Engine
             Inputs.OnUpdate(delta);
             Nodes.OnUpdate(delta);
             Physics.OnUpdate(delta);
-            UI.OnUpdate(delta);
         }
 
         public static void OnRender(double delta)
         {
             Graphics.OnRender(delta);
-            UI.OnRender(delta);
         }
 
         public static void OnResize(Vector2D<int> size)
