@@ -1,6 +1,6 @@
 ﻿using System.Numerics;
 
-namespace OssianForge.Engine.Utils
+namespace OssianForge.Engine.Graphics
 {
     public static class Raycast
     {
@@ -19,8 +19,8 @@ namespace OssianForge.Engine.Utils
             var cam = Engine.Graphics.GetCurrentCamera();
 
             // NDC: [-1, 1] with Y flipped (screen Y grows down, NDC Y grows up)
-            float ndcX = (2f * mousePixels.X / screen.X) - 1f;
-            float ndcY = -((2f * mousePixels.Y / screen.Y) - 1f);
+            float ndcX = 2f * mousePixels.X / screen.X - 1f;
+            float ndcY = -(2f * mousePixels.Y / screen.Y - 1f);
 
             var proj = cam.GetProjection();
             var view = cam.GetView();

@@ -1,8 +1,7 @@
 ﻿using System.Numerics;
 using static OssianForge.Engine.Utils.MathUtils;
-using OssianForge.Engine.UI;
-using OssianForge.Engine.Utils;
 using Silk.NET.Input;
+using OssianForge.Engine.Graphics;
 
 namespace OssianForge.Engine.Nodes.Props
 {

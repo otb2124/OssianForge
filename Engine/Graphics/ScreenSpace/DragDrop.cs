@@ -2,7 +2,7 @@
 using OssianForge.Engine.Nodes.Props;
 using System.Numerics;
 
-namespace OssianForge.Engine.UI
+namespace OssianForge.Engine.Graphics
 {
     /// <summary>
     /// Singleton that owns globally unique UI state: which node has focus,
