@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 using OssianForge.Engine.Nodes;
 using OssianForge.Engine.Nodes.Props;
 using System.Numerics;
-using OssianForge.Engine.Core;
 using System.Reflection;
+using OssianForge.Engine.Reflection;
 
 namespace OssianForge.Engine.Utils.Console
 {
