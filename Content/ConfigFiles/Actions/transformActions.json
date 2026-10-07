@@ -67,7 +67,7 @@
   {
     "id": "action.transform.transformRotationMouseYawY",
     "call": "node.addValue",
-    "args": [ "$self", "TransformProperty", "Rotation", "-1,0,0", "$mouse_y", "$delta" ]
+    "args": [ "$self", "TransformProperty", "Rotation", "1,0,0", "$mouse_y", "$delta" ]
   },
   {
     "id": "action.transform.setBodyYawForward",

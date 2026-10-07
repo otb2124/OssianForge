@@ -7,7 +7,7 @@
   "devices": {
     "monitor": {
       "mode": "primary",
-      "current": "monitor:0"
+      "current": "monitor:1"
     },
     "keyboard": {
       "mode": "all",
