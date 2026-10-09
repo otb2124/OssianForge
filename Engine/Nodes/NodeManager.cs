@@ -12,6 +12,8 @@ namespace OssianForge.Engine.Nodes
         private static readonly ConcurrentQueue<Action> _pendingActions = new();
         private readonly Dictionary<string, Node> _idCache = new();
 
+        public event Action? TreeChanged;
+
         public NodeManager() { }
 
         public void Initialize() => Roots = new();
@@ -20,30 +22,45 @@ namespace OssianForge.Engine.Nodes
         // Tree registration
         // -----------------------------------------------------------------------
 
-        public void RegisterTree(Node root) => Roots.Add(root);
+        public void RegisterTree(Node root)
+        {
+            Roots.Add(root);
+            TreeChanged?.Invoke();
+        }
 
-        public void AddNode(Node node) => Roots.Add(node);
+        public void AddNode(Node node)
+        {
+            Roots.Add(node);
+            TreeChanged?.Invoke();
+        }
 
         public void AddChild(Node parent, Node child)
         {
             parent.Children.Add(child);
             child.Parent = parent;
             RegisterInCache(child); // child + all of child's existing descendants, if it arrives with a subtree attached
+            TreeChanged?.Invoke();
         }
 
-        public void RemoveNode(Node node) => Roots.Remove(node);
+        public void RemoveNode(Node node)
+        {
+            Roots.Remove(node);
+            TreeChanged?.Invoke();
+        }
 
         public void RemoveChild(Node parent, Node child)
         {
             parent.Children.Remove(child);
             child.Parent = null;
             UnregisterFromCache(child); // child + all descendants
+            TreeChanged?.Invoke();
         }
 
         internal void RekeyNode(string? oldId, string? newId, Node node)
         {
             if (!string.IsNullOrEmpty(oldId)) _idCache.Remove(oldId);
             if (!string.IsNullOrEmpty(newId)) _idCache[newId] = node;
+            TreeChanged?.Invoke();
         }
 
         private void RegisterInCache(Node node)

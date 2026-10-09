@@ -7,14 +7,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using OssianForge.Engine.Ipc;
 
 namespace OssianForge.App
 {
     public class App
     {
 
-        public App()
+        public App(string[] args)
         {
+            ManagerLink.Configure(args);
+
             Engine.Engine.Create();
             Engine.Engine.Initialize();
 

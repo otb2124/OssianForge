@@ -8,6 +8,7 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using OssianForge.Engine.Ipc;
 
 namespace OssianForge.Engine
 {
@@ -75,6 +76,8 @@ namespace OssianForge.Engine
             Physics.OnLoad();
             Resources.PostLoad();
             DebugConsole.Start();
+
+            ManagerLink.StartIfRequested();
         }
 
         public static void OnUpdate(double delta)

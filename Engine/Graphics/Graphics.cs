@@ -139,7 +139,7 @@ namespace OssianForge.Engine.Graphics
             ParallaxController.Enabled = false;
             //ParallaxController.Start();
 
-            if (StartupWindowMode != WindowMode.Windowed)
+            if (!OssianForge.Engine.Ipc.ManagerLink.Embedded && StartupWindowMode != WindowMode.Windowed)
                 SetWindowMode(StartupWindowMode);
         }
 
