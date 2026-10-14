@@ -1,5 +1,7 @@
 # OssianForge
 
+<img width="1024" height="1024" alt="ossian1024x1024" src="https://github.com/user-attachments/assets/04cf1a46-5f6e-4306-b605-3e5d3a98adf0" />
+
 OssianForge is a custom 3D game engine written in C# on top of **Silk.NET** and **OpenGL**. It follows a Godot-style node/property architecture, where behavior is composed by attaching typed `NodeProperty` components to `Node`s, and most game content — scenes, actions, state machines, input bindings — is authored as data in JSON rather than hardcoded.
 
 A lightweight reflection dispatcher sits at the center of the engine: JSON config files reference engine and game methods by string path (e.g. `node.callMethod`, `nodes.getValue`), which are resolved, cached, and invoked at runtime. This lets scenes, animations, and gameplay logic be wired up without recompiling.
