@@ -10,10 +10,16 @@
 
   <ItemGroup>
     <Compile Remove="exports\**" />
+    <Compile Remove="OssianContent\**" />
+    <Compile Remove="OssianCooker\**" />
     <Compile Remove="snapshots\**" />
     <EmbeddedResource Remove="exports\**" />
+    <EmbeddedResource Remove="OssianContent\**" />
+    <EmbeddedResource Remove="OssianCooker\**" />
     <EmbeddedResource Remove="snapshots\**" />
     <None Remove="exports\**" />
+    <None Remove="OssianContent\**" />
+    <None Remove="OssianCooker\**" />
     <None Remove="snapshots\**" />
   </ItemGroup>
 
@@ -418,6 +424,10 @@
   <ItemGroup>
     <Folder Include="Content\TextureFiles\HeightMaps\" />
     <Folder Include="Engine\Resources\Types\FrameSequence\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="OssianContent\OssianContent.csproj" />
   </ItemGroup>
 
 </Project>

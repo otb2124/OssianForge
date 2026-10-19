@@ -1,15 +1,17 @@
-﻿using OssianForge.Engine.Resources.Config;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using OssianForge.Content;
+using OssianForge.Engine.Resources.Config;
 
 namespace OssianForge.Engine.Resources
 {
     public class ResourceLoader
     {
         public ResourcesConfig ResourcesConfig;
+
+        public static IContentSource Source { get; private set; } = new DiskContentSource(Resource.CONTENT_FOLDER_PATH);
+
+        /// <summary>True when Source returns cooked blobs; loaders then use the OssianContent codecs instead of importing.</summary>
+        public static bool IsCooked => Source.IsCooked;
+
 
         public ResourceLoader()
         {
@@ -29,7 +31,7 @@ namespace OssianForge.Engine.Resources
             ResourcesConfig.LoadResources<SceneConfig>();
         }
 
-        public void InitializeResources()
+        public void InitializeResourceConfigs()
         {
             var dependency = Engine.Resources.ResourceScheduler.NodeDependency;
 
@@ -45,6 +47,17 @@ namespace OssianForge.Engine.Resources
 
             // Build instances in sorted dependency order
             ResourcesConfig.BuildInstances(dependency.GetSortedResourceIds().ToArray());
+        }
+
+        public static void InitializeResources(string? packPath = null)
+        {
+            if (Environment.GetEnvironmentVariable("OSSIAN_CONTENT") == "loose") return;
+
+            packPath ??= System.IO.Path.Combine(AppContext.BaseDirectory, "Content.pak");
+            if (!System.IO.File.Exists(packPath)) return;
+
+            Source = new Content.Pack.PackContentSource(packPath);
+            Console.WriteLine($"[CONTENT] Using cooked pack: {packPath}");
         }
 
         public void OnLoad()

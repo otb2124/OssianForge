@@ -5,6 +5,10 @@ VisualStudioVersion = 17.10.34928.147
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OssianForge", "OssianForge.csproj", "{27E9089F-F405-4403-93F1-C9864756C897}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OssianContent", "OssianContent\OssianContent.csproj", "{CDF0545D-92E6-4173-AF5C-F031E1BB0EA1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OssianCooker", "OssianCooker\OssianCooker.csproj", "{AD632551-4E9D-4AC4-9C62-CD43C0E0D50D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +19,14 @@ Global
 		{27E9089F-F405-4403-93F1-C9864756C897}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{27E9089F-F405-4403-93F1-C9864756C897}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{27E9089F-F405-4403-93F1-C9864756C897}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CDF0545D-92E6-4173-AF5C-F031E1BB0EA1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CDF0545D-92E6-4173-AF5C-F031E1BB0EA1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CDF0545D-92E6-4173-AF5C-F031E1BB0EA1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CDF0545D-92E6-4173-AF5C-F031E1BB0EA1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AD632551-4E9D-4AC4-9C62-CD43C0E0D50D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AD632551-4E9D-4AC4-9C62-CD43C0E0D50D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AD632551-4E9D-4AC4-9C62-CD43C0E0D50D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AD632551-4E9D-4AC4-9C62-CD43C0E0D50D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
