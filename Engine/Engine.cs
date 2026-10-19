@@ -22,6 +22,7 @@ namespace OssianForge.Engine
         public static Inputs.Inputs Inputs;
         public static Physics.Physics Physics;
         public static Audio.Audio Audio;
+        public static Network.Network Network;
 
         public static Utils.Console.DebugConsole DebugConsole;
 
@@ -34,6 +35,7 @@ namespace OssianForge.Engine
             Inputs = new Inputs.Inputs();
             Physics = new Physics.Physics();
             Audio = new Audio.Audio();
+            Network = new Network.Network();
 
             DebugConsole = new Utils.Console.DebugConsole();
         }
@@ -79,12 +81,14 @@ namespace OssianForge.Engine
             Resources.PostLoad();
 
             ManagerLink.StartIfRequested();
+            Network.StartIfRequested();
         }
 
         public static void OnUpdate(double delta)
         {
             Devices.OnUpdate(delta);
             Inputs.OnUpdate(delta);
+            Network.OnUpdate(delta);
             Nodes.OnUpdate(delta);
             Physics.OnUpdate(delta);
         }
@@ -102,6 +106,11 @@ namespace OssianForge.Engine
         public static void OnFocusChanged(bool focused)
         {
             Inputs.OnFocusChanged(focused);
+        }
+
+        public static void OnClose()
+        {
+            Network.Shutdown();
         }
     }
 }

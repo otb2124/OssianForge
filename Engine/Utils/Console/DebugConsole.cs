@@ -19,6 +19,7 @@ namespace OssianForge.Engine.Utils.Console
             Register(new RemoveNodeCommand());
             Register(new ListNodesCommand());
             Register(new SetPropertyCommand());
+            Register(new NetCommand());
             Register(new HelpCommand(_commands));
         }
 

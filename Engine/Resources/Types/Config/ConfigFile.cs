@@ -36,7 +36,7 @@ namespace OssianForge.Engine.Resources.Config
         {
             base.Load();
             if (!CookerLink.Source.Exists(Path))
-                throw new Exception($"ConfigFile not found: '{Path}'");
+                 throw new Exception($"ConfigFile not found: '{Path}'");
             string raw = CookerLink.Source.ReadAllText(Path);
             _data = Format switch
             {

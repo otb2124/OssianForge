@@ -8,6 +8,8 @@ using OssianForge.Engine.Nodes.Props;
 using System.Numerics;
 using System.Reflection;
 using OssianForge.Engine.Reflection;
+using OpenCvSharp.Dnn;
+using Net = OssianForge.Engine.Network.Network;
 
 namespace OssianForge.Engine.Utils.Console
 {
@@ -439,6 +441,77 @@ namespace OssianForge.Engine.Utils.Console
             DebugConsole.Write("Available commands:", ConsoleColor.Cyan);
             foreach (var cmd in _commands.Values)
                 DebugConsole.Write($"  {cmd.Name,-20} {cmd.Description}", ConsoleColor.White);
+        }
+    }
+
+    public class NetCommand : ICommand
+    {
+        public string Name => "net";
+        public string Description =>
+            "net host [port:7777] [name:Bob] | net join ip:<address[:port]> [name:Bob] | net say <text> | net status | net stop";
+
+        public void Execute(CommandContext ctx)
+        {
+            var sub = ctx.Args.Keys.FirstOrDefault(k => ctx.Args[k] == "");
+
+            switch (sub)
+            {
+                case "host":
+                    {
+                        int port = ctx.GetAs("port", Net.DefaultPort);
+                        string? name = ctx.Get("name");
+                        NodeManager.Enqueue(() => Engine.Network.Host(port, name));
+                        break;
+                    }
+
+                case "join":
+                    {
+                        string? target = ctx.Get("ip");
+                        if (target == null || !Net.TryParseEndpoint(target, out string host, out int port))
+                        {
+                            DebugConsole.Write("Usage: net join ip:<address[:port]> [name:Bob]", ConsoleColor.Yellow);
+                            return;
+                        }
+
+                        string? name = ctx.Get("name");
+                        NodeManager.Enqueue(() => Engine.Network.Join(host, port, name));
+                        break;
+                    }
+
+                case "say":
+                    {
+                        int i = ctx.Raw.IndexOf("say", StringComparison.OrdinalIgnoreCase);
+                        string text = ctx.Raw[(i + 3)..].Trim();
+                        if (text.Length == 0)
+                        {
+                            DebugConsole.Write("Usage: net say <text>", ConsoleColor.Yellow);
+                            return;
+                        }
+
+                        NodeManager.Enqueue(() => Engine.Network.SendChat(text));
+                        break;
+                    }
+
+                case "status":
+                    NodeManager.Enqueue(() =>
+                    {
+                        var n = Engine.Network;
+                        DebugConsole.Write(
+                            $"role={n.Role} ready={n.IsReady} localPeer={n.LocalPeerId} rtt={n.RttMs:F0}ms",
+                            ConsoleColor.Cyan);
+                        foreach (var p in n.Peers.Values)
+                            DebugConsole.Write($"  [{p.Id}] {p.Name}", ConsoleColor.White);
+                    });
+                    break;
+
+                case "stop":
+                    NodeManager.Enqueue(() => Engine.Network.Disconnect("stopped by user"));
+                    break;
+
+                default:
+                    DebugConsole.Write(Description, ConsoleColor.Yellow);
+                    break;
+            }
         }
     }
 }
