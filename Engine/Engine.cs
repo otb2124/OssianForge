@@ -46,6 +46,8 @@ namespace OssianForge.Engine
             Nodes.Initialize();
             Inputs.Initialize();
             Audio.Initialize();
+
+            DebugConsole.Start();
         }
 
         public static void OnRun()
@@ -75,7 +77,6 @@ namespace OssianForge.Engine
             Inputs.OnLoad();
             Physics.OnLoad();
             Resources.PostLoad();
-            DebugConsole.Start();
 
             ManagerLink.StartIfRequested();
         }

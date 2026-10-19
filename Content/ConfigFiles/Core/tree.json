@@ -14,5 +14,8 @@
     ]
   },
   "mainScene": "configfile.scene.terrainscene",
-  "version": "1.0.0"
+  "version": "1.0.0",
+  "versionTags": ["tag"],
+  "appTitle": "OssianForge",
+  "executablePath": "bin/Debug/net8.0/OssianForge.exe"
 }

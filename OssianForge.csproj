@@ -9,6 +9,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="exports\**" />
+    <Compile Remove="snapshots\**" />
+    <EmbeddedResource Remove="exports\**" />
+    <EmbeddedResource Remove="snapshots\**" />
+    <None Remove="exports\**" />
+    <None Remove="snapshots\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Remove="Content\ScriptFiles\MyCustomProperty.cs" />
     <Compile Remove="Content\ScriptFiles\Packs\Ossian\Motion\MotionProperty.cs" />
     <Compile Remove="Content\ScriptFiles\Packs\Ossian\StateMachine\State.cs" />
@@ -384,6 +393,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Content\TextureFiles\3d\leather_n.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Content\TextureFiles\3d\ossian_alt1024x1024.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Content\TextureFiles\3d\skin.jpg">
