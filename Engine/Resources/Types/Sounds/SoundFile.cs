@@ -1,5 +1,7 @@
 ﻿using NVorbis;
+using OssianForge.Content.Sounds;
 using OssianForge.Engine.Audio;
+using OssianForge.Engine.Ipc;
 using Silk.NET.OpenAL;
 using System.Buffers.Binary;
 
@@ -27,26 +29,33 @@ namespace OssianForge.Engine.Resources.Sounds
         public override void Load()
         {
             base.Load();
-            string fullPath = CONTENT_FOLDER_PATH + "/" + Path;
-            string ext = System.IO.Path.GetExtension(fullPath).ToLowerInvariant();
+            string ext = System.IO.Path.GetExtension(Path).ToLowerInvariant();
 
             byte[] pcmData;
             int sampleRate;
             int channels;
+            int bits = 16;
             BufferFormat format;
 
-            if (ext == ".ogg")
-                (pcmData, sampleRate, channels, format) = LoadOgg(fullPath);
-            else if (ext == ".wav")
-                (pcmData, sampleRate, channels, format) = LoadWav(fullPath);
-            else
-                throw new Exception($"[SOUND] Unsupported audio format '{ext}'. Use .wav or .ogg.");
+            if (CookerLink.IsCooked)
+            {
+                var s = SoundCodec.Read(CookerLink.Source.ReadAllBytes(Path));
+                pcmData = s.Pcm; sampleRate = s.SampleRate; channels = s.Channels; bits = s.BitsPerSample;
+                format = (channels, bits) switch
+                {
+                    (1, 8) => BufferFormat.Mono8,
+                    (1, 16) => BufferFormat.Mono16,
+                    (2, 8) => BufferFormat.Stereo8,
+                    _ => BufferFormat.Stereo16
+                };
+            }
+            else if (ext == ".ogg") (pcmData, sampleRate, channels, format) = LoadOgg(Path);
+            else if (ext == ".wav") (pcmData, sampleRate, channels, format) = LoadWav(Path);
+            else throw new Exception($"[SOUND] Unsupported audio format '{ext}'. Use .wav or .ogg.");
 
             SampleRate = sampleRate;
             Channels = channels;
-
-            // bytes per sample = 2 (16-bit PCM), total samples = pcmData.Length / 2 / channels
-            DurationSecs = (double)pcmData.Length / (sampleRate * channels * 2);
+            DurationSecs = (double)pcmData.Length / (sampleRate * channels * (bits / 8));
 
             var al = Engine.Audio.AudioSystem.AL;
             BufferId = al.GenBuffer();
@@ -64,7 +73,8 @@ namespace OssianForge.Engine.Resources.Sounds
 
         private static (byte[] pcm, int rate, int ch, BufferFormat fmt) LoadOgg(string path)
         {
-            using var reader = new VorbisReader(path);
+            using var stream = CookerLink.Source.Open(path);
+            using var reader = new VorbisReader(stream, false);
 
             int channels = reader.Channels;
             int sampleRate = reader.SampleRate;
@@ -92,7 +102,7 @@ namespace OssianForge.Engine.Resources.Sounds
 
         private static (byte[] pcm, int rate, int ch, BufferFormat fmt) LoadWav(string path)
         {
-            using var fs = System.IO.File.OpenRead(path);
+            using var fs = CookerLink.Source.Open(path);
             using var reader = new System.IO.BinaryReader(fs);
 
             // RIFF header

@@ -1,4 +1,5 @@
-﻿using Silk.NET.Assimp;
+﻿using OssianForge.Engine.Ipc;
+using Silk.NET.Assimp;
 using Silk.NET.OpenGL;
 using OssianForge.Engine.Utils;
 using System;
@@ -56,6 +57,13 @@ namespace OssianForge.Engine.Resources.MeshFiles
         public override void Load()
         {
             base.Load();
+
+            if (CookerLink.IsCooked)
+            {
+                LoadCooked();
+                return;
+            }
+
             string globalPath = CONTENT_FOLDER_PATH + "/" + Path;
 
             using var assimp = Assimp.GetApi();
@@ -193,6 +201,34 @@ namespace OssianForge.Engine.Resources.MeshFiles
 
                 assimp.FreeScene(scene);
             }
+        }
+
+        private void LoadCooked()
+        {
+            var data = OssianForge.Content.Meshes.MeshCodec.Read(CookerLink.Source.ReadAllBytes(Path));
+
+            RootNode = data.Root != null ? ToSkeletonNode(data.Root) : null;
+
+            foreach (var sm in data.SubMeshes)
+            {
+                var bones = new List<BoneData>(sm.Bones.Length);
+                foreach (var b in sm.Bones)
+                {
+                    var bone = new BoneData { Name = b.Name, OffsetMatrix = b.OffsetMatrix };
+                    bone.Weights.Capacity = b.Weights.Length;
+                    foreach (var w in b.Weights)
+                        bone.Weights.Add(new BoneWeight { VertexIndex = w.VertexIndex, Weight = w.Weight });
+                    bones.Add(bone);
+                }
+                SubMeshes.Add((sm.Vertices, sm.MaterialIndex, bones));
+            }
+        }
+
+        private static SkeletonNode ToSkeletonNode(OssianForge.Content.Meshes.SkeletonNodeData n)
+        {
+            var node = new SkeletonNode { Name = n.Name, LocalTransform = n.LocalTransform };
+            foreach (var c in n.Children) node.Children.Add(ToSkeletonNode(c));
+            return node;
         }
 
         private unsafe SkeletonNode BuildSkeletonNode(Node* node)

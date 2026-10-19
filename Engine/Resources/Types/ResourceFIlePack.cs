@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OssianForge.Engine.Ipc;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -18,19 +19,12 @@ namespace OssianForge.Engine.Resources
 
         public override void Load()
         {
-            string fullFolder = CONTENT_FOLDER_PATH + "/" + Path;
-
-            if (!Directory.Exists(fullFolder))
-                throw new DirectoryNotFoundException($"ResourceFilePack: folder not found: {fullFolder}");
-
-            var filePaths = Directory.GetFiles(fullFolder, "*", SearchOption.AllDirectories);
+            var filePaths = CookerLink.Source.List(Path).ToList();
 
             Files.Clear();
 
-            foreach (var absolutePath in filePaths)
+            foreach (var relativePath in filePaths)
             {
-                string relativePath = System.IO.Path.GetRelativePath(CONTENT_FOLDER_PATH, absolutePath)
-                                                    .Replace('\\', '/');
 
                 var file = new T
                 {

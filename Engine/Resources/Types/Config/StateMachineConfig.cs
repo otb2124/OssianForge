@@ -1,4 +1,6 @@
-﻿using System;
+﻿using OssianForge.Content;
+using OssianForge.Engine.Ipc;
+using System;
 using System.Linq;
 using System.Text.Json;
 using OssianForge.Engine.Nodes.Props;
@@ -16,8 +18,7 @@ namespace OssianForge.Engine.Resources.Config
         public override void Load()
         {
             //base.Load();
-            string globalPath = CONTENT_FOLDER_PATH + "/" + Path;
-            string raw = File.ReadAllText(globalPath);
+            string raw = CookerLink.Source.ReadAllText(Path);
             Document = JsonDocument.Parse(raw);
         }
 

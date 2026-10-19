@@ -17,6 +17,7 @@ namespace OssianForge.App
         public App(string[] args)
         {
             ManagerLink.Configure(args);
+            CookerLink.InitializeResources();
 
             Engine.Engine.Create();
             Engine.Engine.Initialize();

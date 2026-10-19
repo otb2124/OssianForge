@@ -1,5 +1,7 @@
-﻿using Silk.NET.OpenGL;
+﻿using OssianForge.Content;
+using Silk.NET.OpenGL;
 using OssianForge.Engine.Utils;
+using OssianForge.Engine.Ipc;
 
 
 namespace OssianForge.Engine.Resources.ShaderFiles
@@ -20,10 +22,9 @@ namespace OssianForge.Engine.Resources.ShaderFiles
         {
             base.Load();
 
-            string globalPath = CONTENT_FOLDER_PATH + "/" + Path;
-            if (!File.Exists(globalPath))
-                throw new Exception($"ShaderFile not found: '{globalPath}'");
-            string raw = File.ReadAllText(globalPath);
+            if (!CookerLink.Source.Exists(Path))
+                throw new Exception($"ShaderFile not found: '{Path}'");
+            string raw = CookerLink.Source.ReadAllText(Path);
 
             uint shader = Engine.Graphics.Batch.OpenGL.CreateShader(FileExtensionHelper.ExtensionToShaderType(GetExtension()));
             Engine.Graphics.Batch.OpenGL.ShaderSource(shader, raw);

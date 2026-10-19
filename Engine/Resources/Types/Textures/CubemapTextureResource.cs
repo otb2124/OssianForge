@@ -1,4 +1,6 @@
-﻿using Silk.NET.OpenGL;
+﻿using OssianForge.Content.Textures;
+using OssianForge.Engine.Ipc;
+using Silk.NET.OpenGL;
 using StbImageSharp;
 using System;
 using System.Collections.Generic;
@@ -51,8 +53,20 @@ namespace OssianForge.Engine.Resources.Textures
             for (int i = 0; i < 6; i++)
             {
                 var faceFile = Faces[i].TextureFiles[0];
-                string globalPath = CONTENT_FOLDER_PATH + "/" + faceFile.Path;
-                using var stream = File.OpenRead(globalPath);
+
+                if (CookerLink.IsCooked)
+                {
+                    var tex = TextureCodec.Read(CookerLink.Source.ReadAllBytes(faceFile.Path));
+                    unsafe
+                    {
+                        fixed (byte* ptr = tex.Mips[0])
+                            gl.TexImage2D(targets[i], 0, InternalFormat.Rgba, (uint)tex.Width, (uint)tex.Height, 0,
+                                PixelFormat.Rgba, PixelType.UnsignedByte, ptr);
+                    }
+                    continue;
+                }
+
+                using var stream = CookerLink.Source.Open(faceFile.Path);
                 var image = ImageResult.FromStream(stream, ColorComponents.RedGreenBlueAlpha);
 
                 unsafe

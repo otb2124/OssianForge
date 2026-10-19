@@ -1,4 +1,6 @@
-﻿using OssianForge.Engine.Resources.MeshFiles;
+﻿using OssianForge.Content.Textures;
+using OssianForge.Engine.Ipc;
+using OssianForge.Engine.Resources.MeshFiles;
 using OssianForge.Engine.Resources.Meshes;
 using OssianForge.Engine.Resources.TextureFiles;
 using Silk.NET.OpenGL;
@@ -47,12 +49,26 @@ namespace OssianForge.Engine.Resources.Meshes
             var texFile = Engine.Resources.GetResource<TextureFile>(_heightmapId)
                 ?? throw new Exception($"HeightmapMeshResource: heightmap TextureFile not found: '{_heightmapId}'");
 
-            string globalPath = Resource.CONTENT_FOLDER_PATH + "/" + texFile.Path;
-
             StbImage.stbi_set_flip_vertically_on_load(1);
             ImageResult image;
-            using (var stream = File.OpenRead(globalPath))
+            if (CookerLink.IsCooked)
+            {
+                // cooked rows are already flipped (default import), RGBA8, mip 0 = full resolution
+                var tex = TextureCodec.Read(CookerLink.Source.ReadAllBytes(texFile.Path));
+                image = new ImageResult
+                {
+                    Width = tex.Width,
+                    Height = tex.Height,
+                    SourceComp = ColorComponents.RedGreenBlueAlpha,
+                    Comp = ColorComponents.RedGreenBlueAlpha,
+                    Data = tex.Mips[0]
+                };
+            }
+            else
+            {
+                using var stream = CookerLink.Source.Open(texFile.Path);
                 image = ImageResult.FromStream(stream, ColorComponents.RedGreenBlueAlpha);
+            }
 
             _width = image.Width;
             _depth = image.Height;

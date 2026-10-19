@@ -1,4 +1,6 @@
-﻿using System;
+﻿using OssianForge.Content;
+using OssianForge.Engine.Ipc;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -33,10 +35,9 @@ namespace OssianForge.Engine.Resources.Config
         public override void Load()
         {
             base.Load();
-            string globalPath = CONTENT_FOLDER_PATH + "/" + Path;
-            if (!File.Exists(globalPath))
-                throw new Exception($"ConfigFile not found: '{globalPath}'");
-            string raw = File.ReadAllText(globalPath);
+            if (!CookerLink.Source.Exists(Path))
+                throw new Exception($"ConfigFile not found: '{Path}'");
+            string raw = CookerLink.Source.ReadAllText(Path);
             _data = Format switch
             {
                 ConfigFormat.Json => ParseJson(raw),

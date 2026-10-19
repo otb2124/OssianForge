@@ -1,4 +1,5 @@
-﻿using Silk.NET.Assimp;
+﻿using OssianForge.Engine.Ipc;
+using Silk.NET.Assimp;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -65,6 +66,13 @@ namespace OssianForge.Engine.Resources.Animations
         public override void Load()
         {
             base.Load();
+
+            if (CookerLink.IsCooked)
+            {
+                LoadCooked();
+                return;
+            }
+
             string globalPath = CONTENT_FOLDER_PATH + "/" + Path;
 
             // Derive the expected clip name from the filename.
@@ -222,6 +230,35 @@ namespace OssianForge.Engine.Resources.Animations
                 }
 
                 assimp.FreeScene(scene);
+            }
+        }
+
+        private void LoadCooked()
+        {
+            var data = OssianForge.Content.Animations.AnimationCodec.Read(CookerLink.Source.ReadAllBytes(Path));
+
+            foreach (var c in data.Clips)
+            {
+                var clip = new AnimationClip
+                {
+                    Name = c.Name,
+                    DurationTicks = c.DurationTicks,
+                    TicksPerSecond = c.TicksPerSecond
+                };
+
+                foreach (var ch in c.Channels)
+                {
+                    var bone = new BoneChannel { BoneName = ch.BoneName };
+                    foreach (var k in ch.PositionKeys) bone.PositionKeys.Add(new VectorKey { Time = k.Time, Value = k.Value });
+                    foreach (var k in ch.RotationKeys) bone.RotationKeys.Add(new QuatKey { Time = k.Time, Value = k.Value });
+                    foreach (var k in ch.ScaleKeys) bone.ScaleKeys.Add(new VectorKey { Time = k.Time, Value = k.Value });
+                    clip.Channels.Add(bone);
+                }
+
+                Console.WriteLine($"[ANIMFILE] Loaded cooked clip '{clip.Name}' from '{Path}': " +
+                                  $"{clip.Channels.Count} channels, {clip.DurationTicks} ticks, " +
+                                  $"tps={clip.TicksPerSecond}, duration={clip.DurationSeconds:F2}s");
+                Clips.Add(clip);
             }
         }
 
