@@ -9,6 +9,8 @@
     <AssemblyName>OssianCooker</AssemblyName>
     <RootNamespace>OssianForge.Cooker</RootNamespace>
     <InvariantGlobalization>true</InvariantGlobalization>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
   </PropertyGroup>
 
   <ItemGroup>
