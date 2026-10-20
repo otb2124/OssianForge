@@ -25,10 +25,9 @@ namespace OssianForge.Engine.Network.Replication
 
         public override bool WriteState(BlobWriter w, bool full)
         {
-            var res = _anim.AnimationResource;
             string clip = _anim.CurrentClip?.Name ?? "";
-            bool playing = _anim.IsPlaying, loop = res.IsLooping;
-            float speed = res.PlaybackSpeed;
+            bool playing = _anim.IsPlaying, loop = _anim.IsLooping;
+            float speed = _anim.PlaybackSpeed;
             double now = NetClock.Now;
 
             bool changed = clip != _lastClip || playing != _lastPlaying || loop != _lastLoop || speed != _lastSpeed;

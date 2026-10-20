@@ -8,7 +8,11 @@ namespace OssianForge.Engine.Nodes.Props
 {
     public class AnimationProperty : NodeProperty
     {
+        /// <summary>Shared clip library. Playback state is NOT here, it is in <see cref="Player"/>.</summary>
         public AnimationResource AnimationResource { get; private set; }
+
+        /// <summary>Playback state of this node only.</summary>
+        public AnimationPlayer Player { get; private set; }
         public Matrix4x4[] BonePalette { get; private set; } = Array.Empty<Matrix4x4>();
         public Vector3 RootMotionDelta { get; private set; } = Vector3.Zero;
 
@@ -24,30 +28,33 @@ namespace OssianForge.Engine.Nodes.Props
         {
             AnimationResource = Engine.Resources.GetResource<AnimationResource>(animationResourceId)
                 ?? throw new Exception($"AnimationResource not found: '{animationResourceId}'");
+            Player = AnimationResource.CreatePlayer();
         }
 
         public void Play(string clipName, bool loop = true, float speed = 1f)
-            => AnimationResource.Play(clipName, loop, speed);
+            => Player.Play(clipName, loop, speed);
 
         public void Play(int clipIndex, bool loop = true, float speed = 1f)
-            => AnimationResource.Play(clipIndex, loop, speed);
+            => Player.Play(clipIndex, loop, speed);
 
-        public void SetSpeed(float speed) => AnimationResource.SetSpeed(speed);
-        public void Stop() => AnimationResource.Stop();
-        public void Pause() => AnimationResource.Pause();
-        public void Resume() => AnimationResource.Resume();
-        public void Seek(double ticks) => AnimationResource.Seek(ticks);
+        public void SetSpeed(float speed) => Player.SetSpeed(speed);
+        public void Stop() => Player.Stop();
+        public void Pause() => Player.Pause();
+        public void Resume() => Player.Resume();
+        public void Seek(double ticks) => Player.Seek(ticks);
 
-        public bool IsPlaying => AnimationResource.IsPlaying;
-        public AnimationClip CurrentClip => AnimationResource.CurrentClip;
-        public double CurrentTime => AnimationResource.CurrentTime;
+        public bool IsPlaying => Player.IsPlaying;
+        public bool IsLooping => Player.IsLooping;
+        public float PlaybackSpeed => Player.PlaybackSpeed;
+        public AnimationClip CurrentClip => Player.CurrentClip;
+        public double CurrentTime => Player.CurrentTime;
 
         public override void OnUpdate(Node node, double delta)
         {
-            AnimationResource.Update(delta);
+            Player.Update(delta);
 
             var mesh = node.GetProperty<MeshProperty>();
-            if (mesh == null || AnimationResource.CurrentClip == null) return;
+            if (mesh == null || Player.CurrentClip == null) return;
 
             var skeleton = mesh.MeshResource.Skeleton;
             if (skeleton == null) return;
@@ -67,7 +74,7 @@ namespace OssianForge.Engine.Nodes.Props
 
         private void ExtractRootMotion()
         {
-            var channel = AnimationResource.CurrentClip?.Channels
+            var channel = Player.CurrentClip?.Channels
                 .Find(c => c.BoneName == RootBoneName);
 
             if (channel == null)
@@ -77,7 +84,7 @@ namespace OssianForge.Engine.Nodes.Props
             }
 
             // Get current root position from animation
-            Vector3 currentRootPos = SamplePosition(channel, AnimationResource.CurrentTime);
+            Vector3 currentRootPos = SamplePosition(channel, Player.CurrentTime);
 
             RootMotionDelta = currentRootPos - _lastRootPosition;
             _lastRootPosition = currentRootPos;
@@ -107,7 +114,7 @@ namespace OssianForge.Engine.Nodes.Props
         private void WalkSkeleton(SkeletonNode node, Matrix4x4 parentTransform,
                    List<BoneData> bones, Matrix4x4[] palette, ref int matched)
         {
-            Matrix4x4? animated = AnimationResource.TryGetBoneTransform(node.Name);
+            Matrix4x4? animated = Player.TryGetBoneTransform(node.Name);
             Matrix4x4 local = animated ?? node.LocalTransform;
 
             if (node.Name == RootBoneName && animated.HasValue)
@@ -133,7 +140,7 @@ namespace OssianForge.Engine.Nodes.Props
         }
 
         public Matrix4x4 GetBoneTransform(string boneName)
-            => AnimationResource.GetBoneTransform(boneName);
+            => Player.GetBoneTransform(boneName);
 
         private static SkeletonNode FindSkeletonNode(SkeletonNode root, string name)
         {
