@@ -33,12 +33,6 @@ desktop.ini
 *.so
 *.dylib
 
-# But keep content files
-!Content/**
-
-# Shader source (keep these)
-!Content/ShaderFiles/**
-
 # Compiled shader cache (if you add any)
 *.spirv
 *.spv
@@ -50,3 +44,5 @@ snapshots/
 exports/
 
 .ossian/
+
+Content/
