@@ -55,6 +55,17 @@ namespace OssianForge.Engine.Resources.Config
                 if (!node.Enabled)
                     return node;
 
+                // A ref carrying spawn flags is not built into the scene. It tells the network layer which
+                // scene to spawn (and where); the node itself stays inert.
+                var identity = node.GetProperty<NetworkIdentityProperty>();
+                if (identity != null && identity.Spawn != NetSpawn.None)
+                {
+                    var tp = node.GetProperty<TransformProperty>();
+                    Engine.Network.Replication.Prefabs.Register(sceneRef.SceneId, identity, tp?.Position);
+                    node.Enabled = false;
+                    return node;
+                }
+
                 return ResolveSceneReference(sceneRef, node, el, parent);
             }
 
@@ -120,14 +131,6 @@ namespace OssianForge.Engine.Resources.Config
         }
     }
 
-        /// <summary>
-        /// Id namespace of one scene instance. Path is empty for the top-level scene; for a scene reference it is the
-        /// reference node's global id; for a runtime spawn it is "&lt;rootLocalId&gt;@&lt;netId&gt;".
-        /// </summary>
-        public readonly record struct InstanceScope(string Path)
-        {
-            public string IdFor(string localId) => string.IsNullOrEmpty(Path) ? localId : $"{Path}/{localId}";
-        }
 
     /// <summary>
     /// property type name -> factory taking the property's "data" element (null when absent).
@@ -210,4 +213,12 @@ namespace OssianForge.Engine.Resources.Config
         }
     }
 
+    /// <summary>
+    /// Id namespace of one scene instance. Path is empty for the top-level scene; for a scene reference it is the
+    /// reference node's global id; for a runtime spawn it is "&lt;rootLocalId&gt;@&lt;netId&gt;".
+    /// </summary>
+    public readonly record struct InstanceScope(string Path)
+    {
+        public string IdFor(string localId) => string.IsNullOrEmpty(Path) ? localId : $"{Path}/{localId}";
+    }
 }

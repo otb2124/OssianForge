@@ -24,9 +24,6 @@ namespace OssianForge.Engine.Resources
 
             ResourcesConfig.BuildInstances<SceneConfig>();
             ResourcesConfig.LoadResources<SceneConfig>();
-
-            // 3. Find spawnable prefab scenes (root NetworkIdentityProperty with spawn flags) before networking starts
-            Engine.Network.Replication.Prefabs.Discover(ResourcesConfig.GetInstances<SceneConfig>());
         }
 
         public void InitializeResourceConfigs()
@@ -39,10 +36,6 @@ namespace OssianForge.Engine.Resources
             // Phase 2: Extract trees and scenes (nodes)
             dependency.ExtractTree("configfile.tree");
             dependency.ExtractScene(Engine.Resources.GetResource<TreeConfig>("configfile.tree").MainScene);
-
-            // Spawnable prefabs are not referenced by any scene node, so pull in their resources explicitly
-            foreach (var prefabSceneId in Engine.Network.Replication.Prefabs.SceneIds)
-                dependency.ExtractScene(prefabSceneId);
 
             // Phase 3: Load post-node resources (modes) AFTER nodes exist
             dependency.ExtractPostNodeResources();

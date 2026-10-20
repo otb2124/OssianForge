@@ -23,10 +23,10 @@ namespace OssianForge.Engine.Network.Replication
         private readonly Dictionary<int, NetworkIdentityProperty> _entities = new();
         private int _nextDynamicId = 1;
 
-        /// <summary>Host (or offline): optional spawn position per peer id. Default: the "spawnPoint" group.</summary>
+        /// <summary>Host (or offline): optional spawn position per peer id. Default: the position of the declaring scene ref.</summary>
         public Func<int, Vector3?>? SpawnPointProvider;
 
-        /// <summary>Spawnable scenes found at resource-load time.</summary>
+        /// <summary>Spawnable scenes declared by scene refs in the main scene.</summary>
         public PrefabCatalog Prefabs { get; } = new();
 
         public IReadOnlyDictionary<int, NetworkIdentityProperty> Entities => _entities;
@@ -42,7 +42,7 @@ namespace OssianForge.Engine.Network.Replication
         public NetworkReplication(Net net)
         {
             _net = net;
-            SpawnPointProvider = DefaultSpawnPoint;
+            SpawnPointProvider = _ => PeerPrefabId != null && Prefabs.TryGet(PeerPrefabId, out var e) ? e.Position : null;
             net.MessageReceived += OnMessage;
             net.PeerJoined += OnPeerJoined;
             net.PeerLeft += OnPeerLeft;
@@ -133,16 +133,6 @@ namespace OssianForge.Engine.Network.Replication
                 Engine.Nodes.NodeManager.DestroySubtree(id.Entity);
         }
 
-        /// <summary>Position of the spawnPoint node chosen by peer id; null when the scene has none (prefab keeps its own transform).</summary>
-        private static Vector3? DefaultSpawnPoint(int peerId)
-        {
-            var pts = Engine.Nodes.NodeManager.GetNodesInGroup(PrefabCatalog.SpawnPointGroup);
-            if (pts.Count == 0) return null;
-
-            int index = ((peerId % pts.Count) + pts.Count) % pts.Count;
-            return pts[index].GetProperty<TransformProperty>()?.WorldTransform.Position;
-        }
-
         private Node? Instantiate(string prefabId, int netId, int owner, Vector3? at)
         {
             var scene = Engine.Resources.GetResource<SceneConfig>(prefabId);
@@ -155,7 +145,12 @@ namespace OssianForge.Engine.Network.Replication
             node.IsInstanceRoot = true;
 
             var id = node.GetProperty<NetworkIdentityProperty>();
-            if (id == null) { id = new NetworkIdentityProperty(); node.AddProperty(id); }
+            if (id == null)
+            {
+                id = new NetworkIdentityProperty();
+                if (Prefabs.TryGet(prefabId, out var declared)) id.SendRate = declared.SendRate;
+                node.AddProperty(id);
+            }
             id.NetId = netId;
             id.OwnerPeerId = owner;
             id.PrefabId = prefabId;

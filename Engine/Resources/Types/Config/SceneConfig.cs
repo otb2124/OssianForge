@@ -39,23 +39,6 @@ namespace OssianForge.Engine.Resources.Config
         public Node Instantiate(InstanceScope scope = default)
             => SceneBuilder.Build(Document.RootElement, scope);
 
-        /// <summary>
-        /// Spawn flags of the ROOT node's NetworkIdentityProperty, read straight from the JSON (nothing is built).
-        /// NetSpawn.None when the root has no NetworkIdentityProperty.
-        /// </summary>
-        public NetSpawn RootSpawnFlags()
-        {
-            if (Document == null) return NetSpawn.None;
-            if (!Document.RootElement.TryGetProperty("properties", out var props)) return NetSpawn.None;
-
-            foreach (var prop in props.EnumerateArray())
-            {
-                if (prop.TryGetProperty("type", out var type) && type.GetString() == "NetworkIdentityProperty")
-                    return ParseProperty(prop) is NetworkIdentityProperty identity ? identity.Spawn : NetSpawn.None;
-            }
-            return NetSpawn.None;
-        }
-
         // ── property dispatch ─────────────────────────────────────────────────────
 
         internal static NodeProperty ParseProperty(JsonElement el)
@@ -351,7 +334,7 @@ namespace OssianForge.Engine.Resources.Config
 
         private static StateMachineProperty ParseStateMachineProperty(JsonElement? data)
         {
-            string smConfigId = Str(data, 0);
+            string smConfigId = Str(data, 0); // e.g. "configfile.statemachine.player"
             var config = Engine.Resources.GetResource<StateMachineConfig>(smConfigId);
             return config.BuildProperty();
         }

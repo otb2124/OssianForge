@@ -1,15 +1,6 @@
 ﻿{
   "id": "playerScene",
   "name": "Player Scene",
-  "properties": [
-    {
-      "type": "NetworkIdentityProperty",
-      "data": [
-        20,
-        [ "SpawnPerPeer" ]
-      ]
-    }
-  ],
   "children": [
     {
       "id": "player",
@@ -122,3 +113,4 @@
     }
   ]
 }
+

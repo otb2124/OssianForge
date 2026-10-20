@@ -60,7 +60,7 @@ namespace OssianForge.Engine.Nodes.Props
         internal float SendTimer;
         internal bool RolePending = true;
 
-        /// <summary>Spawn behaviour. Read from the scene ROOT at resource-load time (see PrefabCatalog).</summary>
+        /// <summary>Spawn behaviour. Set on a scene-reference node in the main scene to make the referenced scene spawnable (see PrefabCatalog).</summary>
         public NetSpawn Spawn;
 
         public override OverrideTarget SceneRefTarget => OverrideTarget.Root;
