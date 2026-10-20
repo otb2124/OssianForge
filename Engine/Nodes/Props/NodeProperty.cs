@@ -7,8 +7,13 @@ using System.Threading.Tasks;
 
 namespace OssianForge.Engine.Nodes.Props
 {
+    /// <summary>Where a property written on a scene-reference node lands in the referenced scene.</summary>
+    public enum OverrideTarget { Content, Root }
+
     public class NodeProperty
     {
+        /// <summary>Content: the scene's content node (root, or its single child when the root is an empty wrapper). Root: always the instance root.</summary>
+        public virtual OverrideTarget SceneRefTarget => OverrideTarget.Content;
 
         public string NodeId;
         public bool Started = false;

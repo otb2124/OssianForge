@@ -47,6 +47,8 @@ namespace OssianForge.Engine.Nodes.Props
 
     public class TransformProperty : NodeProperty
     {
+        public override OverrideTarget SceneRefTarget => OverrideTarget.Root;
+
         public bool TransformDirty { get; set; } = false;
 
         public Transform InitialTransform;

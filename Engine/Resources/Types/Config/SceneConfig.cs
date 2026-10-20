@@ -18,14 +18,6 @@ namespace OssianForge.Engine.Resources.Config
 
         public JsonDocument Document;
 
-        public static string IdSuffix = "";
-        public static string IdPrefix = "";
-
-        public const string TemplatePrefix = "@scene:";
-        public static readonly Dictionary<string, JsonElement> Templates = new();
-        public static string? PlayerTemplateId;          // first player template seen
-        private static bool _instantiatingTemplate;
-
         public SceneConfig(string id, string path) : base(id, path) { }
 
 
@@ -37,140 +29,49 @@ namespace OssianForge.Engine.Resources.Config
             Document = JsonDocument.Parse(raw);
         }
 
-        public Node GetScene()
+        /// <summary>Authored id of the scene's root node, or null.</summary>
+        public string? RootLocalId
+            => Document != null && Document.RootElement.TryGetProperty("id", out var id) ? id.GetString() : null;
+
+        public Node GetScene() => Instantiate(default);
+
+        /// <summary>Builds a fresh node tree from this scene. Ids are namespaced under <paramref name="scope"/>.</summary>
+        public Node Instantiate(InstanceScope scope = default)
+            => SceneBuilder.Build(Document.RootElement, scope);
+
+        /// <summary>
+        /// Spawn flags of the ROOT node's NetworkIdentityProperty, read straight from the JSON (nothing is built).
+        /// NetSpawn.None when the root has no NetworkIdentityProperty.
+        /// </summary>
+        public NetSpawn RootSpawnFlags()
         {
-            return ParseNode(Document.RootElement);
-        }
+            if (Document == null) return NetSpawn.None;
+            if (!Document.RootElement.TryGetProperty("properties", out var props)) return NetSpawn.None;
 
-        // ── node ─────────────────────────────────────────────────────────────────
-
-        public static Node ParseNode(JsonElement el, Node parent = null)
-        {
-            bool bypassTemplate = _instantiatingTemplate;   // consumed by the top node only
-            _instantiatingTemplate = false;
-
-            var node = new Node();
-
-            if (el.TryGetProperty("id", out var id))
+            foreach (var prop in props.EnumerateArray())
             {
-                node.LocalId = id.GetString();
-                node.Id = IdPrefix + node.LocalId + IdSuffix;
+                if (prop.TryGetProperty("type", out var type) && type.GetString() == "NetworkIdentityProperty")
+                    return ParseProperty(prop) is NetworkIdentityProperty identity ? identity.Spawn : NetSpawn.None;
             }
-
-            if (el.TryGetProperty("name", out var name))
-                node.Name = name.GetString();
-
-            if (el.TryGetProperty("StartEnabled", out var onStart))
-                node.StartEnabled = onStart.GetBoolean();
-
-            if (el.TryGetProperty("UpdateEnabled", out var onUpdate))
-                node.UpdateEnabled = onUpdate.GetBoolean();
-
-            if (el.TryGetProperty("renderEnabled", out var onRender))
-                node.RenderEnabled = onRender.GetBoolean();
-
-            if (el.TryGetProperty("enabled", out var enabled))
-                node.Enabled = enabled.GetBoolean();
-
-            if (el.TryGetProperty("properties", out var props))
-                foreach (var prop in props.EnumerateArray())
-                    node.AddProperty(ParseProperty(prop));
-
-            var sceneRef = node.GetProperty<SceneReferenceProperty>();
-            if (sceneRef != null)
-            {
-                // Skip scene reference resolution if either the node or the SceneReferenceProperty itself is disabled
-                if (!node.Enabled)
-                {
-                    return node;
-                }
-
-                var identity = node.GetProperty<NetworkIdentityProperty>();
-                if (identity is { PlayerTemplate: true } && !bypassTemplate)
-                {
-                    string key = node.LocalId ?? node.Name;
-                    Templates[key] = el.Clone();
-                    PlayerTemplateId ??= TemplatePrefix + key;
-                    node.Enabled = false;        // inert spawn marker; the player is spawned at runtime
-                    return node;
-                }
-
-                var resolved = ResolveSceneReference(sceneRef, node, el, parent);
-                return resolved;
-            }
-
-            if (el.TryGetProperty("children", out var children))
-                foreach (var child in children.EnumerateArray())
-                {
-                    var childNode = ParseNode(child, node);
-                    childNode.Parent = node;
-                    node.AddChild(childNode);
-                }
-
-            return node;
-        }
-
-        private static Node ResolveSceneReference(SceneReferenceProperty sceneRef, Node overrides, JsonElement el, Node parent)
-        {
-            var sceneConfig = Engine.Resources.GetResource<SceneConfig>(sceneRef.SceneId)
-                ?? throw new Exception($"[SCENE REFERENCE] SceneConfig '{sceneRef.SceneId}' not found.");
-
-            // Everything inside the referenced scene is namespaced under the ref node's id.
-            string refId = overrides.Id;
-            string previousPrefix = IdPrefix;
-            if (!string.IsNullOrEmpty(refId)) IdPrefix = refId + "/";
-
-            Node root;
-            try { root = sceneConfig.GetScene(); }
-            finally { IdPrefix = previousPrefix; }
-
-            if (!string.IsNullOrEmpty(refId)) root.Id = refId;
-            if (!string.IsNullOrEmpty(overrides.LocalId)) root.InstanceName = overrides.LocalId; // how the parent scene sees it
-            root.IsInstanceRoot = true;
-            root.Parent = parent;
-
-            Node injectTarget = (root.Properties.Count == 0 && root.Children.Count == 1)
-                ? root.Children[0]
-                : root;
-
-            foreach (var prop in overrides.Properties)
-            {
-                if (prop is TransformProperty || prop is NetworkIdentityProperty)
-                    root.SetProperty(prop);
-                else
-                    injectTarget.SetProperty(prop);
-            }
-
-            // Ensure root always has a TransformProperty for hierarchy climbing
-            if (root.GetProperty<TransformProperty>() == null)
-                root.SetProperty(new TransformProperty());
-
-            foreach (var child in root.Children)
-                child.Parent = root;
-
-            if (el.TryGetProperty("children", out var children))
-                foreach (var child in children.EnumerateArray())
-                {
-                    var childNode = ParseNode(child, root);
-                    root.AddChild(childNode);
-                }
-
-            return root;
+            return NetSpawn.None;
         }
 
         // ── property dispatch ─────────────────────────────────────────────────────
 
-        private static NodeProperty ParseProperty(JsonElement el)
+        internal static NodeProperty ParseProperty(JsonElement el)
         {
             string type = el.GetProperty("type").GetString()
                 ?? throw new Exception("[SCENE CONFIG] Property missing 'type'");
 
             var data = el.TryGetProperty("data", out var d) ? d : (JsonElement?)null;
 
+            // Registered factories first, then the legacy switch.
+            if (PropertyFactory.TryCreate(type, data, out var made))
+                return made!;
+
             return type switch
             {
                 "CameraProperty" => new CameraProperty(),
-                "TransformProperty" => ParseTransformProperty(data),
                 "MeshProperty" => new MeshProperty(Str(data, 0)),
                 "CubemapMaterialProperty" => ParseCubemapMaterialProperty(data),
                 "TextureMaterialProperty" => ParseTextureMaterialProperty(data),
@@ -190,47 +91,12 @@ namespace OssianForge.Engine.Resources.Config
                 "ScriptProperty" => new ScriptProperty(Str(data, 0)),
                 "GroupProperty" => new GroupProperty(Str(data, 0)),
                 "StateMachineProperty" => ParseStateMachineProperty(data),
-                "SceneReferenceProperty" => new SceneReferenceProperty(Str(data, 0)),
                 "OrbitalCameraProperty" => ParseOrbitalCameraProperty(data),
-                "NetworkIdentityProperty" => ParseNetworkIdentityProperty(data),
                 _ => throw new Exception($"[SCENE CONFIG] Unknown property type '{type}'")
             };
         }
 
         // ── property parsers ──────────────────────────────────────────────────────
-
-        private static TransformProperty ParseTransformProperty(JsonElement? data)
-        {
-            if (data == null)
-            {
-                return new TransformProperty();
-            }
-
-            var arr = data.Value;
-
-            var vec3arr = arr[0];
-            var position = ParseVector3(vec3arr[0].GetString());
-            var rotation = ParseVector3(vec3arr[1].GetString());
-            var scale = ParseVector3(vec3arr[2].GetString());
-            var transform = new Transform(position, rotation, scale);
-            var stopProp = PropagationLock.None;
-
-
-            int len = arr.GetArrayLength();
-
-            RenderSpace space = RenderSpace.World;
-            Anchor2D anchor = Anchor2D.None;
-
-            if (len > 1) space = Enum.Parse<RenderSpace>(arr[1].GetString()!, true);
-            if (len > 2) anchor = Enum.Parse<Anchor2D>(arr[2].GetString()!, true);
-            if (len > 3 && arr[3].ValueKind == JsonValueKind.Array)
-            {
-                foreach (var flag in arr[3].EnumerateArray())
-                    stopProp |= Enum.Parse<PropagationLock>(flag.GetString()!, true);
-            }
-
-            return new TransformProperty(transform, space, anchor, stopProp);
-        }
 
         // "data": [ "texture.id", "shader.id" ]
         // "data": [ "texture.id", "shader.id", ["DisableDepthTest", "AdditiveBlend"] ]
@@ -461,20 +327,6 @@ namespace OssianForge.Engine.Resources.Config
             return new ActionProperty(actionMap);
         }
 
-        private static NetworkIdentityProperty ParseNetworkIdentityProperty(JsonElement? data)
-        {
-            var p = new NetworkIdentityProperty();
-            if (data is { } arr)
-            {
-                if (arr.GetArrayLength() > 0 && arr[0].ValueKind == JsonValueKind.Number)
-                    p.SendRate = arr[0].GetSingle();
-                if (arr.GetArrayLength() > 1 && arr[1].ValueKind == JsonValueKind.String
-                    && arr[1].GetString() == "player")
-                    p.PlayerTemplate = true;
-            }
-            return p;
-        }
-
         private static Dictionary<string, List<string>> ParseActionMap(JsonElement obj)
         {
             var actionMap = new Dictionary<string, List<string>>();
@@ -499,7 +351,7 @@ namespace OssianForge.Engine.Resources.Config
 
         private static StateMachineProperty ParseStateMachineProperty(JsonElement? data)
         {
-            string smConfigId = Str(data, 0); // e.g. "configfile.statemachine.player"
+            string smConfigId = Str(data, 0);
             var config = Engine.Resources.GetResource<StateMachineConfig>(smConfigId);
             return config.BuildProperty();
         }
@@ -540,11 +392,11 @@ namespace OssianForge.Engine.Resources.Config
 
         // ── vector helpers ────────────────────────────────────────────────────────
 
-        private static string Str(JsonElement? data, int index)
+        internal static string Str(JsonElement? data, int index)
             => data!.Value[index].GetString()
                ?? throw new Exception($"[SCENE CONFIG] Expected string at data[{index}]");
 
-        private static Vector3 ParseVector3(string s)
+        internal static Vector3 ParseVector3(string s)
         {
             var parts = s.Split(',');
             return new Vector3(
@@ -580,16 +432,6 @@ namespace OssianForge.Engine.Resources.Config
             float a = parts.Length > 3 ? parts[3] / 255f : 1.0f; // Default alpha to 1.0 if omitted
 
             return new Vector4(r, g, b, a);
-        }
-
-        public static Node? InstantiateTemplate(string key, string idSuffix)
-        {
-            if (!Templates.TryGetValue(key, out var el)) return null;
-            string prev = IdSuffix;
-            IdSuffix = idSuffix;
-            _instantiatingTemplate = true;
-            try { return ParseNode(el); }
-            finally { IdSuffix = prev; _instantiatingTemplate = false; }
         }
     }
 }

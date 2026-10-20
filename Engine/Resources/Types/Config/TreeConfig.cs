@@ -26,7 +26,7 @@ namespace OssianForge.Engine.Resources.Config
             if (!Document.RootElement.TryGetProperty("node", out var nodeEl))
                 throw new Exception($"[TREE CONFIG] '{Id}' is missing a 'node' field.");
 
-            return SceneConfig.ParseNode(nodeEl);
+            return SceneBuilder.Build(nodeEl);
         }
 
         public void SetCurrentScene(string sceneId)

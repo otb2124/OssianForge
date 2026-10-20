@@ -23,21 +23,26 @@ namespace OssianForge.Engine.Network.Replication
         private readonly Dictionary<int, NetworkIdentityProperty> _entities = new();
         private int _nextDynamicId = 1;
 
-        /// <summary>Host only: optional spawn position per joining peer id.</summary>
+        /// <summary>Host (or offline): optional spawn position per peer id. Default: the "spawnPoint" group.</summary>
         public Func<int, Vector3?>? SpawnPointProvider;
+
+        /// <summary>Spawnable scenes found at resource-load time.</summary>
+        public PrefabCatalog Prefabs { get; } = new();
 
         public IReadOnlyDictionary<int, NetworkIdentityProperty> Entities => _entities;
 
-        private string? _playerPrefabId;
-        public string? PlayerPrefabId
+        private string? _peerPrefabId;
+        /// <summary>Scene spawned once per peer. Explicit assignment wins, else the catalog's SpawnPerPeer scene (may be null).</summary>
+        public string? PeerPrefabId
         {
-            get => _playerPrefabId ?? SceneConfig.PlayerTemplateId;   // explicit override, else the scene's template
-            set => _playerPrefabId = value;
+            get => _peerPrefabId ?? Prefabs.PeerPrefabId;
+            set => _peerPrefabId = value;
         }
 
         public NetworkReplication(Net net)
         {
             _net = net;
+            SpawnPointProvider = DefaultSpawnPoint;
             net.MessageReceived += OnMessage;
             net.PeerJoined += OnPeerJoined;
             net.PeerLeft += OnPeerLeft;
@@ -128,22 +133,25 @@ namespace OssianForge.Engine.Network.Replication
                 Engine.Nodes.NodeManager.DestroySubtree(id.Entity);
         }
 
+        /// <summary>Position of the spawnPoint node chosen by peer id; null when the scene has none (prefab keeps its own transform).</summary>
+        private static Vector3? DefaultSpawnPoint(int peerId)
+        {
+            var pts = Engine.Nodes.NodeManager.GetNodesInGroup(PrefabCatalog.SpawnPointGroup);
+            if (pts.Count == 0) return null;
+
+            int index = ((peerId % pts.Count) + pts.Count) % pts.Count;
+            return pts[index].GetProperty<TransformProperty>()?.WorldTransform.Position;
+        }
+
         private Node? Instantiate(string prefabId, int netId, int owner, Vector3? at)
         {
-            Node node;
-            if (prefabId.StartsWith(SceneConfig.TemplatePrefix))
-            {
-                node = SceneConfig.InstantiateTemplate(prefabId[SceneConfig.TemplatePrefix.Length..], $"@{netId}");
-                if (node == null) { Console.WriteLine($"[REPL] Player template '{prefabId}' not found."); return null; }
-            }
-            else
-            {
-                var scene = Engine.Resources.GetResource<SceneConfig>(prefabId);
-                if (scene == null) { Console.WriteLine($"[REPL] Prefab scene '{prefabId}' not found."); return null; }
-                SceneConfig.IdSuffix = $"@{netId}";
-                try { node = scene.GetScene(); }
-                finally { SceneConfig.IdSuffix = ""; }
-            }
+            var scene = Engine.Resources.GetResource<SceneConfig>(prefabId);
+            if (scene == null) { Console.WriteLine($"[REPL] Prefab scene '{prefabId}' not found."); return null; }
+
+            // "<rootLocalId>@<netId>": the root's id, and the namespace of everything below it.
+            var scope = new InstanceScope($"{scene.RootLocalId ?? "prefab"}@{netId}");
+            var node = scene.Instantiate(scope);
+            node.Id = scope.Path;
             node.IsInstanceRoot = true;
 
             var id = node.GetProperty<NetworkIdentityProperty>();
@@ -390,7 +398,7 @@ namespace OssianForge.Engine.Network.Replication
 
         private void OnPeerJoined(PeerInfo peer)
         {
-            Console.WriteLine($"[REPL] peer {peer.Id} joined; PlayerPrefabId={PlayerPrefabId ?? "(null)"}, entities={_entities.Count}");
+            Console.WriteLine($"[REPL] peer {peer.Id} joined; PeerPrefabId={PeerPrefabId ?? "(null)"}, entities={_entities.Count}");
 
             if (!_net.IsHost) return;
 
@@ -410,12 +418,12 @@ namespace OssianForge.Engine.Network.Replication
             }
             if (statics.Count > 0) _net.SendTo(peer.Id, BuildStatePacket(statics));
 
-            if (PlayerPrefabId != null)
+            if (PeerPrefabId != null)
             {
-                try { SpawnNow(PlayerPrefabId, peer.Id); }
+                try { SpawnNow(PeerPrefabId, peer.Id); }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"[REPL] Spawning '{PlayerPrefabId}' for peer {peer.Id} failed: {ex}");
+                    Console.WriteLine($"[REPL] Spawning '{PeerPrefabId}' for peer {peer.Id} failed: {ex}");
                 }
             }
         }

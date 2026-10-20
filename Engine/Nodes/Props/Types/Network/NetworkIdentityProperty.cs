@@ -5,6 +5,19 @@ using Net = OssianForge.Engine.Network.Network;
 
 namespace OssianForge.Engine.Nodes.Props
 {
+    /// <summary>What the network layer does with a scene whose root carries this identity.</summary>
+    [Flags]
+    public enum NetSpawn
+    {
+        None = 0,
+        /// <summary>Can be spawned by id (Replication.Spawn).</summary>
+        Spawnable = 1,
+        /// <summary>One instance per peer, owned by that peer. Implies Spawnable.</summary>
+        SpawnPerPeer = 2,
+        /// <summary>Keep the entity when its owner leaves.</summary>
+        KeepWhenOwnerLeaves = 4,
+    }
+
     /// <summary>
     /// Marks a node as a network entity. It carries identity (NetId, owner, prefab) and owns the replicators
     /// built from the properties of this node AND every descendant (a character is usually a root with a body
@@ -47,7 +60,10 @@ namespace OssianForge.Engine.Nodes.Props
         internal float SendTimer;
         internal bool RolePending = true;
 
-        public bool PlayerTemplate;
+        /// <summary>Spawn behaviour. Read from the scene ROOT at resource-load time (see PrefabCatalog).</summary>
+        public NetSpawn Spawn;
+
+        public override OverrideTarget SceneRefTarget => OverrideTarget.Root;
 
         public override void OnStart(Node node)
         {

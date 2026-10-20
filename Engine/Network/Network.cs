@@ -112,8 +112,8 @@ namespace OssianForge.Engine.Network
 
 
 
-            if (!IsClient && Replication.PlayerPrefabId != null)
-                Replication.Spawn(Replication.PlayerPrefabId, HostPeerId);
+            if (!IsClient && Replication.PeerPrefabId != null)
+                Replication.Spawn(Replication.PeerPrefabId, HostPeerId);
         }
 
         public bool Host(int port = DefaultPort, string? name = null)
@@ -145,9 +145,6 @@ namespace OssianForge.Engine.Network
             _nextPeerId = 1;
             _peers.Clear();
             _peers[HostPeerId] = new PeerInfo { Id = HostPeerId, Name = LocalName };
-
-            Replication.PlayerPrefabId = "configfile.scene.player";
-            Replication.SpawnPointProvider = peerId => new Vector3(-60 + 4 * peerId, 20, 30);
 
             _ = Task.Run(() => AcceptLoop(listener, session));
 

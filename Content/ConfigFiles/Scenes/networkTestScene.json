@@ -103,21 +103,30 @@
       ]
     },
     {
-      "id": "playerSceneRef",
-      "enabled": true,
-      "name": "PlayerSceneRef",
+      "id": "spawnPoint1",
+      "name": "spawnPoint1",
       "properties": [
-        {
-          "type": "SceneReferenceProperty",
-          "data": [ "configfile.scene.player" ]
-        },
         {
           "type": "TransformProperty",
           "data": [ [ "-60,20,30", "0,0,0", "1,1,1" ] ]
         },
         {
-          "type": "NetworkIdentityProperty",
-          "data": [ 20, "player" ]
+          "type": "GroupProperty",
+          "data": [ "spawnPoint" ]
+        }
+      ]
+    },
+    {
+      "id": "spawnPoint2",
+      "name": "spawnPoint2",
+      "properties": [
+        {
+          "type": "TransformProperty",
+          "data": [ [ "-56,20,30", "0,0,0", "1,1,1" ] ]
+        },
+        {
+          "type": "GroupProperty",
+          "data": [ "spawnPoint" ]
         }
       ]
     },
