@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using OssianForge.Engine.Ipc;
+using OssianForge.Engine.Network;
 
 namespace OssianForge.App
 {
@@ -17,6 +18,7 @@ namespace OssianForge.App
         public App(string[] args)
         {
             ManagerLink.Configure(args);
+            NetLaunchArgs.Configure(args);
             CookerLink.InitializeResources();
 
             Engine.Engine.Create();

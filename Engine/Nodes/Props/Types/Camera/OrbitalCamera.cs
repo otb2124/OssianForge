@@ -14,6 +14,8 @@ namespace OssianForge.Engine.Nodes.Props.Types.Camera
         public float MinPitch = -89f;
         public float MaxPitch = 89f;
 
+        private Node _target;
+
         public OrbitalCameraProperty(string targetNodeId, float orbitDistance = 5f, float minPitch = -89f, float maxPitch = 89) : base()
         {
             TargetNodeId = targetNodeId;
@@ -25,7 +27,7 @@ namespace OssianForge.Engine.Nodes.Props.Types.Camera
         public override void OnUpdate(Node node, double delta)
         {
             var selfTransform = node.GetProperty<TransformProperty>();
-            var target = FindTargetTransform();
+            var target = FindTargetTransform(node);
             if (selfTransform != null && target != null)
             {
                 // Clamp pitch on the stored rotation so it never accumulates past limits.
@@ -54,10 +56,15 @@ namespace OssianForge.Engine.Nodes.Props.Types.Camera
             Camera.OnUpdate(delta);
         }
 
-        private TransformProperty FindTargetTransform()
+        private TransformProperty FindTargetTransform(Node self)
         {
             if (string.IsNullOrEmpty(TargetNodeId)) return null;
-            return Engine.Nodes.NodeManager.GetNode(TargetNodeId)?.GetProperty<TransformProperty>();
+
+            // re-resolve if never resolved or the cached node left the tree
+            if (_target == null || Engine.Nodes.NodeManager.GetNode(_target.Id) != _target)
+                _target = self.FindLocal(TargetNodeId) ?? Engine.Nodes.NodeManager.GetNode(TargetNodeId);
+
+            return _target?.GetProperty<TransformProperty>();
         }
     }
 }

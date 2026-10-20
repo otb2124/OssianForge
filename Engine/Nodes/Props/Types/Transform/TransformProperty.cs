@@ -277,15 +277,17 @@ namespace OssianForge.Engine.Nodes.Props
         private void SetDirty()
         {
             TransformDirty = true;
+            if (NodeId == null) return;   // not started yet; OnStart recomputes the world transform
             var node = Engine.Nodes.NodeManager.GetNode(NodeId);
             if (node == null) return;
-            foreach (var child in node.Children) 
+            foreach (var child in node.Children)
                 child.GetProperty<TransformProperty>()?.SetDirtyRecursive();
         }
 
         private void SetDirtyRecursive()
         {
             TransformDirty = true;
+            if (NodeId == null) return;
             var node = Engine.Nodes.NodeManager.GetNode(NodeId);
             if (node == null) return;
             foreach (var child in node.Children)

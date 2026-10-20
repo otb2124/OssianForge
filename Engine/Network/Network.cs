@@ -3,7 +3,10 @@ using System.Diagnostics;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
+using System.Numerics;
 using OssianForge.Content.Cooked;
+using OssianForge.Engine.Network.Replication;
+using OssianForge.Engine.Nodes.Props;
 
 namespace OssianForge.Engine.Network
 {
@@ -23,6 +26,7 @@ namespace OssianForge.Engine.Network
         Ping = 6,
         Pong = 7,
         Chat = 8,
+        Spawn = 32, Despawn = 33, EntityState = 34, EntityEvent = 35,
     }
 
     public sealed class PeerInfo
@@ -82,6 +86,9 @@ namespace OssianForge.Engine.Network
         private int _session;      // bumped by every Host/Join/Reset so late async callbacks are ignored
         private float _pingTimer;
 
+        public NetworkReplication Replication { get; }
+        public Network() { Replication = new NetworkReplication(this); }
+
         private enum InboxKind { Connected, ConnectFailed, Frame, Closed }
 
         private readonly record struct InboxItem(
@@ -102,6 +109,11 @@ namespace OssianForge.Engine.Network
                 else
                     Console.WriteLine($"[NET] Could not parse --join '{NetLaunchArgs.JoinAddress}'.");
             }
+
+
+
+            if (!IsClient && Replication.PlayerPrefabId != null)
+                Replication.Spawn(Replication.PlayerPrefabId, HostPeerId);
         }
 
         public bool Host(int port = DefaultPort, string? name = null)
@@ -133,6 +145,9 @@ namespace OssianForge.Engine.Network
             _nextPeerId = 1;
             _peers.Clear();
             _peers[HostPeerId] = new PeerInfo { Id = HostPeerId, Name = LocalName };
+
+            Replication.PlayerPrefabId = "configfile.scene.player";
+            Replication.SpawnPointProvider = peerId => new Vector3(-60 + 4 * peerId, 20, 30);
 
             _ = Task.Run(() => AcceptLoop(listener, session));
 
@@ -294,8 +309,7 @@ namespace OssianForge.Engine.Network
                         }
                         catch (Exception ex)
                         {
-                            // A malformed packet must never take the engine down: drop that peer.
-                            Console.WriteLine($"[NET] Bad packet from {item.Conn!.Remote}: {ex.Message}");
+                            Console.WriteLine($"[NET] Bad packet from {item.Conn!.Remote}: {ex}");
                             item.Conn.Close();
                         }
                         break;
@@ -311,7 +325,11 @@ namespace OssianForge.Engine.Network
                     SendToHost(Build(PacketType.Ping, w => w.F64(NowSeconds())));
                 }
             }
+
+            Replication.OnUpdate(delta);
         }
+
+        public void OnLateUpdate(double delta) => Replication.OnLateUpdate(delta);
 
         private void OnConnected(NetConnection conn)
         {
@@ -554,6 +572,12 @@ namespace OssianForge.Engine.Network
                     if (ua.Address.AddressFamily == AddressFamily.InterNetwork)
                         Console.WriteLine($"[NET]   {ua.Address}:{port}   ({nic.Name})");
             }
+        }
+
+        public void BroadcastExceptPeer(byte[] payload, int exceptPeerId)
+        {
+            foreach (var conn in _connections)
+                if (conn.PeerId >= 0 && conn.PeerId != exceptPeerId) conn.Send(payload);
         }
     }
 }

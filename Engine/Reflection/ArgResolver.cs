@@ -25,6 +25,7 @@ namespace OssianForge.Engine.Resources.Config
     ///   $child.a.b.c             -> walks context.Children by id, dot-separated
     ///   $group.name.ref          -> NodeManager.GetNodesInGroup(name), indexed by position or id
     ///   $id.nodeId               -> NodeManager.GetNode(nodeId)
+    ///   $local.name -> node with that authored id anywhere in the context's own scene instance
     ///   $key (no dot, no other prefix match) -> ValueStore.Get("key")  [back-compat]
     ///
     /// Any other "$prefix.rest" with an unrecognized prefix throws — previously this
@@ -42,7 +43,8 @@ namespace OssianForge.Engine.Resources.Config
                 ["currentCamera"] = (rest, ctx, delta) => ResolveCurrentCamera(),
                 ["child"] = (rest, ctx, delta) => ResolveChild(rest, ctx as Node),
                 ["group"] = (rest, ctx, delta) => ResolveGroup(rest),
-                ["id"] = (rest, ctx, delta) => Engine.Nodes.NodeManager.GetNode(rest),
+                ["id"] = (rest, ctx, delta) => ResolveId(rest, ctx as Node),
+                ["local"] = (rest, ctx, delta) => (ctx as Node)?.FindLocal(rest),
             };
 
         /// <summary>
@@ -102,7 +104,12 @@ namespace OssianForge.Engine.Resources.Config
             string rest = body[(dot + 1)..];
 
             if (_handlers.TryGetValue(prefix, out var handler))
-                return handler(rest, context, delta);
+            {
+                var result = handler(rest, context, delta);
+                if (result == null)
+                    WarnOnce($"'{s}' resolved to null (context node '{(context as Node)?.Id}').");
+                return result;
+            }
 
             // Special case: $currentCamera can also appear with a trailing dot/segment
             // in some configs (matched via StartsWith in the original); treat bare
@@ -161,7 +168,7 @@ namespace OssianForge.Engine.Resources.Config
             foreach (string childId in path.Split('.'))
             {
                 if (current == null) break;
-                current = current.Children.FirstOrDefault(c => c.Id == childId);
+                current = current.Children.FirstOrDefault(c => c.HasLocalName(childId) || c.Id == childId);
             }
             return current;
         }
@@ -182,6 +189,33 @@ namespace OssianForge.Engine.Resources.Config
                 return group[idx];
 
             return group.FirstOrDefault(n => n.Id == nodeRef);
+        }
+
+        private static Node? ResolveId(string id, Node? context)
+        {
+            var nm = Engine.Nodes.NodeManager;
+            return context?.FindLocal(id)
+                ?? nm.GetNode(id)
+                ?? FindUniqueByLocalId(nm, id);
+        }
+
+        private static Node? FindUniqueByLocalId(NodeManager nm, string id)
+        {
+            Node? hit = null;
+            foreach (var n in nm.Flatten())
+            {
+                if (!n.HasLocalName(id)) continue;
+                if (hit != null) { WarnOnce($"$id.{id} is ambiguous (several instances); use $local.{id} or the full id."); return null; }
+                hit = n;
+            }
+            return hit;
+        }
+
+        private static void WarnOnce(string msg)
+        {
+            bool first;
+            lock (_warnedMissingKeys) first = _warnedMissingKeys.Add(msg);
+            if (first) Console.WriteLine($"[ARG RESOLVER] {msg}");
         }
     }
 }

@@ -13,7 +13,7 @@
       }
     ]
   },
-  "mainScene": "configfile.scene.terrainscene",
+  "mainScene": "configfile.scene.networkTestScene",
   "version": "1.0.0",
   "versionTags": ["tag"],
   "appTitle": "OssianForge",

@@ -390,6 +390,11 @@
     "type": "configfile.scene"
   },
   {
+    "id": "configfile.scene.networkTestScene",
+    "data": [ "ConfigFiles/Scenes/networkTestScene.json" ],
+    "type": "configfile.scene"
+  },
+  {
     "id": "configfile.tree",
     "data": [ "ConfigFiles/Core/tree.json" ],
     "type": "configfile.tree"

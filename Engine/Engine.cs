@@ -91,6 +91,7 @@ namespace OssianForge.Engine
             Network.OnUpdate(delta);
             Nodes.OnUpdate(delta);
             Physics.OnUpdate(delta);
+            Network.OnLateUpdate(delta);
         }
 
         public static void OnRender(double delta)

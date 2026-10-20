@@ -54,6 +54,14 @@ namespace OssianForge.Engine.Nodes
         private static readonly ConcurrentDictionary<(Node Node, string TypeName, int Count), NodeProperty> _propertyCache =
             new();
 
+
+        /// <summary>Resolves a node id written in a config: inside the context's own scene instance first, then globally.</summary>
+        public static Node? ResolveNodeRef(Node? context, string id)
+        {
+            if (string.IsNullOrEmpty(id)) return null;
+            return context?.FindLocal(id) ?? Engine.Nodes.NodeManager.GetNode(id);
+        }
+
         /// <summary>
         /// Non-throwing lookup. Use this wherever a missing property is an expected outcome: an exception
         /// thrown and caught on a hot path still stops the debugger on every first-chance throw and is slow.
@@ -90,7 +98,9 @@ namespace OssianForge.Engine.Nodes
         public static NodeProperty FindNodeProperty(Node node, string propertyTypeName)
         {
             if (!TryFindNodeProperty(node, propertyTypeName, out var prop))
-                throw new Exception($"[NODE REFLECTION] Node '{node.Id}' has no property of type '{propertyTypeName}'.");
+                throw new Exception(node == null
+                    ? $"[NODE REFLECTION] Target node is null (wanted '{propertyTypeName}'). A $id/$child/$local arg resolved to null."
+                    : $"[NODE REFLECTION] Node '{node.Id}' has no property of type '{propertyTypeName}'.");
             return prop;
         }
 
@@ -256,7 +266,7 @@ namespace OssianForge.Engine.Nodes
             var cameraNode = string.Equals(directionSourceNodeId, "$currentCamera", StringComparison.OrdinalIgnoreCase)
                 ? Engine.Nodes.NodeManager.GetNodesWithProperty<CameraProperty>()
                     .FirstOrDefault(n => string.Equals(n.Id, Engine.Graphics.CurrentCameraNode, StringComparison.OrdinalIgnoreCase))
-                : Engine.Nodes.NodeManager.GetNode(directionSourceNodeId);
+                : ResolveNodeRef(node, directionSourceNodeId);
 
             AddValueCameraDirection(node, propertyTypeName, memberPath, rawDirection, cameraNode, delta);
         }
@@ -265,7 +275,7 @@ namespace OssianForge.Engine.Nodes
             Node node, string propertyTypeName, string memberPath,
             string rawDirection, string directionSourceNodeId, double delta)
         {
-            var cameraNode = Engine.Nodes.NodeManager.GetNode(directionSourceNodeId);
+            var cameraNode = ResolveNodeRef(node, directionSourceNodeId);
             var cameraSelfTransform = cameraNode?.GetProperty<TransformProperty>();
             if (cameraSelfTransform == null) return;
 
@@ -295,7 +305,7 @@ namespace OssianForge.Engine.Nodes
         {
             float yawOffset = float.Parse(yawOffsetRaw, CultureInfo.InvariantCulture);
 
-            var cameraNode = Engine.Nodes.NodeManager.GetNode(cameraNodeId);
+            var cameraNode = ResolveNodeRef(targetNode, cameraNodeId);
             var cameraTransform = cameraNode?.GetProperty<TransformProperty>();
             if (cameraTransform == null) return;
 

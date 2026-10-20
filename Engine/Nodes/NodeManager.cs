@@ -28,6 +28,20 @@ namespace OssianForge.Engine.Nodes
             TreeChanged?.Invoke();
         }
 
+        public void StartSubtree(Node node) => StartNode(node);
+
+        public void DestroySubtree(Node node)
+        {
+            DestroyNode(node);
+            if (node.Parent != null) RemoveChild(node.Parent, node); else RemoveNode(node);
+        }
+
+        private static void DestroyNode(Node node)
+        {
+            foreach (var child in node.Children.ToList()) DestroyNode(child);
+            foreach (var p in node.Properties) p.OnDestroy(node);
+        }
+
         public void AddNode(Node node)
         {
             Roots.Add(node);
@@ -145,7 +159,7 @@ namespace OssianForge.Engine.Nodes
         // Query helpers — enumerate on demand, no stored flat list
         // -----------------------------------------------------------------------
 
-        public Node GetNode(string id) => _idCache.TryGetValue(id, out var n) ? n : null;
+        public Node GetNode(string id) => id != null && _idCache.TryGetValue(id, out var n) ? n : null;
 
         public List<Node> GetNodesOfType(Type type)
             => Flatten().Where(n => type.IsInstanceOfType(n)).ToList();

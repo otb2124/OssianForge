@@ -64,6 +64,8 @@ namespace OssianForge.Engine.Resources.Animations
         public void Pause() { IsPlaying = false; }
         public void Resume() { if (CurrentClip != null) IsPlaying = true; }
 
+        public void Seek(double ticks) => CurrentTime = ticks;
+
         public void SetSpeed(float speed) => PlaybackSpeed = speed;
 
         public void Update(double deltaTime)

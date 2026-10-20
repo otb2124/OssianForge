@@ -59,5 +59,13 @@ namespace OssianForge.Engine.Nodes.Props.Types.Physics
             if(RigidBody.JitterBody == null) return;
             RigidBody.JitterBody.Velocity = new Jitter2.LinearMath.JVector(0,0,0);
         }
+
+        public override void OnDestroy(Node node)
+        {
+            var world = Engine.Physics.GetWorld(WorldIndex);
+            if (_preStep != null) world.OnPreStep -= _preStep;
+            if (_postStep != null) world.OnPostStep -= _postStep;
+            if (_body.JitterBody != null) world.JitterWorld.Remove(_body.JitterBody);
+        }
     }
 }

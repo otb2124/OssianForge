@@ -36,6 +36,7 @@ namespace OssianForge.Engine.Nodes.Props
         public void Stop() => AnimationResource.Stop();
         public void Pause() => AnimationResource.Pause();
         public void Resume() => AnimationResource.Resume();
+        public void Seek(double ticks) => AnimationResource.Seek(ticks);
 
         public bool IsPlaying => AnimationResource.IsPlaying;
         public AnimationClip CurrentClip => AnimationResource.CurrentClip;

@@ -81,6 +81,7 @@ namespace OssianForge.Engine.Nodes.Props
         {
             base.OnStart(node);
             Current?.OnEnter(node);
+            Console.WriteLine($"[SM] state machine started on '{node.Id}'");
         }
 
         public override void OnUpdate(Node node, double delta)

@@ -212,6 +212,9 @@
     <None Update="Content\ConfigFiles\Scenes\player.json">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
+    <None Update="Content\ConfigFiles\Scenes\networkTestScene.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
     <None Update="Content\ConfigFiles\Scenes\terrainscene.json">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>

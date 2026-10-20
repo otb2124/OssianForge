@@ -14,6 +14,16 @@ namespace OssianForge.Engine.Nodes
                 _id = value;
             }
         }
+
+        /// <summary>Id as authored in the scene file. Unique only inside its scene instance. Id is the global runtime key.</summary>
+        public string LocalId;
+
+        /// <summary>True on the root of an instantiated scene (scene ref or spawned prefab). Local lookups stop here.</summary>
+        public bool IsInstanceRoot;
+
+        /// <summary>Authored id of the scene-ref node that created this instance, as the parent scene sees it.</summary>
+        public string InstanceName;
+
         public string Name;
         public Node Parent;
         public List<Node> Children = new();
@@ -32,6 +42,7 @@ namespace OssianForge.Engine.Nodes
 
         public bool Writable = true;
 
+        public bool HasLocalName(string name) => LocalId == name || InstanceName == name;
         public void AddChild(Node child)
         {
             Engine.Nodes.NodeManager.AddChild(this, child);
@@ -59,6 +70,12 @@ namespace OssianForge.Engine.Nodes
                 Properties.Add(prop);
         }
 
+        public void SetProperty(NodeProperty prop)
+        {
+            int i = Properties.FindIndex(p => p.GetType() == prop.GetType());
+            if (i >= 0) Properties[i] = prop; else Properties.Add(prop);
+        }
+
         public NodeProperty GetProperty(Type type)
         {
             if (type == null) return null;
@@ -77,7 +94,28 @@ namespace OssianForge.Engine.Nodes
             => Children.OfType<T>().ToList();
 
 
+        public Node GetInstanceRoot()
+        {
+            var n = this;
+            while (n.Parent != null && !n.IsInstanceRoot) n = n.Parent;
+            return n;
+        }
 
+        /// <summary>Finds a node by authored id inside this node's own scene instance.
+        /// Nested instances are opaque: their root is findable, their insides are not.</summary>
+        public Node FindLocal(string localId)
+            => string.IsNullOrEmpty(localId) ? null : SearchLocal(GetInstanceRoot(), localId);
+
+        private static Node SearchLocal(Node n, string localId)
+        {
+            foreach (var c in n.Children)
+            {
+                if (c.HasLocalName(localId)) return c;
+                var found = SearchLocal(c, localId);
+                if (found != null) return found;
+            }
+            return null;
+        }
 
 
 
@@ -87,6 +125,7 @@ namespace OssianForge.Engine.Nodes
             if (!StartEnabled) return;
             foreach (var property in Properties)
             {
+                if (!property.Enabled) continue;
                 property.OnStart(this);
             }
         }
@@ -99,6 +138,7 @@ namespace OssianForge.Engine.Nodes
             if (!UpdateEnabled) return;
             foreach (var property in Properties)
             {
+                if (!property.Enabled) continue;
                 property.OnUpdate(this, delta);
             }
         }
@@ -112,6 +152,7 @@ namespace OssianForge.Engine.Nodes
             if (!RenderEnabled) return;
             foreach (var property in Properties)
             {
+                if (!property.Enabled) continue;
                 property.OnRender(this, delta);
             }
         }

@@ -18,6 +18,14 @@ namespace OssianForge.Engine.Resources.Config
 
         public JsonDocument Document;
 
+        public static string IdSuffix = "";
+        public static string IdPrefix = "";
+
+        public const string TemplatePrefix = "@scene:";
+        public static readonly Dictionary<string, JsonElement> Templates = new();
+        public static string? PlayerTemplateId;          // first player template seen
+        private static bool _instantiatingTemplate;
+
         public SceneConfig(string id, string path) : base(id, path) { }
 
 
@@ -38,10 +46,16 @@ namespace OssianForge.Engine.Resources.Config
 
         public static Node ParseNode(JsonElement el, Node parent = null)
         {
+            bool bypassTemplate = _instantiatingTemplate;   // consumed by the top node only
+            _instantiatingTemplate = false;
+
             var node = new Node();
 
             if (el.TryGetProperty("id", out var id))
-                node.Id = id.GetString();
+            {
+                node.LocalId = id.GetString();
+                node.Id = IdPrefix + node.LocalId + IdSuffix;
+            }
 
             if (el.TryGetProperty("name", out var name))
                 node.Name = name.GetString();
@@ -71,6 +85,16 @@ namespace OssianForge.Engine.Resources.Config
                     return node;
                 }
 
+                var identity = node.GetProperty<NetworkIdentityProperty>();
+                if (identity is { PlayerTemplate: true } && !bypassTemplate)
+                {
+                    string key = node.LocalId ?? node.Name;
+                    Templates[key] = el.Clone();
+                    PlayerTemplateId ??= TemplatePrefix + key;
+                    node.Enabled = false;        // inert spawn marker; the player is spawned at runtime
+                    return node;
+                }
+
                 var resolved = ResolveSceneReference(sceneRef, node, el, parent);
                 return resolved;
             }
@@ -91,7 +115,18 @@ namespace OssianForge.Engine.Resources.Config
             var sceneConfig = Engine.Resources.GetResource<SceneConfig>(sceneRef.SceneId)
                 ?? throw new Exception($"[SCENE REFERENCE] SceneConfig '{sceneRef.SceneId}' not found.");
 
-            var root = sceneConfig.GetScene();
+            // Everything inside the referenced scene is namespaced under the ref node's id.
+            string refId = overrides.Id;
+            string previousPrefix = IdPrefix;
+            if (!string.IsNullOrEmpty(refId)) IdPrefix = refId + "/";
+
+            Node root;
+            try { root = sceneConfig.GetScene(); }
+            finally { IdPrefix = previousPrefix; }
+
+            if (!string.IsNullOrEmpty(refId)) root.Id = refId;
+            if (!string.IsNullOrEmpty(overrides.LocalId)) root.InstanceName = overrides.LocalId; // how the parent scene sees it
+            root.IsInstanceRoot = true;
             root.Parent = parent;
 
             Node injectTarget = (root.Properties.Count == 0 && root.Children.Count == 1)
@@ -100,9 +135,8 @@ namespace OssianForge.Engine.Resources.Config
 
             foreach (var prop in overrides.Properties)
             {
-                if (prop is SceneReferenceProperty) continue;
-                if (prop is TransformProperty)
-                    root.SetProperty(prop); // transform always on root for hierarchy
+                if (prop is TransformProperty || prop is NetworkIdentityProperty)
+                    root.SetProperty(prop);
                 else
                     injectTarget.SetProperty(prop);
             }
@@ -158,6 +192,7 @@ namespace OssianForge.Engine.Resources.Config
                 "StateMachineProperty" => ParseStateMachineProperty(data),
                 "SceneReferenceProperty" => new SceneReferenceProperty(Str(data, 0)),
                 "OrbitalCameraProperty" => ParseOrbitalCameraProperty(data),
+                "NetworkIdentityProperty" => ParseNetworkIdentityProperty(data),
                 _ => throw new Exception($"[SCENE CONFIG] Unknown property type '{type}'")
             };
         }
@@ -426,6 +461,20 @@ namespace OssianForge.Engine.Resources.Config
             return new ActionProperty(actionMap);
         }
 
+        private static NetworkIdentityProperty ParseNetworkIdentityProperty(JsonElement? data)
+        {
+            var p = new NetworkIdentityProperty();
+            if (data is { } arr)
+            {
+                if (arr.GetArrayLength() > 0 && arr[0].ValueKind == JsonValueKind.Number)
+                    p.SendRate = arr[0].GetSingle();
+                if (arr.GetArrayLength() > 1 && arr[1].ValueKind == JsonValueKind.String
+                    && arr[1].GetString() == "player")
+                    p.PlayerTemplate = true;
+            }
+            return p;
+        }
+
         private static Dictionary<string, List<string>> ParseActionMap(JsonElement obj)
         {
             var actionMap = new Dictionary<string, List<string>>();
@@ -531,6 +580,16 @@ namespace OssianForge.Engine.Resources.Config
             float a = parts.Length > 3 ? parts[3] / 255f : 1.0f; // Default alpha to 1.0 if omitted
 
             return new Vector4(r, g, b, a);
+        }
+
+        public static Node? InstantiateTemplate(string key, string idSuffix)
+        {
+            if (!Templates.TryGetValue(key, out var el)) return null;
+            string prev = IdSuffix;
+            IdSuffix = idSuffix;
+            _instantiatingTemplate = true;
+            try { return ParseNode(el); }
+            finally { IdSuffix = prev; _instantiatingTemplate = false; }
         }
     }
 }

@@ -16,6 +16,7 @@ using OssianForge.Engine.Utils.Console;
 using SilkMonitor = Silk.NET.Windowing.Monitor;
 using SilkWindowBorder = Silk.NET.Windowing.WindowBorder;
 using SilkWindowState = Silk.NET.Windowing.WindowState;
+using OssianForge.Engine.Nodes;
 
 namespace OssianForge.Engine.Graphics
 {
@@ -58,7 +59,7 @@ namespace OssianForge.Engine.Graphics
         public WindowMode FullscreenMode = WindowMode.Borderless;
 
         /// <summary>Mode applied once the window exists (in OnLoad).</summary>
-        public WindowMode StartupWindowMode = WindowMode.Fullscreen;
+        public WindowMode StartupWindowMode = WindowMode.Windowed;
 
         /// <summary>Size a windowed window gets when it has no remembered size (e.g. the game started fullscreen).</summary>
         public Vector2D<int> DefaultWindowedSize = new(1280, 720);
@@ -195,9 +196,23 @@ namespace OssianForge.Engine.Graphics
             PostProcess?.Resize(size.X, size.Y);
         }
 
+
+        private static bool IsLocallyControlled(Node n)
+        {
+            for (var p = n; p != null; p = p.Parent)
+            {
+                var id = p.GetProperty<NetworkIdentityProperty>();
+                if (id != null) return id.IsAuthority;   // nearest owning entity decides
+            }
+            return true;                                  // not networked: always ours
+        }
+
+
         public Camera.Camera GetCurrentCamera()
         {
-            var cameraNode = Engine.Nodes.NodeManager.GetNodeWithProperty<CameraProperty>();
+            var nm = Engine.Nodes.NodeManager;
+            var cameraNode = nm.GetNodesWithProperty<CameraProperty>().FirstOrDefault(IsLocallyControlled)
+                             ?? nm.GetNodeWithProperty<CameraProperty>(); 
 
             if (cameraNode == null)
                 return null;
