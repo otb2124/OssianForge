@@ -13,6 +13,7 @@ namespace OssianForge.Engine.Resources
             "configfile.inputAxis",
             "configfile.devices",
             "shader.wireframe",
+            "script.packs.ossian.system"
         };
 
         public static readonly HashSet<string> PostNodeAlwaysInclude = new()

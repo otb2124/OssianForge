@@ -86,6 +86,7 @@ namespace OssianForge.Engine.Graphics
         public int TargetUpdatesPerSecond = 120;
 
         public string CurrentCameraNode;
+        public string CameraOverrideNode;
 
         public ParallaxController ParallaxController;
 
@@ -211,22 +212,43 @@ namespace OssianForge.Engine.Graphics
         public Camera.Camera GetCurrentCamera()
         {
             var nm = Engine.Nodes.NodeManager;
-            var cameraNode = nm.GetNodesWithProperty<CameraProperty>().FirstOrDefault(IsLocallyControlled)
-                             ?? nm.GetNodeWithProperty<CameraProperty>(); 
+
+            Node cameraNode = null;
+            if (!string.IsNullOrEmpty(CameraOverrideNode))
+            {
+                var forced = nm.GetNode(CameraOverrideNode);
+                if (forced?.GetProperty<CameraProperty>() != null) cameraNode = forced;
+            }
+
+            cameraNode ??= nm.GetNodesWithProperty<CameraProperty>().FirstOrDefault(IsLocallyControlled)
+                           ?? nm.GetNodeWithProperty<CameraProperty>();
 
             if (cameraNode == null)
                 return null;
 
-            if (cameraNode.Id == CurrentCameraNode)
-            {
-                return cameraNode.GetProperty<CameraProperty>().Camera;
-            }
-            else
+            var camera = cameraNode.GetProperty<CameraProperty>().Camera;
+
+            if (cameraNode.Id != CurrentCameraNode)
             {
                 CurrentCameraNode = cameraNode.Id;
-                return cameraNode.GetProperty<CameraProperty>().Camera;
+
+                // OnResize only updates the camera that was current at the time; catch up when switching.
+                camera.AspectRatio = (float)WindowSize.X / WindowSize.Y;
             }
 
+            return camera;
+        }
+
+        public void SetCameraOverride(string nodeId)
+        {
+            CameraOverrideNode = nodeId;
+            CurrentCameraNode = nodeId;   // $currentCamera resolves through this
+        }
+
+        public void ClearCameraOverride()
+        {
+            CameraOverrideNode = null;
+            CurrentCameraNode = null;     // re-picked by GetCurrentCamera()
         }
 
 

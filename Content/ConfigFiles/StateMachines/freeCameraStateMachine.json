@@ -26,7 +26,7 @@
       "to": "WalkForward",
       "condition": {
         "call": "OssianForge.Engine.Inputs.KeyHandler.IsStateActive",
-        "args": [ "walk_up" ]
+        "args": [ "edit_camera_up" ]
       }
     },
     {
@@ -34,7 +34,7 @@
       "to": "WalkBackward",
       "condition": {
         "call": "OssianForge.Engine.Inputs.KeyHandler.IsStateActive",
-        "args": [ "walk_down" ]
+        "args": [ "edit_camera_down" ]
       }
     },
     {
@@ -42,7 +42,7 @@
       "to": "WalkLeft",
       "condition": {
         "call": "OssianForge.Engine.Inputs.KeyHandler.IsStateActive",
-        "args": [ "walk_left" ]
+        "args": [ "edit_camera_left" ]
       }
     },
     {
@@ -50,7 +50,7 @@
       "to": "WalkRight",
       "condition": {
         "call": "OssianForge.Engine.Inputs.KeyHandler.IsStateActive",
-        "args": [ "walk_right" ]
+        "args": [ "edit_camera_right" ]
       }
     },
     {
@@ -59,7 +59,7 @@
       "condition": {
         "not": {
           "call": "OssianForge.Engine.Inputs.KeyHandler.IsStateActive",
-          "args": [ "walk_up" ]
+          "args": [ "edit_camera_up" ]
         }
       }
     },
@@ -69,7 +69,7 @@
       "condition": {
         "not": {
           "call": "OssianForge.Engine.Inputs.KeyHandler.IsStateActive",
-          "args": [ "walk_down" ]
+          "args": [ "edit_camera_down" ]
         }
       }
     },
@@ -79,7 +79,7 @@
       "condition": {
         "not": {
           "call": "OssianForge.Engine.Inputs.KeyHandler.IsStateActive",
-          "args": [ "walk_left" ]
+          "args": [ "edit_camera_left" ]
         }
       }
     },
@@ -89,7 +89,7 @@
       "condition": {
         "not": {
           "call": "OssianForge.Engine.Inputs.KeyHandler.IsStateActive",
-          "args": [ "walk_right" ]
+          "args": [ "edit_camera_right" ]
         }
       }
     }

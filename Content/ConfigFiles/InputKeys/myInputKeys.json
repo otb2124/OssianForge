@@ -48,5 +48,78 @@
     "id": "mouseleft_released",
     "type": "release",
     "keys": [ "mouseleft" ]
+  },
+
+
+
+  {
+    "id": "edit_camera_up",
+    "type": "down",
+    "keys": [ "W" ]
+  },
+  {
+    "id": "edit_camera_down",
+    "type": "down",
+    "keys": [ "S" ]
+  },
+  {
+    "id": "edit_camera_left",
+    "type": "down",
+    "keys": [ "A" ]
+  },
+  {
+    "id": "edit_camera_right",
+    "type": "down",
+    "keys": [ "D" ]
+  },
+  {
+    "id": "edit_gizmo_position",
+    "type": "click",
+    "keys": [ "Number1" ]
+  },
+  {
+    "id": "edit_gizmo_rotate",
+    "type": "click",
+    "keys": [ "Number2" ]
+  },
+  {
+    "id": "edit_gizmo_scale",
+    "type": "click",
+    "keys": [ "Number3" ]
+  },
+  {
+    "id": "edit_axis_x_pos",
+    "type": "down",
+    "keys": [ "Right" ]
+  },
+  {
+    "id": "edit_axis_x_neg",
+    "type": "down",
+    "keys": [ "Left" ]
+  },
+  {
+    "id": "edit_axis_y_pos",
+    "type": "down",
+    "keys": [ "PageUp" ]
+  },
+  {
+    "id": "edit_axis_y_neg",
+    "type": "down",
+    "keys": [ "PageDown" ]
+  },
+  {
+    "id": "edit_axis_z_pos",
+    "type": "down",
+    "keys": [ "Down" ]
+  },
+  {
+    "id": "edit_axis_z_neg",
+    "type": "down",
+    "keys": [ "Up" ]
+  },
+  {
+    "id": "edit_fine",
+    "type": "down",
+    "keys": [ "ShiftLeft" ]
   }
 ]

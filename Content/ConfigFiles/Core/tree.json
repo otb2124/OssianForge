@@ -10,12 +10,16 @@
             "OnStart": [ "action.myActions.printHi" ]
           }
         ]
+      },
+      {
+        "type": "ScriptProperty",
+        "data": [ "script.packs.ossian.system.editmode.EditModeScript" ]
       }
     ]
   },
   "mainScene": "configfile.scene.main",
   "version": "1.0.0",
-  "versionTags": ["tag"],
+  "versionTags": [ "tag" ],
   "appTitle": "OssianForge",
   "executablePath": "bin/Debug/net8.0/OssianForge.exe"
 }

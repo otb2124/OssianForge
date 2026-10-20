@@ -11,7 +11,15 @@
       }
     },
     {
-      "id": "renderLimited",
+      "id": "spectator",
+      "actions": {
+        "OnEnter": [
+          "action.systemActions.setWindowVisibleTrue"
+        ]
+      }
+    },
+    {
+      "id": "render",
       "actions": {
         "OnEnter": [
           "action.systemActions.setWindowVisibleTrue"

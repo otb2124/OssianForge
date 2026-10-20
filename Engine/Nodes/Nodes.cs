@@ -38,6 +38,25 @@ namespace OssianForge.Engine.Nodes
         }
 
         /// <summary>
+        /// Builds and loads every resource the scene (and the scenes it references) needs that does not exist yet.
+        /// Anything already instantiated is left alone so references held by surviving nodes stay valid.
+        /// Call on the update thread (GL resources).
+        /// </summary>
+        public void LoadSceneResources(string sceneId)
+        {
+            var resources = Engine.Resources.ResourceLoader.ResourcesConfig;
+            var pending = Engine.Resources.ResourceScheduler.NodeDependency
+                .AddScene(sceneId)
+                .Where(id => resources.GetInstanceById(id) == null)
+                .ToArray();
+
+            if (pending.Length == 0) return;
+
+            resources.BuildInstances(pending);
+            resources.LoadResources(pending);
+        }
+
+        /// <summary>
         /// Replaces the current scene. Call on the update thread (from the console: NodeManager.Enqueue).
         /// </summary>
         public void ChangeScene(string sceneId)
@@ -50,18 +69,8 @@ namespace OssianForge.Engine.Nodes
             var sceneConfig = Engine.Resources.GetResource<SceneConfig>(sceneId)
                 ?? throw new ArgumentException($"'{sceneId}' is not a scene.");
 
-            // 1. Load what the new scene needs. Anything already instantiated is left alone so
-            //    references held by surviving nodes (tree root, sounds, ...) stay valid.
-            var resources = Engine.Resources.ResourceLoader.ResourcesConfig;
-            var pending = Engine.Resources.ResourceScheduler.NodeDependency
-                .AddScene(sceneId)
-                .Where(id => resources.GetInstanceById(id) == null)
-                .ToArray();
-            if (pending.Length > 0)
-            {
-                resources.BuildInstances(pending);
-                resources.LoadResources(pending);
-            }
+            // 1. Load what the new scene needs.
+            LoadSceneResources(sceneId);
 
             // 2. Tear down BEFORE building: node ids are the id-cache keys, so an old and a new scene
             //    sharing ids would unregister each other.

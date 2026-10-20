@@ -12,12 +12,12 @@
   {
     "id": "action.systemActions.addControlPropertyNoWriteToAll",
     "call": "node.addPropertyToAll",
-    "args": [ "ControlProperty", "OnClick:action.systemActions.setGizmoPositionAtNode" ]
+    "args": [ "ControlProperty", "OnClick:action.systemActions.selectEditNode" ]
   },
   {
-    "id": "action.systemActions.setGizmoPositionAtNode",
-    "call": "node.setValue",
-    "args": [ "$id.gizmo_scene", "TransformProperty", "Position", "$self.properties.TransformProperty.Position" ]
+    "id": "action.systemActions.selectEditNode",
+    "call": "EditModeScript.Select",
+    "args": [ "$self" ]
   },
   {
     "id": "action.systemActions.storeCurrentEditNodeId",

@@ -460,6 +460,11 @@
     "type": "scriptfile"
   },
   {
+    "id": "script.packs.ossian.system.editmode.EditModeScript",
+    "data": [ "ScriptFiles/Packs/Ossian/System/EditMode/EditModeScript.cs" ],
+    "type": "scriptfile"
+  },
+  {
     "id": "mesh.cube",
     "data": [ "fastmesh.cube" ],
     "type": "mesh"
