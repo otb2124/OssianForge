@@ -193,5 +193,13 @@ namespace OssianForge.Engine.Resources
 
             return sorted;
         }
+
+        /// <summary>Registers a scene (plus everything it references) after startup; returns all ids in dependency order.</summary>
+        public List<string> AddScene(string sceneConfigId)
+        {
+            ExtractScene(sceneConfigId);
+            ResolveDependencies();
+            return GetSortedResourceIds();
+        }
     }
 }

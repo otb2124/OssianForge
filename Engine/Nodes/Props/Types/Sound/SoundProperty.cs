@@ -40,6 +40,8 @@ namespace OssianForge.Engine.Nodes.Props
             }
         }
 
+        public override void OnDestroy(Node node) => SoundResource.Stop();
+
         // Convenience passthrough so callers don't need to reach into SoundResource
         public void Play() => SoundResource.Play();
         public void Pause() => SoundResource.Pause();

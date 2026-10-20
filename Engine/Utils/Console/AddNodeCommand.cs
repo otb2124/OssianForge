@@ -60,7 +60,7 @@ namespace OssianForge.Engine.Utils.Console
                 var node = new Node { Name = name, Id = name };
                 node.AddProperty(new TransformProperty());
                 parent.AddChild(node);
-                Engine.Nodes.NodeManager.Roots.Add(node);
+                //Engine.Nodes.NodeManager.Roots.Add(node);
                 DebugConsole.Write($"Added node '{name}'", ConsoleColor.Green);
             });
         }
