@@ -43,6 +43,6 @@ snapshots/
 #codebase export
 exports/
 
-Content
+/Content/
 
 .ossian/
