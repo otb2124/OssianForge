@@ -15,11 +15,27 @@ internal sealed class CookOptions
     public bool Json;
     public bool Verbose;
 
+    // Globs from Cook.ini. null = not set, fall back to cook.json / built-in defaults.
+    public List<string>? Raw;
+    public List<string>? Scripts;
+    public List<string>? Exclude;
+
+    public string? IniPath;                  // Cook.ini that was applied, if any
+    public List<string> IniWarnings = new();
+
     public List<string> Positional = new();
 
     public static CookOptions Parse(string[] args, int start)
     {
         var o = new CookOptions();
+
+        // Cook.ini is applied first so command-line options override it.
+        string? explicitIni = null;
+        for (int i = start; i < args.Length; i++)
+            if (args[i] == "--ini")
+                explicitIni = i + 1 < args.Length ? args[i + 1] : throw new ArgumentException("Missing value for --ini");
+        CookIni.Apply(o, explicitIni);
+
         for (int i = start; i < args.Length; i++)
         {
             string a = args[i];
@@ -29,6 +45,7 @@ internal sealed class CookOptions
 
             switch (a)
             {
+                case "--ini": Next(); break;   // already handled above
                 case "--content": o.ContentDir = Next(); break;
                 case "--config": o.ConfigPath = Next(); break;
                 case "--manifest": o.Manifest = Next(); break;

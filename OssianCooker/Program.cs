@@ -11,6 +11,7 @@ Usage:
   OssianCooker clean  [options]        delete the import cache
 
 Options:
+  --ini <file>          settings file                               (default: nearest Cook.ini above cwd / exe)
   --content <dir>       Content folder                              (default: Content)
   --out, -o <file>      Output pack                                 (default: Content.pak)
   --manifest <path>     resources.json, relative to --content       (default: ConfigFiles/Core/resources.json)
@@ -44,6 +45,8 @@ Exit codes: 0 ok, 1 asset errors / bad pack, 2 usage or missing input.";
             var options = CookOptions.Parse(args, 1);
             Log.Json = options.Json;
             Log.Verbose = options.Verbose;
+            if (options.IniPath != null) Log.Info($"Using {options.IniPath}");
+            foreach (var w in options.IniWarnings) Log.Warn(w);
 
             return args[0].ToLowerInvariant() switch
             {

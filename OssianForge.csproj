@@ -52,6 +52,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="Cook.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Ossian.Ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

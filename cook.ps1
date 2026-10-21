@@ -1,13 +1,11 @@
-# Cooks Content/ into bin/Debug/net8.0/Content.pak
-# Run from anywhere: .\cook.ps1   (extra args are passed to the cooker, e.g. .\cook.ps1 -v --no-cache)
+# Cooks the content described in Cook.ini (see Cook.ini for content path, pak output, engine dir, globs).
+# Run from anywhere: .\cook.ps1   (extra args go to the cooker and override Cook.ini, e.g. .\cook.ps1 -v --no-cache)
 
 $ErrorActionPreference = 'Stop'
-Set-Location $PSScriptRoot   # solution root, so relative paths below resolve
+Set-Location $PSScriptRoot   # solution root
 
 dotnet run --project OssianCooker -c Release -- cook `
-    --content Content `
-    --engine-dir bin/Debug/net8.0 `
-    --out bin/Debug/net8.0/Content.pak `
+    --ini "$PSScriptRoot\Cook.ini" `
     @args
 
 if ($LASTEXITCODE -ne 0) {
@@ -15,4 +13,4 @@ if ($LASTEXITCODE -ne 0) {
     exit $LASTEXITCODE
 }
 
-Write-Host "Cook finished: bin/Debug/net8.0/Content.pak" -ForegroundColor Green
+Write-Host "Cook finished (output path: OutputPath in Cook.ini)" -ForegroundColor Green

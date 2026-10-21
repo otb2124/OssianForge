@@ -44,6 +44,11 @@ internal sealed class CookConfig
             Log.Debug($"Using config {path}");
         }
 
+        // Cook.ini / command line win over cook.json
+        if (o.Raw != null) cfg.Raw = o.Raw;
+        if (o.Scripts != null) cfg.Scripts = o.Scripts;
+        if (o.Exclude != null) cfg.Exclude = o.Exclude;
+
         cfg.Manifest = o.Manifest ?? cfg.Manifest ?? "ConfigFiles/Core/resources.json";
         return cfg;
     }
