@@ -2,8 +2,8 @@
 
 /// <summary>
 /// Reads Cook.ini into <see cref="CookOptions"/>. Precedence: command line > Cook.ini > cook.json > built-in defaults.
-/// Path keys are resolved relative to the folder containing Cook.ini (not the working directory),
-/// so the cook behaves the same wherever the cooker is started from.
+/// Relative path keys are resolved from the folder containing Cook.ini (not the working directory), searching
+/// parent folders if the target is not found there, so the cook behaves the same wherever the cooker is started from.
 /// Without --ini, the nearest Cook.ini is searched upwards from the working directory, then from the exe directory.
 /// </summary>
 internal static class CookIni
@@ -39,7 +39,7 @@ internal static class CookIni
             switch ($"{section}.{key}".ToLowerInvariant())
             {
                 case "cook.contentpath": if (value.Length > 0) o.ContentDir = Abs(baseDir, value); break;
-                case "cook.outputpath": if (value.Length > 0) o.Output = Abs(baseDir, value); break;
+                case "cook.outputpath": if (value.Length > 0) o.Output = Abs(baseDir, value, isOutputFile: true); break;
                 case "cook.resourcesconfigpath": if (value.Length > 0) o.Manifest = value; break;
                 case "cook.enginedir": if (value.Length > 0) o.EngineDir = Abs(baseDir, value); break;
                 case "cook.cachedir": if (value.Length > 0) o.CacheDir = Abs(baseDir, value); break;
@@ -74,7 +74,21 @@ internal static class CookIni
         return null;
     }
 
-    private static string Abs(string baseDir, string p) => Path.GetFullPath(p, baseDir);
+    // Relative paths: against the Cook.ini folder; if the target is not there, against the nearest parent folder
+    // where it exists (for the output file: where its folder exists). This lets the same Cook.ini work from the
+    // solution root and from <root>\bin\<cfg>\<tfm>\OssianCooker\.
+    private static string Abs(string baseDir, string p, bool isOutputFile = false)
+    {
+        if (Path.IsPathRooted(p)) return Path.GetFullPath(p);
+
+        for (var dir = new DirectoryInfo(baseDir); dir != null; dir = dir.Parent)
+        {
+            string full = Path.GetFullPath(p, dir.FullName);
+            string probe = isOutputFile ? Path.GetDirectoryName(full) ?? full : full;
+            if (Directory.Exists(probe) || File.Exists(probe)) return full;
+        }
+        return Path.GetFullPath(p, baseDir);
+    }
 
     private static bool Bool(string key, string v) => v.ToLowerInvariant() switch
     {

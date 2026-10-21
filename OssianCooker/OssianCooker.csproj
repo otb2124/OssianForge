@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -11,6 +11,10 @@
     <InvariantGlobalization>true</InvariantGlobalization>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+    <!-- Build into <solution>\bin\<cfg>\<tfm>\OssianCooker\, next to the engine exe -->
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+    <OutputPath>..\bin\$(Configuration)\$(TargetFramework)\OssianCooker\</OutputPath>
   </PropertyGroup>
 
   <ItemGroup>
@@ -22,6 +26,12 @@
 
   <ItemGroup>
     <ProjectReference Include="..\OssianContent\OssianContent.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Cook.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

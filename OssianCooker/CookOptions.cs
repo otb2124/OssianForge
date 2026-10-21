@@ -64,6 +64,16 @@ internal sealed class CookOptions
                     break;
             }
         }
+
+        // Deployed layout <engine output>\OssianCooker\: the engine build is the parent folder.
+        o.EngineDir ??= GuessEngineDir();
         return o;
+    }
+
+    private static string? GuessEngineDir()
+    {
+        string? parent = Directory.GetParent(
+            AppContext.BaseDirectory.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar))?.FullName;
+        return parent != null && File.Exists(Path.Combine(parent, "OssianForge.dll")) ? parent : null;
     }
 }
