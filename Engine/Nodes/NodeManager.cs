@@ -19,7 +19,7 @@ namespace OssianForge.Engine.Nodes
         public void Initialize() => Roots = new();
 
         // -----------------------------------------------------------------------
-        // Tree registration
+        // TreeConfigPath registration
         // -----------------------------------------------------------------------
 
         public void RegisterTree(Node root)

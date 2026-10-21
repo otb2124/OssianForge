@@ -1,4 +1,5 @@
-﻿using OssianForge.Engine.Resources.Animations;
+﻿using OssianForge.Engine.Ipc;
+using OssianForge.Engine.Resources.Animations;
 using OssianForge.Engine.Resources.Colliders;
 using OssianForge.Engine.Resources.Fonts;
 using OssianForge.Engine.Resources.Meshes;
@@ -113,7 +114,8 @@ namespace OssianForge.Engine.Resources.Config
                 "animationfile" => new AnimationFile(record.Id, record.Data[0]),
                 "configfile.font" => new ConfigFile(record.Id, record.Data[0]),
                 "configfile.scene" => new SceneConfig(record.Id, record.Data[0]),
-                "configfile.tree" => new TreeConfig(record.Id, record.Data[0]),
+                "configfile.tree" => new TreeConfig(record.Id,
+                    CookerLink.Settings.TreeConfigPath.Length > 0 ? CookerLink.Settings.TreeConfigPath : record.Data[0]),
                 "configfile.actions" => new ActionsConfig(record.Id, record.Data[0]),
                 "configfile.pronouns" => new PronounsConfig(record.Id, record.Data[0]),
                 "configfile.inputKeys" => new InputKeysConfig(record.Id, record.Data[0]),

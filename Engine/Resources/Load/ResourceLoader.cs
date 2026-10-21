@@ -1,4 +1,5 @@
 ﻿using OssianForge.Content;
+using OssianForge.Engine.Ipc;
 using OssianForge.Engine.Resources.Config;
 
 namespace OssianForge.Engine.Resources
@@ -10,7 +11,8 @@ namespace OssianForge.Engine.Resources
 
         public ResourceLoader()
         {
-            ResourcesConfig = new ResourcesConfig("configfile.resources", "ConfigFiles/Core/resources.json");
+            // CookerLink.InitializeResources() has already run (App ctor), so this is the path for the active source.
+            ResourcesConfig = new ResourcesConfig("configfile.resources", CookerLink.ResourcesConfigPath);
         }
 
         public void InitializeCore()
@@ -18,7 +20,7 @@ namespace OssianForge.Engine.Resources
             // 1. Load base resource registry
             ResourcesConfig.Load();
 
-            // 2. Load Tree and Scene configuration structures
+            // 2. Load TreeConfigPath and Scene configuration structures
             ResourcesConfig.BuildInstances<TreeConfig>();
             ResourcesConfig.LoadResources<TreeConfig>();
 

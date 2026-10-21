@@ -64,7 +64,7 @@ namespace OssianForge.Engine.Resources.MeshFiles
                 return;
             }
 
-            string globalPath = CONTENT_FOLDER_PATH + "/" + Path;
+            string globalPath = CookerLink.GetDiskPath(Path);
 
             using var assimp = Assimp.GetApi();
 

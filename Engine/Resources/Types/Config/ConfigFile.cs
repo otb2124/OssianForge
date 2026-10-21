@@ -73,7 +73,7 @@ namespace OssianForge.Engine.Resources.Config
         // --- save ---
         public void Save()
         {
-            string globalPath = CONTENT_FOLDER_PATH + "/" + Path;
+            string globalPath = CookerLink.GetDiskPath(Path);
             string content = Format switch
             {
                 ConfigFormat.Json => SerializeJson(),

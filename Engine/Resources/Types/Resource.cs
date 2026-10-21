@@ -17,9 +17,6 @@ namespace OssianForge.Engine.Resources
             "collider.", "font.", "sound.", "animation."
         };
 
-        public static readonly string CONTENT_FOLDER_PATH = "Content";
-
-
         public string Id;
         public bool IsLoaded { get; private set; }
 

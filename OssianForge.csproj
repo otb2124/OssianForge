@@ -424,6 +424,9 @@
     <None Update="Content\TextureFiles\HeightMaps\highLands1.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
+    <None Update="Ossian.Ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
   <ItemGroup>

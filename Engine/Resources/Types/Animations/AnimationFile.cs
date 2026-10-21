@@ -73,7 +73,7 @@ namespace OssianForge.Engine.Resources.Animations
                 return;
             }
 
-            string globalPath = CONTENT_FOLDER_PATH + "/" + Path;
+            string globalPath = CookerLink.GetDiskPath(Path);
 
             // Derive the expected clip name from the filename.
             // e.g. "AnimationFiles/remy_jump.fbx" → stem "remy_jump" → after last '_' → "jump"
