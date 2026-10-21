@@ -23,14 +23,17 @@
     <Compile Remove="exports\**" />
     <Compile Remove="OssianContent\**" />
     <Compile Remove="OssianCooker\**" />
+    <Compile Remove="OssianBuilder\**" />
     <Compile Remove="snapshots\**" />
     <EmbeddedResource Remove="exports\**" />
     <EmbeddedResource Remove="OssianContent\**" />
     <EmbeddedResource Remove="OssianCooker\**" />
+    <EmbeddedResource Remove="OssianBuilder\**" />
     <EmbeddedResource Remove="snapshots\**" />
     <None Remove="exports\**" />
     <None Remove="OssianContent\**" />
     <None Remove="OssianCooker\**" />
+    <None Remove="OssianBuilder\**" />
     <None Remove="snapshots\**" />
   </ItemGroup>
 

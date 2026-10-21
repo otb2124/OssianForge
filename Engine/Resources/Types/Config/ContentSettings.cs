@@ -14,6 +14,9 @@ namespace OssianForge.Engine.Resources.Config
     /// <summary>
     /// Where the engine reads content from. Parsed from Ossian.ini (project root, never cooked):
     /// <code>
+    /// [App]
+    /// Title = My Game                         ; window title (written by OssianBuilder; empty = "OssianForge")
+    ///
     /// [Content]
     /// Mode = raw                              ; raw | pak
     /// Path = Content                          ; raw: Content folder   pak: Content.pak file
@@ -28,6 +31,9 @@ namespace OssianForge.Engine.Resources.Config
 
         /// <summary>Folder used for disk writes (ConfigFile.Save) when running from a pak.</summary>
         public const string DefaultFolder = "Content";
+
+        /// <summary>Window title of the shipped app. Empty keeps the engine's default.</summary>
+        public string AppTitle { get; set; } = "";
 
         public ContentMode Mode { get; set; } = ContentMode.Raw;
         public string Path { get; set; } = DefaultFolder;
@@ -63,6 +69,7 @@ namespace OssianForge.Engine.Resources.Config
 
                 switch ($"{section}.{key}".ToLowerInvariant())
                 {
+                    case "app.title": s.AppTitle = value; break;
                     case "content.mode":
                         if (!Enum.TryParse<ContentMode>(value, ignoreCase: true, out var mode))
                             throw new Exception($"[CONTENT] {origin}: unknown Content.Mode '{value}' (expected raw or pak).");

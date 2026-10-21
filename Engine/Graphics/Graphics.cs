@@ -102,6 +102,9 @@ namespace OssianForge.Engine.Graphics
 
         public void Initialize()
         {
+            string iniTitle = OssianForge.Engine.Ipc.CookerLink.Settings.AppTitle;
+            WindowTitle = string.IsNullOrWhiteSpace(iniTitle) ? "OssianForge" : iniTitle;
+
             WindowOptions options = WindowOptions.Default with
             {
                 Size = WindowSize,
