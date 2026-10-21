@@ -16,7 +16,7 @@ internal sealed class BuildOptions
     public string ContentDir = "Content";
     public string PakName = "Content.pak";
     public string Manifest = "ConfigFiles/Core/resources.json";
-    public string Tree = "";
+    public string TreeConfigPath = "ConfigFiles/Core/tree.json";
     public string? CookIni;
     public string? PrebuiltPak;
     public bool AllowCookErrors;
@@ -74,7 +74,7 @@ internal sealed class BuildOptions
                 case "--content": o.ContentDir = Path.GetFullPath(Next()); break;
                 case "--pak-name": o.PakName = Next(); break;
                 case "--manifest": o.Manifest = Next(); break;
-                case "--tree": o.Tree = Next(); break;
+                case "--tree": o.TreeConfigPath = Next(); break;
                 case "--cook-ini": o.CookIni = Path.GetFullPath(Next()); break;
                 case "--prebuilt-pak": o.PrebuiltPak = Path.GetFullPath(Next()); break;
                 case "--allow-errors": o.AllowCookErrors = true; break;

@@ -50,7 +50,7 @@ internal static class BuildIni
                 case "content.path": if (value.Length > 0) o.ContentDir = Abs(baseDir, value); break;
                 case "content.pak": if (value.Length > 0) o.PakName = value; break;
                 case "content.resourcesconfigpath": if (value.Length > 0) o.Manifest = value; break;
-                case "content.tree": o.Tree = value; break;
+                case "content.tree": o.TreeConfigPath = value; break;
                 case "content.cookini": o.CookIni = value.Length > 0 ? Abs(baseDir, value) : null; break;
                 case "content.prebuiltpak": o.PrebuiltPak = value.Length > 0 ? Abs(baseDir, value) : null; break;
                 case "content.allowcookerrors": o.AllowCookErrors = Bool(path, key, value); break;

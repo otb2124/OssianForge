@@ -342,7 +342,7 @@ internal static class Packager
         sb.AppendLine("Mode = pak");
         sb.AppendLine($"Path = \"{o.PakName}\"");
         sb.AppendLine($"ResourcesConfigPath = \"{o.Manifest}\"");
-        if (o.Tree.Length > 0) sb.AppendLine($"Tree = \"{o.Tree}\"");
+        if (o.TreeConfigPath.Length > 0) sb.AppendLine($"TreeConfigPath = \"{o.TreeConfigPath}\"");
         return sb.ToString();
     }
 
