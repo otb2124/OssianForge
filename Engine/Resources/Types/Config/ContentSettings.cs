@@ -76,7 +76,8 @@ namespace OssianForge.Engine.Resources.Config
                         s.Mode = mode;
                         break;
                     case "content.path": if (value.Length > 0) s.Path = value; break;
-                    case "content.tree": s.TreeConfigPath = value; break;
+                    case "content.tree": //TODO: check the tool projects what they use to write
+                    case "content.treeconfigpath": s.TreeConfigPath = value; break;
                     case "content.resourcesconfigpath": if (value.Length > 0) s.ResourcesConfigPath = value; break;
                     default:
                         Console.WriteLine($"[CONTENT] {origin}: ignoring unknown key '{section}.{key}'");

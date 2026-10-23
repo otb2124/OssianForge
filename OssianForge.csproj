@@ -22,23 +22,16 @@
   <ItemGroup>
     <Compile Remove="exports\**" />
     <Compile Remove="OssianContent\**" />
-    <Compile Remove="OssianCooker\**" />
-    <Compile Remove="OssianBuilder\**" />
+    <Compile Remove="OssianTools\**" />
     <Compile Remove="snapshots\**" />
     <EmbeddedResource Remove="exports\**" />
     <EmbeddedResource Remove="OssianContent\**" />
-    <EmbeddedResource Remove="OssianCooker\**" />
-    <EmbeddedResource Remove="OssianBuilder\**" />
+    <EmbeddedResource Remove="OssianTools\**" />
     <EmbeddedResource Remove="snapshots\**" />
     <None Remove="exports\**" />
     <None Remove="OssianContent\**" />
-    <None Remove="OssianCooker\**" />
-    <None Remove="OssianBuilder\**" />
+    <None Remove="OssianTools\**" />
     <None Remove="snapshots\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Remove="Cook.ini" />
   </ItemGroup>
 
   <ItemGroup>
@@ -60,6 +53,12 @@
 
   <ItemGroup>
     <None Update="Ossian.Ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Redist\dotnet-runtime-8.0.32-win-x64.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Redist\VC_redist.x64.exe">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
